@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+
+#Makefile
+Makefile
+
+CMakeCache.txt
+
+rcbe_engine
+
+build/
+
+cmake-build-debug/
+CMakeFiles/
+cmake_install.cmake
+.idea/
