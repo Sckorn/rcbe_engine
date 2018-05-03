@@ -27,7 +27,11 @@ include_directories(
 
 add_executable(
   ${PROJECT_NAME}
-  main.cpp
+  src/main.cpp
+  include/config/GlobalEngineConfig.h
+  include/engine/Engine.h
+  src/config/GlobalEngineConfig.cpp
+  include/config/ConfigUtils.h
 )
 
 target_link_libraries(
