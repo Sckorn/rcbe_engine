@@ -32,7 +32,7 @@ add_executable(
   include/engine/Engine.h
   src/config/GlobalEngineConfig.cpp
   include/config/ConfigUtils.h
-)
+  include/data_types/gui_types.h include/gui/Window.h src/gui/Window.cpp)
 
 target_link_libraries(
   ${PROJECT_NAME}
