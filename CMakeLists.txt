@@ -10,7 +10,7 @@ find_package(
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 
 find_package(
   CGAL REQUIRED
@@ -18,14 +18,11 @@ find_package(
 
 include(${CGAL_USE_FILE})
 
-
-add_definitions(${GTK3_CFLAGS_OTHER})
-
 include_directories(
   include
   ${Boost_INCLUDE_DIRS}
   ${CGAL_INCLUDE_DIRS}
-  ${GTK3_INCLUDE_DIRS}
+  ${GTKMM_INCLUDE_DIRS}
 )
 
 add_executable(
@@ -35,11 +32,14 @@ add_executable(
   include/engine/Engine.h
   src/config/GlobalEngineConfig.cpp
   include/config/ConfigUtils.h
-  include/data_types/gui_types.h include/gui/Window.h src/gui/Window.cpp)
+  include/data_types/gui_types.h
+  include/gui/Window.h
+  src/gui/Window.cpp
+)
 
 target_link_libraries(
   ${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${CGAL_LIBRARIES}
-  ${GTK3_LIBRARIES}
+  ${GTKMM_LIBRARIES}
 )

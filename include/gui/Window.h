@@ -6,30 +6,24 @@
 
 #include "data_types/gui_types.h"
 
-#include <gtk/gtk.h>
+#include <gtkmm/window.h>
 
 namespace rcbe::toolkit::gui
 {
 
 enum class WindowType
 {
-  REGULAR = static_cast<int>(GTK_WINDOW_TOPLEVEL),
-  POPUP = static_cast<int>(GTK_WINDOW_POPUP)
+  REGULAR = 0,
+  POPUP = 1
 };
 
-class Window
+class Window : public Gtk::Window
 {
 public:
   Window()
   :
-  coordinates({0, 0})
-  , dimensions({200, 200})
-  , caption("Window")
-  , gtk_window_ptr(std::move(std::unique_ptr<GtkWidget>(gtk_window_new(type))))
-  , type(GTK_WINDOW_TOPLEVEL)
-  {
-    initWindow();
-  };
+  Window({0, 0}, {200, 200}, "Window")
+  {};
   /**
    * since window caption is only required in window class
    * passing it by value with std::move seems like an option
@@ -40,44 +34,35 @@ public:
     std::size_t width,
     std::size_t height,
     const std::string &caption,
-    GtkWindowType type = GTK_WINDOW_TOPLEVEL
+    WindowType type = WindowType::REGULAR
   )
   :
-  coordinates({x, y})
-  , dimensions({width, height})
-  , caption(caption)
-  , gtk_window_ptr(std::move(std::unique_ptr<GtkWidget>(gtk_window_new(type))))
-  , type(type)
-  {
-    initWindow();
-  };
+  Window({x, y}, {width, height}, caption, type)
+  {};
 
   //TODO: pass cpation and points as value with move (or rvalue ref maybe)
   Window(
     const data_types::gui::Point2 &coords,
     const data_types::gui::Point2 &dimensions,
     const std::string &caption,
-    GtkWindowType type = GTK_WINDOW_TOPLEVEL
+    WindowType type = WindowType::REGULAR
   )
   :
   coordinates(coords)
   , dimensions(dimensions)
   , caption(caption)
-  , gtk_window_ptr(std::move(std::unique_ptr<GtkWidget>(gtk_window_new(type))))
   , type(type)
   {
     initWindow();
   };
 
-  void show();
+  //void show();
 
 private:
 
   void initWindow();
 
-  GtkWindowType type;
-
-  std::unique_ptr<GtkWidget> gtk_window_ptr;
+  WindowType type;
 
   data_types::gui::Point2 coordinates;
   data_types::gui::Point2 dimensions;

@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <boost/program_options.hpp>
+#include <gtkmm/main.h>
 
 #include "config/GlobalEngineConfig.h"
 #include "config/ConfigUtils.h"
@@ -37,7 +38,7 @@ int main(int argc, char * argv[])
       std::cout << std::boolalpha << conf.debug << std::endl;
     }
 
-    gtk_init(&argc, &argv);
+    Gtk::Main kit(argc, argv);
 
     rcbe::toolkit::gui::Window main_window(
       0, 0,
@@ -45,9 +46,7 @@ int main(int argc, char * argv[])
       conf.application_name
     );
 
-    main_window.show();
-
-    gtk_main();
+    Gtk::Main::run(main_window);
   }
   catch (const std::exception &exc)
   {
