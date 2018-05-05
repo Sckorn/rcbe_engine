@@ -8,21 +8,24 @@ find_package(
   filesystem
 )
 
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+
 find_package(
   CGAL REQUIRED
 )
 
 include(${CGAL_USE_FILE})
 
-find_package(
-  GTK REQUIRED
-)
+
+add_definitions(${GTK3_CFLAGS_OTHER})
 
 include_directories(
   include
   ${Boost_INCLUDE_DIRS}
   ${CGAL_INCLUDE_DIRS}
-  ${GTK_INCLUDE_DIRS}
+  ${GTK3_INCLUDE_DIRS}
 )
 
 add_executable(
@@ -38,5 +41,5 @@ target_link_libraries(
   ${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${CGAL_LIBRARIES}
-  ${GTK_LIBRARIES}
+  ${GTK3_LIBRARIES}
 )
