@@ -1,4 +1,5 @@
 {
   "debug" : true,
-  "application_name" : "rcbe_engine"
+  "application_name" : "rcbe_engine",
+  "toolkit_gui_config_path" : "data/config/toolkit_gui.json"
 }
