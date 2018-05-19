@@ -35,7 +35,7 @@ add_executable(
   include/data_types/gui_types.h
   include/gui/Window.h
   src/gui/Window.cpp
-  include/gui/window_utils.h src/gui/window_utils.cpp include/config/ToolkitGUIConfig.h src/config/ToolkitGUIConfig.cpp)
+  include/gui/window_utils.h src/gui/window_utils.cpp include/config/ToolkitGUIConfig.h src/config/ToolkitGUIConfig.cpp include/config/config.h include/common/utils/file_utils.h)
 
 target_link_libraries(
   ${PROJECT_NAME}

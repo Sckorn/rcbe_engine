@@ -1,11 +1,14 @@
 #include <iostream>
 
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include <gtkmm/main.h>
 
 #include "config/GlobalEngineConfig.h"
-#include "config/ConfigUtils.h"
+#include "config/config.h"
 #include "gui/Window.h"
+#include "common/utils/file_utils.h"
+#include "gui/window_utils.h"
 
 int main(int argc, char * argv[])
 {
@@ -34,9 +37,34 @@ int main(int argc, char * argv[])
     {
       auto config_file_path = vm["config"].as<std::string>();
       conf = config::utils::readFromFile<config::GlobalEngineConfig>(config_file_path);
-
+      conf.app_base_path = boost::filesystem::path(
+        argv[0]
+      ).parent_path().string();
       std::cout << std::boolalpha << conf.debug << std::endl;
     }
+
+    if(conf.toolkit_gui_config_path.empty())
+    {
+      std::cerr << "GUI config path is not specified!" << std::endl;
+      return 1;
+    }
+
+    auto gui_config_file_path = common::makeStringPathFromParts(
+      conf.app_base_path,
+      conf.toolkit_gui_config_path
+      );
+
+    std::cout << gui_config_file_path << std::endl;
+
+    auto gui_config = config::utils::readFromFile<config::ToolkitGUIConfig>(gui_config_file_path);
+
+    auto main_widget_path = common::makeStringPathFromParts(
+      conf.app_base_path,
+      gui_config.widgets_dir_path,
+      gui_config.main_window_widget_file_name
+    );
+
+    std::cout << main_widget_path << std::endl;
 
     Gtk::Main kit(argc, argv);
 
@@ -46,7 +74,9 @@ int main(int argc, char * argv[])
       conf.application_name
     );
 
-    Gtk::Main::run(main_window);
+    auto main_widget = rcbe::toolkit::gui::makeWindowFromFile(main_widget_path);
+    main_widget->show();
+    kit.run(*main_widget);
   }
   catch (const std::exception &exc)
   {

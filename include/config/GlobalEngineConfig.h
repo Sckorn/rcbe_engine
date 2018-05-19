@@ -8,7 +8,9 @@ namespace rcbe::config
 struct GlobalEngineConfig
 {
   bool debug = false;
-  std::string application_name = "";
+  std::string application_name;
+  std::string toolkit_gui_config_path;
+  std::string app_base_path;
 };
 
 void to_json(nlohmann::json &json, const GlobalEngineConfig &config);
