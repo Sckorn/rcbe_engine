@@ -3,6 +3,6 @@
 
 #include "config/ConfigUtils.h"
 #include "config/GlobalEngineConfig.h"
-#include "config/ToolkitGUIConfig.h"
+#include "config/WindowManagerConfig.h"
 
 #endif //RCBE_ENGINE_CONFIG_H
