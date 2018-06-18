@@ -17,7 +17,7 @@ void windowManagerWorker(std::string app_path, config::WindowManagerConfig confi
 class WindowManager
 {
 public:
-  WindowManager() {};
+  WindowManager() = delete;
   WindowManager(
     const std::string &app_path,
     const config::WindowManagerConfig &config,
@@ -44,10 +44,7 @@ private:
 
   config::WindowManagerConfig config;
 
-  //std::stack<Window *> visible_windows;
-  std::unordered_map<std::string, Window> windows;
-
-  std::shared_ptr<Gtk::Window> main_window;
+  std::unordered_map<std::string, std::shared_ptr<Gtk::Window>> windows;
 
   Gtk::Main kit;
 };

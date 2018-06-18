@@ -20,11 +20,15 @@ void WindowManager::init()
   );
 
   std::cout << main_widget_path << std::endl;
-  main_window = rcbe::toolkit::gui::makeWindowFromFile(main_widget_path);
+  windows.insert({
+    config.widgets.id,
+    rcbe::toolkit::gui::makeWindowFromFile(main_widget_path)
+  });
 }
 
 int WindowManager::start()
 {
+  auto &main_window = windows.at(config.widgets.id);
   main_window->show();
   kit.run(*main_window);
   return 0;
