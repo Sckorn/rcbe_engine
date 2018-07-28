@@ -8,6 +8,7 @@
 #include "gui/window_utils.h"
 
 #include <gtkmm/main.h>
+#include <gtkmm/builder.h>
 
 namespace rcbe::toolkit::gui
 {
@@ -37,6 +38,11 @@ public:
   int start();
 
 private:
+
+  std::pair<Glib::RefPtr<Gtk::Builder>, std::shared_ptr<Gtk::Window>>
+  makeWindowFromFile(const std::string &path, const std::string &widget_id);
+
+  void simpleHandler();
 
   void init();
 

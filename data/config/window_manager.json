@@ -5,8 +5,8 @@
     "file_name" : "main_window.glade",
     "children" : [
       {
-        "id" : "first_child",
-        "file_name" : "first_child.glade",
+        "id" : "open_file",
+        "file_name" : "open_file.glade",
         "children": []
       },
       {
