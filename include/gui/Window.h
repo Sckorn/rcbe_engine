@@ -7,66 +7,35 @@
 #include "data_types/gui_types.h"
 
 #include <gtkmm/window.h>
+#include <gtkmm/builder.h>
 
 namespace rcbe::toolkit::gui
 {
 
-enum class WindowType
-{
-  REGULAR = 0,
-  POPUP = 1
-};
-
-class Window : public Gtk::Window
+class Window
 {
 public:
-  Window()
-  :
-  Window({0, 0}, {200, 200}, "Window")
-  {};
-  /**
-   * since window caption is only required in window class
-   * passing it by value with std::move seems like an option
-   * */
+
+  static Window
+  makeWindowFromFile(const std::string &path, const std::string &widget_id);
+
   Window(
-    std::size_t x,
-    std::size_t y,
-    std::size_t width,
-    std::size_t height,
-    const std::string &caption,
-    WindowType type = WindowType::REGULAR
+    std::unique_ptr<Gtk::Window> &&gtk_window,
+    Glib::RefPtr<Gtk::Builder> gtk_builder
   )
   :
-  Window({x, y}, {width, height}, caption, type)
-  {};
+  gtk_window(std::move(gtk_window))
+  , gtk_builder(std::move(gtk_builder))
+  {}
 
-  //TODO: pass cpation and points as value with move (or rvalue ref maybe)
-  Window(
-    const data_types::gui::Point2 &coords,
-    const data_types::gui::Point2 &dimensions,
-    const std::string &caption,
-    WindowType type = WindowType::REGULAR
-  )
-  :
-  coordinates(coords)
-  , dimensions(dimensions)
-  , caption(caption)
-  , type(type)
-  {
-    initWindow();
-  };
+  Gtk::Window &operator*();
 
-  //void show();
+  //void show(Gtk::Main &kit);
 
 private:
 
-  void initWindow();
-
-  WindowType type;
-
-  data_types::gui::Point2 coordinates;
-  data_types::gui::Point2 dimensions;
-  std::string caption;
+  std::unique_ptr<Gtk::Window> gtk_window;
+  Glib::RefPtr<Gtk::Builder> gtk_builder;
 };
 }
 
