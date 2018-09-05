@@ -1,9 +1,15 @@
 #include <iostream>
+#include <thread>
 
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
+#include <gtkmm/main.h>
 
 #include "config/GlobalEngineConfig.h"
-#include "config/ConfigUtils.h"
+#include "config/config.h"
+#include "gui/WindowManager.h"
+#include "common/utils/file_utils.h"
+#include "gui/window_utils.h"
 
 int main(int argc, char * argv[])
 {
@@ -24,21 +30,49 @@ int main(int argc, char * argv[])
     return 0;
   }
 
-  config::GlobalEngineConfig conf;
-
-  if(vm.count("config"))
+  try
   {
-    auto config_file_path = vm["config"].as<std::string>();
-    try
-    {
-      config::GlobalEngineConfig gec = config::utils::readFromFile<config::GlobalEngineConfig>(config_file_path);
+    config::GlobalEngineConfig conf;
 
-      std::cout << std::boolalpha << gec.debug << std::endl;
-    }
-    catch(const std::exception &e)
+    if(vm.count("config"))
     {
-      std::cerr << "Exception in main(): " << e.what() << std::endl;
+      auto config_file_path = vm["config"].as<std::string>();
+      conf = config::utils::readFromFile<config::GlobalEngineConfig>(config_file_path);
+      conf.app_base_path = boost::filesystem::path(
+        argv[0]
+      ).parent_path().string();
+      std::cout << std::boolalpha << conf.debug << std::endl;
     }
+
+    if(conf.window_manager_config_file.empty())
+    {
+      std::cerr << "GUI config path is not specified!" << std::endl;
+      return 1;
+    }
+
+    auto gui_config_file_path = common::makeStringPathFromParts(
+      conf.app_base_path,
+      conf.window_manager_config_file
+      );
+
+    std::cout << gui_config_file_path << std::endl;
+
+    auto gui_config = config::utils::readFromFile<config::WindowManagerConfig>(gui_config_file_path);
+
+    Gtk::Main kit(argc, argv);
+
+    std::thread gui_thread(
+      rcbe::toolkit::gui::windowManagerWorker,
+      conf.app_base_path,
+      gui_config,
+      kit
+    );
+    gui_thread.join();
+  }
+  catch (const std::exception &exc)
+  {
+    std::cerr << "Exception in main(): " << exc.what() << std::endl;
+    return 1;
   }
 
   return 0;

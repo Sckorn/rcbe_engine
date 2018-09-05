@@ -8,6 +8,9 @@ namespace rcbe::config
 struct GlobalEngineConfig
 {
   bool debug = false;
+  std::string application_name;
+  std::string window_manager_config_file;
+  std::string app_base_path;
 };
 
 void to_json(nlohmann::json &json, const GlobalEngineConfig &config);

@@ -1,3 +1,5 @@
 {
-  "debug" : true
+  "debug" : true,
+  "application_name" : "rcbe_engine",
+  "window_manager_config_file" : "data/config/window_manager.json"
 }

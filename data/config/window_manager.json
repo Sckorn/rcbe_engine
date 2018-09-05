@@ -1,0 +1,19 @@
+{
+  "widgets_dir_path" : "data/widgets/",
+  "widgets" : {
+    "id" : "main_window",
+    "file_name" : "main_window.glade",
+    "children" : [
+      {
+        "id" : "open_file",
+        "file_name" : "open_file.glade",
+        "children": []
+      },
+      {
+        "id" : "second_child",
+        "file_name" : "second_child.glade",
+        "children": []
+      }
+    ]
+  }
+}
