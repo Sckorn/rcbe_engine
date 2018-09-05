@@ -9,7 +9,7 @@ struct GlobalEngineConfig
 {
   bool debug = false;
   std::string application_name;
-  std::string toolkit_gui_config_path;
+  std::string window_manager_config_file;
   std::string app_base_path;
 };
 

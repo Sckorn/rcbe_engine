@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -6,7 +7,7 @@
 
 #include "config/GlobalEngineConfig.h"
 #include "config/config.h"
-#include "gui/Window.h"
+#include "gui/WindowManager.h"
 #include "common/utils/file_utils.h"
 #include "gui/window_utils.h"
 
@@ -43,7 +44,7 @@ int main(int argc, char * argv[])
       std::cout << std::boolalpha << conf.debug << std::endl;
     }
 
-    if(conf.toolkit_gui_config_path.empty())
+    if(conf.window_manager_config_file.empty())
     {
       std::cerr << "GUI config path is not specified!" << std::endl;
       return 1;
@@ -51,32 +52,22 @@ int main(int argc, char * argv[])
 
     auto gui_config_file_path = common::makeStringPathFromParts(
       conf.app_base_path,
-      conf.toolkit_gui_config_path
+      conf.window_manager_config_file
       );
 
     std::cout << gui_config_file_path << std::endl;
 
-    auto gui_config = config::utils::readFromFile<config::ToolkitGUIConfig>(gui_config_file_path);
-
-    auto main_widget_path = common::makeStringPathFromParts(
-      conf.app_base_path,
-      gui_config.widgets_dir_path,
-      gui_config.main_window_widget_file_name
-    );
-
-    std::cout << main_widget_path << std::endl;
+    auto gui_config = config::utils::readFromFile<config::WindowManagerConfig>(gui_config_file_path);
 
     Gtk::Main kit(argc, argv);
 
-    rcbe::toolkit::gui::Window main_window(
-      0, 0,
-      500, 500,
-      conf.application_name
+    std::thread gui_thread(
+      rcbe::toolkit::gui::windowManagerWorker,
+      conf.app_base_path,
+      gui_config,
+      kit
     );
-
-    auto main_widget = rcbe::toolkit::gui::makeWindowFromFile(main_widget_path);
-    main_widget->show();
-    kit.run(*main_widget);
+    gui_thread.join();
   }
   catch (const std::exception &exc)
   {

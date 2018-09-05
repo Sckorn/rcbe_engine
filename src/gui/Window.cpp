@@ -2,9 +2,27 @@
 
 namespace rcbe::toolkit::gui
 {
-void Window::initWindow()
+
+Window
+Window::makeWindowFromFile(const std::string &path, const std::string &widget_id)
 {
-  set_title(caption);
+  Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_file(path);
+
+  Gtk::Window *pd = nullptr;
+
+  builder->get_widget(widget_id, pd);
+  std::unique_ptr<Gtk::Window> ptr = nullptr;
+  ptr.reset(pd);
+
+  return Window(
+    std::move(ptr),
+    std::move(builder)
+  );
+}
+
+Gtk::Window &Window::operator*()
+{
+  return *gtk_window;
 }
 
 /*void Window::show()

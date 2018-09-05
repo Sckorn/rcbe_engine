@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 project(rcbe_engine)
 add_definitions(-std=c++17)
 
+find_package(Threads)
+
 find_package(
   Boost REQUIRED COMPONENTS
   program_options
@@ -35,11 +37,20 @@ add_executable(
   include/data_types/gui_types.h
   include/gui/Window.h
   src/gui/Window.cpp
-  include/gui/window_utils.h src/gui/window_utils.cpp include/config/ToolkitGUIConfig.h src/config/ToolkitGUIConfig.cpp include/config/config.h include/common/utils/file_utils.h)
+  include/gui/window_utils.h
+  src/gui/window_utils.cpp
+  include/config/WindowManagerConfig.h
+  src/config/WindowManagerConfig.cpp
+  include/config/config.h
+  include/common/utils/file_utils.h
+  include/gui/WindowManager.h
+  src/gui/WindowManager.cpp
+)
 
 target_link_libraries(
   ${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${CGAL_LIBRARIES}
   ${GTKMM_LIBRARIES}
+  ${CMAKE_THREAD_LIBS_INIT}
 )
