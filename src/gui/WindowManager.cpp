@@ -12,9 +12,11 @@ void WindowManager::simpleHandler()
   std::cout << "Trying to open widget " << main_widget_first_child.id << std::endl;
 
   auto main_widget_first_child_path = rcbe::common::makeStringPathFromParts(
-    app_path,
-    config.widgets_dir_path,
-    main_widget_first_child.file_name
+    {
+      app_path,
+      config.widgets_dir_path,
+      main_widget_first_child.file_name
+    }
   );
 
   std::cout << main_widget_first_child_path << std::endl;
@@ -41,9 +43,11 @@ void windowManagerWorker(std::string app_path, config::WindowManagerConfig confi
 void WindowManager::init()
 {
   auto main_widget_path = rcbe::common::makeStringPathFromParts(
-    app_path,
-    config.widgets_dir_path,
-    config.widgets.file_name
+    {
+      app_path,
+      config.widgets_dir_path,
+      config.widgets.file_name
+    }
   );
 
   auto builder_and_widget = makeWindowFromFile(main_widget_path, config.widgets.id);

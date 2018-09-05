@@ -51,8 +51,10 @@ int main(int argc, char * argv[])
     }
 
     auto gui_config_file_path = common::makeStringPathFromParts(
-      conf.app_base_path,
-      conf.window_manager_config_file
+      {
+        conf.app_base_path,
+        conf.window_manager_config_file
+      }
       );
 
     std::cout << gui_config_file_path << std::endl;

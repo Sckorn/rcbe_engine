@@ -45,6 +45,7 @@ add_executable(
   include/common/utils/file_utils.h
   include/gui/WindowManager.h
   src/gui/WindowManager.cpp
+  src/common/utils/file_utils.cpp
 )
 
 target_link_libraries(
