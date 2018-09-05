@@ -5,18 +5,9 @@
 
 namespace rcbe::common
 {
-template <typename ... Args>
-boost::filesystem::path makePathFromParts(Args&&... args)
-{
-  return (boost::filesystem::path(args) / ...);
-}
+boost::filesystem::path makePathFromParts(const std::vector<std::string> &parts);
 
-template <typename ... Args>
-std::string makeStringPathFromParts(Args&&... args)
-{
-  auto path = makePathFromParts(args...);
-  return path.string();
-}
+std::string makeStringPathFromParts(const std::vector<std::string> &parts);
 }
 
 #endif //RCBE_ENGINE_FILE_UTILS_H
