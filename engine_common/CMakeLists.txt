@@ -24,3 +24,14 @@ target_link_libraries(
   ${Boost_LIBRARIES}
 )
 
+target_include_directories(
+  ${PROJECT_NAME} INTERFACE include/
+)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "include/common/utils/file_utils.h")
+
+install(
+  TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION /usr/lib/x86_64-linux-gnu/
+  PUBLIC_HEADER DESTINATION /usr/include/x86_64-linux-gnu/${PROJECT_NAME}
+)

@@ -45,3 +45,6 @@ CMakeFiles/
 cmake_install.cmake
 .idea/
 *.cbp
+install_manifest.txt
+
+.vscode

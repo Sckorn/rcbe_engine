@@ -25,6 +25,9 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${CGAL_INCLUDE_DIRS}
   ${GTKMM_INCLUDE_DIRS}
+  ../thirdparty/include/ #remove later when done with header only libs
+  ../engine_datamodel/include/
+  rcbe_engine_common
 )
 
 add_executable(
@@ -43,6 +46,8 @@ add_executable(
   include/config/config.h
   include/gui/WindowManager.h
   src/gui/WindowManager.cpp
+  ../thirdparty/include/json/json.h
+  ../engine_datamodel/include/data_types/gui_types.h
 )
 
 target_link_libraries(
@@ -51,4 +56,6 @@ target_link_libraries(
   ${CGAL_LIBRARIES}
   ${GTKMM_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
+  #thirdparty
+  rcbe_engine_common
 )
