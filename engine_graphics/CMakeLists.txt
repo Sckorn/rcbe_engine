@@ -23,7 +23,11 @@ add_library(
   SHARED
   include/core/constants.hpp
   include/core/types.hpp
+  include/core/Renderer.hpp
+  include/core/conversions.hpp
+
   src/types.cpp
+  src/conversions.cpp
 )
 
 target_link_libraries(
@@ -53,7 +57,7 @@ target_include_directories(
 set_target_properties(
   ${PROJECT_NAME} 
   PROPERTIES PUBLIC_HEADER 
-  "include/core/constants.hpp;include/core/types.hpp"
+  "include/core/constants.hpp;include/core/types.hpp;include/core/Renderer.hpp;include/core/conversions.hpp"
   )
 
 install(

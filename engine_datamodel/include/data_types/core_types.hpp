@@ -5,25 +5,42 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#include <type_traits>
+
+#include <iostream>
 
 namespace rcbe::data_types::core
 {
 
-template <typename ValueType>
+template <typename ValueType, size_t dim>
 class Vector
 {
 public:
 
     using value_type = ValueType;
 
+    static const size_t dimension = dim;
+
 public:
-    Vector(ValueType &&x, ValueType &&y, ValueType &&z)
+
+    Vector() 
+    {
+        std::cout << "default ctor" << std::endl;
+    };
+
+    template <typename... Args>
+    Vector(Args&&... args)
     :
-    _x(x)
-    , _y(y)
-    , _z(z)
-    {}
-    ~Vector() = default;
+    _v {{args...}}
+    {
+        constexpr size_t size = sizeof...(Args);
+        static_assert(size == dim);
+    }
+
+    ~Vector() 
+    {
+        static_assert(std::is_scalar_v<ValueType>);
+    };
 
     Vector(const Vector &other) = default;
     Vector &operator=(const Vector &other) = default;
@@ -31,21 +48,28 @@ public:
     Vector(Vector &&other) = default;
     Vector &operator=(Vector &&other) = default;
 
+    ValueType operator[](const size_t index) const
+    {
+        if (index > dimension)
+            throw std::runtime_error("Acces for wrong dimension");
+        return _v[index];
+    }
+
 private:
-    ValueType _x;
-    ValueType _y;
-    ValueType _z;
+    std::array<ValueType, dim> _v;
+    //std::vector<ValueType> _v;
 };
 
-using Vector3d = Vector<double>;
+using Vector3d = Vector<double, 3>;
+using Vector2d = Vector<double, 2>;
 
 template <typename ValueType, size_t DimRow, size_t DimCol>
 class Matrix
 {
 public:
     using value_type = ValueType;
-    /*const size_t rows = DimRow;
-    const size_t columns = DimCol;*/
+    static const size_t rows = DimRow;
+    static const size_t columns = DimCol;
 
 public:
     Matrix(const std::vector<ValueType> &m)
@@ -56,7 +80,10 @@ public:
 
         std::copy(m.begin(), m.end(), _m.begin());
     }
-    ~Matrix() = default;
+    ~Matrix()
+    {
+        static_assert(std::is_scalar_v<ValueType>);
+    };
 
     Matrix(const Matrix &other) = default;
     Matrix &operator=(const Matrix &other) = default;
@@ -66,6 +93,7 @@ public:
 
 private:
     std::array<ValueType, DimRow * DimCol> _m;
+    //std::vector
 };
 
 using Matrix3x3d = Matrix<double, 3, 3>;

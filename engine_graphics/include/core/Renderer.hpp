@@ -6,7 +6,7 @@ namespace rcbe::core::rendering
 class Renderer
 {
 public:
-
+    
 };
 }
 

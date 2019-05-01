@@ -19,7 +19,7 @@ include_directories(
 )
 
 target_include_directories(
-  ${PROJECT_NAME} INTERFACE include/
+  ${PROJECT_NAME} INTERFACE include
 )
 
 set_target_properties(
