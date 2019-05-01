@@ -1,5 +1,7 @@
 #include <string>
 
+#include <rcbe_engine_datamodel/data_types/core_types.hpp>
+
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 
@@ -29,6 +31,5 @@ int main(int argc, char *argv[])
     glutCreateWindow("OpenGL - Creating a triangle");
     glutDisplayFunc(drawTriangle);
     glutMainLoop();
-    return 0;
     return 0;
 }
