@@ -48,3 +48,5 @@ cmake_install.cmake
 install_manifest.txt
 
 .vscode
+
+rcbe_engine_graphics_test_node
