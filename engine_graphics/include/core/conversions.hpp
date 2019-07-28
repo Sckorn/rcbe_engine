@@ -1,0 +1,9 @@
+#ifndef RCBE_ENGINE_GRAPHICS_CONVERSIONS_H
+#define RCBE_ENGINE_GRAPHICS_CONVERSIONS_H
+
+namespace rcbe::core::conversions
+{
+    
+}
+
+#endif //RCBE_ENGINE_GRAPHICS_CONVERSIONS_H

@@ -8,7 +8,7 @@
 #include "config/GlobalEngineConfig.h"
 #include "config/config.h"
 #include "gui/WindowManager.h"
-#include "common/utils/file_utils.h"
+#include <common/utils/file_utils.h>
 #include "gui/window_utils.h"
 
 int main(int argc, char * argv[])
