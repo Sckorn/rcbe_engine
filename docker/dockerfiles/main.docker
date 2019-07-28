@@ -1,0 +1,145 @@
+# main docker file used for basic enviroment setup for bazel build
+
+FROM ubuntu:latest
+
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    TZ=Europe/Moscow \
+    TERM=xterm \
+    PYTHONIOENCODING=UTF-8 
+
+RUN mv /bin/sh /bin/sh-old && \
+    ln -s /bin/bash /bin/sh && \
+    # install packages
+    apt-get -qq update && \
+    apt-get install -q -y \
+        dirmngr \
+        gnupg2 \
+        tzdata \
+        lsb-release && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get -qq update && \
+    apt-get -y -q install \
+            pkg-config \
+            zip \
+            g++ \
+            zlib1g-dev \
+            unzip \
+            python \
+            bash-completion \
+            default-jdk \
+            software-properties-common \
+#            python-software-properties \
+            python-jinja2 && \
+    add-apt-repository ppa:ubuntu-toolchain-r/test && \
+    apt-get -qq update && \
+    apt-get -y -qq install \
+            gcc-7 \
+            g++-7 \
+    && rm -rf /var/lib/apt/lists/*
+
+# create alternative for GCC-5
+RUN #update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 100 \
+                        #--slave /usr/bin/g++ g++ /usr/bin/g++-5 && \
+# create alternative for GCC-7
+	 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 150 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-7
+
+ENV BAZEL_VERSION=0.22.0
+
+#
+# Install Bazel
+#
+
+# Original link:
+RUN BAZEL_DOWNLOAD_URL="https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb"; \
+    wget --output-document=/tmp/bazel.deb --tries=3 --continue --no-verbose "${BAZEL_DOWNLOAD_URL}" && \
+    dpkg -i /tmp/bazel.deb && \
+    rm /tmp/bazel.deb
+
+#
+# Install CLion
+#
+
+ENV CLION_VERSION=Clion-2019.2
+
+# original link for download:
+RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/CLion-${CLION_VERSION}.tar.gz"; \
+    wget --output-document=/tmp/clion.tar.gz --tries=3 --continue --no-verbose "${CLION_DOWNLOAD_URL}" && \
+    mkdir -p /opt/clion && \
+    tar --gzip -xf /tmp/clion.tar.gz --strip-components=1 -C /opt/clion && \
+    rm /tmp/clion.tar.gz && \
+    sed -i 's/^-Xmx.*$/-Xmx4000m/' /opt/clion/bin/clion64.vmoptions && \
+    echo 'idea.system.path=${user.home}/clion' >> /opt/clion/bin/idea.properties && \
+    echo 'idea.config.path=${user.home}/.CLion/config' >> /opt/clion/bin/idea.properties
+
+# COPY plugins inside docker image
+
+COPY clwb.tar.gz /tmp/bazel.tar.gz
+COPY bash.tar.gz /tmp/bash.tar.gz 
+COPY md.tar.gz /tmp/md.tar.gz
+COPY protobuf.tar.gz /tmp/protobuf.tar.gz
+
+# Install CLion plugins
+RUN tar --gzip -xf /tmp/bazel.tar.gz -C /opt/clion/plugins/ && \
+    tar --gzip -xf /tmp/bash.tar.gz -C /opt/clion/plugins/ && \
+    tar --gzip -xf /tmp/md.tar.gz -C /opt/clion/plugins/ && \
+    tar --gzip -xf /tmp/protobuf.tar.gz -C /opt/clion/plugins/ && \
+    rm /tmp/bazel.tar.gz /tmp/bash.tar.gz /tmp/md.tar.gz /tmp/protobuf.tar.gz
+
+RUN apt update -y -qq &&\
+    apt install -y -qq curl tmux iputils-ping net-tools nano &&\
+    apt install -y -qq vim vim-pathogen vim-fugitive vim-syntastic &&\
+    apt install -y -qq gpicview python-pip meld freecad python-tk &&\
+    apt-get clean &&\
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN pip install --no-cache-dir scipy==1.2.0 numpy==1.16.1 scikit-learn==0.20.3 matplotlib==2.2.3 pwlf plyfile protobuf pyhocon
+RUN groupdel dialout
+COPY docker/scripts/entrypoint.sh /entrypoint.sh
+
+ENV CC=/usr/bin/gcc-7\
+    CXX=/usr/bin/g++-7
+
+
+RUN apt-get -qq update && \
+	sudo aptget install -y -q \
+	# libraries
+	libgtkmm-3.0-dev \
+	libvtk7-dev \
+	libboost-all-dev \
+	libbullet-dev \
+	# binaries
+	python3.6 \
+	# utlities
+	tmux \
+	cmake \
+	dirmngr \
+        gnupg2 \
+        tzdata \
+	wget \
+        sudo \
+        git \
+        lsb-release && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        pkg-config \
+        libxau-dev \
+        libxdmcp-dev \
+        libxcb1-dev \
+        libxext-dev \
+        libx11-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Setup timezone
+
+RUN ln -nfs /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo "$TZ" > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata
+
+
+# https://download.jetbrains.com/cpp/CLion-2019.2.tar.gz
