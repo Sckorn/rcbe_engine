@@ -16,6 +16,7 @@ RUN mv /bin/sh /bin/sh-old && \
         dirmngr \
         gnupg2 \
         tzdata \
+	wget \
         lsb-release && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -31,7 +32,7 @@ RUN apt-get -qq update && \
             bash-completion \
             default-jdk \
             software-properties-common \
-#            python-software-properties \
+#            python-software-properties \ #figure out what's wrong with this
             python-jinja2 && \
     add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt-get -qq update && \
@@ -40,12 +41,9 @@ RUN apt-get -qq update && \
             g++-7 \
     && rm -rf /var/lib/apt/lists/*
 
-# create alternative for GCC-5
-RUN #update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 100 \
-                        #--slave /usr/bin/g++ g++ /usr/bin/g++-5 && \
-# create alternative for GCC-7
-	 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 150 \
+RUN  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 150 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-7
+
 
 ENV BAZEL_VERSION=0.22.0
 
@@ -63,10 +61,10 @@ RUN BAZEL_DOWNLOAD_URL="https://github.com/bazelbuild/bazel/releases/download/${
 # Install CLion
 #
 
-ENV CLION_VERSION=Clion-2019.2
+ENV CLION_VERSION=CLion-2019.2
 
 # original link for download:
-RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/CLion-${CLION_VERSION}.tar.gz"; \
+RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/${CLION_VERSION}.tar.gz"; \
     wget --output-document=/tmp/clion.tar.gz --tries=3 --continue --no-verbose "${CLION_DOWNLOAD_URL}" && \
     mkdir -p /opt/clion && \
     tar --gzip -xf /tmp/clion.tar.gz --strip-components=1 -C /opt/clion && \
@@ -98,14 +96,14 @@ RUN apt update -y -qq &&\
 
 RUN pip install --no-cache-dir scipy==1.2.0 numpy==1.16.1 scikit-learn==0.20.3 matplotlib==2.2.3 pwlf plyfile protobuf pyhocon
 RUN groupdel dialout
-COPY docker/scripts/entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 
 ENV CC=/usr/bin/gcc-7\
     CXX=/usr/bin/g++-7
 
 
 RUN apt-get -qq update && \
-	sudo aptget install -y -q \
+	apt-get install -y -q \
 	# libraries
 	libgtkmm-3.0-dev \
 	libvtk7-dev \
@@ -140,6 +138,3 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN ln -nfs /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo "$TZ" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata
-
-
-# https://download.jetbrains.com/cpp/CLion-2019.2.tar.gz
