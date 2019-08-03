@@ -6,25 +6,6 @@ echo "127.0.1.1 $(hostname -s)" >> /etc/hosts
 #
 # Create new USER with uid and gid on HOST
 #
-if ! $(grep -q '^rcbe' /etc/group); then
-  if ! $(groupadd --gid ${HGID} 'rcbe'); then
-    echo "E: Could not add group 'rcbe'!"
-    exit 1
-  fi
-  echo -e "Added group 'rcbe' with gid=${HGID}"
-fi
-
-if ! $(grep -q '^oper' /etc/passwd); then
-  if ! $(useradd -m -N -u ${HUID} -g ${HGID} -s /bin/bash -k /root -d ${OPER_HOME} oper); then
-    echo "E: Could not add user 'oper' to group 'abagy'!"
-    exit 1
-  fi
-  echo -e "Added  user 'oper'  with uid=${HUID}"
-
-  if ! $(usermod -a -G users oper); then
-    echo "E: Could not add user 'oper' to group 'users'!"
-    exit 1
-  fi
 
   # Add new USER to sudoers list
   sed -i '$ a oper ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
@@ -43,13 +24,8 @@ if ! $(grep -q '^oper' /etc/passwd); then
   cp -r ${OPER_HOME}/additional/.CLion ${OPER_HOME}/
   cp -r ${OPER_HOME}/additional/.ssh ${OPER_HOME}/
 
-  [[ -d ${OPER_HOME} ]] && chown -R ${HUID}:${HGID} ${OPER_HOME}
-  echo -e "Changed ownership of ${OPER_HOME} to 'oper:abagy'\n"
-
-  sudo chown -R ${HUID}:${HGID} ${CATKIN_WS}
-fi
-
-[[ -f ${OPER_HOME}/.ssh/id_rsa ]] && chmod go-rw ${OPER_HOME}/.ssh/id_rsa
+# Start uEye USB camera service if it exists
+#[[ -x /etc/init.d/ueyeusbdrc ]] && /etc/init.d/ueyeusbdrc start
 
 usermod -a -G docker,ueye oper
 

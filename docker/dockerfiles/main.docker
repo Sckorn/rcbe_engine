@@ -61,7 +61,7 @@ RUN BAZEL_DOWNLOAD_URL="https://github.com/bazelbuild/bazel/releases/download/${
 # Install CLion
 #
 
-ENV CLION_VERSION=CLion-2019.2
+ENV CLION_VERSION=CLion-2018.2
 
 # original link for download:
 RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/${CLION_VERSION}.tar.gz"; \
@@ -98,19 +98,24 @@ RUN pip install --no-cache-dir scipy==1.2.0 numpy==1.16.1 scikit-learn==0.20.3 m
 RUN groupdel dialout
 COPY entrypoint.sh /entrypoint.sh
 
-ENV CC=/usr/bin/gcc-7\
+ENV CC=/usr/bin/gcc-7 \
     CXX=/usr/bin/g++-7
 
 
 RUN apt-get -qq update && \
 	apt-get install -y -q \
+	build-essential \
 	# libraries
 	libgtkmm-3.0-dev \
 	libvtk7-dev \
 	libboost-all-dev \
 	libbullet-dev \
+	libgmp-dev \
+	libmpfr-dev \
 	# binaries
 	python3.6 \
+	git \
+	glade \
 	# utlities
 	tmux \
 	cmake \
@@ -123,6 +128,20 @@ RUN apt-get -qq update && \
         lsb-release && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
+
+#
+# Install CGAL
+#
+
+RUN cd /tmp/ && \
+	git clone https://github.com/CGAL/cgal.git && \
+	cd cgal && \
+	mkdir build && \
+	cd build && \
+	cmake .. && \
+	make install clean
+
+	
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
