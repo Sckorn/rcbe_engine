@@ -1,5 +1,4 @@
 #!/bin/bash
-echo -ne "\nRWC environment variables:\n$(env | grep RWC)\n\n"
 
 echo "127.0.1.1 $(hostname -s)" >> /etc/hosts
 
