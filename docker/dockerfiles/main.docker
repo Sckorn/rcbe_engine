@@ -95,8 +95,7 @@ RUN VSC_DOWNLOAD_URL=https://go.microsoft.com/fwlink/?LinkID=760868 && \
 	wget --output-document=/tmp/vscode.deb --tries=3 --continue --no-verbose "${VSC_DOWNLOAD_URL}" && \ 
 	apt-get update -qq && \
 	apt-get install -y libnotify4 libxkbfile1 libsecret-1-0 libgtk-3-0 libxss1 && \
-	dpkg -i /tmp/vscode.deb && \
-	apt-get -f install
+	dpkg -i /tmp/vscode.deb 
 
 RUN apt update -y -qq &&\
     apt install -y -qq curl tmux iputils-ping net-tools nano &&\

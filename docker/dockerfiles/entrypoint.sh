@@ -15,7 +15,7 @@ fi
 
 if ! $(grep -q '^oper' /etc/passwd); then
   if ! $(useradd -m -N -u ${HUID} -g ${HGID} -s /bin/bash -k /root -d ${OPER_HOME} oper); then
-    echo "E: Could not add user 'oper' to group 'abagy'!"
+    echo "E: Could not add user 'oper' to group 'rcbe'!"
     exit 1
   fi
   echo -e "Added  user 'oper'  with uid=${HUID}"
@@ -43,7 +43,7 @@ if ! $(grep -q '^oper' /etc/passwd); then
   cp -r ${OPER_HOME}/additional/.ssh ${OPER_HOME}/
 
   [[ -d ${OPER_HOME} ]] && chown -R ${HUID}:${HGID} ${OPER_HOME}
-  echo -e "Changed ownership of ${OPER_HOME} to 'oper:abagy'\n"
+  echo -e "Changed ownership of ${OPER_HOME} to 'oper:rcbe'\n"
 
   sudo chown -R ${HUID}:${HGID} ${CATKIN_WS}
 fi
