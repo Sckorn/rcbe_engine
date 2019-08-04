@@ -61,31 +61,42 @@ RUN BAZEL_DOWNLOAD_URL="https://github.com/bazelbuild/bazel/releases/download/${
 # Install CLion
 #
 
-ENV CLION_VERSION=CLion-2018.2
+#ENV CLION_VERSION=CLion-2019.2
 
 # original link for download:
-RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/${CLION_VERSION}.tar.gz"; \
-    wget --output-document=/tmp/clion.tar.gz --tries=3 --continue --no-verbose "${CLION_DOWNLOAD_URL}" && \
-    mkdir -p /opt/clion && \
-    tar --gzip -xf /tmp/clion.tar.gz --strip-components=1 -C /opt/clion && \
-    rm /tmp/clion.tar.gz && \
-    sed -i 's/^-Xmx.*$/-Xmx4000m/' /opt/clion/bin/clion64.vmoptions && \
-    echo 'idea.system.path=${user.home}/clion' >> /opt/clion/bin/idea.properties && \
-    echo 'idea.config.path=${user.home}/.CLion/config' >> /opt/clion/bin/idea.properties
+#RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/${CLION_VERSION}.tar.gz"; \
+#    wget --output-document=/tmp/clion.tar.gz --tries=3 --continue --no-verbose "${CLION_DOWNLOAD_URL}" && \
+#    mkdir -p /opt/clion && \
+#    tar --gzip -xf /tmp/clion.tar.gz --strip-components=1 -C /opt/clion && \
+#    rm /tmp/clion.tar.gz && \
+#    sed -i 's/^-Xmx.*$/-Xmx4000m/' /opt/clion/bin/clion64.vmoptions && \
+#    echo 'idea.system.path=${user.home}/clion' >> /opt/clion/bin/idea.properties && \
+#    echo 'idea.config.path=${user.home}/.CLion/config' >> /opt/clion/bin/idea.properties
 
 # COPY plugins inside docker image
 
-COPY clwb.tar.gz /tmp/bazel.tar.gz
-COPY bash.tar.gz /tmp/bash.tar.gz 
-COPY md.tar.gz /tmp/md.tar.gz
-COPY protobuf.tar.gz /tmp/protobuf.tar.gz
+#COPY clwb.tar.gz /tmp/bazel.tar.gz
+#COPY bash.tar.gz /tmp/bash.tar.gz 
+#COPY md.tar.gz /tmp/md.tar.gz
+#COPY protobuf.tar.gz /tmp/protobuf.tar.gz
 
 # Install CLion plugins
-RUN tar --gzip -xf /tmp/bazel.tar.gz -C /opt/clion/plugins/ && \
-    tar --gzip -xf /tmp/bash.tar.gz -C /opt/clion/plugins/ && \
-    tar --gzip -xf /tmp/md.tar.gz -C /opt/clion/plugins/ && \
-    tar --gzip -xf /tmp/protobuf.tar.gz -C /opt/clion/plugins/ && \
-    rm /tmp/bazel.tar.gz /tmp/bash.tar.gz /tmp/md.tar.gz /tmp/protobuf.tar.gz
+#RUN tar --gzip -xf /tmp/bazel.tar.gz -C /opt/clion/plugins/ && \
+#    tar --gzip -xf /tmp/bash.tar.gz -C /opt/clion/plugins/ && \
+#    tar --gzip -xf /tmp/md.tar.gz -C /opt/clion/plugins/ && \
+#    tar --gzip -xf /tmp/protobuf.tar.gz -C /opt/clion/plugins/ && \
+#    rm /tmp/bazel.tar.gz /tmp/bash.tar.gz /tmp/md.tar.gz /tmp/protobuf.tar.gz
+
+#
+# Uncomment the above when issue with bazel plugin solved
+#
+
+RUN VSC_DOWNLOAD_URL=https://go.microsoft.com/fwlink/?LinkID=760868 && \
+	wget --output-document=/tmp/vscode.deb --tries=3 --continue --no-verbose "${VSC_DOWNLOAD_URL}" && \ 
+	apt-get update -qq && \
+	apt-get install -y libnotify4 libxkbfile1 libsecret-1-0 libgtk-3-0 libxss1 && \
+	dpkg -i /tmp/vscode.deb && \
+	apt-get -f install
 
 RUN apt update -y -qq &&\
     apt install -y -qq curl tmux iputils-ping net-tools nano &&\
