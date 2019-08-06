@@ -50,3 +50,11 @@ install_manifest.txt
 .vscode
 
 rcbe_engine_graphics_test_node
+
+bazel-bin
+bazel-genfiles
+bazel-out
+bazel-rcbe_engine
+bazel-testlogs
+
+.Trash-1000/
