@@ -1,26 +1,19 @@
-def get_global(path_list) :
-    return native.glob(path_list)
+include_pattern = "boost/%s/"
 
-include_pattern = get_global(["/usr/include/boost/%s/"]) 
+hdrs_patterns = [
+    "boost/%s.h",
+    "boost/%s_fwd.h",
+    "boost/%s.hpp",
+    "boost/%s_fwd.hpp",
+    "boost/%s/**/*.hpp",
+    "boost/%s/**/*.ipp",
+    "boost/%s/**/*.h",
+]
 
-hdrs_patterns = get_global(
-    [
-        "/usr/include/boost/%s.h",
-        "/usr/include/boost/%s_fwd.h",
-        "/usr/include/boost/%s.hpp",
-        "/usr/include/boost/%s_fwd.hpp",
-        "/usr/include/boost/%s/**/*.hpp",
-        "/usr/include/boost/%s/**/*.ipp",
-        "/usr/include/boost/%s/**/*.h",
-    ]
-)
-
-srcs_patterns = get_global(
-    [
-        "/usr/lib/libboost_%s*.so*",
-        "/usr/lib/libboost_%s*.so",
-    ]
-) 
+srcs_patterns = [
+    "lib/libboost_%s*.so*",
+    "lib/libboost_%s*.so",
+]
 
 # Building boost results in many warnings for unused values. Downstream users
 # won't be interested, so just disable the warning.
