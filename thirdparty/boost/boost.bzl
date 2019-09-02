@@ -1,18 +1,18 @@
-include_pattern = "boost/%s/"
+include_pattern = "usr/include/boost/%s/"
 
 hdrs_patterns = [
-    "boost/%s.h",
-    "boost/%s_fwd.h",
-    "boost/%s.hpp",
-    "boost/%s_fwd.hpp",
-    "boost/%s/**/*.hpp",
-    "boost/%s/**/*.ipp",
-    "boost/%s/**/*.h",
+    "usr/include/boost/%s.h",
+    "usr/include/boost/%s_fwd.h",
+    "usr/include/boost/%s.hpp",
+    "usr/include/boost/%s_fwd.hpp",
+    "usr/include/boost/%s/**/*.hpp",
+    "usr/include/boost/%s/**/*.ipp",
+    "usr/include/boost/%s/**/*.h",
 ]
 
 srcs_patterns = [
-    "lib/libboost_%s*.so*",
-    "lib/libboost_%s*.so",
+    "usr/include/lib/libboost_%s*.so*",
+    "usr/include/lib/libboost_%s*.so",
 ]
 
 # Building boost results in many warnings for unused values. Downstream users

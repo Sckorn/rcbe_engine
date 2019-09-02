@@ -1,0 +1,15 @@
+build_flags:
+  --build_tag_filters=-optional,-experimental,-catkin_deploy,-integration_tests,-docker
+
+directories:
+  # Add the directories you want added as source here
+  # By default, we've added your entire workspace ('.')
+  .
+
+targets:
+  # Add targets that reach the source code that you want to resolve here
+  # By default, we've added all targets in your workspace
+  //...:all
+
+additional_languages:
+  python
