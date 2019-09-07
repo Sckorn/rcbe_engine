@@ -1,4 +1,4 @@
-load(":boost.bzl", "boost_library")
+load("@//thirdparty/boost:boost.bzl", "boost_library")
 
 boost_library(
     name = "context",
