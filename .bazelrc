@@ -1,0 +1,72 @@
+########## general ###########
+
+build --distinct_host_configuration=false
+build --dynamic_mode=fully
+build --force_pic
+
+# there are 3 possible compilation_modes in bazel: fast-build (default, optimized for build time), dbg (debug), opt (-O2, -DNDEBUG)
+build -c opt
+test -c opt
+
+# we can not use sandbox for cc as we want to compile with ccache (ccache with sandbox is not supported in bazel)
+# TODO: consider standalone mode only for cxx
+build --spawn_strategy=standalone
+build --genrule_strategy=standalone
+
+test --spawn_strategy=standalone
+
+# remove optional and experimental targets by default so that build //.. won't compile them
+build --build_tag_filters=-optional,-experimental,-catkin_deploy,-integration_tests,-docker
+
+# do not run integration tests by default
+test --test_tag_filters=-integration_tests
+
+########### caching ###########
+
+# save bazel cache on host machine
+#startup --output_user_root=/bazel/cache
+
+# save repository_cache on host machine
+#build --repository_cache=/bazel/repository_cache
+#fetch --repository_cache=/bazel/repository_cache
+#query --repository_cache=/bazel/repository_cache
+#sync --repository_cache=/bazel/repository_cache
+
+####### compiler and linker options ######
+
+# enable c++17
+build --cxxopt=-std=c++17
+build --host_cxxopt=-std=c++17
+
+build --conlyopt=-std=c99
+build --host_conlyopt=-std=c99
+
+# TODO: enable hardball compiler flags
+#build --host_copt=-Werror
+#build --host_copt=-Wall
+#build --host_copt=-Wextra
+#build --host_copt=-Wpedantic
+#build --host_copt=-Wcast-align
+#build --host_copt=-Wcast-qual
+#build --host_copt=-Wconversion
+#build --host_copt=-Wctor-dtor-privacy
+#build --host_copt=-Wenum-compare
+#build --host_copt=-Wfloat-equal
+#build --host_copt=-Wnon-virtual-dtor
+#build --host_copt=-Wold-style-cast
+#build --host_copt=-Woverloaded-virtual
+#build --host_copt=-Wredundant-decls
+#build --host_copt=-Wsign-conversion
+#build --host_copt=-Wsign-promo
+#build --host_copt=-Wno-unused-function
+#build --host_copt=-Wchkp
+#build --host_copt=-Wimplicit-fallthrough
+#build --host_copt=-Wparentheses
+#build --host_copt=-Wunused-parameter
+#build --host_copt=-Wuninitialized
+#build --host_copt=-Wduplicated-branches
+#build --host_copt=-Wshadow
+#build --host_copt=-Wlogical-op
+#build --host_copt=-Wmissing-declarations
+
+build --host_linkopt=-Wl,--no-undefined,--no-allow-shlib-undefined

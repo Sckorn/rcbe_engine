@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "json/json.h"
+#include <nlohmann/json.h>
 
 namespace rcbe::config
 {

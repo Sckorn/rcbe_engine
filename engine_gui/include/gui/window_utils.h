@@ -1,9 +1,9 @@
 #ifndef RCBE_ENGINE_WINDOW_UTILS_H
 #define RCBE_ENGINE_WINDOW_UTILS_H
 
-#include "gui/Window.h"
+#include <data_types/gui_types.hpp>
 
-#include <gtkmm/dialog.h>
+#include <gtkmm-3.0/gtkmm/dialog.h>
 
 #include <boost/filesystem.hpp>
 

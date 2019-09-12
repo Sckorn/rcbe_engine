@@ -8,10 +8,6 @@ cc_library(
         "src/**/*.cpp"
     ]),
     includes = ["include"],
-    #deps = ["@boost//:filesystem"],
-    deps = [
-        "@opengl//:opengl",
-        "//thirdparty/nlohmann",
-        ],
+    deps = ["@boost//:filesystem"],
     visibility = ["//visibility:public"]
 )

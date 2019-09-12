@@ -28,6 +28,42 @@ new_local_repository(
     path = "/usr/",
 )
 
+new_local_repository(
+    name = "gtkmm",
+    build_file = "thirdparty/gtkmm.BUILD",
+    path = "/usr/",
+)
+
+new_local_repository(
+    name = "gdkmm",
+    build_file = "thirdparty/gdkmm.BUILD",
+    path = "/usr/",
+)
+
+new_local_repository(
+    name = "glibmm",
+    build_file = "thirdparty/glibmm.BUILD",
+    path = "/usr/",
+)
+
+new_local_repository(
+    name = "glib",
+    build_file = "thirdparty/glib.BUILD",
+    path = "/usr/",
+)
+
+new_local_repository(
+    name = "sigpp",
+    build_file = "thirdparty/sigpp.BUILD",
+    path = "/usr/",
+)
+
+#new_local_repository(
+#    name = "gcc_lib",
+#    build_file = "thirdparty/gcc_lib.BUILD",
+#    path = "/",
+#)
+
 
 # Group the sources of the library so that CMake rule have access to it
 #all_content = """filegroup(name = "all", srcs = glob(["**"]), visibility = ["//visibility:public"])"""

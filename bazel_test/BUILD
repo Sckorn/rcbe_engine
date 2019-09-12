@@ -1,5 +1,5 @@
 cc_binary(
-    srcs = ["bazel_test.cpp"],
+    srcs = glob(["src/**/*.cpp"]),
     name = "bazel_test",
     deps = [
         "@boost//:program_options",

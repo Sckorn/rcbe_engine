@@ -8,44 +8,90 @@ ENV LANG=C.UTF-8 \
     TERM=xterm \
     PYTHONIOENCODING=UTF-8 
 
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN mv /bin/sh /bin/sh-old && \
     ln -s /bin/bash /bin/sh && \
     # install packages
     apt-get -qq update && \
-    apt-get install -q -y \
+    apt-get install --fix-missing -q -y \
         dirmngr \
         gnupg2 \
+        wget \
+        pkg-config \
+        zip \
+        g++ \
+        zlib1g-dev \
+        unzip \
+        python \
+        bash-completion \
+        default-jdk \
+        software-properties-common \
+        python-jinja2 \
+        libpython3.6-minimal \
+        libpython3.6-stdlib \
+        python3.6 \ 
+        python3.6-minimal \
+        curl \ 
+        tmux \ 
+        iputils-ping \ 
+        net-tools \
+        nano \
+        vim \ 
+        vim-pathogen \ 
+        vim-fugitive \ 
+        vim-syntastic \
+        libnotify4 \ 
+        libxkbfile1 \ 
+        libsecret-1-0 \ 
+        libgtk-3-0 \ 
+        libxss1 \
+        gpicview \ 
+        python-pip \ 
+        meld \ 
+        freecad \ 
+        python-tk \
+        build-essential \
+        # libraries
+        libgtkmm-3.0-dev \
+        libvtk7-dev \
+        libboost-all-dev \
+        libbullet-dev \
+        libgmp-dev \
+        libmpfr-dev \
+        # binaries
+        python3.6 \
+        git \
+        glade \
+        # utlities
+        tmux \
+        cmake \
+        gnupg2 \
+        sudo \
+        git \
+        pkg-config \
+        libxau-dev \
+        libxdmcp-dev \
+        libxcb1-dev \
+        libxext-dev \
+        libx11-dev \
         tzdata \
-	wget \
         lsb-release && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -qq update && \
-    apt-get -y -q install \
-            pkg-config \
-            zip \
-            g++ \
-            zlib1g-dev \
-            unzip \
-            python \
-            bash-completion \
-            default-jdk \
-            software-properties-common \
-#            python-software-properties \ #figure out what's wrong with this
-            python-jinja2 && \
-    add-apt-repository ppa:ubuntu-toolchain-r/test && \
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt-get -qq update && \
     apt-get -y -qq install \
-            gcc-7 \
-            g++-7 \
+            gcc-9 \
+            g++-9 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 150 \
-                        --slave   /usr/bin/g++ g++ /usr/bin/g++-7
+RUN  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 150 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9
 
 
-ENV BAZEL_VERSION=0.22.0
+ENV BAZEL_VERSION=0.29.0
 
 #
 # Install Bazel
@@ -57,87 +103,19 @@ RUN BAZEL_DOWNLOAD_URL="https://github.com/bazelbuild/bazel/releases/download/${
     dpkg -i /tmp/bazel.deb && \
     rm /tmp/bazel.deb
 
-#
-# Install CLion
-#
-
-#ENV CLION_VERSION=CLion-2019.2
-
-# original link for download:
-#RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/${CLION_VERSION}.tar.gz"; \
-#    wget --output-document=/tmp/clion.tar.gz --tries=3 --continue --no-verbose "${CLION_DOWNLOAD_URL}" && \
-#    mkdir -p /opt/clion && \
-#    tar --gzip -xf /tmp/clion.tar.gz --strip-components=1 -C /opt/clion && \
-#    rm /tmp/clion.tar.gz && \
-#    sed -i 's/^-Xmx.*$/-Xmx4000m/' /opt/clion/bin/clion64.vmoptions && \
-#    echo 'idea.system.path=${user.home}/clion' >> /opt/clion/bin/idea.properties && \
-#    echo 'idea.config.path=${user.home}/.CLion/config' >> /opt/clion/bin/idea.properties
-
-# COPY plugins inside docker image
-
-#COPY clwb.tar.gz /tmp/bazel.tar.gz
-#COPY bash.tar.gz /tmp/bash.tar.gz 
-#COPY md.tar.gz /tmp/md.tar.gz
-#COPY protobuf.tar.gz /tmp/protobuf.tar.gz
-
-# Install CLion plugins
-#RUN tar --gzip -xf /tmp/bazel.tar.gz -C /opt/clion/plugins/ && \
-#    tar --gzip -xf /tmp/bash.tar.gz -C /opt/clion/plugins/ && \
-#    tar --gzip -xf /tmp/md.tar.gz -C /opt/clion/plugins/ && \
-#    tar --gzip -xf /tmp/protobuf.tar.gz -C /opt/clion/plugins/ && \
-#    rm /tmp/bazel.tar.gz /tmp/bash.tar.gz /tmp/md.tar.gz /tmp/protobuf.tar.gz
-
-#
-# Uncomment the above when issue with bazel plugin solved
-#
-
 RUN VSC_DOWNLOAD_URL=https://go.microsoft.com/fwlink/?LinkID=760868 && \
 	wget --output-document=/tmp/vscode.deb --tries=3 --continue --no-verbose "${VSC_DOWNLOAD_URL}" && \ 
-	apt-get update -qq && \
-	apt-get install -y libnotify4 libxkbfile1 libsecret-1-0 libgtk-3-0 libxss1 && \
-	dpkg -i /tmp/vscode.deb 
+	dpkg -i /tmp/vscode.deb && \
+    rm /tmp/vscode.deb
 
-RUN apt update -y -qq &&\
-    apt install -y -qq curl tmux iputils-ping net-tools nano &&\
-    apt install -y -qq vim vim-pathogen vim-fugitive vim-syntastic &&\
-    apt install -y -qq gpicview python-pip meld freecad python-tk &&\
-    apt-get clean &&\
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN pip install --no-cache-dir scipy==1.2.0 numpy==1.16.1 scikit-learn==0.20.3 matplotlib==2.2.3 pwlf plyfile protobuf pyhocon tornado
 
-RUN pip install --no-cache-dir scipy==1.2.0 numpy==1.16.1 scikit-learn==0.20.3 matplotlib==2.2.3 pwlf plyfile protobuf pyhocon
 RUN groupdel dialout
+
 COPY entrypoint.sh /entrypoint.sh
 
-ENV CC=/usr/bin/gcc-7 \
-    CXX=/usr/bin/g++-7
-
-
-RUN apt-get -qq update && \
-	apt-get install -y -q \
-	build-essential \
-	# libraries
-	libgtkmm-3.0-dev \
-	libvtk7-dev \
-	libboost-all-dev \
-	libbullet-dev \
-	libgmp-dev \
-	libmpfr-dev \
-	# binaries
-	python3.6 \
-	git \
-	glade \
-	# utlities
-	tmux \
-	cmake \
-	dirmngr \
-        gnupg2 \
-        tzdata \
-	wget \
-        sudo \
-        git \
-        lsb-release && \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+ENV CC=/usr/bin/gcc-9 \
+    CXX=/usr/bin/g++-9
 
 #
 # Install CGAL
@@ -149,18 +127,7 @@ RUN cd /tmp/ && \
 	mkdir build && \
 	cd build && \
 	cmake .. && \
-	make install clean
-
-	
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        pkg-config \
-        libxau-dev \
-        libxdmcp-dev \
-        libxcb1-dev \
-        libxext-dev \
-        libx11-dev && \
-    rm -rf /var/lib/apt/lists/*
+	make install clean	
 
 # Setup timezone
 

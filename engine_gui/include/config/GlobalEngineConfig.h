@@ -1,7 +1,7 @@
 #ifndef RCBE_ENGINE_GLOBALENGINECONFIG_H
 #define RCBE_ENGINE_GLOBALENGINECONFIG_H
 
-#include "json/json.h"
+#include <nlohmann/json.h>
 
 namespace rcbe::config
 {
