@@ -3,7 +3,7 @@
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
-#include <gtkmm/main.h>
+//#include <gtkmm/main.h>
 
 #include "config/GlobalEngineConfig.h"
 #include "config/config.h"

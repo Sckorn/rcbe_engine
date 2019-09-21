@@ -5,5 +5,5 @@ cc_library(
     hdrs = glob(["include/GL/**/*.h"]),
     includes = ["include"],
     visibility = ["//visibility:public"],
-    deps = ["@gcc_lib"],
+    #deps = ["@gcc_lib"],
 )

@@ -16,5 +16,5 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 xhost +local:
 
-docker run -it --rm -e DISPLAY=unix$DISPLAY -e HUID=${HUID} -e HGID=${HGID} -e OPER_HOME=${OPER_HOME} -v /tmp/.X11-unix:/tmp/.X11-unix -v ${DIR}/../../:/rcbe_engine/ -v /dev/snd:/dev/snd --privileged --network host --entrypoint /entrypoint.sh $1 /bin/bash
+docker run -it --rm -e DISPLAY=unix$DISPLAY -e HUID=${HUID} -e HGID=${HGID} -e OPER_HOME=${OPER_HOME} -v ${DIR}/../../../rcbe_static_storage:/home/oper/dev/rcbe_static_storage  -v /home/danny/.ssh:/home/oper/.ssh -v /tmp/.X11-unix:/tmp/.X11-unix -v ${DIR}/../../:/rcbe_engine/ -v /dev/snd:/dev/snd --privileged --network host --entrypoint /entrypoint.sh $1 /bin/bash
 

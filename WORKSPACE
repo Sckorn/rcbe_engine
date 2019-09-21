@@ -17,9 +17,9 @@ http_archive(
 http_archive(
     name = "boost",
     build_file = "@//thirdparty/boost:boost.BUILD",
-    url = "https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.gz",
-    sha256 = "bd0df411efd9a585e5a2212275f8762079fed8842264954675a4fddc46cfcf60",
-    strip_prefix = "boost_1_66_0",
+    url = "http://localhost:8080/static/boost_1_71_0_gcc9.tar.gz",
+    sha256 = "8e4bd2759ac539a6d1c4750a8b575f20bc544d77678770df65aaba5e9c5db9d9",
+    strip_prefix = "boost_1_71_0",
 )
 
 new_local_repository(

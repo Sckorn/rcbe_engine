@@ -1,4 +1,4 @@
-load("@//thirdparty/boost:boost.bzl", "boost_library")
+load(":boost.bzl", "boost_library")
 
 boost_library(
     name = "context",
@@ -59,9 +59,9 @@ boost_library(
 boost_library(
     name = "atomic",
     hdrs = [
-        "boost/memory_order.hpp",
+        "include/boost/memory_order.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":assert",
         ":config",
@@ -255,9 +255,9 @@ boost_library(
 boost_library(
     name = "core",
     hdrs = [
-        "boost/checked_delete.hpp",
+        "include/boost/checked_delete.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":config",
     ],
@@ -310,11 +310,11 @@ boost_library(
 boost_library(
     name = "detail",
     hdrs = [
-        "boost/blank.hpp",
-        "boost/blank_fwd.hpp",
-        "boost/cstdlib.hpp",
+        "include/boost/blank.hpp",
+        "include/boost/blank_fwd.hpp",
+        "include/boost/cstdlib.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":limits",
     ],
@@ -352,9 +352,9 @@ boost_library(
 boost_library(
     name = "exception",
     hdrs = [
-        "boost/exception_ptr.hpp",
+        "include/boost/exception_ptr.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":config",
         ":detail",
@@ -417,9 +417,9 @@ boost_library(
 boost_library(
     name = "function",
     hdrs = [
-        "boost/function_equal.hpp",
+        "include/boost/function_equal.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":bind",
         ":integer",
@@ -520,12 +520,12 @@ boost_library(
 boost_library(
     name = "integer",
     hdrs = [
-        "boost/cstdint.hpp",
-        "boost/integer_traits.hpp",
-        "boost/pending/integer_log2.hpp",
-        "boost/pending/lowest_bit.hpp",
+        "include/boost/cstdint.hpp",
+        "include/boost/integer_traits.hpp",
+        "include/boost/pending/integer_log2.hpp",
+        #"include/boost/pending/lowest_bit.hpp",
     ],
-    includes = ["boost", "boost/pending"],
+    includes = ["include/boost", "include/boost/pending"],
     deps = [
         ":static_assert",
     ],
@@ -555,15 +555,15 @@ boost_library(
 boost_library(
     name = "iterator",
     hdrs = [
-        "boost/function_output_iterator.hpp",
-        "boost/generator_iterator.hpp",
-        "boost/indirect_reference.hpp",
-        "boost/iterator_adaptors.hpp",
-        "boost/next_prior.hpp",
-        "boost/pointee.hpp",
-        "boost/shared_container_iterator.hpp",
+        "include/boost/function_output_iterator.hpp",
+        "include/boost/generator_iterator.hpp",
+        "include/boost/indirect_reference.hpp",
+        "include/boost/iterator_adaptors.hpp",
+        "include/boost/next_prior.hpp",
+        "include/boost/pointee.hpp",
+        "include/boost/shared_container_iterator.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":detail",
         ":static_assert",
@@ -658,9 +658,9 @@ boost_library(
 boost_library(
     name = "math",
     hdrs = [
-        "boost/cstdint.hpp",
+        "include/boost/cstdint.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
 )
 
 boost_library(
@@ -701,10 +701,10 @@ boost_library(
 boost_library(
     name = "multi_index",
     hdrs = [
-        "boost/multi_index_container.hpp",
-        "boost/multi_index_container_fwd.hpp",
+        "include/boost/multi_index_container.hpp",
+        "include/boost/multi_index_container_fwd.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":foreach",
         ":serialization",
@@ -736,17 +736,17 @@ boost_library(
 boost_library(
     name = "none",
     hdrs = [
-        "boost/none_t.hpp",
+        "include/boost/none_t.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
 )
 
 boost_library(
     name = "numeric_conversion",
     hdrs = glob([
-        "boost/numeric/conversion/**/*.hpp",
+        "include/boost/numeric/conversion/**/*.hpp",
     ]),
-    includes = ["boost/numeric/conversion"],
+    includes = ["include/boost/numeric/conversion"],
     deps = [
         ":config",
         ":detail",
@@ -762,9 +762,9 @@ boost_library(
 boost_library(
     name = "numeric_ublas",
     hdrs = glob([
-        "boost/numeric/ublas/**/*.hpp",
+        "include/boost/numeric/ublas/**/*.hpp",
     ]),
-    includes = ["boost/numeric/ublas"],
+    includes = ["include/boost/numeric/ublas"],
     deps = [
         ":concept_check",
         ":config",
@@ -787,9 +787,9 @@ boost_library(
 boost_library(
     name = "numeric_odeint",
     hdrs = glob([
-        "boost/numeric/odeint/**/*.hpp",
+        "include/boost/numeric/odeint/**/*.hpp",
     ]),
-    includes = ["boost/numeric/odeint"],
+    includes = ["include/boost/numeric/odeint"],
     deps = [
         ":fusion",
         ":lexical_cast",
@@ -994,9 +994,9 @@ boost_library(
 boost_library(
     name = "regex",
     hdrs = [
-        "boost/cregex.hpp",
+        "include/boost/cregex.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     defines = [
         "BOOST_FALLTHROUGH",
     ],
@@ -1109,13 +1109,13 @@ boost_library(
 boost_library(
     name = "smart_ptr",
     hdrs = [
-        "boost/enable_shared_from_this.hpp",
-        "boost/make_shared.hpp",
-        "boost/make_unique.hpp",
-        "boost/pointer_to_other.hpp",
-        "boost/weak_ptr.hpp",
+        "include/boost/enable_shared_from_this.hpp",
+        "include/boost/make_shared.hpp",
+        "include/boost/make_unique.hpp",
+        "include/boost/pointer_to_other.hpp",
+        "include/boost/weak_ptr.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":align",
         ":core",
@@ -1196,10 +1196,10 @@ boost_library(
 boost_library(
     name = "tokenizer",
     hdrs = [
-        "boost/token_functions.hpp",
-        "boost/token_iterator.hpp",
+        "include/boost/token_functions.hpp",
+        "include/boost/token_iterator.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":assert",
         ":config",
@@ -1213,10 +1213,10 @@ boost_library(
 boost_library(
     name = "tribool",
     hdrs = [
-        "boost/logic/tribool.hpp",
-        "boost/logic/tribool_fwd.hpp",
+        "include/boost/logic/tribool.hpp",
+        "include/boost/logic/tribool_fwd.hpp",
     ],
-    includes = ["boost/logic"],
+    includes = ["include/boost/logic"],
     deps = [
         ":config",
         ":detail",
@@ -1254,9 +1254,9 @@ boost_library(
 boost_library(
     name = "type_traits",
     hdrs = [
-        "boost/aligned_storage.hpp",
+        "include/boost/aligned_storage.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":config",
         ":core",
@@ -1287,10 +1287,10 @@ boost_library(
 boost_library(
     name = "unordered",
     hdrs = [
-        "boost/unordered_map.hpp",
-        "boost/unordered_set.hpp",
+        "include/boost/unordered_map.hpp",
+        "include/boost/unordered_set.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":assert",
         ":config",
@@ -1313,10 +1313,10 @@ boost_library(
 boost_library(
     name = "utility",
     hdrs = [
-        "boost/compressed_pair.hpp",
-        "boost/next_prior.hpp",
+        "include/boost/compressed_pair.hpp",
+        "include/boost/next_prior.hpp",
     ],
-    includes = ["boost"],
+    includes = ["include/boost"],
     deps = [
         ":config",
         ":detail",

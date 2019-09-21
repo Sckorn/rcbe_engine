@@ -8,6 +8,7 @@ cc_library(
         "src/**/*.cpp"
     ]),
     includes = ["include"],
-    deps = ["@boost//:filesystem"],
+    deps = ["@boost//:filesystem", "@boost//:system"],
+    linkopts = ["-lpthread"],
     visibility = ["//visibility:public"]
 )
