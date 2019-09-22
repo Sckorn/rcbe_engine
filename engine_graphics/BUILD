@@ -18,14 +18,14 @@ cc_library(
     ],
 )
 
-#cc_binary(
-#    name = "core_test_node",
-#    srcs = ["src/core_test_node.cpp"],
-#    deps = [
-#        ":engine_graphics",
-#        "@boost//:filesystem",
-#        "@boost//:system",
-#    ],
-#    linkopts = ["-lpthread"],
-#    visibility = ["//visibility:public"],
-#)
+cc_binary(
+    name = "core_test_node",
+    srcs = ["src/core_test_node.cpp"],
+    deps = [
+        ":engine_graphics",
+        "@boost//:filesystem",
+        "@boost//:system",
+    ],
+    linkopts = ["-lpthread", "-lOpenGL", "-lGL", "-lGLU",  "-lglut"],
+    visibility = ["//visibility:public"],
+)
