@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 
-#include <rcbe_engine_datamodel/core_types.hpp>
+#include <data_types/core_types.hpp>
 
 #include <GL/gl.h>
 #include <GL/freeglut.h>

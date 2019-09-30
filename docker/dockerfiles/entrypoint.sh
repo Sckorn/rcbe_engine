@@ -38,18 +38,15 @@ if ! $(grep -q '^oper' /etc/passwd); then
   echo "export PATH=${PATH}" >> ${OPER_HOME}/.bashrc
   echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> ${OPER_HOME}/.bashrc
 
-  echo "alias clion='/opt/clion/bin/clion.sh'" >> ${OPER_HOME}/.bashrc
-  cp -r ${OPER_HOME}/additional/.CLion ${OPER_HOME}/
   cp -r ${OPER_HOME}/additional/.ssh ${OPER_HOME}/
 
   [[ -d ${OPER_HOME} ]] && chown -R ${HUID}:${HGID} ${OPER_HOME}
   echo -e "Changed ownership of ${OPER_HOME} to 'oper:rcbe'\n"
 
-  sudo chown -R ${HUID}:${HGID} ${CATKIN_WS}
 fi
 
 [[ -f ${OPER_HOME}/.ssh/id_rsa ]] && chmod go-rw ${OPER_HOME}/.ssh/id_rsa
 
-usermod -a -G docker,ueye oper
+usermod -a -G docker oper
 
 su oper -s /bin/bash

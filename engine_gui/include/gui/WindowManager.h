@@ -2,7 +2,7 @@
 #define RCBE_ENGINE_WINDOWMANAGER_H
 
 #include <stack>
-#include <include/config/WindowManagerConfig.h>
+#include <config/WindowManagerConfig.h>
 
 #include "gui/Window.h"
 #include "gui/window_utils.h"

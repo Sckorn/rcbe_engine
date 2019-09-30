@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "data_types/gui_types.h"
+#include <data_types/gui_types.hpp>
 
 #include <gtkmm/window.h>
 #include <gtkmm/builder.h>
