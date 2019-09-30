@@ -3,6 +3,5 @@ cc_binary(
     srcs = ["test_boost.cpp"],
     deps = [
         "@boost//:program_options",
-        #"@system//:common_deps",
     ],
 )
