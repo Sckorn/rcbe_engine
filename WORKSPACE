@@ -27,5 +27,5 @@ http_archive(
     url = "http://localhost:8080/static/CGAL-4.13.1.tar.gz",
     build_file = "@//thirdparty:CGAL.BUILD",
     strip_prefix = "CGAL-4.13.1",
-    #sha256 = "112c4e1ce8969a3c29e77ee8d58c2b9e4b3cbab5234af187207ab8ca7ddd2575",
+    sha256 = "112c4e1ce8969a3c29e77ee8d58c2b9e4b3cbab5234af187207ab8ca7ddd2575",
 )
