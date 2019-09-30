@@ -12,8 +12,6 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        #"@opengl",
-        #"@gcc_lib",
         "//engine_datamodel:engine_datamodel",
     ],
 )
