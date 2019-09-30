@@ -4,6 +4,7 @@ cc_binary(
     deps = [
         "@boost//:program_options",
         "@boost//:filesystem",
+        "@CGAL",
     ],
     visibility = ["//visibility:public"]
 )

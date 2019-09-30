@@ -24,13 +24,13 @@ test --test_tag_filters=-integration_tests
 ########### caching ###########
 
 # save bazel cache on host machine
-startup --output_user_root=/bazel/cache
+#startup --output_user_root=/bazel/cache
 
 # save repository_cache on host machine
-build --repository_cache=/bazel/repository_cache
-fetch --repository_cache=/bazel/repository_cache
-query --repository_cache=/bazel/repository_cache
-sync --repository_cache=/bazel/repository_cache
+#build --repository_cache=/bazel/repository_cache
+#fetch --repository_cache=/bazel/repository_cache
+#query --repository_cache=/bazel/repository_cache
+#sync --repository_cache=/bazel/repository_cache
 
 ####### compiler and linker options ######
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <CGAL/AABB_tree.h>
 
 int main(int argc, char *argv[])
 {
