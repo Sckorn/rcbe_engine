@@ -2,12 +2,12 @@
 
 namespace rcbe::data_types::rendering
 {
-void RenderingObject::SetTranslation(core::Vector3d &&translation)
+void RenderingObject::SetTranslation(geometry::Vector3d &&translation)
 {
     _translation = translation;
 }
 
-void RenderingObject::SetOrientation(core::Matrix3x3d &&orientation)
+void RenderingObject::SetOrientation(geometry::Matrix3x3d &&orientation)
 {
     _orientation = orientation;
 }
@@ -17,12 +17,12 @@ void RenderingObject::setId(std::string &id)
     _id = id;
 }
 
-const core::Vector3d &RenderingObject::GetTranslation() const
+const geometry::Vector3d &RenderingObject::GetTranslation() const
 {
     return _translation;
 }
 
-const core::Matrix3x3d &RenderingObject::GetOrientation() const
+const geometry::Matrix3x3d &RenderingObject::GetOrientation() const
 {
     return _orientation;
 }

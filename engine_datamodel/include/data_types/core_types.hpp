@@ -9,94 +9,51 @@
 
 #include <iostream>
 
-namespace rcbe::data_types::core
-{
+#include <data_model_config.hpp>
 
-template <typename ValueType, size_t dim>
-class Vector
+namespace rcbe::data_model
+{
+template <size_t dim, typename Val = EngineScalar>
+class ArrayBase
 {
 public:
-
-    using value_type = ValueType;
-
-    static const size_t dimension = dim;
+    static constexpr size_t DIMENSION = dim;
+public:
+    using ValueType = Val;
 
 public:
-
-    Vector() 
+    ArrayBase()
     {
-        std::cout << "default ctor" << std::endl;
+        for (size_t i = 0; i < dim; ++i)
+        {
+            _word[i] = 0;
+        }
     };
 
-    template <typename... Args>
-    Vector(Args&&... args)
+    template <typename... Ts, typename = std::enable_if_t<sizeof...(Ts) == dim>>
+    ArrayBase(Ts&&... args)
     :
-    _v {{args...}}
+    _word{ { args... } }
     {
-        constexpr size_t size = sizeof...(Args);
-        static_assert(size == dim);
+
     }
 
-    ~Vector() 
+    // provide two versions one for trivially copyable types (this), and one for custom type (returning const reference)
+    // open 
+    EngineScalar m(const size_t index)
     {
-        static_assert(std::is_scalar_v<ValueType>);
-    };
+        if (index > _word.size())
+            throw std::runtime_error("ArrayBase out of range access!");
 
-    Vector(const Vector &other) = default;
-    Vector &operator=(const Vector &other) = default;
-
-    Vector(Vector &&other) = default;
-    Vector &operator=(Vector &&other) = default;
-
-    ValueType operator[](const size_t index) const
-    {
-        if (index > dimension)
-            throw std::runtime_error("Acces for wrong dimension");
-        return _v[index];
+        return _word[index];
     }
+
+    
+
 
 private:
-    std::array<ValueType, dim> _v;
-    //std::vector<ValueType> _v;
+    std::array<EngineScalar, dim> _word;
 };
-
-using Vector3d = Vector<double, 3>;
-using Vector2d = Vector<double, 2>;
-
-template <typename ValueType, size_t DimRow, size_t DimCol>
-class Matrix
-{
-public:
-    using value_type = ValueType;
-    static const size_t rows = DimRow;
-    static const size_t columns = DimCol;
-
-public:
-    Matrix(const std::vector<ValueType> &m)
-    {
-        const auto total = DimRow * DimCol;
-        if(m.size() != DimRow * DimCol)
-            throw std::runtime_error("Wrong number of arguments for matrix initialization!");
-
-        std::copy(m.begin(), m.end(), _m.begin());
-    }
-    ~Matrix()
-    {
-        static_assert(std::is_scalar_v<ValueType>);
-    };
-
-    Matrix(const Matrix &other) = default;
-    Matrix &operator=(const Matrix &other) = default;
-
-    Matrix(Matrix &&other) = default;
-    Matrix &operator=(Matrix &&other) = default;
-
-private:
-    std::array<ValueType, DimRow * DimCol> _m;
-    //std::vector
-};
-
-using Matrix3x3d = Matrix<double, 3, 3>;
 }
 
 #endif //RCBE_CORE_TYPES_H
