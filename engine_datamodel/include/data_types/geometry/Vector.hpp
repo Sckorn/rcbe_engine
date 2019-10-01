@@ -5,6 +5,7 @@
 #include <array>
 #include <algorithm>
 #include <type_traits>
+#include <cmath>
 
 #include <iostream>
 
@@ -27,8 +28,12 @@ public:
 public:
 
     Vector() = default;
-
     ~Vector() = default;
+
+    Vector(ValueType x, ValueType y, ValueType z)
+    :
+    _v(x, y, z)
+    {}
 
     Vector(const Vector &other) = default;
     Vector &operator=(const Vector &other) = default;
@@ -39,9 +44,37 @@ public:
     const ValueType &operator[](const size_t index) const
     {
         if (index > dimension)
-            throw std::runtime_error("Acces for wrong dimension");
+            throw std::runtime_error("Access for wrong dimension");
         return _v[index];
     }
+
+    _value_type x() const
+    {
+        return _v[0];
+    }
+
+    _value_type y() const
+    {
+        return _v[1];
+    }
+
+    _value_type z() const
+    {
+        return _v[2];
+    }
+
+    _value_type length() const
+    {
+        return std::sqrt(_v[0] * _v[0] + _v[1] * _v[1] + _v[2] * _v[2]);
+    }
+
+    Vector normalized()
+    {
+        const auto len = length();
+        return ValueType { _v[0] / len, _v[1] / len, _v[2] / len };
+    }
+
+    //void norm
 
 private:
     StorageBase<dim, ValueType> _v;

@@ -37,21 +37,36 @@ public:
     // open 
     const EngineScalar &m(const size_t index) const
     {
-        if (index > _word.size())
-            throw std::runtime_error("ArrayBase out of range access!");
-
+        rangeCheck(index);
         return _word[index];
     }
 
-    const EngineScalar &operator[](size_t index) const
+    const EngineScalar &operator[](const size_t index) const
     {
-        if (index > _word.size())
-            throw std::runtime_error("ArrayBase out of range access!");
+        rangeCheck(index);
+        return _word[index];
+    }
 
+    EngineScalar &m(size_t index)
+    {
+        rangeCheck(index);
+        return _word[index];
+    }
+
+    EngineScalar &operator[](size_t index)
+    {
+        rangeCheck(index);
         return _word[index];
     }
 
 private:
+
+    void rangeCheck(const size_t index)
+    {
+        if (index > _word.size())
+            throw std::runtime_error("ArrayBase out of range access!");
+    }
+
     std::array<EngineScalar, dim> _word;
 };
 }
