@@ -1,15 +1,9 @@
-#ifndef RCBE_CORE_TYPES_H
-#define RCBE_CORE_TYPES_H
+#ifndef RCBE_ARRAYBASE_HPP
+#define RCBE_ARRAYBASE_HPP
 
-#include <string>
-#include <vector>
 #include <array>
-#include <algorithm>
-#include <type_traits>
 
-#include <iostream>
-
-#include <data_model_config.hpp>
+#include <data_types/data_model_config.hpp>
 
 namespace rcbe::data_model
 {
@@ -35,12 +29,13 @@ public:
     :
     _word{ { args... } }
     {
-
+        
     }
 
+    // TODO: in a comment below
     // provide two versions one for trivially copyable types (this), and one for custom type (returning const reference)
     // open 
-    EngineScalar m(const size_t index)
+    const EngineScalar &m(const size_t index) const
     {
         if (index > _word.size())
             throw std::runtime_error("ArrayBase out of range access!");
@@ -48,12 +43,17 @@ public:
         return _word[index];
     }
 
-    
+    const EngineScalar &operator[](size_t index) const
+    {
+        if (index > _word.size())
+            throw std::runtime_error("ArrayBase out of range access!");
 
+        return _word[index];
+    }
 
 private:
     std::array<EngineScalar, dim> _word;
 };
 }
 
-#endif //RCBE_CORE_TYPES_H
+#endif

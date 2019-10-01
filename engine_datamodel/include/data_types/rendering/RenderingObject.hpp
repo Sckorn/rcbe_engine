@@ -1,12 +1,10 @@
-#ifndef RCBE_DATA_TYPES_RENDERING_TYPES
-#define RCBE_DATA_TYPES_RENDERING_TYPES
+#ifndef RCBE_RENDERINGOBJECT_HPP
+#define RCBE_RENDERINGOBJECT_HPP
 
-#include <data_types/core_types.hpp>
-#include <geometry/geometry.hpp>
+#include <data_types/geometry/geometry.hpp>
 
-namespace rcbe::data_types::rendering
+namespace rcbe::rendering
 {
-//using 
 
 class RenderingObject
 {
@@ -37,4 +35,4 @@ public:
 };
 }
 
-#endif //RCBE_DATA_TYPES_RENDERING_TYPES
+#endif

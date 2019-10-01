@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 
-#include <data_types/core_types.hpp>
+#include <data_types/geometry/geometry.hpp>
 
 #include <GL/gl.h>
 #include <GL/freeglut.h>

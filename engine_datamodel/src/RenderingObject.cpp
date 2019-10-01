@@ -1,6 +1,6 @@
-#include <data_types/rendering_types.hpp>
+#include <data_types/rendering/RenderingObject.hpp>
 
-namespace rcbe::data_types::rendering
+namespace rcbe::rendering
 {
 void RenderingObject::SetTranslation(geometry::Vector3d &&translation)
 {
