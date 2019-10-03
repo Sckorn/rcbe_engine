@@ -30,6 +30,7 @@ public:
 
         std::copy(m.begin(), m.end(), _m.begin());
     }
+
     ~Matrix()
     {
         static_assert(std::is_scalar_v<ValueType>);

@@ -3,17 +3,15 @@
 
 #include <array>
 
-#include <data_types/data_model_config.hpp>
-
-namespace rcbe::data_model
+namespace rcbe::core
 {
-template <size_t dim, typename Val = EngineScalar>
+template <typename ValueType, size_t dim>
 class ArrayBase
 {
 public:
-    static constexpr size_t DIMENSION = dim;
+    static constexpr size_t dimension = dim;
 public:
-    using ValueType = Val;
+    using value_type = ValueType;
 
 public:
     ArrayBase()
@@ -24,7 +22,7 @@ public:
         }
     };
 
-    template <typename... Ts, typename = std::enable_if_t<sizeof...(Ts) == dim>>
+    template <typename... Ts, typename = std::enable_if_t< (sizeof...(Ts) == dim) > >
     ArrayBase(Ts&&... args)
     :
     _word{ { args... } }
@@ -35,7 +33,7 @@ public:
     // TODO: in a comment below
     // provide two versions one for trivially copyable types (this), and one for custom type (returning const reference)
     // open 
-    const EngineScalar &m(const size_t index) const
+    /*const EngineScalar &m(const size_t index) const
     {
         rangeCheck(index);
         return _word[index];
@@ -45,9 +43,9 @@ public:
     {
         rangeCheck(index);
         return _word[index];
-    }
+    }*/
 
-    EngineScalar &m(size_t index)
+    EngineScalar &at(size_t index)
     {
         rangeCheck(index);
         return _word[index];
@@ -67,7 +65,7 @@ private:
             throw std::runtime_error("ArrayBase out of range access!");
     }
 
-    std::array<EngineScalar, dim> _word;
+    std::array<value_type, dimension> _word;
 };
 }
 

@@ -15,24 +15,33 @@
 namespace rcbe::geometry
 {
 
-template <size_t dim, typename ValueType = rcbe::data_model::EngineScalar, template <size_t n, typename ValT> typename StorageBase = data_model::ArrayBase>
+template <typename ValueType, size_t dim, template <typename ValT, size_t n> typename StorageBase = std::array>
 class Vector
 {
     static_assert(std::is_scalar_v<ValueType>);
+    static_assert(dim == 2 || dim == 3); // Vectors of only 2 or 3 dimensional space
 public:
-
-    using _value_type = ValueType;
 
     static constexpr size_t dimension = dim;
 
 public:
 
-    Vector() = default;
+    using value_type = ValueType;
+    using storage_type = StorageBase<value_type, dimension>;
+
+public:
+
+    Vector()
+    {
+        _v.fill(0);
+    };
+
     ~Vector() = default;
 
-    Vector(ValueType x, ValueType y, ValueType z)
+    template <typename... valt>
+    Vector(valt&&... args)
     :
-    _v(x, y, z)
+    _v( {args... })
     {}
 
     Vector(const Vector &other) = default;
@@ -41,43 +50,59 @@ public:
     Vector(Vector &&other) = default;
     Vector &operator=(Vector &&other) = default;
 
-    const ValueType &operator[](const size_t index) const
+    value_type &operator[](const size_t index)
     {
-        if (index > dimension)
-            throw std::runtime_error("Access for wrong dimension");
         return _v[index];
     }
 
-    _value_type x() const
+    value_type x()
     {
         return _v[0];
     }
 
-    _value_type y() const
+    value_type y()
     {
         return _v[1];
     }
 
-    _value_type z() const
+    template <typename = std::enable_if_t<dim == 3>>
+    value_type z()
     {
         return _v[2];
     }
 
-    _value_type length() const
+    value_type length() const
     {
-        return std::sqrt(_v[0] * _v[0] + _v[1] * _v[1] + _v[2] * _v[2]);
+        size_t sum = 0;
+        for (const auto &e : _v)
+        {
+            sum += e * e;
+        }
+
+        return sum;
     }
 
     Vector normalized()
     {
         const auto len = length();
-        return ValueType { _v[0] / len, _v[1] / len, _v[2] / len };
+
+        auto copy = *this;
+        copy.normalize();
+
+        return copy;
     }
 
-    //void norm
+    void normalize()
+    {
+        const auto len = length();
+        for (auto &e : _v)
+        {
+            e /= len;
+        }
+    }
 
 private:
-    StorageBase<dim, ValueType> _v;
+    StorageBase<ValueType, dim> _v;
 };
 
 }
