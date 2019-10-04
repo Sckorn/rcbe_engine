@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 
-#include <data_types/geometry/geometry.hpp>
+#include <data_types/math/math.hpp>
 
 #include <GL/gl.h>
 #include <GL/freeglut.h>
@@ -27,7 +27,7 @@ void drawTriangle()
 
 int main(int argc, char *argv[])
 {
-    geometry::Vector3d vec { 10.0, 0.0, 1.0};
+    math::Vector3d vec { 10.0, 0.0, 1.0};
 
     std::cout << vec.x() << std::endl;
 

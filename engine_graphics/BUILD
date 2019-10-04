@@ -12,7 +12,7 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        "//engine_datamodel:engine_datamodel",
+        "//engine_datamodel:engine_datamodel_math",
     ],
 )
 

@@ -12,7 +12,7 @@
 #include <data_types/core/ArrayBase.hpp>
 #include <data_types/data_model_config.hpp>
 
-namespace rcbe::geometry
+namespace rcbe::math
 {
 
 template <typename ValueType, size_t dim, template <typename ValT, size_t n> typename StorageBase = std::array>

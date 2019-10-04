@@ -11,7 +11,7 @@
 #include <data_types/core/ArrayBase.hpp>
 #include <data_types/data_model_config.hpp>
 
-namespace rcbe::geometry
+namespace rcbe::math
 {
 template <typename ValueType, size_t DimRow, size_t DimCol>
 class Matrix
