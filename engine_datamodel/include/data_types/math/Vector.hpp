@@ -38,10 +38,10 @@ public:
 
     ~Vector() = default;
 
-    template <typename... valt>
+    template <typename... valt, typename = std::enable_if_t< (std::is_same_v<value_type, valt> && ... ) && (sizeof...(valt) == dimension) > >
     Vector(valt&&... args)
     :
-    _v( {args... })
+    _v( { args... } )
     {}
 
     Vector(const Vector &other) = default;

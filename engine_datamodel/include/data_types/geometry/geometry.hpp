@@ -11,4 +11,9 @@
 
 #include <data_types/data_model_config.hpp>
 
+namespace rcbe::geometry
+{
+using Triangle = std::array<size_t, 3>;
+}
+
 #endif
