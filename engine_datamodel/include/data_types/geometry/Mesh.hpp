@@ -11,6 +11,11 @@ namespace rcbe::geometry
 class Mesh
 {
 public:
+    using vertex_type = math::Vector3d;
+    using normal_type = math::Vector3d;
+    using triangle_type = Triangle;
+
+public:
     Mesh() = default;
 
 private:

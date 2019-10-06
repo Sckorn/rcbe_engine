@@ -9,7 +9,6 @@
 
 #include <iostream>
 
-#include <data_types/core/ArrayBase.hpp>
 #include <data_types/data_model_config.hpp>
 
 namespace rcbe::math
@@ -38,7 +37,7 @@ public:
 
     ~Vector() = default;
 
-    template <typename... valt, typename = std::enable_if_t< (std::is_same_v<value_type, valt> && ... ) && (sizeof...(valt) == dimension) > >
+    template <typename... valt, typename = std::enable_if_t< (std::is_convertible_v<valt, value_type> && ... ) && (sizeof...(valt) == dimension) > >
     Vector(valt&&... args)
     :
     _v( { args... } )
@@ -104,6 +103,25 @@ public:
 private:
     StorageBase<ValueType, dim> _v;
 };
+
+using Vector3d = Vector<core::EngineScalar, 3>;
+using Vector2d = Vector<core::EngineScalar, 2>;
+
+std::ostream &operator<<(std::ostream &os, const Vector3d &vec)
+{
+    os << "(";
+    //os << vec.x() << ", " << vec.y() << ", " << vec.z();
+    os << ");";
+    return os;
+}
+
+std::istream &operator>>(std::istream &is, rcbe::math::Vector3d &vec)
+{
+    rcbe::math::Vector3d::value_type x, y, z;
+    is >> x >> y >> z;
+    vec = rcbe::math::Vector3d( x, y, z);
+    return is;
+}
 
 }
 

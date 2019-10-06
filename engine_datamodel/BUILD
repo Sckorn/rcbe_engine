@@ -13,6 +13,9 @@ cc_library(
     hdrs = glob([
         "include/data_types/math/**/*.cpp",
     ]),
+    srcs = glob([
+        "src/math/**/*.cpp",
+    ]),
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [

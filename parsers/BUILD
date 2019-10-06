@@ -10,3 +10,10 @@ cc_library(
         "//engine_datamodel:engine_datamodel_geometry",
     ],
 )
+
+cc_binary(
+    name = "test_x3d_parser",
+    srcs = ["src/test_x3d_parser.cpp"],
+    deps = [":x3d_parser"],
+    visibility = ["//visibility:public"],
+)
