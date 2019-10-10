@@ -5,7 +5,6 @@ cc_binary(
         "@boost//:program_options",
         "@boost//:filesystem",
         "@CGAL",
-        "@gtest",
     ],
     visibility = ["//visibility:public"]
 )
