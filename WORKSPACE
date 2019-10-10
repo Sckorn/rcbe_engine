@@ -29,3 +29,11 @@ http_archive(
     strip_prefix = "CGAL-4.13.1",
     sha256 = "112c4e1ce8969a3c29e77ee8d58c2b9e4b3cbab5234af187207ab8ca7ddd2575",
 )
+
+http_archive(
+    name = "gtest",
+    url = "https://github.com/google/googletest/archive/release-1.7.0.zip",
+    sha256 = "b58cb7547a28b2c718d1e38aee18a3659c9e3ff52440297e965f5edffe34b6d0",
+    build_file = "@//thirdparty:gtest.BUILD",
+    strip_prefix = "googletest-release-1.7.0",
+)
