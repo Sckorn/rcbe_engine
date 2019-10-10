@@ -18,6 +18,24 @@ public:
 public:
     Mesh() = default;
 
+    template <typename VertsInIter, typename NormsInIter, typename FacesInIter>
+    Mesh(
+        VertsInIter vbegin, VertsInIter vend,
+        NormsInIter nbegin, NormsInIter nend,
+        FacesInIter fbegin, FacesInIter fend
+    )
+    :
+    _vertices(vbegin, vend)
+    , _normals(nbegin, nend)
+    , _facets(fbegin, fend)
+    {}
+
+    Mesh(const Mesh &other) = delete;
+    Mesh &operator=(const Mesh &other) = delete;
+
+    Mesh(Mesh &&other) = default;
+    Mesh &operator=(Mesh &&other) = default;
+
 private:
     std::vector<math::Vector3d> _vertices;
     std::vector<math::Vector3d> _normals;
