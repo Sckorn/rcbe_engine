@@ -1,2 +1,2 @@
-# graph_engine
-Simple graphical engine, for training purposes
+# RCBE engine
+Simple 3D engine, for training purposes
