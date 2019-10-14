@@ -28,6 +28,7 @@ cc_library(
     hdrs = glob([
         "include/data_types/geometry/**/*.hpp",
     ]),
+    srcs = glob(["src/geometry/**/*.cpp"]),
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [

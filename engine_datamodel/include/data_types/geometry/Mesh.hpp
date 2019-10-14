@@ -48,95 +48,31 @@ public:
     Mesh(Mesh &&other) = default;
     Mesh &operator=(Mesh &&other) = default;
 
-    const vertex_storage &vertices() const
-    {
-        return _vertices;
-    }
+    const vertex_storage &vertices() const;
+    const normal_storage &normals() const;
+    const facet_storage &facets() const;
 
-    const normal_storage &normals() const
-    {
-        return _normals;
-    }
+    size_t vertices_size() const;
+    size_t normals_size() const;
+    size_t facets_size() const;
 
-    const facet_storage &facets() const
-    {
-        return _facets;
-    }
+    vertices_iterator vertices_begin();
+    const_vertices_iterator vertices_cbegin() const;
 
-    size_t vertices_size() const
-    {
-        return _vertices.size();
-    }
+    vertices_iterator vertices_end();
+    const_vertices_iterator vertices_cend() const;
 
-    size_t normals_size() const
-    {
-        return _normals.size();
-    }
+    normals_iterator normals_begin();
+    const_normals_iterator normals_cbegin() const;
 
-    size_t facets_size() const
-    {
-        return _facets.size();
-    }
+    normals_iterator normals_end();
+    const_normals_iterator normals_cend() const;
 
-    vertices_iterator vertices_begin()
-    {
-        return _vertices.begin();
-    }
+    facets_iterator facets_begin();
+    const_facets_iterator facets_cbegin() const;
 
-    const_vertices_iterator vertices_cbegin() const
-    {
-        return _vertices.cbegin();
-    }
-
-    vertices_iterator vertices_end()
-    {
-        return _vertices.end();
-    }
-
-    const_vertices_iterator vertices_cend() const
-    {
-        return  _vertices.cend();
-    }
-
-    normals_iterator normals_begin()
-    {
-        return _normals.begin();
-    }
-
-    const_normals_iterator normals_cbegin() const
-    {
-        return _normals.cbegin();
-    }
-
-    normals_iterator normals_end()
-    {
-        return _normals.end();
-    }
-
-    const_normals_iterator normals_cend() const
-    {
-        return _normals.cend();
-    }
-
-    facets_iterator facets_begin()
-    {
-        return _facets.begin();
-    }
-
-    const_facets_iterator facets_cbegin() const
-    {
-        return _facets.cbegin();
-    }
-
-    facets_iterator facets_end()
-    {
-        return _facets.end();
-    }
-
-    const_facets_iterator facets_cend() const
-    {
-        return _facets.cend();
-    }
+    facets_iterator facets_end();
+    const_facets_iterator facets_cend() const;
 
 private:
     vertex_storage _vertices;
