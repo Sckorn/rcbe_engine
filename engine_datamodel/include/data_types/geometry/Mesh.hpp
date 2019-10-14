@@ -20,11 +20,11 @@ public:
     using facet_storage = std::vector<Triangle>;
 
     using vertices_iterator = vertex_storage::iterator;
-    using normals_oterator = normal_storage::iterator;
+    using normals_iterator = normal_storage::iterator;
     using facets_iterator = facet_storage::iterator;
 
     using const_vertices_iterator = vertex_storage::const_iterator;
-    using const_normals_oterator = normal_storage::const_iterator;
+    using const_normals_iterator = normal_storage::const_iterator;
     using const_facets_iterator = facet_storage::const_iterator;
 
 public:
@@ -47,6 +47,21 @@ public:
 
     Mesh(Mesh &&other) = default;
     Mesh &operator=(Mesh &&other) = default;
+
+    const vertex_storage &vertices() const
+    {
+        return _vertices;
+    }
+
+    const normal_storage &normals() const
+    {
+        return _normals;
+    }
+
+    const facet_storage &facets() const
+    {
+        return _facets;
+    }
 
     size_t vertices_size() const
     {
@@ -81,6 +96,46 @@ public:
     const_vertices_iterator vertices_cend() const
     {
         return  _vertices.cend();
+    }
+
+    normals_iterator normals_begin()
+    {
+        return _normals.begin();
+    }
+
+    const_normals_iterator normals_cbegin() const
+    {
+        return _normals.cbegin();
+    }
+
+    normals_iterator normals_end()
+    {
+        return _normals.end();
+    }
+
+    const_normals_iterator normals_cend() const
+    {
+        return _normals.cend();
+    }
+
+    facets_iterator facets_begin()
+    {
+        return _facets.begin();
+    }
+
+    const_facets_iterator facets_cbegin() const
+    {
+        return _facets.cbegin();
+    }
+
+    facets_iterator facets_end()
+    {
+        return _facets.end();
+    }
+
+    const_facets_iterator facets_cend() const
+    {
+        return _facets.cend();
     }
 
 private:

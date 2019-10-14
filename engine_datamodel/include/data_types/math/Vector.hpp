@@ -59,13 +59,29 @@ public:
         return _v[0];
     }
 
+    const value_type &x() const
+    {
+        return _v[0];
+    }
+
     value_type y()
+    {
+        return _v[1];
+    }
+
+    const value_type &y() const
     {
         return _v[1];
     }
 
     template <typename = std::enable_if_t<dim == 3>>
     value_type z()
+    {
+        return _v[2];
+    }
+
+    template <typename = std::enable_if_t<dim == 3>>
+    const value_type &z() const
     {
         return _v[2];
     }

@@ -13,9 +13,10 @@ cc_library(
 
 filegroup(
     name = "x3d_test_resources",
-    srcs = [
-        "test/resources/corner.x3d",
-    ],
+    srcs = glob([
+        "test/resources/*",
+    ]),
+    visibility = ["//visibility:public"],
 )
 
 cc_test(
