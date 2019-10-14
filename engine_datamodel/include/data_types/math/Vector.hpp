@@ -126,7 +126,7 @@ using Vector2d = Vector<core::EngineScalar, 2>;
 std::ostream &operator<<(std::ostream &os, const Vector3d &vec)
 {
     os << "(";
-    //os << vec.x() << ", " << vec.y() << ", " << vec.z();
+    os << vec.x() << ", " << vec.y() << ", " << vec.z();
     os << ");";
     return os;
 }

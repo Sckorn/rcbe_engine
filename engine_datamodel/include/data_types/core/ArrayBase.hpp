@@ -33,7 +33,7 @@ public:
     // TODO: in a comment below
     // provide two versions one for trivially copyable types (this), and one for custom type (returning const reference)
     // open 
-    /*const EngineScalar &m(const size_t index) const
+    const EngineScalar &m(const size_t index) const
     {
         rangeCheck(index);
         return _word[index];
@@ -43,7 +43,7 @@ public:
     {
         rangeCheck(index);
         return _word[index];
-    }*/
+    }
 
     EngineScalar &at(size_t index)
     {

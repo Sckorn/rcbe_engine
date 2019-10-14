@@ -77,7 +77,6 @@ RUN mv /bin/sh /bin/sh-old && \
         libx11-dev \
         tzdata \
         freeglut3-dev \
-        codeblocks \
         lsb-release && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

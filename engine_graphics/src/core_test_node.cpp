@@ -27,10 +27,6 @@ void drawTriangle()
 
 int main(int argc, char *argv[])
 {
-    math::Vector3d vec { 10.0, 0.0, 1.0};
-
-    std::cout << vec.x() << std::endl;
-
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE);
     glutInitWindowSize(500, 500);
