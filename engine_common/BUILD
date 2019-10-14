@@ -1,14 +1,12 @@
 cc_library(
-    name = "engine_common",
+    name = "engine_filesystem_utils",
     hdrs = glob([
-        "include/**/*.h",
-        "include/**/*.hpp"
+        "include/common/utils/file_utils.h",
     ]),
     srcs = glob([
-        "src/**/*.cpp"
+        "src/common/utils/file_utils.cpp",
     ]),
     includes = ["include"],
-    deps = ["@boost//:filesystem", "@boost//:system"],
     linkopts = ["-lpthread"],
     visibility = ["//visibility:public"]
 )

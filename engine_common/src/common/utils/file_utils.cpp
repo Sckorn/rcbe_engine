@@ -1,13 +1,13 @@
 #include <common/utils/file_utils.h>
 
-namespace rcbe::common
+namespace rcbe::utils
 {
-boost::filesystem::path makePathFromParts(const std::vector<std::string> &parts)
+std::filesystem::path makePathFromParts(const std::vector<std::string> &parts)
 {
-  boost::filesystem::path ret;
+  std::filesystem::path ret;
   for(const auto &part: parts)
   {
-    ret /= boost::filesystem::path(part);
+    ret /= std::filesystem::path(part);
   }
   return ret;
 }

@@ -1,13 +1,16 @@
-#ifndef RCBE_ENGINE_FILE_UTILS_H
-#define RCBE_ENGINE_FILE_UTILS_H
+#ifndef RCBE_FILE_UTILS_H
+#define RCBE_FILE_UTILS_H
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+#include <vector>
+#include <string>
 
-namespace rcbe::common
+namespace rcbe::utils
 {
-boost::filesystem::path makePathFromParts(const std::vector<std::string> &parts);
+std::filesystem::path makePathFromParts(const std::vector<std::string> &parts);
 
 std::string makeStringPathFromParts(const std::vector<std::string> &parts);
+
 }
 
 #endif //RCBE_ENGINE_FILE_UTILS_H

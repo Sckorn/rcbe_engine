@@ -1,15 +1,8 @@
-#ifndef RCBE_ENGINE_GUI_TYPES_H
-#define RCBE_ENGINE_GUI_TYPES_H
+#ifndef RCBE_POINT_HPP
+#define RCBE_POINT_HPP
 
-#include <cstring>
-#include <common/utils/file_utils.h>
-
-namespace rcbe::data_types::gui
+namespace rcbe::gui
 {
-/**
- * Simple 2d point for windows coordinate
- *
- * */
 template <typename ValueType>
 class Point2
 {
@@ -33,4 +26,4 @@ private:
 };
 }
 
-#endif //RCBE_ENGINE_GUI_TYPES_H
+#endif

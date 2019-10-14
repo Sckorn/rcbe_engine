@@ -1,10 +1,12 @@
 #include <string>
 #include <iostream>
 
-#include <data_types/core_types.hpp>
+#include <data_types/math/math.hpp>
 
 #include <GL/gl.h>
 #include <GL/freeglut.h>
+
+using namespace rcbe;
 
 void drawTriangle()
 {
