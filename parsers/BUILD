@@ -11,9 +11,21 @@ cc_library(
     ],
 )
 
-cc_binary(
-    name = "test_x3d_parser",
-    srcs = ["src/test_x3d_parser.cpp"],
-    deps = [":x3d_parser"],
+filegroup(
+    name = "x3d_test_resources",
+    srcs = [
+        "test/resources/corner.x3d",
+    ],
+)
+
+cc_test(
+    name = "x3d_parser_test",
+    srcs = glob(["test/*.cpp"]),
+    deps = [
+        ":x3d_parser",
+        "@gtest"
+    ],
+    copts = ["-Iexternal/gtest/include"],
     visibility = ["//visibility:public"],
+    data = glob(["test/resources/*"]),
 )

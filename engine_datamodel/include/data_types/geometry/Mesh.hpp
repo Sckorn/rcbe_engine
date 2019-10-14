@@ -15,6 +15,18 @@ public:
     using normal_type = math::Vector3d;
     using triangle_type = Triangle;
 
+    using vertex_storage = std::vector<math::Vector3d>;
+    using normal_storage = std::vector<math::Vector3d>;
+    using facet_storage = std::vector<Triangle>;
+
+    using vertices_iterator = vertex_storage::iterator;
+    using normals_oterator = normal_storage::iterator;
+    using facets_iterator = facet_storage::iterator;
+
+    using const_vertices_iterator = vertex_storage::const_iterator;
+    using const_normals_oterator = normal_storage::const_iterator;
+    using const_facets_iterator = facet_storage::const_iterator;
+
 public:
     Mesh() = default;
 
@@ -36,10 +48,45 @@ public:
     Mesh(Mesh &&other) = default;
     Mesh &operator=(Mesh &&other) = default;
 
+    size_t vertices_size() const
+    {
+        return _vertices.size();
+    }
+
+    size_t normals_size() const
+    {
+        return _normals.size();
+    }
+
+    size_t facets_size() const
+    {
+        return _facets.size();
+    }
+
+    vertices_iterator vertices_begin()
+    {
+        return _vertices.begin();
+    }
+
+    const_vertices_iterator vertices_cbegin() const
+    {
+        return _vertices.cbegin();
+    }
+
+    vertices_iterator vertices_end()
+    {
+        return _vertices.end();
+    }
+
+    const_vertices_iterator vertices_cend() const
+    {
+        return  _vertices.cend();
+    }
+
 private:
-    std::vector<math::Vector3d> _vertices;
-    std::vector<math::Vector3d> _normals;
-    std::vector<Triangle> _facets;
+    vertex_storage _vertices;
+    normal_storage _normals;
+    facet_storage _facets;
 
 };
 } // namespace rcbe::geometry

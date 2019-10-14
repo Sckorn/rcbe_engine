@@ -14,8 +14,6 @@ std::vector<rcbe::math::Vector3d> parseVertices(std::string &&str)
 {
     std::vector<rcbe::math::Vector3d> ret;
 
-    std::cout << str << std::endl;
-
     std::istringstream iss { str };
 
     while (!iss.eof())
@@ -31,8 +29,6 @@ std::vector<rcbe::math::Vector3d> parseVertices(std::string &&str)
 std::vector<rcbe::math::Vector3d> parseNormals(std::string &&str)
 {
     std::vector<rcbe::math::Vector3d> ret;
-
-    std::cout << str << std::endl;
 
     std::istringstream iss { str };
 
@@ -50,8 +46,6 @@ std::vector<rcbe::geometry::Mesh::triangle_type> parseFacets(std::string &&str)
 {
     std::vector<rcbe::geometry::Mesh::triangle_type> ret;
 
-    std::cout << str << std::endl;
-
     std::istringstream iss { str };
 
     while (!iss.eof()) 
@@ -66,19 +60,11 @@ std::vector<rcbe::geometry::Mesh::triangle_type> parseFacets(std::string &&str)
 
 rcbe::geometry::Mesh parseShape(const pt::ptree &subtree)
 {
-    rcbe::geometry::Mesh ret;
-
     auto vertices = parseVertices(subtree.get<std::string>("IndexedFaceSet.Coordinate.<xmlattr>.point"));
     auto normals = parseNormals(subtree.get<std::string>("IndexedFaceSet.Normal.<xmlattr>.vector"));
     auto facets = parseFacets(subtree.get<std::string>("IndexedFaceSet.<xmlattr>.coordIndex"));
 
-    /*if (vertices.size() != normals.size())
-        throw std::runtime_error("Vertices and normals are different in size");*/
-    
-
-    std::cout << "Total verts " << vertices.size() << std::endl;
-
-    return ret;
+    return rcbe::geometry::Mesh(vertices.begin(), vertices.end(), normals.begin(), normals.end(), facets.begin(), facets.end());
 }
 }
 
