@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include <data_types/data_model_config.hpp>
+#include <nlohmann/json.hpp>
 
 namespace rcbe::geometry
 {
@@ -47,13 +48,18 @@ public:
 private:
     std::array<size_t, 3> _storage;
 };
-
-std::istream &operator>>(std::istream &is, Triangle &tri)
-{
-    int sep;
-    is >> tri[0] >> tri[1] >> tri[2] >> sep;
-    return is;
 }
+
+std::istream &operator>>(std::istream &is, rcbe::geometry::Triangle &tri);
+
+namespace nlohmann
+{
+template <>
+struct adl_serializer<rcbe::geometry::Triangle>
+{
+    static void to_json(nlohmann::json &j, const rcbe::geometry::Triangle &t);
+    static void from_json(const nlohmann::json &j, rcbe::geometry::Triangle &t);
+};
 }
 
 #endif

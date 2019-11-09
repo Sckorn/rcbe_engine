@@ -3,7 +3,7 @@ cc_library(
     srcs = glob([
         "src/**/*.cpp",
     ],
-    exclude = ["src/core_test_node.cpp"],
+    exclude = ["src/renderer_test_node.cpp"],
     ),
     hdrs = glob([
         "include/**/*.hpp",
@@ -13,17 +13,23 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//engine_datamodel:engine_datamodel_math",
+        "//engine_datamodel:engine_datamodel_rendering",
+        "//engine_datamodel:engine_datamodel_visual",
+        "@nlohmann",
     ],
+    copts = ["-Iexternal/nlohmann/include"],
 )
 
 cc_binary(
-    name = "core_test_node",
-    srcs = ["src/core_test_node.cpp"],
+    name = "renderer_test_node",
+    srcs = ["src/renderer_test_node.cpp"],
     deps = [
         ":engine_graphics",
         "@boost//:filesystem",
         "@boost//:system",
+        "//parsers:x3d_parser",
     ],
-    linkopts = ["-lpthread", "-lOpenGL", "-lGL", "-lGLU",  "-lglut"],
+    data = ["//parsers:x3d_test_resources"],
+    linkopts = ["-lpthread", "-lOpenGL", "-lGL", "-lGLU",  "-lglut", "-lGLX", "-lGLEW"],
     visibility = ["//visibility:public"],
 )

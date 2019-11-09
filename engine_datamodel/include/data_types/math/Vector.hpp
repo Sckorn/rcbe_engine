@@ -11,14 +11,16 @@
 
 #include <data_types/data_model_config.hpp>
 
+#include <nlohmann/json.hpp>
+
 namespace rcbe::math
 {
 
-template <typename ValueType, size_t dim, template <typename ValT, size_t n> typename StorageBase = std::array>
+template <typename ValueType, size_t dim, template <typename valt, size_t n> typename StorageBase = std::array>
 class Vector
 {
     static_assert(std::is_scalar_v<ValueType>);
-    static_assert(dim == 2 || dim == 3); // Vectors of only 2 or 3 dimensional space
+    static_assert(dim > 1 && dim < 5); // 4d vector is base for quaternion or RGBA color
 public:
 
     static constexpr size_t dimension = dim;
@@ -54,7 +56,12 @@ public:
         return _v[index];
     }
 
-    value_type x()
+    const value_type &operator[](const size_t index) const
+    {
+        return _v[index];
+    }
+
+    value_type &x()
     {
         return _v[0];
     }
@@ -64,7 +71,7 @@ public:
         return _v[0];
     }
 
-    value_type y()
+    value_type &y()
     {
         return _v[1];
     }
@@ -74,18 +81,31 @@ public:
         return _v[1];
     }
 
-    template <typename = std::enable_if_t<dim == 3>>
-    value_type z()
+    template <typename T = void, typename = std::enable_if_t< (dim > 2), T > >
+    value_type &z()
     {
         return _v[2];
     }
 
-    template <typename = std::enable_if_t<dim == 3>>
+    template <typename T = void, typename = std::enable_if_t< (dim > 2), T > >
     const value_type &z() const
     {
         return _v[2];
     }
 
+    template < typename T = void, typename = std::enable_if_t< (dim == 4), T > >
+    value_type &w()
+    {
+        return _v[3];
+    }
+
+    template < typename T = void, typename = typename std::enable_if_t< (dim == 4), T > >
+    const value_type &w() const
+    {
+        return _v[3];
+    }
+
+    template < typename T = void, typename = typename std::enable_if_t< (dim < 4), T > >
     value_type length() const
     {
         size_t sum = 0;
@@ -94,19 +114,19 @@ public:
             sum += e * e;
         }
 
-        return sum;
+        return std::sqrt(sum);
     }
 
+    template < typename T = void, typename = typename std::enable_if_t< (dim < 4), T > >
     Vector normalized()
     {
-        const auto len = length();
-
         auto copy = *this;
         copy.normalize();
 
         return copy;
     }
 
+    template < typename T = void, typename = typename std::enable_if_t< (dim < 4), T > >
     void normalize()
     {
         const auto len = length();
@@ -123,22 +143,26 @@ private:
 using Vector3d = Vector<core::EngineScalar, 3>;
 using Vector2d = Vector<core::EngineScalar, 2>;
 
-std::ostream &operator<<(std::ostream &os, const Vector3d &vec)
-{
-    os << "(";
-    os << vec.x() << ", " << vec.y() << ", " << vec.z();
-    os << ");";
-    return os;
+std::ostream &operator<<(std::ostream &os, const Vector3d &vec);
+std::istream &operator>>(std::istream &is, rcbe::math::Vector3d &vec);
+
 }
 
-std::istream &operator>>(std::istream &is, rcbe::math::Vector3d &vec)
+namespace nlohmann
 {
-    rcbe::math::Vector3d::value_type x, y, z;
-    is >> x >> y >> z;
-    vec = rcbe::math::Vector3d( x, y, z);
-    return is;
-}
+template <>
+struct adl_serializer<rcbe::math::Vector3d>
+{
+static void to_json(nlohmann::json &j, const rcbe::math::Vector3d &v);
+static void from_json(const nlohmann::json &j, rcbe::math::Vector3d &v);
+};
 
+template <>
+struct adl_serializer<rcbe::math::Vector2d>
+{
+static void to_json(nlohmann::json &j, const rcbe::math::Vector2d &v);
+static void from_json(const nlohmann::json &j, rcbe::math::Vector2d &v);
+};
 }
 
 #endif

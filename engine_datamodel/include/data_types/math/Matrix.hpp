@@ -8,8 +8,9 @@
 
 #include <iostream>
 
-#include <data_types/core/ArrayBase.hpp>
 #include <data_types/data_model_config.hpp>
+
+#include <nlohmann/json.hpp>
 
 namespace rcbe::math
 {
@@ -44,6 +45,16 @@ public:
 
 private:
     std::array<ValueType, DimRow * DimCol> _m;
+};
+}
+
+namespace nlohmann
+{
+template <>
+struct adl_serializer<rcbe::math::Matrix<rcbe::core::EngineScalar, 3, 3>> 
+{
+    static void to_json(nlohmann::json& j, const rcbe::math::Matrix<rcbe::core::EngineScalar, 3, 3>& value);
+    static void from_json(const nlohmann::json& j, rcbe::math::Matrix<rcbe::core::EngineScalar, 3, 3>& value);
 };
 }
 

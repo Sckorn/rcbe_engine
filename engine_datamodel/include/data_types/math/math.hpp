@@ -7,7 +7,6 @@
 
 namespace rcbe::math
 {
-
 using Matrix3x3d = Matrix<core::EngineScalar, 3, 3>;
 }
 

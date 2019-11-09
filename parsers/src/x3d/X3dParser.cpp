@@ -22,7 +22,6 @@ std::vector<rcbe::math::Vector3d> parseVertices(std::string &&str)
         iss >> v;
         ret.push_back(v);
     }
-
     return ret;
 }
 

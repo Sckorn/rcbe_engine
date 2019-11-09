@@ -91,4 +91,37 @@ Mesh::const_facets_iterator Mesh::facets_cend() const
 {
     return _facets.cend();
 }
+
+const Mesh::color_type &Mesh::color() const
+{
+    return _color;
+}
 } // namespace rcbe::geometry
+
+namespace nlohmann
+{
+void adl_serializer<rcbe::geometry::Mesh>::to_json(nlohmann::json &j, const rcbe::geometry::Mesh &m)
+{
+    j = {
+        {"vertices", m.vertices()},
+        {"normals", m.normals()},
+        {"facets", m.facets()},
+        {"color", m.color()}
+    };
+}
+
+void adl_serializer<rcbe::geometry::Mesh>::from_json(const nlohmann::json &j, rcbe::geometry::Mesh &m)
+{
+    auto vertices = j.at("vertices").get<rcbe::geometry::Mesh::vertex_storage>();
+    auto normals = j.at("normals").get<rcbe::geometry::Mesh::normal_storage>();
+    auto facets = j.at("facets").get<rcbe::geometry::Mesh::facet_storage>();
+    auto color = j.at("color").get<rcbe::geometry::Mesh::color_type>();
+
+    m = { 
+        std::make_move_iterator(vertices.begin()), std::make_move_iterator(vertices.end()), 
+        std::make_move_iterator(normals.begin()), std::make_move_iterator(normals.end()),
+        std::make_move_iterator(facets.begin()), std::make_move_iterator(facets.end()),
+        color
+    };
+}
+}
