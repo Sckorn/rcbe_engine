@@ -37,3 +37,10 @@ http_archive(
     build_file = "@//thirdparty:gtest.BUILD",
     strip_prefix = "googletest-release-1.7.0",
 )
+
+http_archive(
+    name = "nlohmann",
+    url = "https://github.com/nlohmann/json/releases/download/v3.7.3/include.zip",
+    sha256 = "87b5884741427220d3a33df1363ae0e8b898099fbc59f1c451113f6732891014",
+    build_file = "@//thirdparty:nlohmann.BUILD",
+)

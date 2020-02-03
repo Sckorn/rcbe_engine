@@ -24,7 +24,8 @@ cc_test(
     srcs = glob(["test/*.cpp"]),
     deps = [
         ":x3d_parser",
-        "@gtest"
+        "@gtest",
+        "//engine_datamodel:engine_datamodel_math"
     ],
     copts = ["-Iexternal/gtest/include"],
     visibility = ["//visibility:public"],

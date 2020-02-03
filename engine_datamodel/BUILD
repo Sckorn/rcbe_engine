@@ -6,6 +6,7 @@ cc_library(
     ]),
     includes = ["include"],
     visibility = ["//visibility:public"],
+    deps = ["//engine_common:engine_fundamentals"],
 )
 
 cc_library(
@@ -20,7 +21,26 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
+        "@nlohmann"
     ], 
+    copts = ["-Iexternal/nlohmann/include"],
+)
+
+cc_library(
+    name = "engine_datamodel_visual",
+    hdrs = glob([
+        "include/data_types/visual/**/*.hpp",
+    ]),
+    srcs = glob([
+        "src/visual/**/*.cpp",
+    ]),
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":engine_datamodel_math",
+         "@nlohmann"
+    ], 
+    copts = ["-Iexternal/nlohmann/include"],
 )
 
 cc_library(
@@ -33,7 +53,10 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
+        ":engine_datamodel_visual",
+        "@nlohmann",
     ], 
+    copts = ["-Iexternal/nlohmann/include"],
 )
 
 cc_library(
