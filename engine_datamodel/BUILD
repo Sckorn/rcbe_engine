@@ -1,7 +1,7 @@
 cc_library(
     name = "engine_datamodel_core",
     hdrs = glob([
-        "include/data_model_config.hpp",
+        "include/data_types/config/data_model_config.hpp",
         "include/data_types/core/**/*.hpp",
     ]),
     includes = ["include"],
@@ -11,52 +11,53 @@ cc_library(
 
 cc_library(
     name = "engine_datamodel_math",
-    hdrs = glob([
-        "include/data_types/math/**/*.cpp",
-    ]),
     srcs = glob([
         "src/math/**/*.cpp",
     ]),
+    hdrs = glob([
+        "include/data_types/math/**/*.hpp",
+    ]),
+    copts = ["-Iexternal/nlohmann/include"],
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
-        "@nlohmann"
-    ], 
-    copts = ["-Iexternal/nlohmann/include"],
+        "@nlohmann",
+        "//engine_common:engine_math_utils",
+    ],
 )
 
 cc_library(
     name = "engine_datamodel_visual",
-    hdrs = glob([
-        "include/data_types/visual/**/*.hpp",
-    ]),
     srcs = glob([
         "src/visual/**/*.cpp",
     ]),
+    hdrs = glob([
+        "include/data_types/visual/**/*.hpp",
+    ]),
+    copts = ["-Iexternal/nlohmann/include"],
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_math",
-         "@nlohmann"
-    ], 
-    copts = ["-Iexternal/nlohmann/include"],
+        "@nlohmann",
+    ],
 )
 
 cc_library(
     name = "engine_datamodel_geometry",
+    srcs = glob(["src/geometry/**/*.cpp"]),
     hdrs = glob([
         "include/data_types/geometry/**/*.hpp",
     ]),
-    srcs = glob(["src/geometry/**/*.cpp"]),
+    copts = ["-Iexternal/nlohmann/include"],
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
         ":engine_datamodel_visual",
         "@nlohmann",
-    ], 
-    copts = ["-Iexternal/nlohmann/include"],
+    ],
 )
 
 cc_library(
@@ -68,16 +69,16 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
-    ], 
+    ],
 )
 
 cc_library(
     name = "engine_datamodel_rendering",
-    hdrs = glob([
-        "include/data_types/rendering/**/*.hpp",
-    ]),
     srcs = glob([
         "src/rendering/**/*.cpp",
+    ]),
+    hdrs = glob([
+        "include/data_types/rendering/**/*.hpp",
     ]),
     includes = ["include"],
     visibility = ["//visibility:public"],
@@ -85,5 +86,20 @@ cc_library(
         ":engine_datamodel_core",
         ":engine_datamodel_geometry",
         ":engine_datamodel_math",
-    ], 
+    ],
+)
+
+# tests
+
+cc_test(
+    name = "engine_datamodel_test",
+    srcs = glob(["test/*.cpp"]),
+    deps = [
+        ":engine_datamodel_math",
+        "//engine_common:engine_fuzzy_logic",
+        "@gtest",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    visibility = ["//visibility:public"],
+    #data = glob(["test/resources/*"]),
 )

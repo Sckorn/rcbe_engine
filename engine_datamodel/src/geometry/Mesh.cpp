@@ -96,6 +96,37 @@ const Mesh::color_type &Mesh::color() const
 {
     return _color;
 }
+
+const Mesh::transform_type &Mesh::get_transform() const
+{
+    return _transform;
+}
+
+void Mesh::transform(const transform_type &t)
+{
+    _transform = t * _transform;
+
+    if (!_vertices.empty())
+    {
+        std::transform(_vertices.begin(), _vertices.end(), _vertices.begin(), _transform);
+    }
+
+    if (!_normals.empty())
+    {
+        std::transform(_normals.begin(), _normals.end(), _normals.begin(), _transform);
+    }
+}
+
+void Mesh::set_transform(const transform_type &t)
+{
+    _transform = t;
+}
+
+Mesh operator*(const Mesh::transform_type &t, Mesh m)
+{
+    m.transform(t);
+    return m;
+}
 } // namespace rcbe::geometry
 
 namespace nlohmann

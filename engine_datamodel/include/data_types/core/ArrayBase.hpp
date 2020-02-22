@@ -6,7 +6,7 @@
 namespace rcbe::core
 {
 template <typename ValueType, size_t dim>
-class ArrayBase
+class [[deprecated]] ArrayBase
 {
 public:
     static constexpr size_t dimension = dim;

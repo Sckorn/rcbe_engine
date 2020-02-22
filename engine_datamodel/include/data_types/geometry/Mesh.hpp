@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <data_types/math/math.hpp>
+#include <data_types/math/Transform.hpp>
 #include <data_types/geometry/geometry.hpp>
 #include <data_types/visual/RGBAColor.hpp>
 
@@ -29,6 +30,8 @@ public:
     using const_facets_iterator = facet_storage::const_iterator;
 
     using color_type = visual::RGBAColor;
+
+    using transform_type = math::Transform;
 
 public:
     Mesh() = default;
@@ -90,6 +93,12 @@ public:
 
     const color_type &color() const;
 
+    const transform_type &get_transform() const;
+    void transform(const transform_type &t);
+    void set_transform(const transform_type &t);
+
+    friend Mesh operator*(const transform_type &t, Mesh m);
+
 private:
     vertex_storage _vertices;
     normal_storage _normals;
@@ -98,6 +107,7 @@ private:
     //TODO: replace with material
     color_type _color;
 
+    transform_type _transform;
 };
 } // namespace rcbe::geometry
 
