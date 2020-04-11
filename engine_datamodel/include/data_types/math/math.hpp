@@ -1,7 +1,7 @@
 #ifndef RCBE_MATH_HPP
 #define RCBE_MATH_HPP
 
-#include <data_types/data_model_config.hpp>
+#include <data_types/config/data_model_config.hpp>
 #include <data_types/math/Vector.hpp>
 #include <data_types/math/Matrix.hpp>
 

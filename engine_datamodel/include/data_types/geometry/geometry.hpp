@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-#include <data_types/data_model_config.hpp>
+#include <data_types/config/data_model_config.hpp>
 #include <nlohmann/json.hpp>
 
 namespace rcbe::geometry

@@ -1,10 +1,10 @@
 cc_library(
     name = "engine_filesystem_utils",
-    hdrs = glob([
-        "include/common/utils/file_utils.h",
-    ]),
     srcs = glob([
         "src/utils/file_utils.cpp",
+    ]),
+    hdrs = glob([
+        "include/common/utils/file_utils.h",
     ]),
     includes = ["include"],
     linkopts = ["-lpthread"],
@@ -14,19 +14,29 @@ cc_library(
 cc_library(
     name = "engine_fundamentals",
     hdrs = glob([
-        "include/common/fundamentals/type.hpp"
+        "include/common/fundamentals/**/*.hpp",
     ]),
     includes = ["include"],
     visibility = ["//visibility:public"],
 )
 
 cc_library(
+    name = "engine_math_utils",
+    hdrs = glob([
+        "include/common/utils/math_utils.hpp"
+    ]),
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+    deps = [":engine_fundamentals"],
+)
+
+cc_library(
     name = "engine_fuzzy_logic",
+    srcs = glob([
+        "src/fuzzy_logic/**/*.cpp",
+    ]),
     hdrs = glob([
         "include/common/fuzzy_logic/*.hpp",
-    ]),
-    srcs = glob([
-        "srcs/fuzzy_logic/**/*.cpp",
     ]),
     includes = ["include"],
     visibility = ["//visibility:public"],

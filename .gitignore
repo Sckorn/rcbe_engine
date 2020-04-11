@@ -58,3 +58,5 @@ bazel-rcbe_engine
 bazel-testlogs
 
 .Trash-1000/
+
+.clwb/
