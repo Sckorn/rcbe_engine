@@ -1,0 +1,3 @@
+[submodule "rcbe_static_storage"]
+	path = rcbe_static_storage
+	url = git@github.com:Sckorn/rcbe_static_storage.git
