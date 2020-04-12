@@ -51,8 +51,6 @@ fi
 
 chmod +x /start_storage.sh
 
-sh /start_storage.sh
-
-usermod -a -G docker oper
+echo "/start_storage.sh" >> ${OPER_HOME}/.bashrc
 
 su oper -s /bin/bash

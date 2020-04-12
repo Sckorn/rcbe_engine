@@ -98,7 +98,7 @@ RUN  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 150 \
                         --slave   /usr/bin/g++ g++ /usr/bin/g++-9
 
 
-ENV BAZEL_VERSION=0.25.0
+ENV BAZEL_VERSION=3.0.0
 
 #
 # Install Bazel
