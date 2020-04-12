@@ -1,0 +1,36 @@
+# This is a replace for run_docker.sh
+version: '2.3'
+services:
+  rcbe:
+    environment:
+      - OPER_HOME=/home/oper
+      - HUID
+      - HGID
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+
+    image: "rcbe_dev:${_container_tag}"
+    container_name: rcbe_dev
+
+    # --it 
+    stdin_open: true
+    tty: true
+
+    # mount volumes
+    volumes:
+      # mount root source dir
+      - ../../../rcbe_engine:/rcbe_engine
+
+      # caches 
+      - ~/.cache/bazel:/bazel
+      - ~/.cache/clion:/clion
+
+      # file exchange
+      - ~/exchange:/exchange
+
+      # clion and .ssh
+      - ./additional:/home/oper/additional
+
+      # x11
+      - /tmp/.X11-unix:/tmp/.X11-unix
+

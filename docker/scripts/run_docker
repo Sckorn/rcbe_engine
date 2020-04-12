@@ -1,0 +1,60 @@
+#!/bin/bash
+# set -x
+export HUID="$(id -u)"
+export HGID="$(id -g)"
+export DISPLAY
+
+usage () { 
+echo "Usage:
+$0 -l           - use local image
+$0 -t <container_tag>	- use specified container tag
+$0 -h			- show this message"
+}
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+_compose_directory="$DIR/../docker-compose"
+_default_container_tag="latest"
+export _container_tag="$_default_container_tag"
+
+# Check OS
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+  if [[ ! -z $(which nvidia-docker) ]]; then
+      service=rcbe_nvidia_dev
+      yaml_file=$_compose_directory/$service.yaml
+  else service=rcbe_dev
+      yaml_file=$_compose_directory/$service.yaml
+  fi
+fi
+
+# Check script options
+while getopts ":lth" opts; do
+  case "${opts}" in
+    l)
+       echo "Using local $service"
+    ;;
+    t)
+       export _container_tag="${OPTARG}";
+       echo "Using tag $_container_tag"
+    ;;
+    h)
+       usage
+       exit 0
+    ;;
+    *)
+       echo "Invalid option: $1"
+       usage
+       exit 1
+    ;;
+  esac
+done
+
+# Run container
+echo "Running $service"
+docker-compose -f $yaml_file run --service-ports --rm $service
