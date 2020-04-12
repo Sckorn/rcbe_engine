@@ -9,7 +9,7 @@ services:
       - DISPLAY
       - QT_X11_NO_MITSHM=1
 
-    image: "dev:${_container_tag}"
+    image: "rcbe_dev:${_container_tag}"
     container_name: rcbe_dev
 
     # --it 
