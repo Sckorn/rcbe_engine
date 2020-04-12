@@ -38,6 +38,8 @@ if ! $(grep -q '^oper' /etc/passwd); then
   echo "export PATH=${PATH}" >> ${OPER_HOME}/.bashrc
   echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> ${OPER_HOME}/.bashrc
 
+  echo "alias clion='/opt/clion/bin/clion.sh'" >> ${OPER_HOME}/.bashrc
+  cp -r ${OPER_HOME}/additional/.CLion ${OPER_HOME}/
   cp -r ${OPER_HOME}/additional/.ssh ${OPER_HOME}/
 
   [[ -d ${OPER_HOME} ]] && chown -R ${HUID}:${HGID} ${OPER_HOME}
@@ -46,6 +48,10 @@ if ! $(grep -q '^oper' /etc/passwd); then
 fi
 
 [[ -f ${OPER_HOME}/.ssh/id_rsa ]] && chmod go-rw ${OPER_HOME}/.ssh/id_rsa
+
+chmod +x /start_storage.sh
+
+sh /start_storage.sh
 
 usermod -a -G docker oper
 
