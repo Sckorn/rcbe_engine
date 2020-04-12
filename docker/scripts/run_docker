@@ -6,7 +6,6 @@ export DISPLAY
 
 usage () { 
 echo "Usage:
-$0 -l           - use local image
 $0 -t <container_tag>	- use specified container tag
 $0 -h			- show this message"
 }
@@ -34,11 +33,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 fi
 
 # Check script options
-while getopts ":lth" opts; do
+while getopts "t:h" opts; do
   case "${opts}" in
-    l)
-       echo "Using local $service"
-    ;;
     t)
        export _container_tag="${OPTARG}";
        echo "Using tag $_container_tag"
