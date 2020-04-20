@@ -1,0 +1,8 @@
+{
+  "caption": "GLRenderer",
+  "position": {"x":  0, "y":  0},
+  "size": {"width":  1280, "height":  720},
+  "background_color": {"r":  0.5, "g":  0.5, "b":  0.5, "a":  1.0},
+  "fullscreen": false,
+  "type": "gl_renderer_window"
+}

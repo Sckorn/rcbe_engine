@@ -12,6 +12,18 @@ cc_library(
 )
 
 cc_library(
+    name = "engine_json_utils",
+    hdrs = glob([
+        "include/common/utils/json_utils.hpp",
+    ]),
+    copts = ["-Iexternal/nlohmann/include"],
+    includes = ["include"],
+    linkopts = ["-lpthread"],
+    visibility = ["//visibility:public"],
+    deps = ["@nlohmann"],
+)
+
+cc_library(
     name = "engine_fundamentals",
     hdrs = glob([
         "include/common/fundamentals/**/*.hpp",
@@ -23,7 +35,7 @@ cc_library(
 cc_library(
     name = "engine_math_utils",
     hdrs = glob([
-        "include/common/utils/math_utils.hpp"
+        "include/common/utils/math_utils.hpp",
     ]),
     includes = ["include"],
     visibility = ["//visibility:public"],
