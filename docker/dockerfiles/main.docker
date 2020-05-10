@@ -90,15 +90,15 @@ RUN mv /bin/sh /bin/sh-old && \
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt-get -qq update && \
     apt-get -y -qq install \
-            gcc-9 \
-            g++-9 \
+            gcc-10 \
+            g++-10 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 150 \
-                        --slave   /usr/bin/g++ g++ /usr/bin/g++-9
+RUN  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 150 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-10
 
 
-ENV BAZEL_VERSION=3.0.0
+ENV BAZEL_VERSION=3.1.0
 
 #
 # Install Bazel
@@ -115,7 +115,7 @@ RUN VSC_DOWNLOAD_URL=https://go.microsoft.com/fwlink/?LinkID=760868 && \
 	dpkg -i /tmp/vscode.deb && \
     rm /tmp/vscode.deb
 
-ENV CLION_VERSION=2019.3.5
+ENV CLION_VERSION=2019.3.5 # update to 2020 when bazel plugin is available
 
 RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/CLion-${CLION_VERSION}.tar.gz"; \
     wget --output-document=/tmp/clion.tar.gz --tries=3 --continue --no-verbose "${CLION_DOWNLOAD_URL}" && \
@@ -134,8 +134,8 @@ COPY entrypoint.sh /entrypoint.sh
 
 COPY start_storage.sh /start_storage.sh
 
-ENV CC=/usr/bin/gcc-9 \
-    CXX=/usr/bin/g++-9
+ENV CC=/usr/bin/gcc-10 \
+    CXX=/usr/bin/g++-10
 
 #
 # Install CGAL
