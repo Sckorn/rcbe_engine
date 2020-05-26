@@ -1,0 +1,13 @@
+{
+  "window_caption" : "RCBEEngine",
+  "camera_zoom" : -50,
+  "resizable" :  true,
+  "clear_color" : {
+    "r": 0.5,
+    "g": 0.5,
+    "b": 0.5,
+    "a": 1.0
+  },
+  "initial_dimensions": {"width":  1280, "height":  720},
+  "initial_position": {"x":  100, "y":  100}
+}
