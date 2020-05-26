@@ -16,13 +16,13 @@ int main(int argc, char * argv[]) {
     try {
         rcbe::core::WindowManager manager { true };
 
-        auto wconf = rcbe::utils::readFromFile<rcbe::core::WindowConfig>("engine_datamodel/data/system/default_window_config.json");
+        auto wconf = rcbe::utils::readFromFile<rcbe::core::WindowConfig>("datamodel/data/system/default_window_config.json");
 
         auto window = manager.create_window(std::move(wconf));
 
         auto window_handle = window->start_window_loop_aync();
 
-        auto renderer_conf = rcbe::utils::readFromFile<rcbe::rendering::RendererConfig>("engine_datamodel/data/rendering/default_renderer_config.json");
+        auto renderer_conf = rcbe::utils::readFromFile<rcbe::rendering::RendererConfig>("datamodel/data/rendering/default_renderer_config.json");
 
         rcbe::rendering::GLRenderer renderer { std::move(renderer_conf), window };
 

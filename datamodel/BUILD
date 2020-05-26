@@ -11,7 +11,7 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
-        "//engine_common:engine_fundamentals",
+        "//common:engine_fundamentals",
         "@nlohmann",
     ],
 )
@@ -29,7 +29,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
-        "//engine_common:engine_math_utils",
+        "//common:engine_math_utils",
         "@nlohmann",
     ],
 )
@@ -150,8 +150,8 @@ cc_test(
         ":engine_datamodel_math",
         ":engine_datamodel_rendering",
         ":engine_datamodel_visual",
-        "//engine_common:engine_fuzzy_logic",
-        "//engine_common:engine_json_utils",
+        "//common:engine_fuzzy_logic",
+        "//common:engine_json_utils",
         "@gtest",
         "@nlohmann",
     ],

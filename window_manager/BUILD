@@ -15,10 +15,10 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//engine_datamodel:engine_datamodel_core",
-        "//engine_datamodel:engine_datamodel_math",
-        "//engine_datamodel:engine_datamodel_system",
-        "//engine_datamodel:engine_datamodel_visual",
+        "//datamodel:engine_datamodel_core",
+        "//datamodel:engine_datamodel_math",
+        "//datamodel:engine_datamodel_system",
+        "//datamodel:engine_datamodel_visual",
         "@boost//:log",
         "@nlohmann",
     ],
@@ -27,7 +27,7 @@ cc_library(
 cc_binary(
     name = "window_test_tool",
     srcs = ["src/test_tool.cpp"],
-    data = ["//engine_datamodel:datamodel_system_resources"],
+    data = ["//datamodel:datamodel_system_resources"],
     linkopts = [
         "-lpthread",
         "-lX11",
@@ -36,6 +36,6 @@ cc_binary(
     ],
     deps = [
         ":rcbe_window_manager",
-        "//engine_common:engine_json_utils",
+        "//common:engine_json_utils",
     ],
 )

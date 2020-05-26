@@ -7,7 +7,7 @@
 
 int main(int argc, char * argv[]) {
     rcbe::core::WindowManager manager { true };
-    rcbe::core::WindowConfig config = rcbe::utils::readFromFile<rcbe::core::WindowConfig>("engine_datamodel/data/system/default_window_config.json");
+    rcbe::core::WindowConfig config = rcbe::utils::readFromFile<rcbe::core::WindowConfig>("datamodel/data/system/default_window_config.json");
 
     auto window = manager.create_window(std::move(config));
 
