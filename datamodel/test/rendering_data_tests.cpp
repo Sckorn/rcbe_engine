@@ -7,7 +7,7 @@
 
 #include <common/utils/json_utils.hpp>
 
-static constexpr const char * path = "engine_datamodel/data/rendering/default_renderer_config.json";
+static constexpr const char * path = "datamodel/data/rendering/default_renderer_config.json";
 
 TEST(RendererConfigTests, FromJson) {
     auto config = rcbe::utils::readFromFile<rcbe::rendering::RendererConfig>(path);

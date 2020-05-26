@@ -15,10 +15,10 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//engine_datamodel:engine_datamodel_core",
-        "//engine_datamodel:engine_datamodel_math",
-        "//engine_datamodel:engine_datamodel_rendering",
-        "//engine_datamodel:engine_datamodel_visual",
+        "//datamodel:engine_datamodel_core",
+        "//datamodel:engine_datamodel_math",
+        "//datamodel:engine_datamodel_rendering",
+        "//datamodel:engine_datamodel_visual",
         "//gl_extensions",
         "//window_manager:rcbe_window_manager",
         "@boost//:log",
@@ -30,14 +30,14 @@ cc_binary(
     name = "test_renderer",
     srcs = ["src/main.cpp"],
     data = [
-        "//engine_datamodel:datamodel_rendering_resources",
-        "//engine_datamodel:datamodel_system_resources",
+        "//datamodel:datamodel_rendering_resources",
+        "//datamodel:datamodel_system_resources",
         "//parsers:x3d_test_resources",
     ],
     visibility = ["//visibility:public"],
     deps = [
         ":rcbe_renderer",
-        "//engine_common:engine_json_utils",
+        "//common:engine_json_utils",
         "//parsers:x3d_parser",
     ],
 )
