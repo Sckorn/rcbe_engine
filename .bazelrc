@@ -16,7 +16,7 @@ build --genrule_strategy=standalone
 test --spawn_strategy=standalone
 
 # remove optional and experimental targets by default so that build //.. won't compile them
-build --build_tag_filters=-optional,-experimental,-catkin_deploy,-integration_tests,-docker
+build --build_tag_filters=-optional,-experimental
 
 # do not run integration tests by default
 test --test_tag_filters=-integration_tests

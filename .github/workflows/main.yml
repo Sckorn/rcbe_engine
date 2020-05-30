@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install OpenGL
+      run: sudo apt-get update && sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev
+
+    - name: bazel-build
+      env:
+        CC: gcc-9
+        CXX: g++-9
+      run: bazel build //...
+
+    - name: bazel-test
+      env:
+        CC: gcc-9
+        CXX: g++-9
+      run: bazel test --test_output=all //...
