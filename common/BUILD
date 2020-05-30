@@ -55,7 +55,7 @@ cc_library(
 # packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta-package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 
 pkg_tar(
     name = "filesystem-data",
