@@ -44,13 +44,46 @@ cc_library(
 
 cc_library(
     name = "engine_fuzzy_logic",
-    srcs = glob([
-        "src/fuzzy_logic/**/*.cpp",
-    ]),
     hdrs = glob([
         "include/common/fuzzy_logic/*.hpp",
     ]),
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [":engine_fundamentals"],
+)
+
+# packaging
+
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("//meta-package:global_variables.bzl", "ENGINE_VERSION")
+
+pkg_tar(
+    name = "filesystem-data",
+    srcs = [
+        "//common:engine_filesystem_utils",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "common-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":filesystem-data",
+    ],
+)
+
+pkg_deb(
+    name = "common-deb",
+    architecture = "amd64",
+    built_using = "unzip (6.0.1)",
+    data = ":common-package-data",
+    depends = ["libboost-all-dev"],
+    description = "RCBE game engine common functionality package",
+    homepage = "http://rcbe.com",
+    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    package = "rcbe_common",
+    version = ENGINE_VERSION,
 )

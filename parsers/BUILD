@@ -31,3 +31,42 @@ cc_test(
         "@gtest",
     ],
 )
+
+# packaging
+
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("//meta-package:global_variables.bzl", "ENGINE_VERSION")
+
+pkg_tar(
+    name = "parsers-data",
+    srcs = [
+        ":x3d_parser",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "parsers-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":parsers-data",
+    ],
+)
+
+pkg_deb(
+    name = "parsers-deb",
+    architecture = "amd64",
+    built_using = "unzip (6.0.1)",
+    data = ":parsers-package-data",
+    depends = [
+        "rcbe_common",
+        "rcbe_datamodel",
+    ],
+    description = "RCBE game engine parser libraries package",
+    homepage = "http://rcbe.com",
+    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    package = "rcbe_parsers",
+    version = ENGINE_VERSION,
+)

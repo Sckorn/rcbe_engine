@@ -41,3 +41,44 @@ cc_binary(
         "//parsers:x3d_parser",
     ],
 )
+
+# packaging
+
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("//meta-package:global_variables.bzl", "ENGINE_VERSION")
+
+pkg_tar(
+    name = "renderer-data",
+    srcs = [
+        ":rcbe_renderer",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "renderer-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":renderer-data",
+    ],
+)
+
+pkg_deb(
+    name = "renderer-deb",
+    architecture = "amd64",
+    built_using = "unzip (6.0.1)",
+    data = ":renderer-package-data",
+    depends = [
+        "rcbe_common",
+        "rcbe_datamodel",
+        "rcbe_window_manager",
+        "rcbe_gl_extensions",
+    ],
+    description = "RCBE game engine renderer libraries package",
+    homepage = "http://rcbe.com",
+    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    package = "rcbe_renderer",
+    version = ENGINE_VERSION,
+)
