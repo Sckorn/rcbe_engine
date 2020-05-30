@@ -39,3 +39,39 @@ cc_binary(
         "//common:engine_json_utils",
     ],
 )
+
+# packaging
+
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("//meta-package:global_variables.bzl", "ENGINE_VERSION")
+
+pkg_tar(
+    name = "window-manager-data",
+    srcs = [
+        ":rcbe_window_manager",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "wm-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":window-manager-data",
+    ],
+)
+
+pkg_deb(
+    name = "window-manager-deb",
+    architecture = "amd64",
+    built_using = "unzip (6.0.1)",
+    data = ":wm-package-data",
+    depends = ["rcbe_datamodel"],
+    description = "RCBE game engine window manager libraries package",
+    homepage = "http://rcbe.com",
+    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    package = "rcbe_window_manager",
+    version = ENGINE_VERSION,
+)

@@ -156,3 +156,44 @@ cc_test(
         "@nlohmann",
     ],
 )
+
+# packaging
+
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("//meta-package:global_variables.bzl", "ENGINE_VERSION")
+
+pkg_tar(
+    name = "datamodel-data",
+    srcs = [
+        ":engine_datamodel_core",
+        ":engine_datamodel_geometry",
+        ":engine_datamodel_math",
+        ":engine_datamodel_rendering",
+        ":engine_datamodel_system",
+        ":engine_datamodel_visual",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "datamodel-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":datamodel-data",
+    ],
+)
+
+pkg_deb(
+    name = "datamodel-deb",
+    architecture = "amd64",
+    built_using = "unzip (6.0.1)",
+    data = ":datamodel-package-data",
+    depends = ["rcbe_common"],
+    description = "RCBE game engine datamodel libraries package",
+    homepage = "http://rcbe.com",
+    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    package = "rcbe_datamodel",
+    version = ENGINE_VERSION,
+)
