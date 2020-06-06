@@ -16,6 +16,12 @@ using GLRendererPtr = std::unique_ptr<GLRenderer>;
 }
 
 namespace rcbe::core {
+class AbstractInputManager;
+}
+
+namespace rcbe::core {
+class InputManagerImplementation;
+
 #ifdef __linux__
 class XWindow;
 class XWWindow
@@ -39,6 +45,7 @@ public:
 
     void kill();
     void show();
+    [[nodiscard]]const core::AbstractInputManager& get_input_manager() const;
 
     void on_configure(window::configure_handler_t&& handler);
     void on_unmap(window::unmap_handler_t&& handler);

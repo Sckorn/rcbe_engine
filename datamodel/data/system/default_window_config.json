@@ -4,5 +4,8 @@
   "size": {"width":  1280, "height":  720},
   "background_color": {"r":  0.5, "g":  0.5, "b":  0.5, "a":  1.0},
   "fullscreen": false,
-  "type": "gl_renderer_window"
+  "process_input": true,
+  "editor": true,
+  "type": "gl_renderer_window",
+  "input_scheme": "rcbe_engine/datamodel/data/system/default_game_input.json"
 }

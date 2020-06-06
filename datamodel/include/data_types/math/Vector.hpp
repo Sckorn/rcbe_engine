@@ -69,7 +69,7 @@ public:
     const value_type &at(const size_t index) const
     {
         if (index < 0 || index >= dimension)
-            throw std::out_of_range(index + " is out of range.");
+            throw std::out_of_range(std::to_string(index) + " is out of range.");
 
         return _v.at(index);
     }
@@ -131,7 +131,7 @@ public:
     }
 
     template < typename T = void, typename = typename std::enable_if_t< (dim < 4), T > >
-    Vector normalized()
+    Vector normalized() const
     {
         auto copy = *this;
         copy.normalize();

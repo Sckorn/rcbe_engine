@@ -13,6 +13,7 @@ cc_library(
 
 cc_library(
     name = "engine_json_utils",
+    srcs = ["src/utils/json_utils.cpp"],
     hdrs = glob([
         "include/common/utils/json_utils.hpp",
     ]),
@@ -43,6 +44,26 @@ cc_library(
 )
 
 cc_library(
+    name = "engine_stack_utils",
+    hdrs = ["include/common/utils/stack_utils.hpp"],
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+    deps = [":engine_fundamentals"],
+)
+
+cc_library(
+    name = "engine_output_utils",
+    srcs = ["src/utils/output_utils.cpp"],
+    hdrs = ["include/common/utils/output_utils.hpp"],
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":engine_fundamentals",
+        "@boost//:log",
+    ],
+)
+
+cc_library(
     name = "engine_fuzzy_logic",
     hdrs = glob([
         "include/common/fuzzy_logic/*.hpp",
@@ -50,6 +71,30 @@ cc_library(
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [":engine_fundamentals"],
+)
+
+cc_library(
+    name = "rcbe_delegate",
+    hdrs = glob(["include/common/delegate/**/*.hpp"]),
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":engine_fundamentals",
+        "@boost//:log",
+    ],
+)
+
+# tests
+
+cc_test(
+    name = "common_test",
+    srcs = glob(["test/*.cpp"]),
+    copts = ["-Iexternal/gtest/include"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rcbe_delegate",
+        "@gtest",
+    ],
 )
 
 # packaging

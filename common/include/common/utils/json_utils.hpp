@@ -6,6 +6,8 @@
 
 namespace rcbe::utils {
 
+nlohmann::json read_raw(const std::string &path);
+
 template <typename ReturnConfig>
 ReturnConfig readFromFile(const std::string &path)
 {

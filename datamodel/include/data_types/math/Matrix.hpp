@@ -27,8 +27,8 @@ public:
     using storage_type = std::array<value_type, DimRow * DimCol>;
     using column_type = rcbe::math::Vector<value_type, DimRow>;
 
-    static const size_t rows = DimRow;
-    static const size_t columns = DimCol;
+    static constexpr size_t rows = DimRow;
+    static constexpr size_t columns = DimCol;
 
     static_assert(std::is_scalar_v<ValueType>);
 
@@ -86,13 +86,22 @@ public:
         
     }
 
-    explicit Matrix(const std::vector<ValueType> &m)
+    template <typename V, typename = std::enable_if_t<std::is_convertible_v<V, value_type>, void>>
+    explicit Matrix(const std::vector<V> &m)
     {
         const auto total = rows * columns;
         if(m.size() != total)
             throw std::runtime_error("Wrong number of arguments for matrix initialization!");
 
         std::copy(m.begin(), m.end(), _m.begin());
+    }
+
+    template <typename V, typename = std::enable_if_t<std::is_convertible_v<V, value_type>, void>>
+    explicit Matrix(V(&source)[rows * columns])
+    {
+        for (size_t i = 0; i < rows * columns; ++i) {
+            _m[i] = source[i];
+        }
     }
 
     template <typename InputIterator>

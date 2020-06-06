@@ -5,6 +5,7 @@
 #include <core/gl_extensions.hpp>
 
 #include <data_types/rendering/BufferObject.hpp>
+#include <ticker/Ticker.hpp>
 
 #include <boost/log/trivial.hpp>
 
@@ -13,6 +14,8 @@ class GLRendererImplementation {
 public:
     GLRendererImplementation(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context);
     ~GLRendererImplementation();
+
+    [[nodiscard]]bool running() const;
 
     void start();
     void stop();
@@ -24,6 +27,10 @@ public:
     void reshape_window();
 
     void on_stop(renderer_stop_handler_t&& handler);
+
+    void rotate_scene(const rcbe::math::Vector3d& axis, rcbe::core::EngineScalar angle_deg) const;
+    void rotate_scene(const rcbe::math::Vector3d& rvec) const;
+    void translate_scene(const rcbe::math::Vector3d& t) const;
 private:
 
     void render_loop();
@@ -39,8 +46,9 @@ private:
     RendererConfig config_;
     std::shared_ptr<RenderingContext> rendering_context_;
 
-    std::mutex control_mutex_;
+    mutable std::mutex control_mutex_;
     std::mutex changed_mutex_;
+    std::mutex reshape_mutex_;
     bool running_ = false;
     bool vbo_supported_ = false;
 
@@ -53,8 +61,7 @@ private:
 
     renderer_stop_handler_t stop_handler_;
 
-    // TODO: remove default value when user input handling is implemented
-    double zoom_ = -50;
+    std::shared_ptr<rcbe::core::Ticker> ticker_;
 };
 
 GLRendererImplementation::GLRendererImplementation(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context)
@@ -66,7 +73,7 @@ GLRendererImplementation::GLRendererImplementation(RendererConfig &&config, cons
         throw std::runtime_error("RenderingContext is null");
 
     if (rendering_context_->gl_x_context == nullptr)
-        throw std::runtime_error("Rendering context is null");
+        throw std::runtime_error("GLX context is null");
 }
 
 GLRendererImplementation::~GLRendererImplementation() {
@@ -98,6 +105,9 @@ void GLRendererImplementation::init_gl() {
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
     const auto& bg_color = rendering_context_->background_color;
     glClearColor(bg_color.r(), bg_color.g(), bg_color.b(), bg_color.a());                   // background color
     glClearStencil(0);                          // clear stencil buffer
@@ -127,6 +137,20 @@ void GLRendererImplementation::on_stop(renderer_stop_handler_t&& handler) {
     stop_handler_ = std::move(handler);
 }
 
+void GLRendererImplementation::rotate_scene(const rcbe::math::Vector3d& axis, rcbe::core::EngineScalar angle_deg) const {
+    glRotated(angle_deg, axis.x(), axis.y(), axis.z());
+}
+
+void GLRendererImplementation::rotate_scene(const rcbe::math::Vector3d& rvec) const {
+    const auto angle = rvec.length();
+    const auto norm = rvec.normalized();
+    rotate_scene(norm, angle);
+}
+
+void GLRendererImplementation::translate_scene(const rcbe::math::Vector3d& t) const {
+    glTranslated(t.x(), t.y(), t.z());
+}
+
 void GLRendererImplementation::reshape_window() {
     glViewport(0, 0, rendering_context_->window_dimensions.width, rendering_context_->window_dimensions.height);
 
@@ -136,11 +160,16 @@ void GLRendererImplementation::reshape_window() {
 
     set_perspective(60.0f,  rendering_context_->window_dimensions.width / rendering_context_->window_dimensions.height, 0.1f, 100.0f);
 
-    glTranslated(0.0, -20.0, zoom_);
+    translate_scene(rendering_context_->tvec);
+    rotate_scene(rendering_context_->rvec);
 
-    // switch to modelview matrix in order to set scene
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+}
+
+bool GLRendererImplementation::running() const {
+    std::lock_guard lg { control_mutex_ };
+    return running_;
 }
 
 void GLRendererImplementation::start() {
@@ -150,30 +179,39 @@ void GLRendererImplementation::start() {
     }
 
     try {
-        render_loop();
+        ticker_ = std::make_shared<rcbe::core::Ticker>(std::chrono::milliseconds(1), [this]() {
+            render_loop();
+        });
+
+        ticker_->wait();
+
     } catch (const std::exception& e) {
         BOOST_LOG_TRIVIAL(error) << "Exception in main rendering routine " << e.what();
         stop();
     }
+
+    meshes_.clear();
+    index_buffer_.clear();
+    vertex_buffer_.clear();
 }
 
 void GLRendererImplementation::stop() {
-    {
-        std::lock_guard lg {control_mutex_};
-        running_ = false;
+    std::lock_guard lg {control_mutex_};
+    if (!running_) return;
 
-        if (stop_handler_)
-            stop_handler_(rendering_context_);
-    }
+    running_ = false;
+
+    ticker_->stop();
+    ticker_->wait();
+
+    if (stop_handler_)
+        stop_handler_(rendering_context_);
 }
 
 void GLRendererImplementation::add_object(rcbe::geometry::Mesh &&object) {
+    std::lock_guard lg { changed_mutex_ };
     meshes_.push_back(std::move(object));
-
-    {
-        std::lock_guard lg { changed_mutex_ };
-        changed_ = true;
-    }
+    changed_ = true;
 }
 
 void GLRendererImplementation::draw_buffers(const VertexBufferObject& vbo, const IndexBufferObject& ibo) {
@@ -236,52 +274,45 @@ void GLRendererImplementation::render_loop() {
 
     init_gl();
 
-    BOOST_LOG_TRIVIAL(info) << "starting rendering routine...";
-    BOOST_LOG_TRIVIAL(info) << "VBO is " << (vbo_supported_ ? "" : "not ") << "supported";
+    BOOST_LOG_TRIVIAL(debug) << "VBO is " << (vbo_supported_ ? "" : "not ") << "supported";
 
     core::GLErrorProcessor error_processor {};
 
-    while (running_) {
+    {
+        std::lock_guard lg {reshape_mutex_};
         reshape_window();
-
-        glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT );
-
-        /// main rendering start
-        if (!meshes_.empty()) {
-            if (vertex_buffer_.empty() || changed_) {
-                vertex_buffer_.emplace_back(meshes_);
-            }
-
-            const auto& vbo = vertex_buffer_.back();
-
-            if (index_buffer_.empty() || changed_) {
-                index_buffer_.emplace_back(meshes_, vbo);
-
-                {
-                    std::lock_guard lg { changed_mutex_ };
-                    changed_ = false;
-                }
-            }
-
-            const auto& ibo = index_buffer_.back();
-
-            draw_buffers(vbo, ibo);
-        }
-        /// end rendering start
-
-        auto error = glGetError();
-        if (error != GL_NO_ERROR) {
-            BOOST_LOG_TRIVIAL(error) << error_processor(error);
-            BOOST_LOG_TRIVIAL(error) << "error hex code " << std::hex << error;
-        }
-
-        glXSwapBuffers(rendering_context_->x_display, rendering_context_->gl_x_window);
-        std::this_thread::sleep_for( std::chrono_literals::operator""ms(300) );
     }
 
-    meshes_.clear();
-    index_buffer_.clear();
-    vertex_buffer_.clear();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+
+    /// main rendering start
+    if (!meshes_.empty()) {
+        if (vertex_buffer_.empty() || changed_) {
+            std::lock_guard lg { changed_mutex_ };
+            vertex_buffer_.emplace_back(meshes_);
+        }
+
+        const auto& vbo = vertex_buffer_.back();
+
+        if (index_buffer_.empty() || changed_) {
+            std::lock_guard lg { changed_mutex_ };
+            index_buffer_.emplace_back(meshes_, vbo);
+            changed_ = false;
+        }
+
+        const auto& ibo = index_buffer_.back();
+
+        draw_buffers(vbo, ibo);
+    }
+    /// end rendering start
+
+    auto error = glGetError();
+    if (error != GL_NO_ERROR) {
+        BOOST_LOG_TRIVIAL(error) << error_processor(error);
+        BOOST_LOG_TRIVIAL(error) << "error hex code " << std::hex << error;
+    }
+
+    glXSwapBuffers(rendering_context_->x_display, rendering_context_->gl_x_window);
 }
 
 const RendererConfig& GLRendererImplementation::get_config() const {
@@ -321,6 +352,18 @@ void GLRenderer::reshape() {
 
 void GLRenderer::on_stop(renderer_stop_handler_t&& handler) {
     impl_->on_stop(std::move(handler));
+}
+
+void GLRenderer::translate_scene(const rcbe::math::Vector3d& t) const {
+    impl_->translate_scene(t);
+}
+
+void GLRenderer::rotate_scene(const rcbe::math::Vector3d& t, rcbe::core::EngineScalar angle_deg) const {
+    impl_->rotate_scene(t, angle_deg);
+}
+
+bool GLRenderer::running() const {
+    return impl_->running();
 }
 
 GLRendererPtr make_renderer_ptr(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context) {

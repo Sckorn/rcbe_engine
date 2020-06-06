@@ -12,6 +12,7 @@ cc_library(
     linkopts = [
         "-lpthread",
         "-lX11",
+        "-lXext",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -19,6 +20,7 @@ cc_library(
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_system",
         "//datamodel:engine_datamodel_visual",
+        "//input_manager:rcbe_input_manager",
         "//renderer:rcbe_renderer",
         "@boost//:log",
         "@nlohmann",
@@ -38,6 +40,7 @@ cc_binary(
     deps = [
         ":rcbe_window_manager",
         "//common:engine_json_utils",
+        "//datamodel:engine_datamodel_math",
     ],
 )
 

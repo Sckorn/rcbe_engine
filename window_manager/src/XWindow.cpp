@@ -1,8 +1,14 @@
-#include "XWindow.hpp"
+#include <future>
 
 #include <boost/log/trivial.hpp>
 
-#include <future>
+#include <core/EditorInputManager.hpp>
+#include <core/GameInputManager.hpp>
+#include <core/AbstractInputManager.hpp>
+
+#include <common/utils/json_utils.hpp>
+
+#include "XWindow.hpp"
 
 GLXFBConfig *chooseFbConfig(Display *d, int screen) {
     int glAttrib[] = {
@@ -28,8 +34,9 @@ namespace rcbe::core {
 XWindow::XWindow(WindowConfig &&config, Display *root_display, int screen_number, const Window &root_window,
                  const Atom &delete_msg)
         :
-        config_{std::move(config)}, root_display_(root_display),
-        rendering_context_{(config_.type == WindowConfig::WindowType::GL_RENDERING_WINDOW) ? std::make_shared<rendering::RenderingContext>() : nullptr} {
+        config_{std::move(config)}, root_display_(root_display)
+        , rendering_context_{(config_.type == WindowConfig::WindowType::GL_RENDERING_WINDOW) ? std::make_shared<rendering::RenderingContext>() : nullptr}
+{
     GLXFBConfig *fbConfigs = chooseFbConfig(root_display_, screen_number);
     XVisualInfo *visInfo = glXGetVisualFromFBConfig(root_display_, fbConfigs[0]);
 
@@ -66,8 +73,25 @@ XWindow::XWindow(WindowConfig &&config, Display *root_display, int screen_number
         }
             break;
     }
+    XSetStandardProperties(rendering_context_->x_display, rendering_context_->gl_x_window, config_.caption.c_str(), "",None,nullptr,0,nullptr);
 
-    XSelectInput(root_display_, rendering_context_->gl_x_window, StructureNotifyMask);
+    if (config_.process_input) {
+        if (config.editor) {
+            input_manager_.emplace(EditorInputManager(rendering_context_));
+        } else {
+            if (!config_.input_scheme.empty()) {
+                input_manager_.emplace(GameInputManager(utils::read_raw(config_.input_scheme)));
+            } else {
+                throw std::runtime_error("Input requested but no input scheme provided!");
+            }
+        }
+    }
+
+    auto mask = ExposureMask | StructureNotifyMask;
+    if (config_.process_input)
+        mask = mask | ButtonPressMask | ButtonReleaseMask | KeyPressMask | KeyReleaseMask | PointerMotionMask;
+
+    XSelectInput(root_display_, rendering_context_->gl_x_window, mask);
     XSetWMProtocols(root_display_, rendering_context_->gl_x_window, &(rendering_context_->x_delete_message), 1);
 
     XFree(visInfo);
@@ -97,29 +121,34 @@ void XWindow::window_loop() {
                         XNextEvent(rendering_context_->x_display, &event);
                         if (event.type == ClientMessage && static_cast<unsigned int>(event.xclient.data.l[0]) ==
                                                            rendering_context_->x_delete_message) {
-                            BOOST_LOG_TRIVIAL(info) << "window close event received";
+                            BOOST_LOG_TRIVIAL(info) << "Window close event received.";
                             break;
                         }
                     }
                 }
 
-                if (!killed_)
+                if (renderer_->running())
+                    renderer_->stop();
+
+                if (!killed_) {
                     kill();
+                }
             }
     };
 
     while (running_) {
         XEvent event;
+        std::lock_guard lg {input_event_mutex_};
         XNextEvent(root_display_, &event);
 
+        if (!input_manager_->try_process_event(event))
         switch (event.type) {
             // Structure notify
-            case ConfigureNotify:   // size or position change
-            {
+            case ConfigureNotify: {   // size or position change
+
                 BOOST_LOG_TRIVIAL(info) << "configure win " << rendering_context_->gl_x_window << ": pos [" << event.xconfigurerequest.x << " " <<
                                         event.xconfigurerequest.y << "], size [" << event.xconfigurerequest.width << " "
-                                        <<
-                                        event.xconfigurerequest.height << "]";
+                                        << event.xconfigurerequest.height << "]";
                 // Warning this is not thread safe
                 rendering_context_->window_dimensions.width = event.xconfigurerequest.width;
                 rendering_context_->window_dimensions.height = event.xconfigurerequest.height;
@@ -149,15 +178,16 @@ void XWindow::window_loop() {
                 BOOST_LOG_TRIVIAL(info) << "Map win " << event.xmap.window;
                 break;
             case UnmapNotify: {
+                std::lock_guard lg2 {kill_mutex_};
                 BOOST_LOG_TRIVIAL(info) << "UnMap win " << event.xunmap.window;
                 if (unmap_handler_)
                     unmap_handler_();
 
-                if (renderer_)
-                    renderer_->stop();
-
                 if (rendering_context_)
                     rendering_context_->gl_context_from_default();
+
+                if (renderer_ && renderer_->running())
+                    renderer_->stop();
 
                 if (running_)
                     stop_window_loop();
@@ -167,6 +197,12 @@ void XWindow::window_loop() {
                 BOOST_LOG_TRIVIAL(info) << "Client message";
             }
                 break;
+            case Expose: {
+                BOOST_LOG_TRIVIAL(info) << "Exposure event";
+                if (configure_handler_)
+                    configure_handler_();
+            }
+            break;
                 // Unhandled message
             default: {
                 BOOST_LOG_TRIVIAL(info) << "Type " << event.type;
@@ -178,6 +214,10 @@ void XWindow::window_loop() {
     if (worker.joinable()) {
         worker.join();
     }
+
+#ifdef __GNUC__
+    BOOST_LOG_TRIVIAL(debug) << "Leaving " << __func__;
+#endif
 }
 
 void XWindow::kill() {
@@ -186,14 +226,23 @@ void XWindow::kill() {
         glXDestroyContext(rendering_context_->x_display, rendering_context_->gl_x_context);
         XDestroyWindow(rendering_context_->x_display, rendering_context_->gl_x_window);
         XCloseDisplay(rendering_context_->x_display);
-        killed_ = true;
+        renderer_->stop();
         if (running_)
             stop_window_loop();
+
+        killed_ = true;
     }
 }
 
 void XWindow::map_window() {
     XMapWindow(rendering_context_->x_display, rendering_context_->gl_x_window);
+}
+
+const AbstractInputManager& XWindow::get_input_manager() const {
+    if (input_manager_) {
+        return input_manager_.value();
+    } else
+        throw std::runtime_error("Trying to get unassigned input manager!");
 }
 
 const WindowConfig &XWindow::get_config() const {
@@ -211,27 +260,26 @@ void XWindow::start_window_loop() {
     }
 
     window_loop();
+#ifdef __GNUC__
+    BOOST_LOG_TRIVIAL(debug) << "Leaving " << __func__ ;
+#endif
 }
 
 void XWindow::stop_window_loop() {
-    {
-        std::lock_guard lg{running_mutex_};
-        running_ = false;
-    }
+    std::lock_guard lg {running_mutex_};
+    running_ = false;
 }
 
 [[nodiscard]] const rendering::GLRendererPtr& XWindow::get_renderer() const {
+    std::lock_guard lg {renderer_access_mutex_};
     return renderer_;
 }
 
 void XWindow::set_renderer(rendering::GLRendererPtr renderer_ptr) {
+    std::lock_guard lg {renderer_access_mutex_};
     if (renderer_ptr == nullptr)
         throw std::runtime_error("Null pointer assigned into renderer ptr");
 
     renderer_ =  std::move(renderer_ptr);
-    renderer_->on_stop([this](rendering::RenderingContextPtr ptr) {
-        stop_window_loop();
-    });
-
 }
 }

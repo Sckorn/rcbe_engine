@@ -7,6 +7,8 @@
 #include "WinWindow.hpp"
 #endif
 
+#include <core/AbstractInputManager.hpp>
+
 namespace rcbe::core {
 XWWindow::XWWindow(WindowConfig &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg)
 :
@@ -25,6 +27,10 @@ void XWWindow::kill() {
 
 void XWWindow::show() {
     impl_->map_window();
+}
+
+const core::AbstractInputManager& XWWindow::get_input_manager() const {
+    return impl_->get_input_manager();
 }
 
 const WindowConfig& XWWindow::get_config() const {

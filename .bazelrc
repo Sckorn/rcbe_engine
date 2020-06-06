@@ -69,4 +69,6 @@ build --host_conlyopt=-std=c99
 #build --host_copt=-Wlogical-op
 #build --host_copt=-Wmissing-declarations
 
-build --host_linkopt=-Wl,--no-undefined,--no-allow-shlib-undefined
+#build --copt=-fsanitize=thread
+
+#build --linkopt=-fsanitize=thread

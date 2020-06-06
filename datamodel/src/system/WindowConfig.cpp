@@ -10,7 +10,10 @@ void adl_serializer<rcbe::core::WindowConfig>::to_json(json& j, const rcbe::core
             {"background_color", config.background_color},
             {"caption", config.caption},
             {"position", config.position},
-            {"fullsreen", config.fullsreen}
+            {"fullsreen", config.fullsreen},
+            {"editor", config.editor},
+            {"process_input", config.process_input},
+            {"input_scheme", config.input_scheme}
     };
 }
 
@@ -21,5 +24,8 @@ void adl_serializer<rcbe::core::WindowConfig>::from_json(const json& j, rcbe::co
     config.position = j.at("position").get<rcbe::math::Vector2d>();
     config.caption = j.at("caption").get<std::string>();
     config.background_color = j.at("background_color").get<rcbe::visual::RGBAColor>();
+    config.process_input = j.at("process_input").get<bool>();
+    config.editor = j.at("editor").get<bool>();
+    config.input_scheme = j.value<std::string>("input_scheme", "");
 }
 }

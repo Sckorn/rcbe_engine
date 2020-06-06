@@ -9,8 +9,11 @@
 
 #include <GL/glx.h>
 
+#include <boost/log/trivial.hpp>
+
 #include <data_types/visual/RGBAColor.hpp>
 #include <data_types/core/Dimensions.hpp>
+#include <data_types/math/Matrix.hpp>
 
 namespace rcbe::rendering
 {
@@ -21,8 +24,8 @@ struct RenderingContext {
     RenderingContext(const RenderingContext& other) = delete;
     RenderingContext &operator=(const RenderingContext& other) = delete;
 
-    RenderingContext(RenderingContext&& other) = default;
-    RenderingContext &operator=(RenderingContext&& other) = default;
+    RenderingContext(RenderingContext&& other) = delete;
+    RenderingContext &operator=(RenderingContext&& other) = delete;
 
     void gl_context_from_this() const {
         auto status = glXMakeCurrent(x_display, gl_x_window, gl_x_context);
@@ -45,6 +48,12 @@ struct RenderingContext {
     GLXDrawable gl_x_window;
     rcbe::visual::RGBAColor background_color;
     rcbe::core::Dimensions window_dimensions;
+
+    // TODO: remove when camera is introduced
+
+    rcbe::math::Vector3d rvec = {0.0, 0., 0.};
+    rcbe::math::Vector3d tvec = {0.0, 0., 0.};
+    rcbe::core::EngineScalar zoom = 0.;
 };
 
 using RenderingContextPtr = std::shared_ptr<RenderingContext>;
