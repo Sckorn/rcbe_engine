@@ -33,6 +33,9 @@ XWindow::XWindow(WindowConfig &&config, Display *root_display, int screen_number
     GLXFBConfig *fbConfigs = chooseFbConfig(root_display_, screen_number);
     XVisualInfo *visInfo = glXGetVisualFromFBConfig(root_display_, fbConfigs[0]);
 
+    if (visInfo == nullptr)
+        throw std::runtime_error("VisualInfo is null pointer");
+
     rendering_context_->x_display = XOpenDisplay(NULL);
     rendering_context_->background_color = config_.background_color;
     rendering_context_->window_dimensions = config.size;
@@ -46,7 +49,9 @@ XWindow::XWindow(WindowConfig &&config, Display *root_display, int screen_number
                                                             config_.size.width, config_.size.height, 0,
                                                             visInfo->depth, InputOutput, visInfo->visual, CWColormap,
                                                             &attributes_);
-            rendering_context_->gl_x_context = glXCreateContext(rendering_context_->x_display, visInfo, NULL, true);
+            rendering_context_->gl_x_context = glXCreateContext(rendering_context_->x_display, visInfo, nullptr, true);
+            if (rendering_context_->gl_x_context == nullptr)
+                throw std::runtime_error("GLX create context is NULL");
         }
             break;
         case WindowConfig::WindowType::DRAWING_WINDOW: {
@@ -70,7 +75,8 @@ XWindow::XWindow(WindowConfig &&config, Display *root_display, int screen_number
 }
 
 XWindow::~XWindow() {
-    kill();
+    if (!killed_)
+        kill();
 }
 
 void XWindow::on_configure(window::configure_handler_t &&handler) {
@@ -97,7 +103,8 @@ void XWindow::window_loop() {
                     }
                 }
 
-                kill();
+                if (!killed_)
+                    kill();
             }
     };
 
@@ -119,13 +126,17 @@ void XWindow::window_loop() {
 
                 if (configure_handler_)
                     configure_handler_();
+
+                if (renderer_)
+                    renderer_->reshape();
             }
                 break;
             case CirculateNotify:
                 BOOST_LOG_TRIVIAL(info) << "CirculateNotify";
                 break;
             case DestroyNotify: {
-                BOOST_LOG_TRIVIAL(info) << "DestroyNotify";
+                BOOST_LOG_TRIVIAL(warning) << "DestroyNotify event signals that a running window was killed_, in order for window to stop gracefully use stop_window_loop!";
+                stop_window_loop();
             }
                 break;
             case GravityNotify:
@@ -141,7 +152,15 @@ void XWindow::window_loop() {
                 BOOST_LOG_TRIVIAL(info) << "UnMap win " << event.xunmap.window;
                 if (unmap_handler_)
                     unmap_handler_();
-                stop_window_loop();
+
+                if (renderer_)
+                    renderer_->stop();
+
+                if (rendering_context_)
+                    rendering_context_->gl_context_from_default();
+
+                if (running_)
+                    stop_window_loop();
             }
                 break;
             case ClientMessage: {
@@ -162,11 +181,12 @@ void XWindow::window_loop() {
 }
 
 void XWindow::kill() {
-    if (!killed) {
+    std::lock_guard lg {kill_mutex_};
+    if (!killed_) {
         glXDestroyContext(rendering_context_->x_display, rendering_context_->gl_x_context);
         XDestroyWindow(rendering_context_->x_display, rendering_context_->gl_x_window);
         XCloseDisplay(rendering_context_->x_display);
-        killed = true;
+        killed_ = true;
         if (running_)
             stop_window_loop();
     }
@@ -174,7 +194,6 @@ void XWindow::kill() {
 
 void XWindow::map_window() {
     XMapWindow(rendering_context_->x_display, rendering_context_->gl_x_window);
-    glXMakeCurrent(rendering_context_->x_display, rendering_context_->gl_x_window, rendering_context_->gl_x_context);
 }
 
 const WindowConfig &XWindow::get_config() const {
@@ -199,5 +218,20 @@ void XWindow::stop_window_loop() {
         std::lock_guard lg{running_mutex_};
         running_ = false;
     }
+}
+
+[[nodiscard]] const rendering::GLRendererPtr& XWindow::get_renderer() const {
+    return renderer_;
+}
+
+void XWindow::set_renderer(rendering::GLRendererPtr renderer_ptr) {
+    if (renderer_ptr == nullptr)
+        throw std::runtime_error("Null pointer assigned into renderer ptr");
+
+    renderer_ =  std::move(renderer_ptr);
+    renderer_->on_stop([this](rendering::RenderingContextPtr ptr) {
+        stop_window_loop();
+    });
+
 }
 }

@@ -11,7 +11,7 @@
 namespace rcbe::rendering {
 class GLRendererImplementation {
 public:
-    GLRendererImplementation(RendererConfig &&config, const core::WindowPtr& window );
+    GLRendererImplementation(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context);
     ~GLRendererImplementation();
 
     void start();
@@ -20,13 +20,15 @@ public:
     [[nodiscard]] const RendererConfig& get_config() const;
 
     void add_object(rcbe::geometry::Mesh &&object);
+
+    void reshape_window();
+
+    void on_stop(renderer_stop_handler_t&& handler);
 private:
 
     void render_loop();
 
     void init_gl();
-
-    void reshape_window();
 
     void init_lights();
 
@@ -34,8 +36,8 @@ private:
 
     void draw_buffers(const VertexBufferObject& vbo, const IndexBufferObject& ibo);
 
-    core::WindowPtr window_;
     RendererConfig config_;
+    std::shared_ptr<RenderingContext> rendering_context_;
 
     std::mutex control_mutex_;
     std::mutex changed_mutex_;
@@ -49,21 +51,22 @@ private:
 
     bool changed_ = false;
 
+    renderer_stop_handler_t stop_handler_;
+
     // TODO: remove default value when user input handling is implemented
     double zoom_ = -50;
 };
 
-GLRendererImplementation::GLRendererImplementation(RendererConfig &&config, const core::WindowPtr& window )
+GLRendererImplementation::GLRendererImplementation(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context)
 :
-window_ { window }
-, config_ { std::move(config) }
+ config_ { std::move(config) }
+ , rendering_context_ { context }
 {
-    window_->on_configure([this]() {;
-        reshape_window();
-    });
-    window_->on_unmap([this]() {
-        stop();
-    });
+    if (rendering_context_ == nullptr)
+        throw std::runtime_error("RenderingContext is null");
+
+    if (rendering_context_->gl_x_context == nullptr)
+        throw std::runtime_error("Rendering context is null");
 }
 
 GLRendererImplementation::~GLRendererImplementation() {
@@ -95,7 +98,7 @@ void GLRendererImplementation::init_gl() {
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
-    const auto& bg_color = window_->get_context()->background_color;
+    const auto& bg_color = rendering_context_->background_color;
     glClearColor(bg_color.r(), bg_color.g(), bg_color.b(), bg_color.a());                   // background color
     glClearStencil(0);                          // clear stencil buffer
     glClearDepth(1.0f);                         // 0 is near, 1 is far
@@ -120,16 +123,18 @@ void GLRendererImplementation::init_lights() {
     glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
 }
 
-void GLRendererImplementation::reshape_window() {
-    const auto& context = window_->get_context();
+void GLRendererImplementation::on_stop(renderer_stop_handler_t&& handler) {
+    stop_handler_ = std::move(handler);
+}
 
-    glViewport(0, 0, context->window_dimensions.width, context->window_dimensions.height);
+void GLRendererImplementation::reshape_window() {
+    glViewport(0, 0, rendering_context_->window_dimensions.width, rendering_context_->window_dimensions.height);
 
     // set perspective viewing frustum
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    set_perspective(60.0f,  context->window_dimensions.width / context->window_dimensions.height, 0.1f, 100.0f);
+    set_perspective(60.0f,  rendering_context_->window_dimensions.width / rendering_context_->window_dimensions.height, 0.1f, 100.0f);
 
     glTranslated(0.0, -20.0, zoom_);
 
@@ -144,13 +149,21 @@ void GLRendererImplementation::start() {
         running_ = true;
     }
 
-    render_loop();
+    try {
+        render_loop();
+    } catch (const std::exception& e) {
+        BOOST_LOG_TRIVIAL(error) << "Exception in main rendering routine " << e.what();
+        stop();
+    }
 }
 
 void GLRendererImplementation::stop() {
     {
         std::lock_guard lg {control_mutex_};
         running_ = false;
+
+        if (stop_handler_)
+            stop_handler_(rendering_context_);
     }
 }
 
@@ -214,11 +227,9 @@ void GLRendererImplementation::draw_buffers(const VertexBufferObject& vbo, const
 }
 
 void GLRendererImplementation::render_loop() {
-    window_->map_window();
+    rendering_context_->gl_context_from_this();
 
-    const auto& context = window_->get_context();
-
-    const auto& color =   context->background_color;
+    const auto& color = rendering_context_->background_color;
 
     GLExtensions& ext = GLExtensions::getInstance();
     vbo_supported_ = ext.isSupported("GL_ARB_vertex_buffer_object");
@@ -264,24 +275,22 @@ void GLRendererImplementation::render_loop() {
             BOOST_LOG_TRIVIAL(error) << "error hex code " << std::hex << error;
         }
 
-        glXSwapBuffers(context->x_display, context->gl_x_window);
+        glXSwapBuffers(rendering_context_->x_display, rendering_context_->gl_x_window);
         std::this_thread::sleep_for( std::chrono_literals::operator""ms(300) );
     }
 
     meshes_.clear();
     index_buffer_.clear();
     vertex_buffer_.clear();
-
-    window_->kill();
 }
 
 const RendererConfig& GLRendererImplementation::get_config() const {
     return config_;
 }
 
-GLRenderer::GLRenderer(RendererConfig &&config, const core::WindowPtr& window )
+GLRenderer::GLRenderer(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context)
 :
-impl_ { std::make_unique<GLRendererImplementation>(std::move(config), window) }
+impl_ { std::make_unique<GLRendererImplementation>(std::move(config), context) }
 {
 
 }
@@ -304,5 +313,17 @@ void GLRenderer::stop() {
 
 void GLRenderer::add_object(rcbe::geometry::Mesh &&mesh) {
     impl_->add_object(std::move(mesh));
+}
+
+void GLRenderer::reshape() {
+    impl_->reshape_window();
+}
+
+void GLRenderer::on_stop(renderer_stop_handler_t&& handler) {
+    impl_->on_stop(std::move(handler));
+}
+
+GLRendererPtr make_renderer_ptr(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context) {
+    return std::make_unique<GLRenderer>(std::move(config), context);
 }
 }
