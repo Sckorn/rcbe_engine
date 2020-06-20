@@ -24,9 +24,17 @@ int main(int argc, char * argv[]) {
 
         auto renderer_conf = rcbe::utils::readFromFile<rcbe::rendering::RendererConfig>("datamodel/data/rendering/default_renderer_config.json");
 
-        rcbe::rendering::GLRenderer renderer { std::move(renderer_conf), window };
+        window->show();
 
-        auto renderer_handle = renderer.start_async();
+        {
+            auto renderer = rcbe::rendering::make_renderer_ptr(std::move(renderer_conf), window->get_context());
+
+            window->set_renderer(std::move(renderer));
+        }
+
+        const auto& renderer = window->get_renderer();
+
+        auto renderer_handle = renderer->start_async();
 
         auto meshes = rcbe::parsers::parseMeshes("parsers/test/resources/corner.x3d");
         auto second_mesh = meshes[0];
@@ -51,12 +59,11 @@ int main(int argc, char * argv[]) {
 
         std::this_thread::sleep_for(std::chrono::operator""ms(1000));
 
-        renderer.add_object(std::move(meshes[0]));
-        renderer.add_object(std::move(second_mesh));
+        renderer->add_object(std::move(meshes[0]));
+        renderer->add_object(std::move(second_mesh));
 
         renderer_handle.wait();
         window_handle.wait();
-
     } catch (const std::exception& e) {
         std::cout << "Exception thrown: " << e.what() << std::endl;
         return 1;

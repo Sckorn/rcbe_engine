@@ -23,7 +23,7 @@ void XWWindow::kill() {
     impl_->kill();
 }
 
-void XWWindow::map_window() {
+void XWWindow::show() {
     impl_->map_window();
 }
 
@@ -33,6 +33,14 @@ const WindowConfig& XWWindow::get_config() const {
 
 const std::shared_ptr<rendering::RenderingContext>& XWWindow::get_context() const {
     return impl_->get_context();
+}
+
+void XWWindow::set_renderer(rcbe::rendering::GLRendererPtr renderer_ptr) {
+    impl_->set_renderer(std::move(renderer_ptr));
+}
+
+const rcbe::rendering::GLRendererPtr& XWWindow::get_renderer() const {
+    return impl_->get_renderer();
 }
 
 void XWWindow::start_window_loop() {

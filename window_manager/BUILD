@@ -19,6 +19,7 @@ cc_library(
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_system",
         "//datamodel:engine_datamodel_visual",
+        "//renderer:rcbe_renderer",
         "@boost//:log",
         "@nlohmann",
     ],

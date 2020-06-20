@@ -7,7 +7,7 @@
 #include <data_types/rendering/RendererConfig.hpp>
 #include <data_types/geometry/Mesh.hpp>
 
-#include <core/XWWindow.hpp>
+#include <data_types/rendering/RenderingContext.hpp>
 
 namespace rcbe::rendering {
 class GLRendererImplementation;
@@ -16,7 +16,7 @@ class GLRenderer
 {
 public:
     GLRenderer() = delete;
-    GLRenderer(RendererConfig &&config, const core::WindowPtr& window );
+    GLRenderer(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context);
 
     ~GLRenderer();
 
@@ -37,9 +37,18 @@ public:
     void stop();
     void add_object(rcbe::geometry::Mesh &&mesh);
 
+    void reshape();
+
+    void on_stop(renderer_stop_handler_t&& handler);
+
 private:
     std::unique_ptr<GLRendererImplementation> impl_;
 };
+
+using GLRendererPtr = std::unique_ptr<GLRenderer>;
+using GLRendererConstPtr = std::unique_ptr<const GLRenderer>;
+
+GLRendererPtr make_renderer_ptr(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context);
 }
 
 #endif //RCBE_ENGINE_GLRENDERER_HPP

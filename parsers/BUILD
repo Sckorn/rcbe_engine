@@ -7,6 +7,7 @@ cc_library(
     deps = [
         "//common:engine_filesystem_utils",
         "//datamodel:engine_datamodel_geometry",
+        "//datamodel:engine_datamodel_math",
         "@boost//:property_tree",
     ],
 )

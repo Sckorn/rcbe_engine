@@ -9,6 +9,12 @@
 
 #include <X11/Xlib.h>
 
+namespace rcbe::rendering {
+class GLRenderer;
+
+using GLRendererPtr = std::unique_ptr<GLRenderer>;
+}
+
 namespace rcbe::core {
 #ifdef __linux__
 class XWindow;
@@ -32,12 +38,15 @@ public:
     void stop_window_loop();
 
     void kill();
-    void map_window();
+    void show();
 
     void on_configure(window::configure_handler_t&& handler);
     void on_unmap(window::unmap_handler_t&& handler);
 
     [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const;
+
+    void set_renderer(rcbe::rendering::GLRendererPtr renderer_ptr);
+    [[nodiscard]]const rcbe::rendering::GLRendererPtr& get_renderer() const;
 
 private:
     std::shared_ptr<XWindow> impl_;

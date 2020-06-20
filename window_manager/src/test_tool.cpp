@@ -13,7 +13,7 @@ int main(int argc, char * argv[]) {
 
     auto window_handler = window->start_window_loop_aync();
 
-    window->map_window();
+    window->show();
 
     window_handler.wait();
     return 0;

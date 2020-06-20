@@ -20,7 +20,6 @@ cc_library(
         "//datamodel:engine_datamodel_rendering",
         "//datamodel:engine_datamodel_visual",
         "//gl_extensions",
-        "//window_manager:rcbe_window_manager",
         "@boost//:log",
         "@nlohmann",
     ],
@@ -39,6 +38,7 @@ cc_binary(
         ":rcbe_renderer",
         "//common:engine_json_utils",
         "//parsers:x3d_parser",
+        "//window_manager:rcbe_window_manager",
     ],
 )
 
