@@ -11,17 +11,11 @@ Ticker::~Ticker() {
 }
 
 Ticker::period_type Ticker::delta_time() const {
-    return delta_;
+    return period_;
 }
 
 Ticker::clock_type ::time_point Ticker::start_time() const {
     return start_time_;
-}
-
-void Ticker::compute_delta() {
-    auto prev_last = last_time_;
-    last_time_ = clock_type::now();
-    delta_ = std::chrono::duration_cast<period_type>(last_time_ - prev_last);
 }
 
 void Ticker::stop() {

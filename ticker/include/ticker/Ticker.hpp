@@ -21,7 +21,6 @@ public:
     :
     period_ { std::chrono::duration_cast<period_type>(period) }
     , start_time_ { Ticker::clock_type ::now() }
-    , last_time_ { Ticker::clock_type ::now() }
     , handler_ { std::move(handler) }
     {
         std::lock_guard lg { control_mutex_ };
@@ -29,14 +28,9 @@ public:
 
         ticker_thread_ = std::thread([this]() {
             while (running_) {
-                compute_delta();
-                accumulator_ += delta_;
-
-                if (accumulator_ >= period_) {
-                    accumulator_ = period_type ::zero();
-                    if (handler_)
-                        handler_();
-                }
+                if (handler_)
+                    handler_();
+                std::this_thread::sleep_for(period_);
             }
         });
     }
@@ -50,8 +44,6 @@ public:
 
 private:
 
-    void compute_delta();
-
     std::mutex control_mutex_;
     bool running_ = false;
     std::thread ticker_thread_;
@@ -59,10 +51,6 @@ private:
     period_type period_;
     handler_type handler_;
     clock_type::time_point start_time_;
-    clock_type::time_point last_time_;
-
-    period_type delta_ = period_type ::zero();
-    period_type accumulator_ = period_type ::zero();
 };
 }
 
