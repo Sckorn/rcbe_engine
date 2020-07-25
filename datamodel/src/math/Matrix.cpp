@@ -97,7 +97,7 @@ rcbe::math::Matrix4x4 operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::ma
 
 rcbe::math::Matrix4x4 operator+(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs)
 {
-    rcbe::math::Matrix3x3::storage_type intermideate_storage {};
+    rcbe::math::Matrix4x4::storage_type intermideate_storage {};
 
     for (size_t i = 0; i < lhs.rows; ++i)
     {

@@ -13,6 +13,7 @@
 #include <data_types/math/Quaternion.hpp>
 
 #include <common/fuzzy_logic/fuzzy_logic.hpp>
+#include <common/utils/math_utils.hpp>
 
 #include <nlohmann/json.hpp>
 
@@ -34,11 +35,11 @@ public:
 public:
     Matrix()
     {
-        for (size_t row = 0; row < DimRow; ++row)
+        for (size_t row = 0; row < rows; ++row)
         {
-            for  (size_t col = 0; col < DimCol; ++col)
+            for  (size_t col = 0; col < columns; ++col)
             {
-                auto index = row * DimRow + col;
+                auto index = row * rows + col;
                 if (row == col)
                 {
                     _m[index] = 1;
@@ -85,10 +86,10 @@ public:
         
     }
 
-    Matrix(const std::vector<ValueType> &m)
+    explicit Matrix(const std::vector<ValueType> &m)
     {
-        const auto total = DimRow * DimCol;
-        if(m.size() != DimRow * DimCol)
+        const auto total = rows * columns;
+        if(m.size() != total)
             throw std::runtime_error("Wrong number of arguments for matrix initialization!");
 
         std::copy(m.begin(), m.end(), _m.begin());
@@ -100,7 +101,7 @@ public:
         if (begin == end)
             throw std::runtime_error("Empty iterators range!");
 
-        if (std::distance(begin, end) != DimCol * DimRow)
+        if (std::distance(begin, end) != columns * rows)
             throw std::runtime_error("Iterators range has wrong size");
 
         for (InputIterator it = begin; it != end; ++it)
@@ -120,13 +121,13 @@ public:
     // required for basis manipulations
     column_type getColumn(size_t index) const
     {
-        if (index >= DimCol)
+        if (index >= columns)
             throw std::out_of_range("Can't get column of matrix");
 
-        std::array<value_type, DimRow> _tmp;
-        for (size_t i = 0; i < DimRow; ++i)
+        std::array<value_type, rows> _tmp;
+        for (size_t i = 0; i < rows; ++i)
         {
-            _tmp[i] = _m[i * DimCol + index];
+            _tmp[i] = _m[i * columns + index];
         }
 
         return column_type {_tmp};
@@ -135,10 +136,10 @@ public:
     // row-major
     const value_type &at(size_t row, size_t col) const
     {
-        return _m.at(row * DimRow + col);
+        return _m.at(row * rows + col);
     }
 
-    Matrix transpose() const
+    Matrix transposed() const
     {
         storage_type transposed_source {};
         for (size_t i = 0; i < rows; ++i)
@@ -146,11 +147,52 @@ public:
             const auto col = getColumn(i);
             for (size_t j = 0; j < col.dimension; ++j)
             {
-                transposed_source[i * DimRow + j] = col.at(j);
+                transposed_source[i * rows + j] = col.at(j);
             }
         }
 
         return Matrix(std::make_move_iterator(transposed_source.begin()), std::make_move_iterator(transposed_source.end()));
+    }
+
+    // TODO: consider a std::array implementation if memory usage is too excessive
+    template <typename T = void, typename = std::enable_if_t<rows == columns, T>>
+    [[nodiscard]] value_type determinant() const {
+        std::vector<value_type> param;
+        param.reserve(_m.size());
+        for (const auto& m : _m) {
+            param.push_back(m);
+        }
+        return determinant(param, rows, columns);
+    }
+
+    Matrix inversed() const {
+        auto det = determinant();
+        if (det == 0) {
+            throw std::runtime_error("Can't inverse matrix, determinant is zero.");
+        }
+
+        std::vector<value_type> intermediate_storage { _m.begin(), _m.end() };
+        std::vector<value_type > minors_matrix;
+
+        auto storage_size = _m.size();
+
+        minors_matrix.reserve(storage_size);
+
+        for (size_t i = 0; i < storage_size; ++i) {
+            const auto c_row = i / rows;
+            const auto c_col = i % columns;
+
+            auto cof = cofactor_compute(intermediate_storage, rows, columns, c_row, c_col);
+            minors_matrix.push_back(determinant(cof, rows - 1, columns - 1));
+        }
+
+        auto alg_additions = algebraic_additions(minors_matrix);
+
+        auto alg_trn = Matrix(alg_additions.begin(), alg_additions.end()).transposed();
+
+        det = 1 / det;
+
+        return det * alg_trn;
     }
 
     const storage_type &data() const
@@ -161,9 +203,77 @@ public:
     static Matrix &identity()
     {
         return Matrix {};
-    } 
+    }
+
+    friend Matrix operator*(const Matrix& m, const value_type scalar) {
+        Matrix copy = m;
+        for (auto& c : copy._m) {
+            c *= scalar;
+        }
+
+        return copy;
+    }
+
+    friend Matrix operator*(const value_type scalar, const Matrix& m) {
+        return m * scalar;
+    }
 
 private:
+
+    std::vector<value_type> algebraic_additions(const std::vector<value_type >& m) const {
+        std::vector<value_type> ret;
+        ret.reserve(m.size());
+        for (size_t i = 0; i < _m.size(); ++i) {
+            const auto curr_row = i / rows;
+            const auto curr_col = i % columns;
+
+            if(rcbe::math::even(curr_row) && rcbe::math::odd(curr_col)) {
+                ret.push_back(-m[i]);
+            } else if (rcbe::math::even(curr_col) && rcbe::math::odd(curr_row)) {
+                ret.push_back(-m[i]);
+            } else {
+                ret.push_back(m[i]);
+            }
+        }
+
+        return ret;
+    }
+
+    std::vector<value_type> cofactor_compute(const std::vector<value_type >& m, const size_t size_r, const size_t size_c, const size_t exclude_row, const size_t exclude_col) const {
+        std::vector<value_type > ret;
+        ret.reserve((size_r - 1) * (size_c - 1));
+        for (size_t i = 0; i < size_r * size_c; ++i) {
+            const auto row_internal = i / size_r;
+            const auto col_internal = i % size_c;
+
+            if (row_internal != exclude_row && col_internal != exclude_col) {
+                ret.push_back(m[i]);
+            }
+        }
+
+        return ret;
+    }
+
+    value_type determinant(const std::vector<value_type>& m, size_t dim_rows, size_t dim_cols) const {
+        if (m.size() == 1)
+            return m[0];
+
+        value_type det = 0;
+
+        int mul_ratio = 1;
+
+        for (size_t i = 0; i < dim_cols; ++i) {
+            const auto v = m[i];
+
+            auto cof = cofactor_compute(m, dim_rows, dim_cols, 0, i);
+
+            det += mul_ratio * v * determinant(cof, dim_rows - 1, dim_cols - 1);
+
+            mul_ratio = -mul_ratio;
+        }
+
+        return det;
+    }
 
     storage_type _m;
 };

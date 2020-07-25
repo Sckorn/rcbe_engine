@@ -25,9 +25,9 @@ public:
 
     Quaternion(const value_type yaw, const value_type pitch, const value_type roll)
     {
-       auto r = rcbe::core::deg_to_rad(roll);
-       auto p = rcbe::core::deg_to_rad(pitch);
-       auto y = rcbe::core::deg_to_rad(yaw);
+       auto r = rcbe::math::deg_to_rad(roll);
+       auto p = rcbe::math::deg_to_rad(pitch);
+       auto y = rcbe::math::deg_to_rad(yaw);
 
        auto qx = std::sin(r / 2) * std::cos(p / 2) * std::cos(y / 2) - std::cos(r / 2) * std::sin(p / 2) * std::sin(y / 2);
        auto qy = std::cos(r / 2) * std::sin(p / 2) * std::cos(y / 2) + std::sin(r / 2) * std::cos(p / 2) * std::sin(y / 2);

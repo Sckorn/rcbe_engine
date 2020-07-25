@@ -1,14 +1,25 @@
 #ifndef RCBE_MATH_UTILS_HPP
 #define RCBE_MATH_UTILS_HPP
 
-#include <common/fundamentals/types.hpp>
 #include <cmath>
+#include <type_traits>
 
-namespace rcbe::core
+#include <common/fundamentals/types.hpp>
+
+namespace rcbe::math
 {
-inline EngineScalar deg_to_rad(const EngineScalar angle)
-{
+inline core::EngineScalar deg_to_rad(const core::EngineScalar angle) {
     return M_PI / 180 * angle ;
+}
+
+template <typename Value, typename = std::enable_if_t<std::is_integral_v<Value>, void >>
+inline bool even(const Value v) {
+    return v % 2 == 0;
+}
+
+template <typename Value, typename = std::enable_if_t<std::is_integral_v<Value>, void >>
+inline  bool odd(const Value v) {
+    return !even(v);
 }
 }
 
