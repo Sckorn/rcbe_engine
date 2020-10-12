@@ -4,7 +4,7 @@ cc_library(
         ["src/gl_extensions.cpp"],
         exclude = ["src/main.cpp"],
     ),
-    hdrs = glob(["include/core/gl_extensions.hpp"]),
+    hdrs = glob(["include/core/*.hpp"]),
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [],

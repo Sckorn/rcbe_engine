@@ -33,7 +33,10 @@ struct WindowConfig {
     core::Dimensions size;
     visual::RGBAColor background_color;
     bool fullsreen = false;
+    bool process_input = false;
+    bool editor = false;
     WindowType type = WindowType ::UNKNOWN;
+    std::string input_scheme;
 };
 
 using WindowTypeBimap = boost::bimap<std::string, WindowConfig::WindowType>;

@@ -1,0 +1,61 @@
+{
+  "keyboard" : {
+    "highlevel": [
+      {
+        "type": "axis",
+        "name": "Horizontal1"
+      },
+      {
+        "type": "boolswitch",
+        "name": "Jump"
+      }
+    ],
+    "lowlevel": [
+      {
+        "keycode": 119,
+        "name": "Horizontal1",
+        "multiplier": 1
+      },
+      {
+        "keycode": 119,
+        "name": "Horizontal1",
+        "multiplier": 1
+      },
+      {
+        "keycode": 87,
+        "name": "Horizontal1",
+        "multiplier": 1
+      },
+      {
+        "keycode": 83,
+        "name": "Horizontal1",
+        "multiplier": -1
+      },
+      {
+        "keycode": 115,
+        "name": "Horizontal1",
+        "multiplier": -1
+      },
+      {
+        "keycode": 32,
+        "name": "Jump",
+        "multilier": 1
+      }
+    ]
+  },
+  "mouse" : {
+    "highlevel": [
+      {
+        "name": "Fire1",
+        "type": "boolswitch",
+      }
+    ],
+    "lowlevel": [
+      {
+        "keycode": 1,
+        "highlevel_name": "Fire1",
+        "multiplier": 0
+      }
+    ]
+  }
+}

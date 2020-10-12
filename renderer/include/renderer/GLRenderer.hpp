@@ -6,6 +6,7 @@
 
 #include <data_types/rendering/RendererConfig.hpp>
 #include <data_types/geometry/Mesh.hpp>
+#include <data_types/math/Vector.hpp>
 
 #include <data_types/rendering/RenderingContext.hpp>
 
@@ -26,6 +27,8 @@ public:
     GLRenderer(GLRenderer &&other) = default;
     GLRenderer &operator=(GLRenderer &&other) = default;
 
+    [[nodiscard]]bool running() const;
+
     [[nodiscard]]const RendererConfig &config() const;
 
     decltype(auto) start_async() {
@@ -40,6 +43,9 @@ public:
     void reshape();
 
     void on_stop(renderer_stop_handler_t&& handler);
+
+    void translate_scene(const rcbe::math::Vector3d& t) const;
+    void rotate_scene(const rcbe::math::Vector3d& t, rcbe::core::EngineScalar angle_deg) const;
 
 private:
     std::unique_ptr<GLRendererImplementation> impl_;

@@ -20,6 +20,7 @@ cc_library(
         "//datamodel:engine_datamodel_rendering",
         "//datamodel:engine_datamodel_visual",
         "//gl_extensions",
+        "//ticker:rcbe_ticker",
         "@boost//:log",
         "@nlohmann",
     ],
@@ -33,12 +34,20 @@ cc_binary(
         "//datamodel:datamodel_system_resources",
         "//parsers:x3d_test_resources",
     ],
+    linkopts = [
+        "-lpthread",
+        "-lX11",
+        "-lXext",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":rcbe_renderer",
         "//common:engine_json_utils",
+        "//common:engine_output_utils",
+        "//datamodel:engine_datamodel_math",
         "//parsers:x3d_parser",
         "//window_manager:rcbe_window_manager",
+        "@boost//:log",
     ],
 )
 

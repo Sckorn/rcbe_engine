@@ -8,10 +8,12 @@
 
 #include <rcbe/traits/time_traits.hpp>
 
+#include <boost/log/trivial.hpp>
+
 namespace rcbe::core {
 class Ticker {
 public:
-    using period_type = std::chrono::nanoseconds ;
+    using period_type = std::chrono::nanoseconds;
     using handler_type = std::function<void(void)>;
     using clock_type = std::chrono::steady_clock;
 
@@ -20,21 +22,25 @@ public:
     explicit Ticker(Duration&& period, handler_type&& handler)
     :
     period_ { std::chrono::duration_cast<period_type>(period) }
-    , start_time_ { Ticker::clock_type ::now() }
     , handler_ { std::move(handler) }
-    {
-        std::lock_guard lg { control_mutex_ };
-        running_ = true;
-
-        ticker_thread_ = std::thread([this]() {
-            while (running_) {
-                if (handler_)
-                    handler_();
-                std::this_thread::sleep_for(period_);
-            }
-        });
-    }
+    , start_time_ { Ticker::clock_type ::now() }
+    , running_ (true)
+    , ticker_thread_([this]() {
+        while (running_) {
+            BOOST_LOG_TRIVIAL(debug) << std::boolalpha << running_ << " thread id " << std::this_thread::get_id();
+            if (handler_ && running_)
+                handler_();
+            std::this_thread::sleep_for(period_);
+        }
+    })
+    {}
     ~Ticker();
+
+    Ticker(const Ticker& other) = delete;
+    Ticker &operator=(const Ticker& other) = delete;
+
+    Ticker(Ticker&& other) = default;
+    Ticker &operator=(Ticker&& other) = default;
 
     void set_handler(handler_type&& handler);
     void stop();
@@ -42,9 +48,12 @@ public:
     [[nodiscard]] period_type delta_time() const;
     [[nodiscard]] clock_type::time_point start_time() const;
 
+    void wait();
+
 private:
 
     std::mutex control_mutex_;
+    std::mutex join_mutex_;
     bool running_ = false;
     std::thread ticker_thread_;
 

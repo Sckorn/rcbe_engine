@@ -10,10 +10,13 @@
 
 #include <iostream>
 #include <chrono>
+#include <memory>
+
+#include <common/utils/output_utils.hpp>
 
 int main(int argc, char * argv[]) {
-
     try {
+        rcbe::utils::setup_logging();
         rcbe::core::WindowManager manager { true };
 
         auto wconf = rcbe::utils::readFromFile<rcbe::core::WindowConfig>("datamodel/data/system/default_window_config.json");

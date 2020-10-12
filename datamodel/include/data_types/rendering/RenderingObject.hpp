@@ -6,7 +6,7 @@
 namespace rcbe::rendering
 {
 
-class RenderingObject
+class [[deprecated]] RenderingObject
 {
 public:
     virtual void render() = 0;

@@ -7,6 +7,7 @@
 
 namespace rcbe::core
 {
+// TODO: rename into CoreObject
 class CObject
 {
 public:

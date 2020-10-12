@@ -4,7 +4,10 @@ cc_library(
     hdrs = glob(["include/**/*.hpp"]),
     includes = ["include"],
     visibility = ["//visibility:public"],
-    deps = ["//traits:rcbe_traits"],
+    deps = [
+        "//traits:rcbe_traits",
+        "@boost//:log",
+    ],
 )
 
 # tests
