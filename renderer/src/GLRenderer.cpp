@@ -1,6 +1,7 @@
 #include <renderer/GLRenderer.hpp>
 
 #include <mutex>
+#include <cmath>
 
 #include <core/gl_extensions.hpp>
 
@@ -28,9 +29,6 @@ public:
 
     void on_stop(renderer_stop_handler_t&& handler);
 
-    void rotate_scene(const rcbe::math::Vector3d& axis, rcbe::core::EngineScalar angle_deg) const;
-    void rotate_scene(const rcbe::math::Vector3d& rvec) const;
-    void translate_scene(const rcbe::math::Vector3d& t) const;
 private:
 
     void render_loop();
@@ -72,7 +70,7 @@ GLRendererImplementation::GLRendererImplementation(RendererConfig &&config, cons
     if (rendering_context_ == nullptr)
         throw std::runtime_error("RenderingContext is null");
 
-    if (rendering_context_->gl_x_context == nullptr)
+    if (rendering_context_->get_glx_context() == nullptr)
         throw std::runtime_error("GLX context is null");
 }
 
@@ -108,7 +106,7 @@ void GLRendererImplementation::init_gl() {
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-    const auto& bg_color = rendering_context_->background_color;
+    const auto& bg_color = rendering_context_->get_background_color();
     glClearColor(bg_color.r(), bg_color.g(), bg_color.b(), bg_color.a());                   // background color
     glClearStencil(0);                          // clear stencil buffer
     glClearDepth(1.0f);                         // 0 is near, 1 is far
@@ -137,31 +135,18 @@ void GLRendererImplementation::on_stop(renderer_stop_handler_t&& handler) {
     stop_handler_ = std::move(handler);
 }
 
-void GLRendererImplementation::rotate_scene(const rcbe::math::Vector3d& axis, rcbe::core::EngineScalar angle_deg) const {
-    glRotated(angle_deg, axis.x(), axis.y(), axis.z());
-}
-
-void GLRendererImplementation::rotate_scene(const rcbe::math::Vector3d& rvec) const {
-    const auto angle = rvec.length();
-    const auto norm = rvec.normalized();
-    rotate_scene(norm, angle);
-}
-
-void GLRendererImplementation::translate_scene(const rcbe::math::Vector3d& t) const {
-    glTranslated(t.x(), t.y(), t.z());
-}
-
 void GLRendererImplementation::reshape_window() {
-    glViewport(0, 0, rendering_context_->window_dimensions.width, rendering_context_->window_dimensions.height);
+    const auto& dimensions = rendering_context_->get_window_dimensions();
+    glViewport(0, 0, dimensions.width, dimensions.height);
 
     // set perspective viewing frustum
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    set_perspective(60.0f,  rendering_context_->window_dimensions.width / rendering_context_->window_dimensions.height, 0.1f, 100.0f);
+    set_perspective(rendering_context_->get_zoom(),  dimensions.width / dimensions.height, 0.1f, 100.0f);
 
-    translate_scene(rendering_context_->tvec);
-    rotate_scene(rendering_context_->rvec);
+    const auto trn = rendering_context_->get_transform_column_major();
+    glMultMatrixd(static_cast<const GLdouble *>(trn.get_raw()));
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -265,9 +250,10 @@ void GLRendererImplementation::draw_buffers(const VertexBufferObject& vbo, const
 }
 
 void GLRendererImplementation::render_loop() {
+    auto start = std::chrono::steady_clock::now();
     rendering_context_->gl_context_from_this();
 
-    const auto& color = rendering_context_->background_color;
+    const auto& color = rendering_context_->get_background_color();
 
     GLExtensions& ext = GLExtensions::getInstance();
     vbo_supported_ = ext.isSupported("GL_ARB_vertex_buffer_object");
@@ -312,7 +298,9 @@ void GLRendererImplementation::render_loop() {
         BOOST_LOG_TRIVIAL(error) << "error hex code " << std::hex << error;
     }
 
-    glXSwapBuffers(rendering_context_->x_display, rendering_context_->gl_x_window);
+    glXSwapBuffers(rendering_context_->get_display(), rendering_context_->get_drawable());
+    auto end = std::chrono::steady_clock::now();
+    rendering_context_->set_current_time(std::chrono::duration_cast<std::chrono::microseconds>(end - start));
 }
 
 const RendererConfig& GLRendererImplementation::get_config() const {
@@ -352,14 +340,6 @@ void GLRenderer::reshape() {
 
 void GLRenderer::on_stop(renderer_stop_handler_t&& handler) {
     impl_->on_stop(std::move(handler));
-}
-
-void GLRenderer::translate_scene(const rcbe::math::Vector3d& t) const {
-    impl_->translate_scene(t);
-}
-
-void GLRenderer::rotate_scene(const rcbe::math::Vector3d& t, rcbe::core::EngineScalar angle_deg) const {
-    impl_->rotate_scene(t, angle_deg);
 }
 
 bool GLRenderer::running() const {

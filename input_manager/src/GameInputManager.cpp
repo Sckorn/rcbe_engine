@@ -9,10 +9,37 @@ GameInputManager::GameInputManager(nlohmann::json&& j)
 :
 scheme_(std::move(j))
 {
-
+    register_handler(InputEventType::key_press, [](InputManagerImplementation& im, input_event_reference event, previous_event_reference previous) {
+        auto * ptr = std::addressof(im);
+        auto actual = dynamic_cast<GameInputManager*>(ptr);
+        if (!actual)
+            throw std::runtime_error("Can't cast to proper input manager type!");
+        return actual->try_set(event.xkey.keycode, 1);
+    });
+    register_handler(InputEventType::key_release, [](InputManagerImplementation& im, input_event_reference event, previous_event_reference previous) {
+        auto * ptr = std::addressof(im);
+        auto actual = dynamic_cast<GameInputManager*>(ptr);
+        if (!actual)
+            throw std::runtime_error("Can't cast to proper input manager type!");
+        return actual->try_set(event.xkey.keycode, 0);
+    });
+    register_handler(InputEventType::button_press, [](InputManagerImplementation& im, input_event_reference event, previous_event_reference previous) {
+        auto * ptr = std::addressof(im);
+        auto actual = dynamic_cast<GameInputManager*>(ptr);
+        if (!actual)
+            throw std::runtime_error("Can't cast to proper input manager type!");
+        return actual->try_set(event.xbutton.button, 1);
+    });
+    register_handler(InputEventType::button_release, [](InputManagerImplementation& im, input_event_reference event, previous_event_reference previous) {
+        auto * ptr = std::addressof(im);
+        auto actual = dynamic_cast<GameInputManager*>(ptr);
+        if (!actual)
+            throw std::runtime_error("Can't cast to proper input manager type!");
+        return actual->try_set(event.xbutton.button, 0);
+    });
 }
 
-bool GameInputManager::try_set(const int keycode, const int value) {
+bool GameInputManager::try_set(const int keycode, const int value) const {
     try {
         scheme_.set(keycode, value);
     } catch (const std::exception& ex) {
@@ -21,33 +48,5 @@ bool GameInputManager::try_set(const int keycode, const int value) {
     }
 
     return true;
-}
-
-void GameInputManager::init() {
-    register_handler(InputEventType::key_press, [this](event_stack_type& events_stack) {
-        auto e = utils::pop(events_stack);
-        return try_set(e.xkey.keycode, 1);
-    });
-    register_handler(InputEventType::key_release, [this](event_stack_type& events_stack) {
-        auto e = utils::pop(events_stack);
-        return try_set(e.xkey.keycode, 0);
-    });
-    register_handler(InputEventType::button_press, [this](event_stack_type& events_stack) {
-        auto e = utils::pop(events_stack);
-        return try_set(e.xbutton.button, 1);
-    });
-    register_handler(InputEventType::button_release, [this](event_stack_type& events_stack) {
-        auto e = utils::pop(events_stack);
-        return try_set(e.xbutton.button, 0);
-    });
-    methods_initialized_ = true;
-}
-
-bool GameInputManager::try_process_event(input_event_reference event) {
-    if (!methods_initialized_) {
-        init();
-    }
-
-    return InputManagerImplementation::try_process_event(event);
 }
 }

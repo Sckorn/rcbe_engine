@@ -29,8 +29,12 @@ void XWWindow::show() {
     impl_->map_window();
 }
 
-const core::AbstractInputManager& XWWindow::get_input_manager() const {
+const std::shared_ptr<core::AbstractInputManager>& XWWindow::get_input_manager() const {
     return impl_->get_input_manager();
+}
+
+void XWWindow::set_input_manager(const std::shared_ptr<AbstractInputManager>& manager) {
+    impl_->set_manager(manager);
 }
 
 const WindowConfig& XWWindow::get_config() const {

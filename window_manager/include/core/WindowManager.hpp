@@ -19,13 +19,13 @@ class WindowManager {
 public:
     WindowManager() = delete;
     explicit WindowManager(bool multi_thread, size_t max_windows = 5);
+    ~WindowManager();
 
     WindowPtr create_window(WindowConfig &&config);
     WindowPtr create_window(const nlohmann::json &json_config);
 
 private:
     size_t maximum_windows_;
-
 
     Display* x_display_ = nullptr;
     int screen_number_;

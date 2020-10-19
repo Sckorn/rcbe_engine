@@ -1,7 +1,7 @@
 #ifndef RCBE_ENGINE_GAMEINPUTMANAGER_HPP
 #define RCBE_ENGINE_GAMEINPUTMANAGER_HPP
 
-#include <nlohmann/json_fwd.hpp>
+#include <nlohmann/json.hpp>
 
 #include <core/InputManagerImplementation.hpp>
 #include <data_types/system/InputScheme.hpp>
@@ -17,19 +17,21 @@ public:
     GameInputManager& operator=(const GameInputManager& other) = delete;
     GameInputManager& operator=(GameInputManager&& other) = default;
 
-    bool try_process_event(input_event_reference event);
-
-    void init();
+    static GameInputManager create(nlohmann::json&& j) {
+        return GameInputManager(std::move(j));
+    }
 
     [[nodiscard]] auto get(const std::string& input_event_name) const {
         return scheme_.get(input_event_name);
     }
 
-private:
-    bool try_set(int keycode, int value);
+    using InputManagerImplementation::try_process_event;
+    using InputManagerImplementation::get_value;
 
-    bool methods_initialized_ = false;
-    InputScheme scheme_;
+private:
+    bool try_set(int keycode, int value) const;
+
+    mutable InputScheme scheme_;
 };
 }
 

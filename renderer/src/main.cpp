@@ -1,4 +1,5 @@
 #include <renderer/GLRenderer.hpp>
+#include <rcbe/camera/Camera.hpp>
 
 #include <common/utils/json_utils.hpp>
 
@@ -13,8 +14,11 @@
 #include <memory>
 
 #include <common/utils/output_utils.hpp>
+#include <core/AbstractInputManager.hpp>
+#include <core/EditorInputManager.hpp>
 
 int main(int argc, char * argv[]) {
+    using rcbe::core::InputManagerImplementation;
     try {
         rcbe::utils::setup_logging();
         rcbe::core::WindowManager manager { true };
@@ -29,6 +33,8 @@ int main(int argc, char * argv[]) {
 
         window->show();
 
+        auto camera_pos = renderer_conf.camera_position;
+        auto camera_lookat = renderer_conf.camera_lookat;
         {
             auto renderer = rcbe::rendering::make_renderer_ptr(std::move(renderer_conf), window->get_context());
 
@@ -46,7 +52,7 @@ int main(int argc, char * argv[]) {
             rcbe::math::Quaternion<rcbe::core::EngineScalar> q { 0.0, 0.0, 90.0 };
 
             rcbe::math::Matrix3x3 rotation { q };
-            rcbe::math::Vector3d translation { 0.0, 5.0, 0.0 };
+            rcbe::math::Vector3d translation { 0.0, 0.0, 0.0 };
 
             rcbe::math::Transform t { rotation, translation };
 
@@ -54,13 +60,21 @@ int main(int argc, char * argv[]) {
         }
 
         {
-            rcbe::math::Vector3d translation { 0.0, 5.0, -20.0 };
+            rcbe::math::Vector3d translation { 0.0, 0.0, -25.0 };
 
             rcbe::math::Transform t { {}, translation };
             second_mesh.transform(t);
         }
 
-        std::this_thread::sleep_for(std::chrono::operator""ms(1000));
+        auto camera = rcbe::rendering::make_camera(window->get_context(), camera_pos, camera_lookat);
+        auto start =  std::chrono::steady_clock::now();
+        auto aim = std::make_shared<rcbe::core::AbstractInputManager>(rcbe::core::EditorInputManager::create(window->get_context(), camera));
+        auto end =  std::chrono::steady_clock::now();
+        BOOST_LOG_TRIVIAL(debug) << "Editor Input Manager created in " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " nsecs";
+        window->set_input_manager(aim);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds (1000));
+        BOOST_LOG_TRIVIAL(debug) << "Meshes should be visible now";
 
         renderer->add_object(std::move(meshes[0]));
         renderer->add_object(std::move(second_mesh));
@@ -68,7 +82,7 @@ int main(int argc, char * argv[]) {
         renderer_handle.wait();
         window_handle.wait();
     } catch (const std::exception& e) {
-        std::cout << "Exception thrown: " << e.what() << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "Exception thrown: " << e.what();
         return 1;
     }
 

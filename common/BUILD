@@ -84,6 +84,16 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "rcbe_profiling",
+    hdrs = glob(["include/common/utils/profiling_utils.hpp"]),
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":engine_fundamentals",
+    ],
+)
+
 # tests
 
 cc_test(

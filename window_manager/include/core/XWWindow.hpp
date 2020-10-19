@@ -35,7 +35,7 @@ public:
 
     [[nodiscard]] const WindowConfig& get_config() const;
 
-    decltype(auto) start_window_loop_aync(){
+    decltype(auto) start_window_loop_aync() {
         return std::async(std::launch::async, [this]() {
             start_window_loop();
         });
@@ -45,7 +45,8 @@ public:
 
     void kill();
     void show();
-    [[nodiscard]]const core::AbstractInputManager& get_input_manager() const;
+    [[nodiscard]]const std::shared_ptr<core::AbstractInputManager>& get_input_manager() const;
+    void set_input_manager(const std::shared_ptr<AbstractInputManager>& manager);
 
     void on_configure(window::configure_handler_t&& handler);
     void on_unmap(window::unmap_handler_t&& handler);

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <data_types/math/math.hpp>
+#include <data_types/math/math_constants.hpp>
 #include <data_types/math/Transform.hpp>
 #include <data_types/geometry/geometry.hpp>
 #include <data_types/visual/RGBAColor.hpp>
