@@ -1,6 +1,6 @@
 #include <type_traits>
 
-#include <core/EditorInputManager.hpp>
+#include "EditorInputManager.hpp"
 
 namespace rcbe::core {
 

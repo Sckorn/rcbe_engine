@@ -18,7 +18,7 @@ using GLRendererPtr = std::unique_ptr<GLRenderer>;
 namespace rcbe::core {
 class InputManagerImplementation;
 
-using AbstractInputManager = std::shared_ptr<InputManagerImplementation>;
+using AbstractInputManagerPtr = std::shared_ptr<InputManagerImplementation>;
 }
 
 namespace rcbe::core {
@@ -47,7 +47,7 @@ public:
 
     void kill();
     void show();
-    [[nodiscard]]const core::AbstractInputManager& get_input_manager() const;
+    [[nodiscard]]const core::AbstractInputManagerPtr& get_input_manager() const;
 
     void on_configure(window::configure_handler_t&& handler);
     void on_unmap(window::unmap_handler_t&& handler);

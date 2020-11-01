@@ -24,6 +24,7 @@ public:
     using handler_collection = std::vector<typename InputManagerImplementation::handler_intermidiate_storage>;
 
     EditorInputManager() = delete;
+    explicit EditorInputManager(handler_collection&& h);
     ~EditorInputManager() = default;
     EditorInputManager(const EditorInputManager& other) = delete;
     EditorInputManager(EditorInputManager&& other) = default;
@@ -55,63 +56,47 @@ public:
 
                             auto key_sym = XLookupKeysym(&(event.xkey), 0);
 
-                            switch(key_sym) {
-                                case XK_w:
-                                case XK_W:
-                                {
-                                    c->tvec = c->tvec + rcbe::math::Vector3d {0.0, 0.0, 1.0};
-                                }
-                                    break;
-                                case XK_s:
-                                case XK_S:
-                                {
-                                    c->tvec = c->tvec + rcbe::math::Vector3d {0.0, 0.0, -1.0};
-                                }
-                                    break;
-                                case XK_a:
-                                case XK_A:
-                                {
-                                    c->tvec = c->tvec + rcbe::math::Vector3d {1.0, 0.0, 0.0};
-                                }
-                                    break;
-                                case XK_d:
-                                case XK_D:
-                                {
-                                    c->tvec = c->tvec + rcbe::math::Vector3d {-1.0, 0.0, 0.0};
-                                }
-                                    break;
-                                case XK_Up:
-                                {
-                                    c->rvec = c->rvec + rcbe::math::Vector3d {-1.0, 0.0, 0.0};
-                                }
-                                    break;
-                                case XK_Down:
-                                {
-                                    c->rvec = c->rvec + rcbe::math::Vector3d {1.0, 0.0, 0.0};
-                                }
-                                    break;
-                                case XK_Left:
-                                {
-                                    c->rvec = c->rvec + rcbe::math::Vector3d {0.0, -1.0, 0.0};
-                                }
-                                    break;
-                                case XK_Right:
-                                {
-                                    c->rvec = c->rvec + rcbe::math::Vector3d {0.0, 1.0, 0.0};
-                                }
-                                    break;
-                                case XK_Page_Up: {
-                                    c->tvec = c->tvec + rcbe::math::Vector3d {0.0, -1.0, 0.0};
-                                }
-                                    break;
-                                case XK_Page_Down: {
-                                    c->tvec = c->tvec + rcbe::math::Vector3d {0.0, 1.0, 0.0};
-                                }
-                                    break;
-                                default:
-                                    BOOST_LOG_TRIVIAL(info) << "Unhandled KeySym " << key_sym;
-                                    break;
+                            if (im->get_value(KeyboardEventType::symbol_w)) {
+                                c->tvec = c->tvec + rcbe::math::Vector3d {0.0, 0.0, 1.0};
+                                return;
                             }
+
+                            if (im->get_value(KeyboardEventType::symbol_a)) {
+                                c->tvec = c->tvec + rcbe::math::Vector3d {1.0, 0.0, 0.0};
+                                return;
+                            }
+
+                            if (im->get_value(KeyboardEventType::symbol_s)) {
+                                c->tvec = c->tvec + rcbe::math::Vector3d {0.0, 0.0, -1.0};
+                                return;
+                            }
+
+                            if (im->get_value(KeyboardEventType::symbol_d)) {
+                                c->tvec = c->tvec + rcbe::math::Vector3d {-1.0, 0.0, 0.0};
+                                return;
+                            }
+
+                            if (im->get_value(KeyboardEventType::arrow_up)) {
+                                c->rvec = c->rvec + rcbe::math::Vector3d {-1.0, 0.0, 0.0};
+                                return;
+                            }
+
+                            if (im->get_value(KeyboardEventType::arrow_down)) {
+                                c->rvec = c->rvec + rcbe::math::Vector3d {1.0, 0.0, 0.0};
+                                return;
+                            }
+
+                            if (im->get_value(KeyboardEventType::arrow_left)) {
+                                c->rvec = c->rvec + rcbe::math::Vector3d {0.0, -1.0, 0.0};
+                                return;
+                            }
+
+                            if (im->get_value(KeyboardEventType::arrow_right)) {
+                                c->rvec = c->rvec + rcbe::math::Vector3d {0.0, 1.0, 0.0};
+                                return;
+                            }
+
+                            BOOST_LOG_TRIVIAL(info) << "Unhandled KeySym " << key_sym;
                         }
                 },
                 {
@@ -148,10 +133,6 @@ public:
         };
         return std::make_shared<EditorInputManager>(std::move(h));
     }
-
-//private:
-
-    explicit EditorInputManager(handler_collection&& h);
 };
 }
 

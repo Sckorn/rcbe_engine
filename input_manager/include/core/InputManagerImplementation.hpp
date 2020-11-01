@@ -79,6 +79,9 @@ protected:
 
 private:
 
+    void disable_all_mouse();
+    void disable_all_keyboard();
+
     InputManagerMode mode_ = InputManagerMode::simple;
     int number_devices_ = 0;
 
@@ -97,8 +100,8 @@ private:
             {InputEventType ::key_release, InputEventType ::key_press}
     };
 
-    std::unordered_map<MouseEventType, bool> mouse_buttons_states_;
-    std::unordered_map<KeyboardEventType, bool> keyboard_buttons_states_;
+    std::unordered_map<MouseEventType, bool, InputMouseButtonHash> mouse_buttons_states_;
+    std::unordered_map<KeyboardEventType, bool, InputKeyboardKeysHash> keyboard_buttons_states_;
 
     previous_event_type previous_event_ = std::nullopt;
 };

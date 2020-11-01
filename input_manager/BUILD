@@ -1,7 +1,10 @@
 cc_library(
     name = "rcbe_input_manager",
     srcs = glob(
-        ["src/**/*.cpp"],
+        [
+            "src/**/*.cpp",
+            "src/**/*.hpp",
+        ],
         exclude = ["src/main.cpp"],
     ),
     hdrs = glob(["include/**/*.hpp"]),
@@ -22,6 +25,5 @@ cc_library(
         "//traits:rcbe_traits",
         "@boost//:bimap",
         "@boost//:log",
-        "@boost//:multi_index",
     ],
 )

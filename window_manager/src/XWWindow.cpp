@@ -29,7 +29,7 @@ void XWWindow::show() {
     impl_->map_window();
 }
 
-const core::AbstractInputManager& XWWindow::get_input_manager() const {
+const core::AbstractInputManagerPtr& XWWindow::get_input_manager() const {
     return impl_->get_input_manager();
 }
 

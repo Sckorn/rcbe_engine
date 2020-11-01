@@ -11,10 +11,24 @@ bool InputManagerImplementation::try_process_event(XEvent& event) {
     auto it = handlers_.find(event_type);
     if (it != handlers_.end()) {
         active_events_[event.type] = true;
+        if (is_mouse_event(event_type)) {
+            const auto button = static_cast<MouseEventType>(event.xbutton.button);
+            mouse_buttons_states_.insert_or_assign(button, true);
+        } else if (is_keyboard_event(event_type)) {
+            const auto key_sym = XLookupKeysym(&(event.xkey), 0);
+            const auto key = static_cast<KeyboardEventType>(key_sym);
+            keyboard_buttons_states_.insert_or_assign(key, true);
+        }
 
         auto itt = exclusive_events_.find(event_type);
         if (itt != exclusive_events_.end()) {
             active_events_[static_cast<int>(itt->second)] = false;
+
+            if (itt->second == InputEventType::button_press) {
+                disable_all_mouse();
+            } else if (itt->second == InputEventType::key_press) {
+                disable_all_keyboard();
+            }
         }
 
         try {
@@ -44,11 +58,33 @@ bool InputManagerImplementation::event_active(InputEventType event_type) const {
 }
 
 bool InputManagerImplementation::get_value(MouseEventType type) const {
+    auto it = mouse_buttons_states_.find(type);
+    if (it != mouse_buttons_states_.end()) {
+        return it->second;
+    }
 
+    return false;
 }
 
 bool InputManagerImplementation::get_value(KeyboardEventType type) const {
+    auto it = keyboard_buttons_states_.find(type);
+    if (it != keyboard_buttons_states_.end()) {
+        return it->second;
+    }
 
+    return false;
+}
+
+void InputManagerImplementation::disable_all_mouse() {
+    for (auto& i : mouse_buttons_states_) {
+        i.second = false;
+    }
+}
+
+void InputManagerImplementation::disable_all_keyboard() {
+    for (auto& i : keyboard_buttons_states_) {
+        i.second = false;
+    }
 }
 
 }

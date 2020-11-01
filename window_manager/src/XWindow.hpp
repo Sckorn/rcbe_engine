@@ -44,7 +44,7 @@ public:
     void set_renderer(rendering::GLRendererPtr renderer_ptr);
 
     [[nodiscard]] const rendering::GLRendererPtr& get_renderer() const;
-    [[nodiscard]]const AbstractInputManager& get_input_manager() const;
+    [[nodiscard]]const AbstractInputManagerPtr& get_input_manager() const;
 
 private:
 
@@ -59,7 +59,7 @@ private:
     XSetWindowAttributes attributes_;
     std::shared_ptr<rendering::RenderingContext> rendering_context_ = nullptr;
     rendering::GLRendererPtr renderer_ = nullptr;
-    core::AbstractInputManager input_manager_ = nullptr;
+    core::AbstractInputManagerPtr input_manager_ = nullptr;
 
     std::mutex kill_mutex_;
     bool killed_ = false;

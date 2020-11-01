@@ -2,8 +2,6 @@
 
 #include <boost/log/trivial.hpp>
 
-#include <core/EditorInputManager.hpp>
-#include <core/GameInputManager.hpp>
 #include <core/AbstractInputManager.hpp>
 
 #include <common/utils/json_utils.hpp>
@@ -77,10 +75,10 @@ XWindow::XWindow(WindowConfig &&config, Display *root_display, int screen_number
 
     if (config_.process_input) {
         if (config.editor) {
-            input_manager_ = EditorInputManager::create(rendering_context_);
+            input_manager_ = create_input_manager(rendering_context_);
         } else {
             if (!config_.input_scheme.empty()) {
-                input_manager_ = GameInputManager::create(utils::read_raw(config_.input_scheme));
+                input_manager_ = create_input_manager(utils::read_raw(config_.input_scheme));
             } else {
                 throw std::runtime_error("Input requested but no input scheme provided!");
             }
@@ -238,7 +236,7 @@ void XWindow::map_window() {
     XMapWindow(rendering_context_->x_display, rendering_context_->gl_x_window);
 }
 
-const AbstractInputManager& XWindow::get_input_manager() const {
+const AbstractInputManagerPtr& XWindow::get_input_manager() const {
     if (input_manager_) {
         return input_manager_;
     } else

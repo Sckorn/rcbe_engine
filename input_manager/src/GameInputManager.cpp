@@ -1,4 +1,4 @@
-#include <core/GameInputManager.hpp>
+#include "GameInputManager.hpp"
 
 #include <common/utils/stack_utils.hpp>
 
