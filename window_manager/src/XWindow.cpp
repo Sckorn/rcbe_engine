@@ -77,10 +77,10 @@ XWindow::XWindow(WindowConfig &&config, Display *root_display, int screen_number
 
     if (config_.process_input) {
         if (config.editor) {
-            input_manager_.emplace(EditorInputManager(rendering_context_));
+            input_manager_ = EditorInputManager::create(rendering_context_);
         } else {
             if (!config_.input_scheme.empty()) {
-                input_manager_.emplace(GameInputManager(utils::read_raw(config_.input_scheme)));
+                input_manager_ = GameInputManager::create(utils::read_raw(config_.input_scheme));
             } else {
                 throw std::runtime_error("Input requested but no input scheme provided!");
             }
@@ -240,7 +240,7 @@ void XWindow::map_window() {
 
 const AbstractInputManager& XWindow::get_input_manager() const {
     if (input_manager_) {
-        return input_manager_.value();
+        return input_manager_;
     } else
         throw std::runtime_error("Trying to get unassigned input manager!");
 }

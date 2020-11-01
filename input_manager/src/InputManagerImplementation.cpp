@@ -10,7 +10,6 @@ bool InputManagerImplementation::try_process_event(XEvent& event) {
     auto event_type = static_cast<InputEventType>(event.type);
     auto it = handlers_.find(event_type);
     if (it != handlers_.end()) {
-        propagated_events_.push(event);
         active_events_[event.type] = true;
 
         auto itt = exclusive_events_.find(event_type);
@@ -19,11 +18,14 @@ bool InputManagerImplementation::try_process_event(XEvent& event) {
         }
 
         try {
-            it->second.invoke(propagated_events_);
+            it->second.invoke(this->shared_from_this(), event, previous_event_);
         } catch (const std::exception& e) {
+            previous_event_ = event;
             BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what();
             return false;
         }
+
+        previous_event_ = event;
 
         return true;
     } else {
@@ -40,4 +42,13 @@ bool InputManagerImplementation::event_active(InputEventType event_type) const {
     }
     return false;
 }
+
+bool InputManagerImplementation::get_value(MouseEventType type) const {
+
+}
+
+bool InputManagerImplementation::get_value(KeyboardEventType type) const {
+
+}
+
 }

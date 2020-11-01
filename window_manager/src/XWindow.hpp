@@ -59,7 +59,7 @@ private:
     XSetWindowAttributes attributes_;
     std::shared_ptr<rendering::RenderingContext> rendering_context_ = nullptr;
     rendering::GLRendererPtr renderer_ = nullptr;
-    std::optional<core::AbstractInputManager> input_manager_ = std::nullopt;
+    core::AbstractInputManager input_manager_ = nullptr;
 
     std::mutex kill_mutex_;
     bool killed_ = false;

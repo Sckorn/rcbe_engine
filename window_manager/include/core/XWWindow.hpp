@@ -16,7 +16,9 @@ using GLRendererPtr = std::unique_ptr<GLRenderer>;
 }
 
 namespace rcbe::core {
-class AbstractInputManager;
+class InputManagerImplementation;
+
+using AbstractInputManager = std::shared_ptr<InputManagerImplementation>;
 }
 
 namespace rcbe::core {

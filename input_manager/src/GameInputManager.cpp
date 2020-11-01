@@ -9,7 +9,22 @@ GameInputManager::GameInputManager(nlohmann::json&& j)
 :
 scheme_(std::move(j))
 {
-
+    register_handler(InputEventType::key_press, [](InputManagerImplementationPtr im, input_event_reference event, previous_event_reference previous) {
+        auto actual = std::static_pointer_cast<GameInputManager>(im);
+        return actual->try_set(event.xkey.keycode, 1);
+    });
+    register_handler(InputEventType::key_release, [](InputManagerImplementationPtr im, input_event_reference event, previous_event_reference previous) {
+        auto actual = std::static_pointer_cast<GameInputManager>(im);
+        return actual->try_set(event.xkey.keycode, 0);
+    });
+    register_handler(InputEventType::button_press, [](InputManagerImplementationPtr im, input_event_reference event, previous_event_reference previous) {
+        auto actual = std::static_pointer_cast<GameInputManager>(im);
+        return actual->try_set(event.xbutton.button, 1);
+    });
+    register_handler(InputEventType::button_release, [](InputManagerImplementationPtr im, input_event_reference event, previous_event_reference previous) {
+        auto actual = std::static_pointer_cast<GameInputManager>(im);
+        return actual->try_set(event.xbutton.button, 0);
+    });
 }
 
 bool GameInputManager::try_set(const int keycode, const int value) {
@@ -23,31 +38,4 @@ bool GameInputManager::try_set(const int keycode, const int value) {
     return true;
 }
 
-void GameInputManager::init() {
-    register_handler(InputEventType::key_press, [this](event_stack_type& events_stack) {
-        auto e = utils::pop(events_stack);
-        return try_set(e.xkey.keycode, 1);
-    });
-    register_handler(InputEventType::key_release, [this](event_stack_type& events_stack) {
-        auto e = utils::pop(events_stack);
-        return try_set(e.xkey.keycode, 0);
-    });
-    register_handler(InputEventType::button_press, [this](event_stack_type& events_stack) {
-        auto e = utils::pop(events_stack);
-        return try_set(e.xbutton.button, 1);
-    });
-    register_handler(InputEventType::button_release, [this](event_stack_type& events_stack) {
-        auto e = utils::pop(events_stack);
-        return try_set(e.xbutton.button, 0);
-    });
-    methods_initialized_ = true;
-}
-
-bool GameInputManager::try_process_event(input_event_reference event) {
-    if (!methods_initialized_) {
-        init();
-    }
-
-    return InputManagerImplementation::try_process_event(event);
-}
 }

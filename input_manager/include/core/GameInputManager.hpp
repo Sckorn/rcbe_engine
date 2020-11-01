@@ -1,13 +1,20 @@
 #ifndef RCBE_ENGINE_GAMEINPUTMANAGER_HPP
 #define RCBE_ENGINE_GAMEINPUTMANAGER_HPP
 
-#include <nlohmann/json_fwd.hpp>
+#include <memory>
+
+#include <nlohmann/json.hpp>
 
 #include <core/InputManagerImplementation.hpp>
 #include <data_types/system/InputScheme.hpp>
 
 namespace rcbe::core {
-class GameInputManager final : protected InputManagerImplementation {
+class GameInputManager;
+
+using GameInputManagerPtr = std::shared_ptr<GameInputManager>;
+using GameInputManagerConstPtr = std::shared_ptr<const GameInputManager>;
+
+class GameInputManager final : public InputManagerImplementation {
 public:
     GameInputManager() = delete;
     explicit GameInputManager(nlohmann::json&& j);
@@ -17,18 +24,18 @@ public:
     GameInputManager& operator=(const GameInputManager& other) = delete;
     GameInputManager& operator=(GameInputManager&& other) = default;
 
-    bool try_process_event(input_event_reference event);
-
-    void init();
-
     [[nodiscard]] auto get(const std::string& input_event_name) const {
         return scheme_.get(input_event_name);
     }
 
-private:
+     static GameInputManagerPtr create(nlohmann::json&& j) {
+        return std::make_shared<GameInputManager>(std::move(j));
+    }
+
     bool try_set(int keycode, int value);
 
-    bool methods_initialized_ = false;
+private:
+
     InputScheme scheme_;
 };
 }

@@ -6,13 +6,14 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <core/InputManagerImplementation.hpp>
 #include <core/EditorInputManager.hpp>
 #include <core/GameInputManager.hpp>
 
 #include <traits/input_manager.hpp>
 
 namespace rcbe::core {
-using InputManagerVariant = std::variant<EditorInputManager, GameInputManager>;
+/*using InputManagerVariant = std::variant<EditorInputManager, GameInputManager>;
 
 class AbstractInputManager {
 public:
@@ -40,10 +41,11 @@ public:
 
 private:
     InputManagerVariant variant_;
-};
+};*/
 
-using AbstractInputManagerPtr = std::unique_ptr<AbstractInputManager>;
-using AbstractInputManagerConstPtr = std::unique_ptr<const AbstractInputManager>;
+// TODO: refactor for ptrs
+using AbstractInputManager = std::shared_ptr<InputManagerImplementation>;
+using ConstAbstractInputManager = std::shared_ptr<const InputManagerImplementation>;
 }
 
 #endif //RCBE_ENGINE_ABSTRACTINPUTMANAGER_HPP

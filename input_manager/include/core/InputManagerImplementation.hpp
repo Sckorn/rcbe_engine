@@ -5,9 +5,13 @@
 #include <mutex>
 #include <unordered_map>
 #include <stack>
+#include <enable_shared_from_this.hpp>
 
 #include <boost/log/trivial.hpp>
-
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/member.hpp>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -21,17 +25,20 @@ namespace rcbe::core {
 
 static constexpr size_t DEFAULT_MAXIMUM_DELEGATE_SIZE = 10;
 
-// shared from this, pass to window
-// TODO: this should be renamed into InputManagerImpl, and relocated into private header
-class InputManagerImplementation : public utility::InputManagerTraits {
+class InputManagerImplementation;
+
+using InputManagerImplementationPtr = std::shared_ptr<InputManagerImplementation>;
+using InputManagerImplementationConstPtr = std::shared_ptr<const InputManagerImplementation>;
+
+class InputManagerImplementation : public utility::InputManagerTraits, public std::enable_shared_from_this<InputManagerImplementation> {
 public:
 
-   using delegate_type = Delegate<void, handler_signature>;
+   using delegate_type = Delegate<void, InputManagerImplementationPtr, input_event_reference, previous_event_reference>;
+   using handler_intermidiate_storage = std::pair<InputEventType, typename delegate_type::invocation_type>;
 
-   InputManagerImplementation() = default;
     ~InputManagerImplementation() = default;
 
-    bool try_process_event(XEvent& event);
+    bool try_process_event(input_event_reference event);
 
     template <typename HandlerType>
     void register_handler(InputEventType etype, HandlerType&& h) {
@@ -46,7 +53,7 @@ public:
             else
                 BOOST_LOG_TRIVIAL(debug) << "Inserted handler fot event type " << event_type;
         } else {
-            handlers_.at(etype).as<handler_signature>() += std::move(h);
+            handlers_.at(etype).as<InputManagerImplementationPtr, input_event_reference, previous_event_reference>() += std::move(h);
         }
 
         if (active_events_.find(event_type) == active_events_.end()) {
@@ -54,7 +61,21 @@ public:
         }
     }
 
-    [[nodiscard]]bool event_active(InputEventType event_type) const;
+    template <typename Handlers>
+    void register_handlers(std::vector<Handlers>&& h) {
+        for (auto&& [type, handler] : h) {
+            register_handler(type, std::move(handler));
+        }
+    }
+
+    [[nodiscard]] bool event_active(InputEventType event_type) const;
+
+    [[nodiscard]] bool get_value(MouseEventType type) const;
+    [[nodiscard]] bool get_value(KeyboardEventType type) const;
+
+protected:
+
+    InputManagerImplementation() = default;
 
 private:
 
@@ -75,7 +96,11 @@ private:
             {InputEventType ::key_press, InputEventType ::key_release},
             {InputEventType ::key_release, InputEventType ::key_press}
     };
-    event_stack_type propagated_events_;
+
+    std::unordered_map<MouseEventType, bool> mouse_buttons_states_;
+    std::unordered_map<KeyboardEventType, bool> keyboard_buttons_states_;
+
+    previous_event_type previous_event_ = std::nullopt;
 };
 
 using InputManagerPtr = std::unique_ptr<InputManagerImplementation>;

@@ -22,5 +22,6 @@ cc_library(
         "//traits:rcbe_traits",
         "@boost//:bimap",
         "@boost//:log",
+        "@boost//:multi_index",
     ],
 )

@@ -6,6 +6,7 @@
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/keysymdef.h>
 
 namespace rcbe::core {
 
@@ -128,6 +129,35 @@ struct InputEventTypeHash
     }
 };
 
+enum class KeyboardEventType {
+    unknown = -1,
+    symbol_w = 0x0077,      // XK_w
+    symbol_W = 0x0057,      // XK_W
+    symbol_a = 0x0061,      // XK_a
+    symbol_A = 0x0041,      // XK_A
+    symbol_s = 0x0073,      // XK_w
+    symbol_S = 0x0053,      // XK_W
+    symbol_d = 0x0064,      // XK_w
+    symbol_D = 0x0044,      // XK_W
+    arrow_up = 0x08fc,      // XK_uparrow
+    arrow_left = 0x08fb,    // XK_leftarrow
+    arrow_right = 0x08fd,   // XK_rightarrow
+    arrow_down = 0x08fe,    // XK_downarrow
+    escape = 0xff1b,        // XK_Escape
+    backspace = 0xff08,     // XK_BackSpace
+    tab = 0xff09,           // XK_Tab
+    enter = 0xff0d,         // XK_Return
+    space = 0x0020,         // XK_space
+    end = 255
+};
+
+struct InputKeyboardKeysHash {
+    template <typename T>
+    std::size_t operator()(T t) const
+    {
+        return static_cast<std::size_t>(t);
+    }
+};
 }
 
 #endif //RCBE_ENGINE_INPUTSYSTEMTYPES_HPP
