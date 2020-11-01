@@ -10,6 +10,7 @@
 namespace rcbe::utility {
 class InputManagerTraits {
 public:
+    static constexpr size_t DEFAULT_MAXIMUM_DELEGATE_SIZE = 10;
     using key_code_type = unsigned long;
     using input_event_type = XEvent;
     using previous_event_type = std::optional<XEvent>;
@@ -17,9 +18,6 @@ public:
     using previous_event_reference = previous_event_type&;
     using input_event_const_reference = const input_event_type&;
     using previous_event_const_reference = const previous_event_type&;
-
-    // deprecated
-    using event_stack_type = std::stack<XEvent>;
 };
 }
 

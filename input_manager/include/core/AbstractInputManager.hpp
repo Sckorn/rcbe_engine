@@ -15,7 +15,6 @@
 
 namespace rcbe::core {
 
-// TODO: refactor for ptrs
 using AbstractInputManagerPtr = std::shared_ptr<InputManagerImplementation>;
 using AbstractInputManagerConstPtr = std::shared_ptr<const InputManagerImplementation>;
 

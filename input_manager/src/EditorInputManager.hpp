@@ -3,12 +3,8 @@
 
 #include <memory>
 
-#include <X11/keysym.h>
-
 #include <core/InputManagerImplementation.hpp>
 #include <core/gl_helpers.hpp>
-
-#include <common/utils/stack_utils.hpp>
 
 #include <data_types/math/Matrix.hpp>
 #include <data_types/math/Vector.hpp>

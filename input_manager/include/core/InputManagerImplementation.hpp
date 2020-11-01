@@ -7,12 +7,6 @@
 #include <stack>
 #include <enable_shared_from_this.hpp>
 
-#include <boost/log/trivial.hpp>
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/identity.hpp>
-#include <boost/multi_index/member.hpp>
-
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
@@ -22,8 +16,6 @@
 #include <traits/input_manager.hpp>
 
 namespace rcbe::core {
-
-static constexpr size_t DEFAULT_MAXIMUM_DELEGATE_SIZE = 10;
 
 class InputManagerImplementation;
 

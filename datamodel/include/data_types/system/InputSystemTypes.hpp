@@ -3,7 +3,6 @@
 
 #include <boost/bimap.hpp>
 #include <boost/assign.hpp>
-#include <boost/log/trivial.hpp>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -146,7 +145,7 @@ struct InputEventTypeHash
     }
 };
 
-enum class KeyboardEventType : size_t {
+enum class KeyboardEventType {
     symbol_w = XK_w,      // XK_w
     symbol_W = XK_W,      // XK_W
     symbol_a = XK_a,      // XK_a
