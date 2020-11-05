@@ -32,9 +32,9 @@ public:
         return std::make_shared<GameInputManager>(std::move(j));
     }
 
-    bool try_set(int keycode, int value);
-
 private:
+
+    bool try_set(int keycode, int value);
 
     InputScheme scheme_;
 };
