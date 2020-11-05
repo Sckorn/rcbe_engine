@@ -5,6 +5,7 @@
 #include <core/AbstractInputManager.hpp>
 
 #include <common/utils/json_utils.hpp>
+#include <core/GameInputManager.hpp>
 
 #include "XWindow.hpp"
 

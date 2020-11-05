@@ -25,10 +25,10 @@ using InputManagerImplementationConstPtr = std::shared_ptr<const InputManagerImp
 class InputManagerImplementation : public utility::InputManagerTraits, public std::enable_shared_from_this<InputManagerImplementation> {
 public:
 
-   using delegate_type = Delegate<void, InputManagerImplementationPtr, input_event_reference, previous_event_reference>;
-   using handler_intermidiate_storage = std::pair<InputEventType, typename delegate_type::invocation_type>;
+    using delegate_type = Delegate<void, InputManagerImplementationPtr, input_event_reference, previous_event_reference>;
+    using handler_intermidiate_storage = std::pair<InputEventType, typename delegate_type::invocation_type>;
 
-    ~InputManagerImplementation() = default;
+    virtual ~InputManagerImplementation() = default;
 
     bool try_process_event(input_event_reference event);
 

@@ -50,8 +50,6 @@ public:
                         InputEventType::key_press, [c](InputManagerImplementationPtr im, input_event_reference event, previous_event_reference previous) {
                             BOOST_LOG_TRIVIAL(debug) << event.xkey.keycode;
 
-                            auto key_sym = XLookupKeysym(&(event.xkey), 0);
-
                             if (im->get_value(KeyboardEventType::symbol_w)) {
                                 c->tvec = c->tvec + rcbe::math::Vector3d {0.0, 0.0, 1.0};
                                 return;
@@ -92,6 +90,7 @@ public:
                                 return;
                             }
 
+                            auto key_sym = XLookupKeysym(&(event.xkey), 0);
                             BOOST_LOG_TRIVIAL(info) << "Unhandled KeySym " << key_sym;
                         }
                 },

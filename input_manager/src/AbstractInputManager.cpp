@@ -1,7 +1,7 @@
 #include <core/AbstractInputManager.hpp>
 
-#include "EditorInputManager.hpp"
-#include "GameInputManager.hpp"
+#include <core/EditorInputManager.hpp>
+#include <core/GameInputManager.hpp>
 
 namespace rcbe::core {
 AbstractInputManagerPtr create_input_manager(const rendering::RenderingContextPtr& ctx) {
