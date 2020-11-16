@@ -1,5 +1,5 @@
 build_flags:
-  --build_tag_filters=-optional,-experimental,-catkin_deploy,-integration_tests,-docker
+  --build_tag_filters=-optional,-experimental
 
 directories:
   # Add the directories you want added as source here

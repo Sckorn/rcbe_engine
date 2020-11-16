@@ -9,27 +9,32 @@ namespace rcbe::math
 // TODO: refactor it so transform stores 4x4 matrix
 class Transform
 {
+public:
     using rotation_type =  Matrix3x3;
     using translation_type = Vector3d;
-public:
+    using underlying_type = Matrix4x4;
+
     Transform() = default;
-    Transform(const Matrix3x3 &r, const Vector3d &t);
+    Transform(const rotation_type &r, const translation_type &t);
+    explicit Transform(const underlying_type& matrix);
 
-    const rotation_type &getRotation() const;
-    rotation_type &getRotation();
+    [[nodiscard]] rotation_type getRotation() const;
+    [[nodiscard]] translation_type getTranslation() const;
 
-    const translation_type &getTranslation() const;
-    translation_type &getTranslation();
-
-    Vector3d transform(const Vector3d &v) const;
+    [[nodiscard]]Vector3d transform(const Vector3d &v) const;
     Vector3d operator()(const Vector3d &v) const;
     friend Vector3d operator*(const Transform &t, const Vector3d &v);
     friend Transform operator*(const Transform &lhs, const Transform &rhs);
     friend Matrix3x3 operator*(const Transform &lhs, const Matrix3x3 &rhs);
 
+    void inverse();
+    [[nodiscard]] Transform inversed() const;
+
+    [[nodiscard]] const underlying_type& matrix() const;
+
 private:
-    rotation_type _rotation;
-    translation_type _translation;
+
+    underlying_type matrix_;
 };
 }
 

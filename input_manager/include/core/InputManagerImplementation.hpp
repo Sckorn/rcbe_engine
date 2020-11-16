@@ -19,19 +19,18 @@
 
 namespace rcbe::core {
 
-static constexpr size_t DEFAULT_MAXIMUM_DELEGATE_SIZE = 10;
-
 // shared from this, pass to window
 // TODO: this should be renamed into InputManagerImpl, and relocated into private header
 class InputManagerImplementation : public utility::InputManagerTraits {
 public:
 
-   using delegate_type = Delegate<void, handler_signature>;
+    using delegate_type = Delegate<void, InputManagerImplementation&, input_event_reference, previous_event_reference>;
+    using invocation_type = typename delegate_type::invocation_type;
+    using handler_intermidiate_storage = std::pair<InputEventType, invocation_type>;
 
-   InputManagerImplementation() = default;
-    ~InputManagerImplementation() = default;
+    virtual ~InputManagerImplementation() = default;
 
-    bool try_process_event(XEvent& event);
+    bool try_process_event(input_event_reference event);
 
     template <typename HandlerType>
     void register_handler(InputEventType etype, HandlerType&& h) {
@@ -46,7 +45,7 @@ public:
             else
                 BOOST_LOG_TRIVIAL(debug) << "Inserted handler fot event type " << event_type;
         } else {
-            handlers_.at(etype).as<handler_signature>() += std::move(h);
+            handlers_.at(etype).as<InputManagerImplementation&, input_event_reference, previous_event_reference>() += std::move(h);
         }
 
         if (active_events_.find(event_type) == active_events_.end()) {
@@ -54,9 +53,26 @@ public:
         }
     }
 
-    [[nodiscard]]bool event_active(InputEventType event_type) const;
+    template <typename Handlers>
+    void register_handlers(std::vector<Handlers>&& h) {
+        for (auto&& [type, handler] : h) {
+            register_handler(type, std::move(handler));
+        }
+    }
+
+    [[nodiscard]] bool event_active(InputEventType event_type) const;
+
+    [[nodiscard]] bool get_value(MouseEventType type) const;
+    [[nodiscard]] bool get_value(KeyboardEventType type) const;
+
+protected:
+    InputManagerImplementation() = default;
 
 private:
+    void disable_all_mouse();
+    void disable_all_keyboard();
+
+    void exclude_event(const InputEventType event_type_raw);
 
     InputManagerMode mode_ = InputManagerMode::simple;
     int number_devices_ = 0;
@@ -75,7 +91,11 @@ private:
             {InputEventType ::key_press, InputEventType ::key_release},
             {InputEventType ::key_release, InputEventType ::key_press}
     };
-    event_stack_type propagated_events_;
+
+    std::unordered_map<MouseEventType, bool, InputMouseButtonHash> mouse_buttons_states_;
+    std::unordered_map<KeyboardEventType, bool, InputKeyboardKeysHash> keyboard_buttons_states_;
+
+    previous_event_type previous_event_ = std::nullopt;
 };
 
 using InputManagerPtr = std::unique_ptr<InputManagerImplementation>;

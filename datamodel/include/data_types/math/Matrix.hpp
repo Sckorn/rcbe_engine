@@ -227,6 +227,14 @@ public:
         return m * scalar;
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const Matrix& m) {
+        for (const auto& mm : m._m) {
+            os << mm << " ";
+        }
+        os << std::endl;
+        return os;
+    }
+
 private:
 
     std::vector<value_type> algebraic_additions(const std::vector<value_type >& m) const {

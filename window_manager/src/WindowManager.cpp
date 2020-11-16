@@ -40,4 +40,8 @@ WindowPtr WindowManager::create_window(const nlohmann::json &json_config) {
     WindowConfig c = json_config.at("window_config");
     return create_window(std::move(c));
 }
+
+WindowManager::~WindowManager() {
+    XCloseDisplay(x_display_);
+}
 }

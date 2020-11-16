@@ -38,12 +38,19 @@ public:
         }, variant_);
     }
 
+#ifdef RCBE_DEBUG
+    //*For the simplicity of debug*/
+    InputManagerVariant& get_variant() {
+        return variant_;
+    }
+#endif
+
 private:
     InputManagerVariant variant_;
 };
 
-using AbstractInputManagerPtr = std::unique_ptr<AbstractInputManager>;
-using AbstractInputManagerConstPtr = std::unique_ptr<const AbstractInputManager>;
+using AbstractInputManagerPtr = std::shared_ptr<AbstractInputManager>;
+using AbstractInputManagerConstPtr = std::shared_ptr<const AbstractInputManager>;
 }
 
 #endif //RCBE_ENGINE_ABSTRACTINPUTMANAGER_HPP

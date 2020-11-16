@@ -43,10 +43,6 @@ public:
     void reshape();
 
     void on_stop(renderer_stop_handler_t&& handler);
-
-    void translate_scene(const rcbe::math::Vector3d& t) const;
-    void rotate_scene(const rcbe::math::Vector3d& t, rcbe::core::EngineScalar angle_deg) const;
-
 private:
     std::unique_ptr<GLRendererImplementation> impl_;
 };

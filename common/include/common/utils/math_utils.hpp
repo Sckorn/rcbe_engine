@@ -9,7 +9,11 @@
 namespace rcbe::math
 {
 inline core::EngineScalar deg_to_rad(const core::EngineScalar angle) {
-    return M_PI / 180 * angle ;
+    return M_PI / 180 * angle;
+}
+
+inline core::EngineScalar rad_to_deg(const core::EngineScalar angle) {
+    return 180 / M_PI * angle;
 }
 
 template <typename Value, typename = std::enable_if_t<std::is_integral_v<Value>, void >>

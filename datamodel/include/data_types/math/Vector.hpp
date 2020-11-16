@@ -143,9 +143,11 @@ public:
     void normalize()
     {
         const auto len = length();
-        for (auto &e : _v)
-        {
-            e /= len;
+        if (len != 0) {
+            for (auto &e : _v)
+            {
+                e /= len;
+            }
         }
     }
 
@@ -166,6 +168,10 @@ public:
     static Vector cross(const Vector& v1, const Vector& v2)
     {
         return { v1.y() * v2.z() - v1.z() * v2.y(), v1.z() * v2.x() - v1.x() * v2.z(), v1.x() * v2.y() - v1.y() * v2.x()  };
+    }
+
+    [[nodiscard]] friend Vector operator-(const Vector& v) {
+        return v * -1;
     }
 
 private:

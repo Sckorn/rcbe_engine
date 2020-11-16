@@ -15,9 +15,10 @@ struct RendererConfig
     std::string window_caption;
     rcbe::core::Dimensions initial_dimensions;
     bool resizable;
-    rcbe::math::Vector2d initial_position;
+    rcbe::math::Vector2d initial_window_position;
     rcbe::visual::RGBAColor clear_color;
-    rcbe::core::EngineScalar camera_zoom;
+    rcbe::math::Vector3d camera_position;
+    rcbe::math::Vector3d camera_lookat;
 };
 
 }

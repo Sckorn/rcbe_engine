@@ -15,6 +15,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        "//camera:rcbe_engine_camera",
         "//datamodel:engine_datamodel_core",
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_rendering",
@@ -42,6 +43,7 @@ cc_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":rcbe_renderer",
+        "//camera:rcbe_engine_camera",
         "//common:engine_json_utils",
         "//common:engine_output_utils",
         "//datamodel:engine_datamodel_math",

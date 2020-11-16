@@ -42,9 +42,10 @@ public:
     void kill();
     void map_window();
     void set_renderer(rendering::GLRendererPtr renderer_ptr);
+    void set_manager(const std::shared_ptr<AbstractInputManager>& manager);
 
     [[nodiscard]] const rendering::GLRendererPtr& get_renderer() const;
-    [[nodiscard]]const AbstractInputManager& get_input_manager() const;
+    [[nodiscard]] const std::shared_ptr<AbstractInputManager>& get_input_manager() const;
 
 private:
 
@@ -54,12 +55,13 @@ private:
     std::mutex running_mutex_;
     std::mutex input_event_mutex_;
     mutable std::mutex renderer_access_mutex_;
+    mutable std::mutex input_manager_access_mutex_;
     bool running_ = false;
     Display* root_display_ = nullptr;
     XSetWindowAttributes attributes_;
     std::shared_ptr<rendering::RenderingContext> rendering_context_ = nullptr;
     rendering::GLRendererPtr renderer_ = nullptr;
-    std::optional<core::AbstractInputManager> input_manager_ = std::nullopt;
+    std::shared_ptr<core::AbstractInputManager> input_manager_ = nullptr;
 
     std::mutex kill_mutex_;
     bool killed_ = false;

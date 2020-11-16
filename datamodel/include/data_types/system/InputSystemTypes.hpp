@@ -6,6 +6,7 @@
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/keysym.h>
 
 namespace rcbe::core {
 
@@ -22,6 +23,14 @@ enum class InputEventType {
     mouse_motion = MotionNotify,
     unknown = -1
 };
+
+inline bool is_mouse_event(InputEventType t) {
+    return (t == InputEventType::button_press || t == InputEventType::button_release || t == InputEventType::mouse_motion);
+}
+
+inline bool is_keyboard_event(InputEventType t) {
+    return (t == InputEventType::key_press || t == InputEventType::key_release);
+}
 
 using InputEventTypeBimap = boost::bimap<std::string, InputEventType>;
 
@@ -53,8 +62,8 @@ static InputEventType input_event_type_from_string(const std::string& type) {
 
 enum class MouseEventType {
     left_button = Button1,
-    right_button = Button2,
-    middle_button = Button3,
+    right_button = Button3,
+    middle_button = Button2,
     wheel_up = Button4,
     wheel_down = Button5,
     unknown = -1
@@ -87,6 +96,14 @@ static MouseEventType mouse_event_type_from_string(const std::string& type) {
 
     return MouseEventType ::unknown;
 }
+
+struct InputMouseButtonHash {
+    template <typename T>
+    std::size_t operator()(T t) const
+    {
+        return static_cast<std::size_t>(t);
+    }
+};
 
 enum class InputValueType {
     boolswitch,
@@ -121,6 +138,35 @@ static InputValueType input_value_type_from_string(const std::string& type) {
 
 struct InputEventTypeHash
 {
+    template <typename T>
+    std::size_t operator()(T t) const
+    {
+        return static_cast<std::size_t>(t);
+    }
+};
+
+enum class KeyboardEventType {
+    symbol_w = XK_w,      // XK_w
+    symbol_W = XK_W,      // XK_W
+    symbol_a = XK_a,      // XK_a
+    symbol_A = XK_A,      // XK_A
+    symbol_s = XK_s,      // XK_s
+    symbol_S = XK_S,      // XK_S
+    symbol_d = XK_d,      // XK_d
+    symbol_D = XK_D,      // XK_D
+    arrow_up = XK_Up,      // XK_uparrow
+    arrow_left = XK_Left,    // XK_leftarrow
+    arrow_right = XK_Right,   // XK_rightarrow
+    arrow_down = XK_Down,    // XK_downarrow
+    escape = XK_Escape,        // XK_Escape
+    backspace = XK_BackSpace,     // XK_BackSpace
+    tab = XK_Tab,           // XK_Tab
+    enter = XK_Return,         // XK_Return
+    space = XK_space,         // XK_space
+    tilde = XK_asciitilde // XK_asciitilde
+};
+
+struct InputKeyboardKeysHash {
     template <typename T>
     std::size_t operator()(T t) const
     {
