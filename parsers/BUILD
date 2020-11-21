@@ -20,6 +20,8 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
+### tests
+
 cc_test(
     name = "x3d_parser_test",
     srcs = glob(["test/*.cpp"]),
@@ -33,10 +35,14 @@ cc_test(
     ],
 )
 
-# packaging
+### packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "TARGET_ARCH")
+load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+
+## SO
 
 pkg_tar(
     name = "parsers-data",
@@ -58,16 +64,55 @@ pkg_tar(
 
 pkg_deb(
     name = "parsers-deb",
-    architecture = "amd64",
+    architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":parsers-package-data",
     depends = [
-        "rcbe_common",
-        "rcbe_datamodel",
+        "rcbe_common_filesystem_utils_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine parser libraries package",
     homepage = "http://rcbe.com",
     maintainer = "Daniil Kireev <sckorn@gmail.com>",
     package = "rcbe_parsers",
+    version = ENGINE_VERSION,
+)
+
+## Headers
+
+pkg_tar(
+    name = "parsers-headers-data",
+    srcs = [
+        "include/parsers/x3d/X3dParser.hpp",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/include/rcbe/parsers/x3d",
+)
+
+pkg_tar(
+    name = "parsers-headers-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":parsers-headers-data",
+    ],
+)
+
+pkg_deb(
+    name = "parsers-headers-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":parsers-headers-package-data",
+    depends = [
+        "rcbe_common_filesystem_utils_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_parsers_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+    ],
+    description = "RCBE game engine parser headers package",
+    homepage = "http://rcbe.com",
+    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    package = "rcbe_parsers_dev",
     version = ENGINE_VERSION,
 )

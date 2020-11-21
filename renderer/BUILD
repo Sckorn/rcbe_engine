@@ -53,10 +53,14 @@ cc_binary(
     ],
 )
 
-# packaging
+### packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "TARGET_ARCH")
+load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+
+## SO
 
 pkg_tar(
     name = "renderer-data",
@@ -78,18 +82,66 @@ pkg_tar(
 
 pkg_deb(
     name = "renderer-deb",
-    architecture = "amd64",
+    architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":renderer-package-data",
     depends = [
-        "rcbe_common",
-        "rcbe_datamodel",
-        "rcbe_window_manager",
-        "rcbe_gl_extensions",
+        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_window_manager_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_ticker_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "libboost-log{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine renderer libraries package",
     homepage = "http://rcbe.com",
     maintainer = "Daniil Kireev <sckorn@gmail.com>",
     package = "rcbe_renderer",
+    version = ENGINE_VERSION,
+)
+
+## Headers
+
+pkg_tar(
+    name = "renderer-headers-data",
+    srcs = [
+        "include/renderer/GLRenderer.hpp",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/include/rcbe/renderer",
+)
+
+pkg_tar(
+    name = "renderer-headers-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":renderer-headers-data",
+    ],
+)
+
+pkg_deb(
+    name = "renderer-headers-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":renderer-headers-package-data",
+    depends = [
+        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_rendering_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_gl_extensions_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_window_manager_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_ticker_dev{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_renderer_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
+        "nlohmann-json3-dev",
+    ],
+    description = "RCBE game engine renderer headers package",
+    homepage = "http://rcbe.com",
+    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    package = "rcbe_renderer_dev",
     version = ENGINE_VERSION,
 )

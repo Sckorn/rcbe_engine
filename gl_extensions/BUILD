@@ -10,10 +10,14 @@ cc_library(
     deps = [],
 )
 
-# packaging
+### packaging
+
+## SO
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "TARGET_ARCH")
+load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 
 pkg_tar(
     name = "gl-extensions-data",
@@ -35,12 +39,45 @@ pkg_tar(
 
 pkg_deb(
     name = "gl-extensions-deb",
-    architecture = "amd64",
+    architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":gl-extensions-package-data",
     description = "RCBE game engine gl extensions libraries package",
     homepage = "http://rcbe.com",
     maintainer = "Daniil Kireev <sckorn@gmail.com>",
     package = "rcbe_gl_extensions",
+    version = ENGINE_VERSION,
+)
+
+## Headers
+
+pkg_tar(
+    name = "gl-extensions-headers-data",
+    srcs = glob([
+        "include/core/**/*.hpp",
+    ]),
+    mode = "0644",
+    package_dir = "/usr/local/include/rcbe/core/",
+)
+
+pkg_tar(
+    name = "gl-extensions-headers-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":gl-extensions-headers-data",
+    ],
+)
+
+pkg_deb(
+    name = "gl-extensions-headers-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":gl-extensions-headers-package-data",
+    depends = ["rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
+    description = "RCBE game engine gl extensions headers package",
+    homepage = "http://rcbe.com",
+    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    package = "rcbe_gl_extensions_dev",
     version = ENGINE_VERSION,
 )
