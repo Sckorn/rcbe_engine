@@ -34,9 +34,9 @@ test --test_tag_filters=-integration_tests
 
 ####### compiler and linker options ######
 
-# enable c++17
-build --cxxopt=-std=c++17
-build --host_cxxopt=-std=c++17
+# enable c++20
+build --cxxopt=-std=c++2a
+build --host_cxxopt=-std=c++2a
 
 build --conlyopt=-std=c99
 build --host_conlyopt=-std=c99

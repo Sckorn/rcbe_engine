@@ -2,7 +2,7 @@
 #define RCBE_ENGINE_GL_HELPERS_HPP
 
 #include <cstdint>
-#include <array.hpp>
+#include <array>
 
 #include <GL/gl.h>
 

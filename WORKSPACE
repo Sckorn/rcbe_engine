@@ -3,20 +3,25 @@ workspace(name = "rcbe_engine")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-skylib_version = "0.7.0"
+skylib_version = "1.0.3"
 
 http_archive(
     name = "bazel_skylib",
-    sha256 = "2ef429f5d7ce7111263289644d233707dba35e39696377ebab8b0bc701f7818e",
-    type = "tar.gz",
-    url = "https://github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib.{}.tar.gz".format(skylib_version, skylib_version),
+    sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
+    urls = [
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib-{}.tar.gz".format(skylib_version, skylib_version),
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib-{}.tar.gz".format(skylib_version, skylib_version),
+    ],
 )
 
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
 # External deps
 
 git_repository(
     name = "com_github_nelhage_rules_boost",
-    commit = "6d6fd834281cb8f8e758dd9ad76df86304bf1869",
+    commit = "fbac9be7640ecc0fab075233d394f08f1a37e449",
     remote = "https://github.com/nelhage/rules_boost",
 )
 

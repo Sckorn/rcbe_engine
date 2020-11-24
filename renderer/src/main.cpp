@@ -12,6 +12,7 @@
 #include <iostream>
 #include <chrono>
 #include <memory>
+#include <span> // left to clarify that c++20 is used
 
 #include <common/utils/output_utils.hpp>
 #include <core/AbstractInputManager.hpp>
@@ -85,6 +86,11 @@ int main(int argc, char * argv[]) {
         BOOST_LOG_TRIVIAL(error) << "Exception thrown: " << e.what();
         return 1;
     }
+
+#ifdef  RCBE_DEBUG
+    std::array<int, 2> arr = {0, 1};
+    std::span s{arr};
+#endif
 
     return 0;
 }
