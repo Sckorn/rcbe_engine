@@ -19,12 +19,12 @@ jobs:
 
     - name: bazel-build
       env:
-        CC: gcc-9
-        CXX: g++-9
+        CC: gcc-10
+        CXX: g++-10
       run: bazel build //...
 
     - name: bazel-test
       env:
-        CC: gcc-9
-        CXX: g++-9
+        CC: gcc-10
+        CXX: g++-10
       run: bazel test --test_output=all //...

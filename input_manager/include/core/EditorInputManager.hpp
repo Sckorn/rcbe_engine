@@ -2,7 +2,6 @@
 #define RCBE_ENGINE_EDITORINPUTMANAGER_HPP
 
 #include <memory>
-#include <enable_shared_from_this.hpp>
 
 #include <core/InputManagerImplementation.hpp>
 
