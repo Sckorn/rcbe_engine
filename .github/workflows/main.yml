@@ -5,10 +5,13 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  release:
+    types: [ created ]
+    branches: [ master ]
 
 jobs:
 
-  build-and-test:
+  build-test-deploy: # done in a single job to save time, since splitting these into three separate jobs makes the overall time 5 times bigger
     runs-on: ubuntu-latest
 
     steps:
@@ -28,3 +31,18 @@ jobs:
         CC: gcc-10
         CXX: g++-10
       run: bazel test --test_output=all //...
+
+    - name: deploy-packages
+      if: ${{ github.event_name == 'release' }}
+      env:
+        CC: gcc-10
+        CXX: g++-10
+      run: python3 deploy_packages.py
+
+    - uses: actions/upload-artifact@v2
+      env:
+        engine_version: "0.0.3"
+        target_architecture: "amd64"
+      with:
+        name: ${{ format('rcbe_engine_{0}_{1}_{2}', env.engine_version, env.target_architecture, github.sha) }}
+        path: ${{ format('/tmp/rcbe_engine_{0}_{1}.tar.gz', env.engine_version, env.target_architecture) }}
