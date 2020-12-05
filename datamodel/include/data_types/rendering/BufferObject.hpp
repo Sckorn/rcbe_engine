@@ -47,7 +47,7 @@ private:
 
     GLuint id_ = 0;
 
-    size_t source_size_; // since size of all filled ontainers (i.e. vertices, normals, colors) should be the same we kepp only one size
+    size_t source_size_; // since size of all filled containers (i.e. vertices, normals, colors) should be the same we keep only one size
     size_t buffer_size_bytes_;
 
     size_t vertices_byte_size_;

@@ -25,6 +25,7 @@ public:
 
     static constexpr size_t dimension = dim;
 
+// TODO: remove this access specifier
 public:
 
     using value_type = ValueType;
@@ -47,7 +48,7 @@ public:
     template <typename... valt, typename = std::enable_if_t< (std::is_convertible_v<valt, value_type> && ... ) && (sizeof...(valt) == dimension) > >
     Vector(valt&&... args)
     :
-    _v( {args...} )
+    _v( {args...} ) // TODO: std::forward just in case
     {}
 
     Vector(const Vector &other) = default;
@@ -71,7 +72,7 @@ public:
         if (index < 0 || index >= dimension)
             throw std::out_of_range(std::to_string(index) + " is out of range.");
 
-        return _v.at(index);
+        return _v.at(index); //TODO: at performs range check itself
     }
 
     value_type &x()
@@ -175,7 +176,7 @@ public:
     }
 
 private:
-    StorageBase<ValueType, dim> _v;
+    StorageBase<ValueType, dim> _v; // TODO: rename to v_
 };
 
 using Vector4d = Vector<core::EngineScalar, 4>;

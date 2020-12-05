@@ -13,6 +13,7 @@ template <typename ValueType>
 class Quaternion
 {
 public:
+    //TODO: add using scalar_type =
     static constexpr size_t dimension = 4;
     using value_type = ValueType;
     using vector_type = Vector<value_type, dimension - 1>;
@@ -23,6 +24,7 @@ public:
     q_ { v.x(), v.y(), v.z(), s }
     {}
 
+    //TODO: refactor this ctor to use types from rotation_units.hpp i.e. Yaw, Pitch structure
     Quaternion(const value_type yaw, const value_type pitch, const value_type roll)
     {
        auto r = rcbe::math::deg_to_rad(roll);
@@ -77,6 +79,7 @@ public:
         return q_.w();
     }
 
+    // TODO: Return Vector4d
     vector_type getVectorPart() const
     {
         return {q_.x(), q_.y(), q_.z()};

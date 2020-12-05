@@ -24,6 +24,7 @@ public:
         _storage.fill(0);
     }
 
+    // TODO: make this generic
     Triangle(const size_t v1, const size_t v2, const size_t v3) noexcept
     :
     _storage( {v1, v2, v3} )

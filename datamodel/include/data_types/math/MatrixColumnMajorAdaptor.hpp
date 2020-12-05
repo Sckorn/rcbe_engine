@@ -8,6 +8,7 @@
 namespace rcbe::math {
 class MatrixColumnMajorAdaptor {
 public:
+    // TODO: use valarray
     using storage_type = std::vector<core::EngineScalar>;
 
     MatrixColumnMajorAdaptor() = default;
@@ -19,7 +20,7 @@ public:
     adapted_storage_(r * c, 0)
     {
         using matrix_type = Matrix<value, r, c>;
-        static_assert(r * c == matrix_type::rows * matrix_type::columns, "Dimensions of matrix and adaptor should be equal");
+        static_assert(r * c == matrix_type::rows * matrix_type::columns, "Dimensions of matrix and adaptor should be equal"); //TODO: this check is redundant
 
         for (size_t j = 0; j < c; ++j) {
             const auto column = m.getColumn(j);

@@ -3,6 +3,8 @@
 
 #include <stack>
 
+// TODO: this is kind of useless
+
 namespace rcbe::utils {
 template <typename Element>
 Element pop(std::stack<Element> &s) {

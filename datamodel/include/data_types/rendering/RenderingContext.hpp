@@ -95,6 +95,7 @@ private:
     std::optional<rcbe::math::Vector2d> mouse_coordinates_;
     rcbe::core::EngineScalar zoom_ = 45.;
 
+    // TODO: these should and can be relocated to the Ticker class
     uint64_t previous_time_ = 0;
     uint64_t current_time_ = 0;
 };

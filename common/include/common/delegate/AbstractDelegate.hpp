@@ -15,6 +15,7 @@ public:
             :
             impl_ { std::make_shared< DelegateImpl < Delegate < Signature... > >  >(std::move(d)) }
     {
+        // TODO: string is too long, add line break
         static_assert(std::is_rvalue_reference_v<decltype(d)>, "Abstract delegate owns the actual delegate invoked, provide rvalue reference!!!");
     }
 
@@ -68,7 +69,6 @@ public:
 
 private:
 
-    // TODO maybe try to use CRPT, for this
     struct DelegateImplInterface {
         [[nodiscard]] virtual size_t max_size() const noexcept = 0;
         [[nodiscard]] virtual size_t size() const noexcept = 0;
@@ -95,14 +95,17 @@ private:
             delegate_.invoke(std::forward<Signature>(s)...);
         }
 
+
         void add(typename T::invocation_type&& inv) {
             delegate_.add(std::move(inv));
         }
 
+        // TODO: mark noexcept
         T& get() {
             return delegate_;
         }
 
+        // TODO: mark noexcept
         const T& get() const {
             return delegate_;
         }

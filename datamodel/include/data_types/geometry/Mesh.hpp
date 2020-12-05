@@ -65,10 +65,12 @@ public:
     Mesh(Mesh &&other) = default;
     Mesh &operator=(Mesh &&other) = default;
 
+    // TODO: mark the three below as noexcept
     const vertex_storage &vertices() const;
     const normal_storage &normals() const;
     const facet_storage &facets() const;
 
+    // TODO: mark the three below as noexcept
     size_t vertices_size() const;
     size_t normals_size() const;
     size_t facets_size() const;
@@ -91,8 +93,10 @@ public:
     facets_iterator facets_end();
     const_facets_iterator facets_cend() const;
 
+    // TODO: mark noexcept
     const color_type &color() const;
 
+    // TODO: mark noexcept
     const transform_type &get_transform() const;
     void transform(const transform_type &t);
     void set_transform(const transform_type &t);
@@ -100,6 +104,7 @@ public:
     friend Mesh operator*(const transform_type &t, Mesh m);
 
 private:
+    // TODO: relocate the underscore to the end
     vertex_storage _vertices;
     normal_storage _normals;
     facet_storage _facets;

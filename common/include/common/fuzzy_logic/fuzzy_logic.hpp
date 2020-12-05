@@ -8,6 +8,7 @@
 
 namespace rcbe::core
 {
+// TODO: use concepts
 template <typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
 bool fuzzy_equal(const T lhs, const T rhs, const double epsilon = core::EPSILON)
 {

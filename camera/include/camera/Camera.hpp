@@ -16,6 +16,8 @@ public:
     using transform_type = math::Transform;
 
     Camera() = delete;
+
+    // TODO: Create CameraConfig, pass it to this ctor, give up a default value of WORLD_UP
     Camera(const rendering::RenderingContextPtr &context, const math::Vector3d &position, const math::Vector3d &lookat, const math::Vector3d &up);
     ~Camera() = default;
 

@@ -15,6 +15,7 @@ public:
     using storage_type = rcbe::math::Vector<rcbe::core::EngineScalar, dimension>;
 public:
     RGBAColor() = default;
+    // TODO: add hex ctor
     RGBAColor(
         const rcbe::core::EngineScalar r, 
         const rcbe::core::EngineScalar g, 

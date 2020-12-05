@@ -37,7 +37,7 @@ public:
     void on_configure(window::configure_handler_t&& handler);
     void on_unmap(window::unmap_handler_t&& handler);
 
-    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const;
+    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const; // TODO: rename to getRenderingContext
 
     void kill();
     void map_window();

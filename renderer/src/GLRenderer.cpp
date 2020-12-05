@@ -31,6 +31,7 @@ public:
 
 private:
 
+    // TODO: rename to render fram, make it return Time object, that contains current frame time, prev frame time and delta, also pass current time
     void render_loop();
 
     void init_gl();

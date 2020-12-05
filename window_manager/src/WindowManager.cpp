@@ -41,6 +41,7 @@ WindowPtr WindowManager::create_window(const nlohmann::json &json_config) {
     return create_window(std::move(c));
 }
 
+// TODO: iterate over created windows and kill them all
 WindowManager::~WindowManager() {
     XCloseDisplay(x_display_);
 }

@@ -34,6 +34,7 @@ private:
     struct CObjectImplInterface
     {
         virtual size_t hash() const = 0;
+        // TODO: mark noexcept
         virtual size_t id() const = 0;
     };
 
@@ -59,6 +60,7 @@ private:
 
     private:
         T _value;
+        // TODO: make const
         size_t _id;
     };
 

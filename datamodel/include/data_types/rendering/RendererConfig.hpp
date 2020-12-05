@@ -17,6 +17,7 @@ struct RendererConfig
     bool resizable;
     rcbe::math::Vector2d initial_window_position;
     rcbe::visual::RGBAColor clear_color;
+    //TODO: introduce camera config, move these there
     rcbe::math::Vector3d camera_position;
     rcbe::math::Vector3d camera_lookat;
 };

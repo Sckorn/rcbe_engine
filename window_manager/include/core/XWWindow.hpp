@@ -29,6 +29,7 @@ class XWWindow
 public:
     XWWindow() = delete;
 
+    // TODO: add WindowContext class, to hide details about rott window and stuff
     XWWindow(WindowConfig &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg);
 
     ~XWWindow();
@@ -51,7 +52,7 @@ public:
     void on_configure(window::configure_handler_t&& handler);
     void on_unmap(window::unmap_handler_t&& handler);
 
-    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const;
+    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const; // TODO: rename to getRenderingContext
 
     void set_renderer(rcbe::rendering::GLRendererPtr renderer_ptr);
     [[nodiscard]]const rcbe::rendering::GLRendererPtr& get_renderer() const;

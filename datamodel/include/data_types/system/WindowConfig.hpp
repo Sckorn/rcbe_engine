@@ -22,7 +22,7 @@ using configure_handler_t = std::function<void()>;
 }
 
 struct WindowConfig {
-    enum class WindowType {
+    enum class WindowType { // TODO: make members lowercase
         GL_RENDERING_WINDOW,
         DRAWING_WINDOW,
         UNKNOWN = 255
@@ -32,7 +32,7 @@ struct WindowConfig {
     math::Vector2d position;
     core::Dimensions size;
     visual::RGBAColor background_color;
-    bool fullsreen = false;
+    bool fullscreen = false;
     bool process_input = false;
     bool editor = false;
     WindowType type = WindowType ::UNKNOWN;

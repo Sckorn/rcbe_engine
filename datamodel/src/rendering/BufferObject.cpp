@@ -5,7 +5,7 @@
 namespace rcbe::rendering {
 VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes) {
     // right now keeping it simple, it's not a VBO's business to validate meshes
-    // they'll be validate by scene graph
+    // they'll be validated by scene graph
 
     size_t normals_size = 0;
     source_size_ = std::accumulate(meshes.begin(), meshes.end(), 0, [&normals_size](auto sum, const auto &s) mutable {
@@ -18,6 +18,7 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
     vertices_.reserve(source_size_ * 3);
     colors_.reserve(source_size_ * 3);
 
+    // TODO: it seems that this should be negated
     if (normals_intact_) {
         BOOST_LOG_TRIVIAL(warning) << "Normals are of wrong size!";
         normals_.reserve(source_size_ * 3);

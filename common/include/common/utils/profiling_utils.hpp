@@ -6,6 +6,7 @@
 #include <ostream>
 
 namespace rcbe::utils {
+// TODO: use concepts
 template <typename S, typename F, typename ... Args>
 decltype(auto) profiled_call(S& s, F f, Args&&... a) {
     auto start = std::chrono::steady_clock::now();

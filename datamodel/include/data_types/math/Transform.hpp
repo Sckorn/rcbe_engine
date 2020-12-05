@@ -6,7 +6,6 @@
 
 namespace rcbe::math 
 {
-// TODO: refactor it so transform stores 4x4 matrix
 class Transform
 {
 public:

@@ -3,6 +3,7 @@
 
 namespace rcbe::gui
 {
+// TODO: not used can be replaced by Vector2d, amke and alias.
 template <typename ValueType>
 class Point2
 {

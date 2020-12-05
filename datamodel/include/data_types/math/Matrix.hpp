@@ -30,6 +30,7 @@ public:
     static constexpr size_t rows = DimRow;
     static constexpr size_t columns = DimCol;
 
+    // TODO: is this assert even right? Also add a message to clarify
     static_assert(std::is_scalar_v<ValueType>);
 
 public:

@@ -22,6 +22,7 @@ class Delegate<void, Signature...> {
 public:
     using invocation_type = std::function<void(Signature&& ...)>;
 
+    // TODO: mark explicit
     Delegate(size_t max_delegate_size = DEFAULT_DELEGATE_SIZE)
     :
     max_delegate_size_ { max_delegate_size }
@@ -60,7 +61,9 @@ public:
     }
 
 private:
+    // TODO: make const
     size_t max_delegate_size_;
+    // TODO: use valarray
     std::vector<invocation_type> invocation_list_;
 };
 }

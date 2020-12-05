@@ -5,6 +5,7 @@
 
 namespace rcbe::core
 {
+// TODO: remove this
 template <typename ValueType, size_t dim>
 class [[deprecated]] ArrayBase
 {

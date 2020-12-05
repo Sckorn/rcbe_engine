@@ -1,3 +1,5 @@
+// TODO: consider making this into a separate pacakge that will be later transformed into engine package
+
 #include <renderer/GLRenderer.hpp>
 #include <rcbe/camera/Camera.hpp>
 

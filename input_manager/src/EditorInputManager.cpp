@@ -10,6 +10,7 @@
 #include <data_types/math/Vector.hpp>
 
 namespace rcbe::core {
+//TODO: looks useless, consider relocating to header
 EditorInputManager::EditorInputManager(handler_collection&& h)
 {
     register_handlers(std::move(h));

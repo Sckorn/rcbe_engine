@@ -43,7 +43,7 @@ XWindow::XWindow(WindowConfig &&config, Display *root_display, int screen_number
     if (visInfo == nullptr)
         throw std::runtime_error("VisualInfo is null pointer");
 
-    rendering_context_->set_display(XOpenDisplay(NULL));
+    rendering_context_->set_display(XOpenDisplay(NULL)); // TODO: use nullptr
     rendering_context_->set_background_color(config_.background_color);
     rendering_context_->set_window_dimensions(config.size);
     rendering_context_->set_delete_message(delete_msg);

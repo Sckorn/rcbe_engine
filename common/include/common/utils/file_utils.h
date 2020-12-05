@@ -7,8 +7,10 @@
 
 namespace rcbe::utils
 {
+// TODO: apparentely current notation is make_path_from_parts
 std::filesystem::path makePathFromParts(const std::vector<std::string> &parts);
 
+// TODO: apparentely current notation is make_string_path_from_parts
 std::string makeStringPathFromParts(const std::vector<std::string> &parts);
 
 }

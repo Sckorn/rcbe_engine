@@ -5,6 +5,8 @@
 
 #include <common/utils/json_utils.hpp>
 
+// TODO: this can be deleted
+
 int main(int argc, char * argv[]) {
     rcbe::core::WindowManager manager { true };
     rcbe::core::WindowConfig config = rcbe::utils::readFromFile<rcbe::core::WindowConfig>("datamodel/data/system/default_window_config.json");
