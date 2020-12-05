@@ -9,10 +9,10 @@ Here will be listed some basic code style rules to follow, while contributing to
 2. Prefer functions over macro. Avoid macro usage if possible.
 3. Headers:<br/>
 3.1 All headers except private ones should be included via `#include <some/system/header.hpp>` instruction. Private headers are included like this `#include "header.hpp"`.<br/>
-3.2 The order of inclusion is as follows: first included `std` headers, then come `boost` headers, then all other dependencies (i.e. `OpenGL`) headers and then engine headers. This order is intact unless there is a specific reason to break this order. The reason should be clarified int he comment.<br />
+3.2 The order of inclusion is as follows: first included `std` headers, then come `boost` headers, then all other dependencies (i.e. `OpenGL`) headers and then engine headers. This order is intact unless there is a specific reason to break this order. The reason should be clarified in the comment.<br />
 3.3 All headers of the engine should have `*.hpp` extension. <br />
 3.4 All public headers of the engine should be installed using `rcbe` include prefix, i.e. `#include <rcbe/camera/Camera.hpp`. This notation should be used inside the project and when libraries are installed into the system. <br />
-3.5 All headers should have an `ifdef`-lock of ofrmat `RCBE_ENGINE_HEADER_NAME_HPP`. <br />
+3.5 All headers should have an `ifdef`-lock of format `RCBE_ENGINE_HEADER_NAME_HPP`. <br />
 3.6 If any implementation details, that are to be hidden, remain in a header file, they should be hidden under `detail` namespace.
 4. Constants: <br />
 4.1 Fundamental type constants should always be declared `constexpr` if possible. <br />
