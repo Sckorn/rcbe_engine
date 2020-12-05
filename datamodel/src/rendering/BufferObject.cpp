@@ -1,16 +1,16 @@
-#include <data_types/rendering/BufferObject.hpp>
+#include <rcbe-engine/datamodel/rendering/BufferObject.hpp>
 
 #include <boost/log/trivial.hpp>
 
 namespace rcbe::rendering {
 VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes) {
     // right now keeping it simple, it's not a VBO's business to validate meshes
-    // they'll be validate by scene graph
+    // they'll be validated by scene graph
 
     size_t normals_size = 0;
     source_size_ = std::accumulate(meshes.begin(), meshes.end(), 0, [&normals_size](auto sum, const auto &s) mutable {
-        normals_size += s.normals_size();
-        return  sum + s.vertices_size();
+        normals_size += s.normalsSize();
+        return  sum + s.verticesSize();
     });
 
     normals_intact_ = source_size_ == normals_size;
@@ -18,14 +18,15 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
     vertices_.reserve(source_size_ * 3);
     colors_.reserve(source_size_ * 3);
 
-    if (normals_intact_) {
+    if (!normals_intact_) {
         BOOST_LOG_TRIVIAL(warning) << "Normals are of wrong size!";
+    } else {
         normals_.reserve(source_size_ * 3);
     }
 
     vertices_offset_.push_back(0);
     for (const auto& m : meshes) {
-        vertices_offset_.push_back(m.vertices_size());
+        vertices_offset_.push_back(m.verticesSize());
 
         const auto& vertices = m.vertices();
         const auto& normals = m.normals();
@@ -73,7 +74,7 @@ VertexBufferObject::~VertexBufferObject() {
     glDeleteBuffers(1, &id_);
 }
 
-void VertexBufferObject::enable_state() const {
+void VertexBufferObject::enableState() const {
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -87,55 +88,55 @@ void VertexBufferObject::unbind() const {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void VertexBufferObject::disable_state() const {
+void VertexBufferObject::disableState() const {
     glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
 }
 
-size_t VertexBufferObject::size() const {
+size_t VertexBufferObject::size() const noexcept {
     return vertices_.size();
 }
 
-size_t VertexBufferObject::source_size() const {
+size_t VertexBufferObject::sourceSize() const noexcept {
     return source_size_;
 }
 
-size_t VertexBufferObject::size_bytes() const {
+size_t VertexBufferObject::sizeBytes() const noexcept {
     return buffer_size_bytes_;
 }
 
-size_t VertexBufferObject::verts_byte_size() const {
+size_t VertexBufferObject::vertsByteSize() const noexcept {
     return vertices_byte_size_;
 }
 
-size_t VertexBufferObject::norms_byte_size() const {
+size_t VertexBufferObject::normsByteSize() const noexcept {
     return normals_byte_size_;
 }
 
-size_t VertexBufferObject::colors_byte_size() const {
+size_t VertexBufferObject::colorsByteSize() const noexcept {
     return colors_byte_size_;
 }
 
-VertexBufferObject::raw_data_type VertexBufferObject::vertices_data() const {
+VertexBufferObject::RawDataType VertexBufferObject::verticesData() const noexcept {
     return vertices_.data();
 }
 
-VertexBufferObject::raw_data_type VertexBufferObject::normals_data() const {
+VertexBufferObject::RawDataType VertexBufferObject::normalsData() const noexcept {
     return normals_.data();
 }
 
-VertexBufferObject::raw_data_type VertexBufferObject::colors_data() const {
+VertexBufferObject::RawDataType VertexBufferObject::colorsData() const noexcept {
     return colors_.data();
 }
 
-const std::vector<size_t>& VertexBufferObject::offsets() const {
+const std::vector<size_t>& VertexBufferObject::offsets() const noexcept {
     return vertices_offset_;
 }
 
 IndexBufferObject::IndexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes, const VertexBufferObject& vbo) {
     auto itotal = std::accumulate(meshes.begin(), meshes.end(), 0, [](auto sum, const auto &entry) {
-        return sum + entry.facets_size();
+        return sum + entry.facetsSize();
     });
 
     vertices_offset_ = vbo.offsets();
@@ -148,9 +149,9 @@ IndexBufferObject::IndexBufferObject(const std::vector<rcbe::geometry::Mesh>& me
         const auto offset = vertices_offset_[i];
         for (const auto &f : m.facets())
         {
-            indices_.push_back(f[0] + offset);
-            indices_.push_back(f[1] + offset);
-            indices_.push_back(f[2] + offset);
+            indices_.push_back(f.indices[0] + offset);
+            indices_.push_back(f.indices[1] + offset);
+            indices_.push_back(f.indices[2] + offset);
         }
         ++i;
     }
@@ -173,11 +174,11 @@ void IndexBufferObject::unbind() const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-size_t IndexBufferObject::size() const {
+size_t IndexBufferObject::size() const noexcept {
     return indices_.size();
 }
 
-IndexBufferObject::raw_data_type IndexBufferObject::data() const {
+IndexBufferObject::RawDataType IndexBufferObject::data() const noexcept {
     return indices_.data();
 }
 

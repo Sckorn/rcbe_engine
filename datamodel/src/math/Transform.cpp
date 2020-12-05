@@ -1,4 +1,5 @@
-#include <data_types/math/Transform.hpp>
+#include <rcbe-engine/datamodel/math/Transform.hpp>
+#include <rcbe-engine/datamodel/math/Matrix.hpp>
 
 namespace rcbe::math 
 {
@@ -14,7 +15,7 @@ matrix_ {
 
 }
 
-Transform::Transform(const underlying_type& matrix)
+Transform::Transform(const UnderlyingType& matrix)
 :
 matrix_ {
     matrix.at(0, 0), matrix.at(0, 1), matrix.at(0, 2), matrix.at(0, 3),
@@ -46,32 +47,32 @@ Vector3d operator*(const Transform &t, const Vector3d &v)
 
 Transform operator*(const Transform &lhs, const Transform &rhs)
 {
-    const auto t = ::operator*(lhs.matrix_, rhs.matrix_);
-    // TODO: fix namspaces to avoid this ^
+    using ::operator*; // enable ADL
+    const auto t = operator*(lhs.matrix_, rhs.matrix_);
     return Transform(t);
 }
 
 Matrix3x3 operator*(const Transform &lhs, const Matrix3x3 &rhs)
 {
-    // TODO: same as above
-    return ::operator*(lhs.getRotation(), rhs);
+    using ::operator*; // enable ADL
+    return operator*(lhs.getRotation(), rhs);
 }
 
-Transform::rotation_type Transform::getRotation() const {
+Transform::RotationType Transform::getRotation() const {
     const auto x_axis = matrix_.getColumn(0);
     const auto y_axis = matrix_.getColumn(1);
     const auto z_axis = matrix_.getColumn(2);
 
-    return rotation_type {
+    return RotationType {
             x_axis.x(), y_axis.x(), z_axis.x(),
             x_axis.y(), y_axis.y(), z_axis.y(),
             x_axis.z(), y_axis.z(), z_axis.z()
     };
 }
 
-Transform::translation_type Transform::getTranslation() const {
+Transform::TranslationType Transform::getTranslation() const {
     const auto t = matrix_.getColumn(3);
-    return translation_type{t.x(), t.y(), t.z()};
+    return TranslationType{t.x(), t.y(), t.z()};
 }
 
 void Transform::inverse() {
@@ -84,7 +85,7 @@ Transform Transform::inversed() const {
     return copy;
 }
 
-const Transform::underlying_type& Transform::matrix() const {
+const Transform::UnderlyingType& Transform::matrix() const {
     return matrix_;
 }
 }

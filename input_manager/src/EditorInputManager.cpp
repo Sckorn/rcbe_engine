@@ -2,17 +2,16 @@
 
 #include <X11/keysym.h>
 
-#include <core/EditorInputManager.hpp>
-#include <common/utils/stack_utils.hpp>
+#include <rcbe-engine/core/EditorInputManager.hpp>
 
-#include <core/gl_helpers.hpp>
-#include <data_types/math/Matrix.hpp>
-#include <data_types/math/Vector.hpp>
+#include <rcbe-engine/core/gl_helpers.hpp>
+#include <rcbe-engine/datamodel/math/Matrix.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
 
 namespace rcbe::core {
-EditorInputManager::EditorInputManager(handler_collection&& h)
+EditorInputManager::EditorInputManager(HandlerCollection&& h)
 {
-    register_handlers(std::move(h));
+    registerHandlers(std::move(h));
 }
 
 }

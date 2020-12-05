@@ -4,7 +4,6 @@
 
 #include <ticker/Ticker.hpp>
 
-// TODO: fix ticker so it is more preciese (i.e. no need for extra 1 in the ned of sleep time)
 TEST(TickerTests, FourInvocationsSimpleTests) {
     size_t counter = 0;
     rcbe::core::Ticker tick (std::chrono::milliseconds (30), [&counter]() mutable {

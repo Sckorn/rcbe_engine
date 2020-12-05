@@ -5,6 +5,7 @@ cc_library(
         exclude = ["src/main.cpp"],
     ),
     hdrs = glob(["include/**/*.hpp"]),
+    include_prefix = "rcbe-engine",
     includes = ["include"],
     linkopts = [
         "-lpthread",
@@ -13,6 +14,7 @@ cc_library(
         "-lGLX",
         "-lX11",
     ],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//common:rcbe_delegate",
@@ -32,6 +34,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 pkg_tar(
     name = "input-manager-data",
@@ -62,8 +66,8 @@ pkg_deb(
         "libboost-container{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine input manager libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_input_manager",
     version = ENGINE_VERSION,
 )
@@ -76,7 +80,7 @@ pkg_tar(
         "include/core/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/core/",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/core/",
 )
 
 pkg_tar(
@@ -95,8 +99,8 @@ pkg_deb(
     data = ":input-manager-headers-package-data",
     depends = ["rcbe_input_manager_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
     description = "RCBE game engine input manager headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_input_manager_dev",
     version = ENGINE_VERSION,
 )

@@ -1,19 +1,20 @@
-#include <renderer/GLRenderer.hpp>
+#include <rcbe-engine/renderer/GLRenderer.hpp>
 
 #include <mutex>
 #include <cmath>
+#include <atomic>
 
-#include <core/gl_extensions.hpp>
+#include <rcbe-engine/core/gl_extensions.hpp>
 
-#include <data_types/rendering/BufferObject.hpp>
-#include <ticker/Ticker.hpp>
+#include <rcbe-engine/datamodel/rendering/BufferObject.hpp>
+#include <rcbe-engine/ticker/Ticker.hpp>
 
 #include <boost/log/trivial.hpp>
 
 namespace rcbe::rendering {
 class GLRendererImplementation {
 public:
-    GLRendererImplementation(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context);
+    GLRendererImplementation(renderer_config &&config, const std::shared_ptr<RenderingContext>& context);
     ~GLRendererImplementation();
 
     [[nodiscard]]bool running() const;
@@ -21,33 +22,31 @@ public:
     void start();
     void stop();
 
-    [[nodiscard]] const RendererConfig& get_config() const;
+    [[nodiscard]] const renderer_config& getConfig() const noexcept;
 
-    void add_object(rcbe::geometry::Mesh &&object);
+    void addObject(rcbe::geometry::Mesh &&object);
 
-    void reshape_window();
+    void reshapeWindow();
 
-    void on_stop(renderer_stop_handler_t&& handler);
+    void onStop(RendererStopHandlerType&& handler);
 
 private:
+    std::chrono::microseconds renderFrame();
 
-    void render_loop();
+    void initGL();
 
-    void init_gl();
+    void initLights();
 
-    void init_lights();
+    void setPerspective(const double fov, const double aspect, const double near, const double far);
 
-    void set_perspective(const double fov, const double aspect, const double near, const double far);
+    void drawBuffers(const VertexBufferObject& vbo, const IndexBufferObject& ibo);
 
-    void draw_buffers(const VertexBufferObject& vbo, const IndexBufferObject& ibo);
-
-    RendererConfig config_;
+    renderer_config config_;
     std::shared_ptr<RenderingContext> rendering_context_;
-
-    mutable std::mutex control_mutex_;
+    
     std::mutex changed_mutex_;
     std::mutex reshape_mutex_;
-    bool running_ = false;
+    std::atomic_bool running_ = false;
     bool vbo_supported_ = false;
 
     std::vector<rcbe::geometry::Mesh> meshes_;
@@ -57,12 +56,12 @@ private:
 
     bool changed_ = false;
 
-    renderer_stop_handler_t stop_handler_;
+    RendererStopHandlerType stop_handler_;
 
     std::shared_ptr<rcbe::core::Ticker> ticker_;
 };
 
-GLRendererImplementation::GLRendererImplementation(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context)
+GLRendererImplementation::GLRendererImplementation(renderer_config &&config, const std::shared_ptr<RenderingContext>& context)
 :
  config_ { std::move(config) }
  , rendering_context_ { context }
@@ -70,7 +69,7 @@ GLRendererImplementation::GLRendererImplementation(RendererConfig &&config, cons
     if (rendering_context_ == nullptr)
         throw std::runtime_error("RenderingContext is null");
 
-    if (rendering_context_->get_glx_context() == nullptr)
+    if (rendering_context_->getGlxContext() == nullptr)
         throw std::runtime_error("GLX context is null");
 }
 
@@ -78,7 +77,7 @@ GLRendererImplementation::~GLRendererImplementation() {
     stop();
 }
 
-void GLRendererImplementation::set_perspective(const double fov, const double aspect, const double near, const double far) {
+void GLRendererImplementation::setPerspective(const double fov, const double aspect, const double near, const double far) {
     auto field_height = std::tan( (fov / 360 )* M_PI ) * near;
     auto field_width = field_height * aspect;
 
@@ -86,7 +85,7 @@ void GLRendererImplementation::set_perspective(const double fov, const double as
 }
 
 
-void GLRendererImplementation::init_gl() {
+void GLRendererImplementation::initGL() {
     glShadeModel(GL_SMOOTH);                    // shading mathod: GL_SMOOTH or GL_FLAT
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
 
@@ -106,16 +105,16 @@ void GLRendererImplementation::init_gl() {
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-    const auto& bg_color = rendering_context_->get_background_color();
+    const auto& bg_color = rendering_context_->getBackgroundColor();
     glClearColor(bg_color.r(), bg_color.g(), bg_color.b(), bg_color.a());                   // background color
     glClearStencil(0);                          // clear stencil buffer
     glClearDepth(1.0f);                         // 0 is near, 1 is far
     glDepthFunc(GL_LEQUAL);
 
-    init_lights();
+    initLights();
 }
 
-void GLRendererImplementation::init_lights() {
+void GLRendererImplementation::initLights() {
     // set up light colors (ambient, diffuse, specular)
     GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
     GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
@@ -131,41 +130,38 @@ void GLRendererImplementation::init_lights() {
     glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
 }
 
-void GLRendererImplementation::on_stop(renderer_stop_handler_t&& handler) {
+void GLRendererImplementation::onStop(RendererStopHandlerType&& handler) {
     stop_handler_ = std::move(handler);
 }
 
-void GLRendererImplementation::reshape_window() {
-    const auto& dimensions = rendering_context_->get_window_dimensions();
+void GLRendererImplementation::reshapeWindow() {
+    const auto& dimensions = rendering_context_->getWindowDimensions();
     glViewport(0, 0, dimensions.width, dimensions.height);
 
     // set perspective viewing frustum
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    set_perspective(rendering_context_->get_zoom(),  dimensions.width / dimensions.height, 0.1f, 100.0f);
+    setPerspective(rendering_context_->getZoom(), dimensions.width / dimensions.height, 0.1f, 100.0f);
 
-    const auto trn = rendering_context_->get_transform_column_major();
-    glMultMatrixd(static_cast<const GLdouble *>(trn.get_raw()));
+    const auto trn = rendering_context_->getTransformColumnMajor();
+    glMultMatrixd(static_cast<const GLdouble *>(trn.getRaw()));
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
 
 bool GLRendererImplementation::running() const {
-    std::lock_guard lg { control_mutex_ };
-    return running_;
+    return running_.load();
 }
 
 void GLRendererImplementation::start() {
-    {
-        std::lock_guard lg { control_mutex_ };
-        running_ = true;
-    }
+    bool expected = false;
+    if (!running_.compare_exchange_strong(expected, true)) return;
 
     try {
         ticker_ = std::make_shared<rcbe::core::Ticker>(std::chrono::milliseconds(1), [this]() {
-            render_loop();
+            rendering_context_->setCurrentTime(renderFrame());
         });
 
         ticker_->wait();
@@ -181,10 +177,8 @@ void GLRendererImplementation::start() {
 }
 
 void GLRendererImplementation::stop() {
-    std::lock_guard lg {control_mutex_};
-    if (!running_) return;
-
-    running_ = false;
+    bool expected = true;
+    if (!running_.compare_exchange_strong(expected, false)) return;
 
     ticker_->stop();
     ticker_->wait();
@@ -193,28 +187,28 @@ void GLRendererImplementation::stop() {
         stop_handler_(rendering_context_);
 }
 
-void GLRendererImplementation::add_object(rcbe::geometry::Mesh &&object) {
+void GLRendererImplementation::addObject(rcbe::geometry::Mesh &&object) {
     std::lock_guard lg { changed_mutex_ };
     meshes_.push_back(std::move(object));
     changed_ = true;
 }
 
-void GLRendererImplementation::draw_buffers(const VertexBufferObject& vbo, const IndexBufferObject& ibo) {
+void GLRendererImplementation::drawBuffers(const VertexBufferObject& vbo, const IndexBufferObject& ibo) {
     const std::vector<std::function<void(const VertexBufferObject&, const IndexBufferObject&)>> draw_impls = {
             {[this](const VertexBufferObject& vbo, const IndexBufferObject& ibo) {
-                vbo.enable_state();
+                vbo.enableState();
 
                 // before draw, specify vertex arrays
-                glNormalPointer(GL_FLOAT, 0, vbo.normals_data());
-                glColorPointer(3, GL_FLOAT, 0, vbo.colors_data());
-                glVertexPointer(3, GL_FLOAT, 0, vbo.vertices_data());
+                glNormalPointer(GL_FLOAT, 0, vbo.normalsData());
+                glColorPointer(3, GL_FLOAT, 0, vbo.colorsData());
+                glVertexPointer(3, GL_FLOAT, 0, vbo.verticesData());
 
                 glDrawElements(GL_TRIANGLES,            // primitive type
                                ibo.size(),                      // # of indices
                                GL_UNSIGNED_INT,         // data type
                                (void*)ibo.data());         // ptr to indices
 
-                vbo.disable_state();
+                vbo.disableState();
             }},
             {[this](const VertexBufferObject& vbo, const IndexBufferObject& ibo) {
                 // bind VBOs with IDs and set the buffer offsets of the bound VBOs
@@ -224,19 +218,19 @@ void GLRendererImplementation::draw_buffers(const VertexBufferObject& vbo, const
                 ibo.bind();
 
                 // enable vertex arrays
-                vbo.enable_state();
+                vbo.enableState();
 
                 // before draw, specify vertex and index arrays with their offsets
-                glNormalPointer(GL_FLOAT, 0, (void*)vbo.verts_byte_size());
-                glColorPointer(3, GL_FLOAT, 0, (void*)(vbo.verts_byte_size() + vbo.norms_byte_size()));
+                glNormalPointer(GL_FLOAT, 0, (void*) vbo.vertsByteSize());
+                glColorPointer(3, GL_FLOAT, 0, (void*)(vbo.vertsByteSize() + vbo.normsByteSize()));
                 glVertexPointer(3, GL_FLOAT, 0, 0);
                 glDrawElements(GL_TRIANGLES,            // primitive type
                                ibo.size(),//RendererImplementation::_indices.size(),                      // # of indices
                                GL_UNSIGNED_INT,         // data type
                                (void*)0);               // ptr to indices
-                glDrawArrays( GL_TRIANGLES, 0, vbo.verts_byte_size() + vbo.norms_byte_size() + vbo.colors_byte_size());
+                glDrawArrays( GL_TRIANGLES, 0, vbo.vertsByteSize() + vbo.normsByteSize() + vbo.colorsByteSize());
 
-                vbo.disable_state();
+                vbo.disableState();
 
                 // it is good idea to release VBOs with ID 0 after use.
                 // Once bound with 0, all pointers in gl*Pointer() behave as real
@@ -249,16 +243,16 @@ void GLRendererImplementation::draw_buffers(const VertexBufferObject& vbo, const
     draw_impls[vbo_supported_](vbo, ibo);
 }
 
-void GLRendererImplementation::render_loop() {
+std::chrono::microseconds GLRendererImplementation::renderFrame() {
     auto start = std::chrono::steady_clock::now();
-    rendering_context_->gl_context_from_this();
+    rendering_context_->glContextFromThis();
 
-    const auto& color = rendering_context_->get_background_color();
+    const auto& color = rendering_context_->getBackgroundColor();
 
     GLExtensions& ext = GLExtensions::getInstance();
     vbo_supported_ = ext.isSupported("GL_ARB_vertex_buffer_object");
 
-    init_gl();
+    initGL();
 
     BOOST_LOG_TRIVIAL(debug) << "VBO is " << (vbo_supported_ ? "" : "not ") << "supported";
 
@@ -266,7 +260,7 @@ void GLRendererImplementation::render_loop() {
 
     {
         std::lock_guard lg {reshape_mutex_};
-        reshape_window();
+        reshapeWindow();
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
@@ -288,7 +282,7 @@ void GLRendererImplementation::render_loop() {
 
         const auto& ibo = index_buffer_.back();
 
-        draw_buffers(vbo, ibo);
+        drawBuffers(vbo, ibo);
     }
     /// end rendering start
 
@@ -298,16 +292,16 @@ void GLRendererImplementation::render_loop() {
         BOOST_LOG_TRIVIAL(error) << "error hex code " << std::hex << error;
     }
 
-    glXSwapBuffers(rendering_context_->get_display(), rendering_context_->get_drawable());
+    glXSwapBuffers(rendering_context_->getDisplay(), rendering_context_->getDrawable());
     auto end = std::chrono::steady_clock::now();
-    rendering_context_->set_current_time(std::chrono::duration_cast<std::chrono::microseconds>(end - start));
+    return std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 }
 
-const RendererConfig& GLRendererImplementation::get_config() const {
+const renderer_config& GLRendererImplementation::getConfig() const noexcept {
     return config_;
 }
 
-GLRenderer::GLRenderer(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context)
+GLRenderer::GLRenderer(renderer_config &&config, const std::shared_ptr<RenderingContext>& context)
 :
 impl_ { std::make_unique<GLRendererImplementation>(std::move(config), context) }
 {
@@ -318,8 +312,8 @@ GLRenderer::~GLRenderer() {
 
 }
 
-const RendererConfig &GLRenderer::config() const {
-    return impl_->get_config();
+const renderer_config &GLRenderer::config() const noexcept {
+    return impl_->getConfig();
 }
 
 void GLRenderer::start() {
@@ -330,23 +324,23 @@ void GLRenderer::stop() {
     impl_->stop();
 }
 
-void GLRenderer::add_object(rcbe::geometry::Mesh &&mesh) {
-    impl_->add_object(std::move(mesh));
+void GLRenderer::addObject(rcbe::geometry::Mesh &&mesh) {
+    impl_->addObject(std::move(mesh));
 }
 
 void GLRenderer::reshape() {
-    impl_->reshape_window();
+    impl_->reshapeWindow();
 }
 
-void GLRenderer::on_stop(renderer_stop_handler_t&& handler) {
-    impl_->on_stop(std::move(handler));
+void GLRenderer::onStop(RendererStopHandlerType&& handler) {
+    impl_->onStop(std::move(handler));
 }
 
 bool GLRenderer::running() const {
     return impl_->running();
 }
 
-GLRendererPtr make_renderer_ptr(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context) {
+GLRendererPtr make_renderer_ptr(renderer_config &&config, const std::shared_ptr<RenderingContext>& context) {
     return std::make_unique<GLRenderer>(std::move(config), context);
 }
 }

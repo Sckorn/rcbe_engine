@@ -4,11 +4,12 @@ cc_library(
         "src/core/**/*.cpp",
     ]),
     hdrs = glob([
-        "include/data_types/config/data_model_config.hpp",
-        "include/data_types/core/**/*.hpp",
+        "include/datamodel/core/**/*.hpp",
     ]),
     copts = ["-Iexternal/nlohmann/include"],
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//common:engine_fundamentals",
@@ -22,13 +23,17 @@ cc_library(
         "src/math/**/*.cpp",
     ]),
     hdrs = glob([
-        "include/data_types/math/**/*.hpp",
+        "include/datamodel/math/**/*.hpp",
     ]),
     copts = ["-Iexternal/nlohmann/include"],
+    defines = ["RCBE_SCALAR_LINALG"],
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
+        "//common:engine_fuzzy_logic",
         "//common:engine_math_utils",
         "@nlohmann",
     ],
@@ -40,10 +45,12 @@ cc_library(
         "src/visual/**/*.cpp",
     ]),
     hdrs = glob([
-        "include/data_types/visual/**/*.hpp",
+        "include/datamodel/visual/**/*.hpp",
     ]),
     copts = ["-Iexternal/nlohmann/include"],
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_math",
@@ -55,10 +62,12 @@ cc_library(
     name = "engine_datamodel_geometry",
     srcs = glob(["src/geometry/**/*.cpp"]),
     hdrs = glob([
-        "include/data_types/geometry/**/*.hpp",
+        "include/datamodel/geometry/**/*.hpp",
     ]),
     copts = ["-Iexternal/nlohmann/include"],
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
@@ -68,27 +77,17 @@ cc_library(
 )
 
 cc_library(
-    name = "engine_datamodel_gui",
-    hdrs = glob([
-        "include/data_types/gui/**/*.hpp",
-    ]),
-    includes = ["include"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":engine_datamodel_core",
-    ],
-)
-
-cc_library(
     name = "engine_datamodel_system",
     srcs = glob([
         "src/system/**/*.cpp",
     ]),
     hdrs = glob([
-        "include/data_types/system/**/*.hpp",
+        "include/datamodel/system/**/*.hpp",
     ]),
     copts = ["-Iexternal/nlohmann/include"],
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
@@ -105,15 +104,17 @@ cc_library(
         "src/rendering/**/*.cpp",
     ]),
     hdrs = glob([
-        "include/data_types/rendering/**/*.hpp",
+        "include/datamodel/rendering/**/*.hpp",
     ]),
     copts = ["-Iexternal/nlohmann/include"],
+    include_prefix = "rcbe-engine",
     includes = ["include"],
     linkopts = [
         "-lpthread",
         "-lOpenGL",
         "-lGL",
     ],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
@@ -163,6 +164,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 ## SO
 
@@ -192,8 +195,8 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-core-package-data",
     description = "RCBE game engine datamodel core libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_core",
     version = ENGINE_VERSION,
 )
@@ -228,8 +231,8 @@ pkg_deb(
         "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel geometry libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_geometry",
     version = ENGINE_VERSION,
 )
@@ -263,8 +266,8 @@ pkg_deb(
         "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel math libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_math",
     version = ENGINE_VERSION,
 )
@@ -303,8 +306,8 @@ pkg_deb(
         "libboost-log{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel rendering libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_rendering",
     version = ENGINE_VERSION,
 )
@@ -341,8 +344,8 @@ pkg_deb(
         "libboost-container{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel system libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_system",
     version = ENGINE_VERSION,
 )
@@ -374,55 +377,23 @@ pkg_deb(
     data = ":datamodel-visual-package-data",
     depends = ["rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
     description = "RCBE game engine datamodel visual libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_visual",
     version = ENGINE_VERSION,
 )
 
 ## Headers
 
-# datamodel-config
-
-pkg_tar(
-    name = "datamodel-config-data",
-    srcs = [
-        "include/data_types/config/data_model_config.hpp",
-    ],
-    mode = "0644",
-    package_dir = "/usr/local/include/rcbe/data_types/config",
-)
-
-pkg_tar(
-    name = "datamodel-config-package-data",
-    extension = "tar.gz",
-    visibility = ["//visibility:public"],
-    deps = [
-        ":datamodel-config-data",
-    ],
-)
-
-pkg_deb(
-    name = "datamodel-config-deb",
-    architecture = TARGET_ARCH,
-    built_using = "unzip (6.0.1)",
-    data = ":datamodel-config-package-data",
-    description = "RCBE game engine datamodel config headers libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
-    package = "rcbe_datamodel_config",
-    version = ENGINE_VERSION,
-)
-
 # datamodel-core-headers
 
 pkg_tar(
     name = "datamodel-core-headers-data",
     srcs = glob([
-        "include/data_types/core/**/*.hpp",
+        "include/datamodel/core/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/data_types/core",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/core",
 )
 
 pkg_tar(
@@ -444,8 +415,8 @@ pkg_deb(
         "rcbe_datamodel_config_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel core headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_core_dev",
     version = ENGINE_VERSION,
 )
@@ -455,10 +426,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-geometry-headers-data",
     srcs = glob([
-        "include/data_types/geometry/**/*.hpp",
+        "include/datamodel/geometry/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/data_types/geometry",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/geometry",
 )
 
 pkg_tar(
@@ -481,8 +452,8 @@ pkg_deb(
         "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel geometry headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_geometry_dev",
     version = ENGINE_VERSION,
 )
@@ -492,10 +463,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-math-headers-data",
     srcs = glob([
-        "include/data_types/math/**/*.hpp",
+        "include/datamodel/math/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/data_types/math",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/math",
 )
 
 pkg_tar(
@@ -517,8 +488,8 @@ pkg_deb(
         "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel math headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_math_dev",
     version = ENGINE_VERSION,
 )
@@ -528,10 +499,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-rendering-headers-data",
     srcs = glob([
-        "include/data_types/rendering/**/*.hpp",
+        "include/datamodel/rendering/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/data_types/rendering",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/rendering",
 )
 
 pkg_tar(
@@ -558,8 +529,8 @@ pkg_deb(
         "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel rendering headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_rendering_dev",
     version = ENGINE_VERSION,
 )
@@ -569,10 +540,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-system-headers-data",
     srcs = glob([
-        "include/data_types/system/**/*.hpp",
+        "include/datamodel/system/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/data_types/system",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/system",
 )
 
 pkg_tar(
@@ -597,8 +568,8 @@ pkg_deb(
         "libboost-container{}-dev".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel system headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_system_dev",
     version = ENGINE_VERSION,
 )
@@ -608,10 +579,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-visual-headers-data",
     srcs = [
-        "include/data_types/visual/RGBAColor.hpp",
+        "include/datamodel/visual/RGBAColor.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/data_types/visual",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/visual",
 )
 
 pkg_tar(
@@ -633,8 +604,8 @@ pkg_deb(
         "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel visual headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_visual_dev",
     version = ENGINE_VERSION,
 )

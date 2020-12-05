@@ -20,20 +20,20 @@ class Delegate;
 template <typename ... Signature>
 class Delegate<void, Signature...> {
 public:
-    using invocation_type = std::function<void(Signature&& ...)>;
+    using InvocationType = std::function<void(Signature&& ...)>;
 
-    Delegate(size_t max_delegate_size = DEFAULT_DELEGATE_SIZE)
+    explicit Delegate(size_t max_delegate_size = DEFAULT_DELEGATE_SIZE)
     :
     max_delegate_size_ { max_delegate_size }
     {
 
     }
 
-    [[nodiscard]] size_t max_size() const noexcept {
+    [[nodiscard]] size_t maxSize() const noexcept {
         return max_delegate_size_;
     }
 
-    Delegate& add(invocation_type&& f) {
+    Delegate& add(InvocationType&& f) {
         if (invocation_list_.size() == max_delegate_size_) {
             throw std::runtime_error("Invocation list is full");
         }
@@ -41,7 +41,7 @@ public:
         return *this;
     }
 
-    Delegate& operator+=(invocation_type&& f) {
+    Delegate& operator+=(InvocationType&& f) {
         return add(std::move(f));
     }
 
@@ -60,8 +60,8 @@ public:
     }
 
 private:
-    size_t max_delegate_size_;
-    std::vector<invocation_type> invocation_list_;
+    const size_t max_delegate_size_;
+    std::vector<InvocationType> invocation_list_;
 };
 }
 

@@ -6,24 +6,24 @@
 #include <mutex>
 #include <functional>
 
-#include <rcbe/traits/time_traits.hpp>
+#include <rcbe-engine/traits/time_traits.hpp>
 
 #include <boost/log/trivial.hpp>
 
 namespace rcbe::core {
 class Ticker {
 public:
-    using period_type = std::chrono::nanoseconds;
-    using handler_type = std::function<void(void)>;
-    using clock_type = std::chrono::steady_clock;
+    using PeriodType = std::chrono::nanoseconds;
+    using HandlerType = std::function<void(void)>;
+    using ClockType = std::chrono::steady_clock;
 
     Ticker() = delete;
     template <typename Duration, typename = std::enable_if_t <rcbe::utility::duration_type_v<Duration>, void>>
-    explicit Ticker(Duration&& period, handler_type&& handler)
+    explicit Ticker(Duration&& period, HandlerType&& handler)
     :
-    period_ { std::chrono::duration_cast<period_type>(period) }
+    period_ { std::chrono::duration_cast<PeriodType>(period) }
     , handler_ { std::move(handler) }
-    , start_time_ { Ticker::clock_type ::now() }
+    , start_time_ { Ticker::ClockType ::now() }
     , running_ (true)
     , ticker_thread_([this]() {
         while (running_) {
@@ -42,11 +42,11 @@ public:
     Ticker(Ticker&& other) = default;
     Ticker &operator=(Ticker&& other) = default;
 
-    void set_handler(handler_type&& handler);
+    void setHandler(HandlerType&& handler);
     void stop();
 
-    [[nodiscard]] period_type delta_time() const;
-    [[nodiscard]] clock_type::time_point start_time() const;
+    [[nodiscard]] PeriodType deltaTime() const;
+    [[nodiscard]] ClockType::time_point startTime() const;
 
     void wait();
 
@@ -57,9 +57,9 @@ private:
     bool running_ = false;
     std::thread ticker_thread_;
 
-    period_type period_;
-    handler_type handler_;
-    clock_type::time_point start_time_;
+    PeriodType period_;
+    HandlerType handler_;
+    ClockType::time_point start_time_;
 };
 }
 

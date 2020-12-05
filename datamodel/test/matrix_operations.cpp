@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include <data_types/math/Matrix.hpp>
-#include <common/fuzzy_logic/fuzzy_logic.hpp>
+#include <rcbe-engine/datamodel/math/Matrix.hpp>
+#include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
 
 TEST(MatrixTest, IdentityTest)
 {
@@ -309,7 +309,10 @@ TEST(MatrixVectorTest, MatrixVectorMultiplication4by4)
 
 TEST(MatrixQuaternion, CreateMatrixFromQuat)
 {
-    rcbe::math::Quaternion<rcbe::core::EngineScalar> q { 0, 0, 90 };
+    rcbe::math::yaw y(rcbe::math::deg(0));
+    rcbe::math::pitch p(rcbe::math::deg(0));
+    rcbe::math::roll r(rcbe::math::deg(90));
+    rcbe::math::Quaternion<rcbe::core::EngineScalar> q { y, p, r };
     rcbe::math::Matrix3x3 m(q);
  
     ASSERT_TRUE(rcbe::core::fuzzy_equal(m.at(0, 0), 1.0));

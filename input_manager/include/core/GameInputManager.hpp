@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 
 #include <core/InputManagerImplementation.hpp>
-#include <data_types/system/InputScheme.hpp>
+#include <rcbe-engine/datamodel/system/InputScheme.hpp>
 
 namespace rcbe::core {
 class GameInputManager final : protected InputManagerImplementation {
@@ -25,11 +25,11 @@ public:
         return scheme_.get(input_event_name);
     }
 
-    using InputManagerImplementation::try_process_event;
-    using InputManagerImplementation::get_value;
+    using InputManagerImplementation::tryProcessEvent;
+    using InputManagerImplementation::getValue;
 
 private:
-    bool try_set(int keycode, int value) const;
+    bool trySet(int keycode, int value) const;
 
     mutable InputScheme scheme_;
 };
