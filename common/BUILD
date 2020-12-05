@@ -4,10 +4,12 @@ cc_library(
         "src/utils/file_utils.cpp",
     ]),
     hdrs = glob([
-        "include/common/utils/file_utils.h",
+        "include/common/utils/file_utils.hpp",
     ]),
-    includes = ["include"],
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
     linkopts = ["-lpthread"],
+    strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
 )
 
@@ -18,8 +20,10 @@ cc_library(
         "include/common/utils/json_utils.hpp",
     ]),
     copts = ["-Iexternal/nlohmann/include"],
-    includes = ["include"],
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
     linkopts = ["-lpthread"],
+    strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
     deps = ["@nlohmann"],
 )
@@ -29,7 +33,9 @@ cc_library(
     hdrs = glob([
         "include/common/fundamentals/**/*.hpp",
     ]),
-    includes = ["include"],
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
+    strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
 )
 
@@ -38,15 +44,9 @@ cc_library(
     hdrs = glob([
         "include/common/utils/math_utils.hpp",
     ]),
-    includes = ["include"],
-    visibility = ["//visibility:public"],
-    deps = [":engine_fundamentals"],
-)
-
-cc_library(
-    name = "engine_stack_utils",
-    hdrs = ["include/common/utils/stack_utils.hpp"],
-    includes = ["include"],
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
+    strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
     deps = [":engine_fundamentals"],
 )
@@ -55,7 +55,9 @@ cc_library(
     name = "engine_output_utils",
     srcs = ["src/utils/output_utils.cpp"],
     hdrs = ["include/common/utils/output_utils.hpp"],
-    includes = ["include"],
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
+    strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_fundamentals",
@@ -68,7 +70,9 @@ cc_library(
     hdrs = glob([
         "include/common/fuzzy_logic/*.hpp",
     ]),
-    includes = ["include"],
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
+    strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
     deps = [":engine_fundamentals"],
 )
@@ -76,7 +80,9 @@ cc_library(
 cc_library(
     name = "rcbe_delegate",
     hdrs = glob(["include/common/delegate/**/*.hpp"]),
-    includes = ["include"],
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
+    strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_fundamentals",
@@ -87,7 +93,9 @@ cc_library(
 cc_library(
     name = "rcbe_profiling",
     hdrs = glob(["include/common/utils/profiling_utils.hpp"]),
-    includes = ["include"],
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
+    strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_fundamentals",
@@ -113,6 +121,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 ## SO
 
@@ -140,8 +150,8 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-filesystem-package-data",
     description = "RCBE game engine common filesystem functionality package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_filesystem",
     version = ENGINE_VERSION,
 )
@@ -170,8 +180,8 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":json-package-data",
     description = "RCBE game engine json related functionality package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_json",
     version = ENGINE_VERSION,
 )
@@ -203,8 +213,8 @@ pkg_deb(
     data = ":common-utils-output-package-data",
     depends = ["libboost-log{}.0".format(BOOST_TARGET_VERSION)],
     description = "RCBE game engine console output related utilities package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_output",
     version = ENGINE_VERSION,
 )
@@ -216,10 +226,10 @@ pkg_deb(
 pkg_tar(
     name = "filesystem-data-headers",
     srcs = [
-        "include/common/utils/file_utils.h",
+        "include/common/utils/file_utils.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/common/utils",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/utils",
 )
 
 pkg_tar(
@@ -238,8 +248,8 @@ pkg_deb(
     data = ":common-filesystem-dev-package-data",
     depends = ["rcbe_common_utils_filesystem_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
     description = "RCBE game engine common filesystem functionality headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_filesystem_dev",
     version = ENGINE_VERSION,
 )
@@ -252,7 +262,7 @@ pkg_tar(
         "include/common/utils/json_utils.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/common/utils",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/utils",
 )
 
 pkg_tar(
@@ -273,8 +283,8 @@ pkg_deb(
         "nlohmann-json3-dev",
     ],
     description = "RCBE game engine common json functionality headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_json_dev",
     version = ENGINE_VERSION,
 )
@@ -287,7 +297,7 @@ pkg_tar(
         "include/common/fundamentals/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/common/fundamentals",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/fundamentals",
 )
 
 pkg_tar(
@@ -305,8 +315,8 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-fundamentals-dev-package-data",
     description = "RCBE game engine common fundamental types and functionality headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_fundamentals_dev",
     version = ENGINE_VERSION,
 )
@@ -319,7 +329,7 @@ pkg_tar(
         "include/common/utils/math_utils.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/common/utils",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/utils",
 )
 
 pkg_tar(
@@ -338,9 +348,9 @@ pkg_deb(
     data = ":common-math-utils-dev-package-data",
     depends = ["rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
     description = "RCBE game engine common math functionality headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
-    package = "rcbe_common_math_utils_dev",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rcbe_common_utils_math_dev",
     version = ENGINE_VERSION,
 )
 
@@ -352,7 +362,7 @@ pkg_tar(
         "include/common/utils/output_utils.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/common/utils",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/utils",
 )
 
 pkg_tar(
@@ -375,9 +385,9 @@ pkg_deb(
         "rcbe_common_output_utils_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine common math functionality headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
-    package = "rcbe_common_output_utils_dev",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rcbe_common_utils_output_dev",
     version = ENGINE_VERSION,
 )
 
@@ -389,7 +399,7 @@ pkg_tar(
         "include/common/fuzzy_logic/fuzzy_logic.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/common/fuzzy_logic",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/fuzzy_logic",
 )
 
 pkg_tar(
@@ -410,8 +420,8 @@ pkg_deb(
         "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine fuzzy logics functionality headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_fuzzy_logic_dev",
     version = ENGINE_VERSION,
 )
@@ -425,7 +435,7 @@ pkg_tar(
         "include/common/delegate/Delegate.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/common/delegate",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/delegate",
 )
 
 pkg_tar(
@@ -447,8 +457,8 @@ pkg_deb(
         "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine abstract and concrete delegate function headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_delegate_dev",
     version = ENGINE_VERSION,
 )

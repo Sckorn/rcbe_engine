@@ -2,7 +2,7 @@ cc_library(
     name = "rcbe_engine_camera",
     srcs = glob(["src/**/*.cpp"]),
     hdrs = glob(["include/**/*.hpp"]),
-    include_prefix = "rcbe",
+    include_prefix = "rcbe-engine",
     includes = ["include"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
@@ -18,6 +18,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 ## SO
 
@@ -49,8 +51,8 @@ pkg_deb(
         "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine camera libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_camera",
     version = ENGINE_VERSION,
 )
@@ -63,7 +65,7 @@ pkg_tar(
         "include/camera/Camera.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/camera",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/camera",
 )
 
 pkg_tar(
@@ -86,8 +88,8 @@ pkg_deb(
         "rcbe_camera_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine camera headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_camera_dev",
     version = ENGINE_VERSION,
 )

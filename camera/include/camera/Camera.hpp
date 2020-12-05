@@ -4,55 +4,59 @@
 #include <mutex>
 #include <memory>
 
-#include <data_types/math/euler_angles.hpp>
-#include <data_types/rendering/RenderingContext.hpp>
-#include <data_types/math/Transform.hpp>
-#include <data_types/math/Matrix.hpp>
-#include <data_types/math/Vector.hpp>
+#include <rcbe-engine/datamodel/math/euler_angles.hpp>
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
+#include <rcbe-engine/datamodel/math/Transform.hpp>
+#include <rcbe-engine/datamodel/math/Matrix.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
+#include <rcbe-engine/datamodel/math/math_constants.hpp>
+#include <rcbe-engine/datamodel/rendering/camera_config.hpp>
 
 namespace rcbe::rendering {
 class Camera {
 public:
-    using transform_type = math::Transform;
+    using TransformType = math::Transform;
 
     Camera() = delete;
 
-    // TODO: Create CameraConfig, pass it to this ctor, give up a default value of WORLD_UP
-    Camera(const rendering::RenderingContextPtr &context, const math::Vector3d &position, const math::Vector3d &lookat, const math::Vector3d &up);
+    Camera(
+            const rendering::RenderingContextPtr &context,
+            const rendering::camera_config &config
+    );
     ~Camera() = default;
 
-    math::Matrix4x4 look_at(const math::Vector3d& camera_position, const math::Vector3d& lookat, const math::Vector3d& up);
+    math::Matrix4x4 lookAt(const math::Vector3d& camera_position, const math::Vector3d& lookat, const math::Vector3d& up);
 
-    [[nodiscard]]const transform_type& get_transform() const;
+    [[nodiscard]]const TransformType& getTransform() const;
 
-    void reset_view();
+    void resetView();
 
-    [[nodiscard]] math::Vector3d camera_direction() const;
-    [[nodiscard]] math::Vector3d camera_up() const;
-    [[nodiscard]] math::Vector3d camera_right() const;
+    [[nodiscard]] math::Vector3d cameraDirection() const;
+    [[nodiscard]] math::Vector3d cameraUp() const;
+    [[nodiscard]] math::Vector3d cameraRight() const;
 
     void translate(const rcbe::math::Vector3d& direction, const rcbe::math::Vector3d& look_direction);
 
-    [[nodiscard]] const math::pitch &get_pitch() const;
-    [[nodiscard]] const math::yaw &get_yaw() const;
+    [[nodiscard]] const math::pitch &getPitch() const noexcept;
+    [[nodiscard]] const math::yaw &getYaw() const noexcept;
 
     void rotate(math::pitch&& pstep, math::yaw&& ystep);
     void rotate(math::pitch&& step = math::pitch(math::deg(1.)));
     void rotate(math::yaw&& step = math::yaw(math::deg(1.)));
-    void set_angles(math::pitch&& p, math::yaw&& y);
-    void set_pitch(math::pitch&& p);
-    void set_yaw(math::yaw&& y);
+    void setAngles(math::pitch&& p, math::yaw&& y);
+    void setPitch(math::pitch&& p);
+    void setYaw(math::yaw&& y);
 
-    void zoom_in(const rcbe::core::EngineScalar step = 1.);
-    void zoom_out(const rcbe::core::EngineScalar step = 1.);
+    void zoomIn(rcbe::core::EngineScalar step = 1.);
+    void zoomOut(rcbe::core::EngineScalar step = 1.);
 
 private:
-    void update_context(const transform_type &t);
+    void updateContext(const TransformType &t);
 
     mutable std::mutex translate_mutex_;
     mutable std::mutex rotate_mutex_;
 
-    math::Matrix4x4 rotation_impl();
+    math::Matrix4x4 rotationImpl();
 
     math::Vector3d initial_position_;
     math::Vector3d initial_lookat_;
@@ -69,13 +73,13 @@ private:
 
     rendering::RenderingContextPtr context_;
 
-    transform_type transform_;
+    TransformType transform_;
 };
 
 using CameraPtr = std::shared_ptr<Camera>;
 using CameraConstPtr = std::shared_ptr<const Camera>;
 
-CameraPtr make_camera(rendering::RenderingContextPtr ctx, const rcbe::math::Vector3d& pos, const rcbe::math::Vector3d& lookat);
+CameraPtr make_camera(rendering::RenderingContextPtr ctx, const rendering::camera_config &config);
 }
 
 #endif //RCBE_ENGINE_CAMERA_HPP

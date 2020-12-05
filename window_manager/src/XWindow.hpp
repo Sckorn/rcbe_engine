@@ -8,8 +8,8 @@
 #include <future>
 #include <optional>
 
-#include <data_types/system/WindowConfig.hpp>
-#include <data_types/rendering/RenderingContext.hpp>
+#include <rcbe-engine/datamodel/system/window_config.hpp>
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 
 #include <renderer/GLRenderer.hpp>
 
@@ -20,10 +20,10 @@ namespace rcbe::core {
 class XWindow {
 public:
 
-    XWindow(WindowConfig &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg);
+    XWindow(window_config &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg);
     ~XWindow();
 
-    [[nodiscard]] const WindowConfig& get_config() const;
+    [[nodiscard]] const window_config& get_config() const;
 
 
     decltype(auto) start_window_loop_aync() {
@@ -34,8 +34,8 @@ public:
     void start_window_loop();
     void stop_window_loop();
 
-    void on_configure(window::configure_handler_t&& handler);
-    void on_unmap(window::unmap_handler_t&& handler);
+    void on_configure(window::ConfigureHandlerType&& handler);
+    void on_unmap(window::UunmapHandlerType&& handler);
 
     [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const; // TODO: rename to getRenderingContext
 
@@ -51,7 +51,7 @@ private:
 
     void window_loop();
 
-    WindowConfig config_;
+    window_config config_;
     std::mutex running_mutex_;
     std::mutex input_event_mutex_;
     mutable std::mutex renderer_access_mutex_;
@@ -66,8 +66,8 @@ private:
     std::mutex kill_mutex_;
     bool killed_ = false;
 
-    window::unmap_handler_t unmap_handler_;
-    window::configure_handler_t configure_handler_;
+    window::UunmapHandlerType unmap_handler_;
+    window::ConfigureHandlerType configure_handler_;
 };
 }
 

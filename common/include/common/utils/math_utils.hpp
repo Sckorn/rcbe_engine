@@ -3,8 +3,9 @@
 
 #include <cmath>
 #include <type_traits>
+#include <concepts>
 
-#include <common/fundamentals/types.hpp>
+#include <rcbe-engine/fundamentals/types.hpp>
 
 namespace rcbe::math
 {
@@ -16,12 +17,15 @@ inline core::EngineScalar rad_to_deg(const core::EngineScalar angle) {
     return 180 / M_PI * angle;
 }
 
-template <typename Value, typename = std::enable_if_t<std::is_integral_v<Value>, void >>
+template <typename T>
+concept IntegralValue = std::is_integral_v<T>;
+
+template <IntegralValue Value>
 inline bool even(const Value v) {
     return v % 2 == 0;
 }
 
-template <typename Value, typename = std::enable_if_t<std::is_integral_v<Value>, void >>
+template <IntegralValue Value>
 inline  bool odd(const Value v) {
     return !even(v);
 }

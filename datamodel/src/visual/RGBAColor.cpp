@@ -1,4 +1,4 @@
-#include <data_types/visual/RGBAColor.hpp>
+#include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 
 namespace
 {
@@ -9,18 +9,35 @@ bool checkRange(const rcbe::core::EngineScalar &value)
     return  (value >= 0.0) && (value <= 1.0);
 }
 
-void checkStorageInRange(const rcbe::visual::RGBAColor::storage_type &storage)
+void checkStorageInRange(const rcbe::visual::RGBAColor::StorageType &storage)
 {
-    for(size_t i = 0; i < storage.dimension; ++i)
+    for(size_t i = 0; i < storage.DIMENSION; ++i)
     {
         if (!checkRange(storage[i]))
             throw std::runtime_error("Value of one of the components is not in range!");
     }
 }
+
+uint8_t extract_color_byte(const uint32_t hex, uint8_t position) {
+    const uint8_t check = 0b1111'1111;
+    return (hex >> position * 8) & check;
+}
 }
 
 namespace rcbe::visual
 {
+RGBAColor::RGBAColor(uint32_t hex_code)
+:
+storage_(
+        extract_color_byte(hex_code, 3) / COLOR_COMPONENT_DIVIDER,
+        extract_color_byte(hex_code, 2) / COLOR_COMPONENT_DIVIDER,
+        extract_color_byte(hex_code, 1) / COLOR_COMPONENT_DIVIDER,
+        extract_color_byte(hex_code, 0) / COLOR_COMPONENT_DIVIDER
+)
+{
+    checkStorageInRange(storage_);
+}
+
 RGBAColor::RGBAColor(
     const rcbe::core::EngineScalar r, 
     const rcbe::core::EngineScalar g, 
@@ -28,9 +45,9 @@ RGBAColor::RGBAColor(
     const rcbe::core::EngineScalar a
 )
 :
-_storage(r, g, b, a)
+storage_(r, g, b, a)
 {
-    checkStorageInRange(_storage);
+    checkStorageInRange(storage_);
 }
 
 RGBAColor::RGBAColor(
@@ -40,54 +57,54 @@ RGBAColor::RGBAColor(
     const rcbe::core::EngineIntergral a
 )
 :
-_storage(
+storage_(
     r / COLOR_COMPONENT_DIVIDER,
     g / COLOR_COMPONENT_DIVIDER,
     b / COLOR_COMPONENT_DIVIDER,
     a / COLOR_COMPONENT_DIVIDER
 )
 {
-    checkStorageInRange(_storage);
+    checkStorageInRange(storage_);
 }
 
-const RGBAColor::value_type &RGBAColor::r() const
+const RGBAColor::ValueType &RGBAColor::r() const noexcept
 {
-    return _storage.x();
+    return storage_.x();
 }
 
-RGBAColor::value_type &RGBAColor::r()
+RGBAColor::ValueType &RGBAColor::r()
 {
-    return _storage.x();
+    return storage_.x();
 }
 
-const RGBAColor::value_type &RGBAColor::g() const
+const RGBAColor::ValueType &RGBAColor::g() const noexcept
 {
-    return _storage.y();
+    return storage_.y();
 }
 
-RGBAColor::value_type &RGBAColor::g()
+RGBAColor::ValueType &RGBAColor::g()
 {
-    return _storage.y();
+    return storage_.y();
 }
 
-const RGBAColor::value_type &RGBAColor::b() const
+const RGBAColor::ValueType &RGBAColor::b() const noexcept
 {
-    return _storage.z();
+    return storage_.z();
 }
 
-RGBAColor::value_type &RGBAColor::b()
+RGBAColor::ValueType &RGBAColor::b()
 {
-    return _storage.z();
+    return storage_.z();
 }
 
-const RGBAColor::value_type &RGBAColor::a() const
+const RGBAColor::ValueType &RGBAColor::a() const noexcept
 {
-    return _storage.w();
+    return storage_.w();
 }
 
-RGBAColor::value_type &RGBAColor::a()
+RGBAColor::ValueType &RGBAColor::a()
 {
-    return _storage.w();
+    return storage_.w();
 }
 }
 

@@ -4,17 +4,15 @@
 #include <future>
 #include <mutex>
 #include <unordered_map>
-#include <stack>
 
 #include <boost/log/trivial.hpp>
-
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-#include <common/delegate/AbstractDelegate.hpp>
+#include <rcbe-engine/delegate/AbstractDelegate.hpp>
 
-#include <data_types/system/InputSystemTypes.hpp>
+#include <rcbe-engine/datamodel/system/input_system_types.hpp>
 #include <traits/input_manager.hpp>
 
 namespace rcbe::core {
@@ -25,7 +23,7 @@ class InputManagerImplementation : public utility::InputManagerTraits {
 public:
 
     using delegate_type = Delegate<void, InputManagerImplementation&, input_event_reference, previous_event_reference>;
-    using invocation_type = typename delegate_type::invocation_type;
+    using invocation_type = typename delegate_type::InvocationType;
     using handler_intermidiate_storage = std::pair<InputEventType, invocation_type>;
 
     virtual ~InputManagerImplementation() = default;
@@ -77,7 +75,7 @@ private:
     InputManagerMode mode_ = InputManagerMode::simple;
     int number_devices_ = 0;
 
-    std::unordered_map<InputEventType, rcbe::core::AbstractDelegate, InputEventTypeHash> handlers_;
+    std::unordered_map<InputEventType, rcbe::core::AbstractDelegate, input_event_type_hash> handlers_;
     std::unordered_map<int, bool> active_events_ = {
             {static_cast<int>(InputEventType::button_press), false},
             {static_cast<int>(InputEventType::button_release), false},
@@ -85,15 +83,15 @@ private:
             {static_cast<int>(InputEventType::key_release), false},
             {static_cast<int>(InputEventType::mouse_motion), false}
     };
-    const std::unordered_map<InputEventType, InputEventType, InputEventTypeHash> exclusive_events_ = {
+    const std::unordered_map<InputEventType, InputEventType, input_event_type_hash> exclusive_events_ = {
             {InputEventType ::button_press, InputEventType ::button_release},
             {InputEventType ::button_release, InputEventType ::button_press},
             {InputEventType ::key_press, InputEventType ::key_release},
             {InputEventType ::key_release, InputEventType ::key_press}
     };
 
-    std::unordered_map<MouseEventType, bool, InputMouseButtonHash> mouse_buttons_states_;
-    std::unordered_map<KeyboardEventType, bool, InputKeyboardKeysHash> keyboard_buttons_states_;
+    std::unordered_map<MouseEventType, bool, input_mouse_button_hash> mouse_buttons_states_;
+    std::unordered_map<KeyboardEventType, bool, input_keyboard_keys_hash> keyboard_buttons_states_;
 
     previous_event_type previous_event_ = std::nullopt;
 };

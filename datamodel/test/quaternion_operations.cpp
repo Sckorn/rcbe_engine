@@ -1,12 +1,16 @@
 #include <gtest/gtest.h>
 
-#include <data_types/math/Quaternion.hpp>
+#include <rcbe-engine/datamodel/math/Quaternion.hpp>
+#include <rcbe-engine/datamodel/math/euler_angles.hpp>
 
-#include <common/fuzzy_logic/fuzzy_logic.hpp>
+#include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
 
 TEST(QuaternionTest, QuaternionFromRPY)
 {
-    rcbe::math::Quaternion<rcbe::core::EngineScalar> q { 90, 45, 15 };
+    rcbe::math::yaw y(rcbe::math::deg(90));
+    rcbe::math::pitch p(rcbe::math::deg(45));
+    rcbe::math::roll r(rcbe::math::deg(15));
+    rcbe::math::Quaternion<rcbe::core::EngineScalar> q { y, p, r };
     
     ASSERT_TRUE(rcbe::core::fuzzy_equal(q.x(), -0.183013));
     ASSERT_TRUE(rcbe::core::fuzzy_equal(q.y(), 0.3535534));

@@ -3,11 +3,10 @@
 #include <X11/keysym.h>
 
 #include <core/EditorInputManager.hpp>
-#include <common/utils/stack_utils.hpp>
 
 #include <core/gl_helpers.hpp>
-#include <data_types/math/Matrix.hpp>
-#include <data_types/math/Vector.hpp>
+#include <rcbe-engine/datamodel/math/Matrix.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
 
 namespace rcbe::core {
 //TODO: looks useless, consider relocating to header

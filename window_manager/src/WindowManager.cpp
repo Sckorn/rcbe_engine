@@ -27,7 +27,7 @@ maximum_windows_ { max_wins }
     root_window_ = XRootWindow(x_display_, screen_number_);
 }
 
-WindowPtr WindowManager::create_window(WindowConfig &&config) {
+WindowPtr WindowManager::create_window(window_config &&config) {
     if (windows_created_.size() == maximum_windows_) {
         throw std::runtime_error("Already maximum amount of windows!");
     }
@@ -37,11 +37,10 @@ WindowPtr WindowManager::create_window(WindowConfig &&config) {
 }
 
 WindowPtr WindowManager::create_window(const nlohmann::json &json_config) {
-    WindowConfig c = json_config.at("window_config");
+    window_config c = json_config.at("window_config");
     return create_window(std::move(c));
 }
 
-// TODO: iterate over created windows and kill them all
 WindowManager::~WindowManager() {
     XCloseDisplay(x_display_);
 }

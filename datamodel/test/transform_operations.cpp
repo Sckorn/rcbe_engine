@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <data_types/math/Transform.hpp>
-#include <data_types/math/Vector.hpp>
-#include <data_types/math/Quaternion.hpp>
-#include <common/fuzzy_logic/fuzzy_logic.hpp>
+#include <rcbe-engine/datamodel/math/Transform.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
+#include <rcbe-engine/datamodel/math/Quaternion.hpp>
+#include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
 
 TEST(TransformTests, TranslateVectorPositive)
 {
@@ -34,7 +34,10 @@ TEST(TransformTests, TranslateVectorNegative)
 TEST(TransformTests, RotateVectorNinety)
 {
     rcbe::math::Vector3d vec {0, 0, 1};
-    rcbe::math::Quaternion<rcbe::core::EngineScalar> q {0, 90, 0};
+    rcbe::math::yaw y(rcbe::math::deg(0));
+    rcbe::math::pitch p(rcbe::math::deg(90));
+    rcbe::math::roll r(rcbe::math::deg(0));
+    rcbe::math::Quaternion<rcbe::core::EngineScalar> q {y, p, r};
 
     rcbe::math::Transform t { rcbe::math::Matrix3x3 { q }, { 0, 0, 0 } };
 
@@ -46,7 +49,10 @@ TEST(TransformTests, RotateVectorNinety)
 TEST(TransformTests, RotateVectorFourtyFive)
 {
     rcbe::math::Vector3d vec {0, 0, 1};
-    rcbe::math::Quaternion<rcbe::core::EngineScalar> q {0, 45, 0};
+    rcbe::math::yaw y(rcbe::math::deg(0));
+    rcbe::math::pitch p(rcbe::math::deg(45));
+    rcbe::math::roll r(rcbe::math::deg(0));
+    rcbe::math::Quaternion<rcbe::core::EngineScalar> q {y, p, r};
 
     rcbe::math::Transform t { rcbe::math::Matrix3x3 { q }, { 0, 0, 0 } };
 
