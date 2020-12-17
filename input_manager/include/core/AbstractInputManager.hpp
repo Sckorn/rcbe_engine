@@ -6,8 +6,8 @@
 
 #include <boost/log/trivial.hpp>
 
-#include <core/EditorInputManager.hpp>
-#include <core/GameInputManager.hpp>
+#include <rcbe-engine/core/EditorInputManager.hpp>
+#include <rcbe-engine/core/GameInputManager.hpp>
 
 #include <rcbe-engine/traits/input_manager.hpp>
 

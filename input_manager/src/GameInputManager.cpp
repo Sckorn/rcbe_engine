@@ -1,4 +1,4 @@
-#include <core/GameInputManager.hpp>
+#include <rcbe-engine/core/GameInputManager.hpp>
 
 #include <nlohmann/json.hpp>
 

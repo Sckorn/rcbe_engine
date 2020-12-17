@@ -8,12 +8,14 @@ cc_library(
         exclude = ["src/test_tool.cpp"],
     ),
     hdrs = glob(["include/**/*.hpp"]),
+    include_prefix = "rcbe-engine",
     includes = ["include"],
     linkopts = [
         "-lpthread",
         "-lX11",
         "-lXext",
     ],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//common:engine_json_utils",
@@ -25,23 +27,6 @@ cc_library(
         "//renderer:rcbe_renderer",
         "@boost//:log",
         "@nlohmann",
-    ],
-)
-
-cc_binary(
-    name = "window_test_tool",
-    srcs = ["src/test_tool.cpp"],
-    data = ["//datamodel:datamodel_system_resources"],
-    linkopts = [
-        "-lpthread",
-        "-lX11",
-        "-lXext",
-        "-lGLX",
-    ],
-    deps = [
-        ":rcbe_window_manager",
-        "//common:engine_json_utils",
-        "//datamodel:engine_datamodel_math",
     ],
 )
 
@@ -103,7 +88,7 @@ pkg_tar(
         "include/core/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/core",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/core",
 )
 
 pkg_tar(

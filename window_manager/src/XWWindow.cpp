@@ -1,6 +1,6 @@
 #include <future>
 
-#include <core/XWWindow.hpp>
+#include <rcbe-engine/core/XWWindow.hpp>
 #ifdef __linux__
 #include "XWindow.hpp"
 #elif __WIN32
@@ -10,9 +10,9 @@
 #include <rcbe-engine/core/AbstractInputManager.hpp>
 
 namespace rcbe::core {
-XWWindow::XWWindow(window_config &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg)
+XWWindow::XWWindow(window_config &&config_, const WindowContextPtr& window_context)
 :
-impl_ { std::make_shared<XWindow>(std::move(config_), root_display, screen_number, root_window, delete_msg) }
+impl_ { std::make_shared<XWindow>(std::move(config_), window_context) }
 {
 
 }
@@ -26,46 +26,46 @@ void XWWindow::kill() {
 }
 
 void XWWindow::show() {
-    impl_->map_window();
+    impl_->mapWindow();
 }
 
-const std::shared_ptr<core::AbstractInputManager>& XWWindow::get_input_manager() const {
-    return impl_->get_input_manager();
+const std::shared_ptr<core::AbstractInputManager>& XWWindow::getInputManager() const {
+    return impl_->getInputManager();
 }
 
-void XWWindow::set_input_manager(const std::shared_ptr<AbstractInputManager>& manager) {
-    impl_->set_manager(manager);
+void XWWindow::setInputManager(const std::shared_ptr<AbstractInputManager>& manager) {
+    impl_->setInputManager(manager);
 }
 
-const window_config& XWWindow::get_config() const {
-    return impl_->get_config();
+const window_config& XWWindow::getConfig() const {
+    return impl_->getConfig();
 }
 
-const std::shared_ptr<rendering::RenderingContext>& XWWindow::get_context() const {
-    return impl_->get_context();
+const std::shared_ptr<rendering::RenderingContext>& XWWindow::getRenderingContext() const {
+    return impl_->getRenderingContext();
 }
 
-void XWWindow::set_renderer(rcbe::rendering::GLRendererPtr renderer_ptr) {
-    impl_->set_renderer(std::move(renderer_ptr));
+void XWWindow::setRenderer(rcbe::rendering::GLRendererPtr renderer_ptr) {
+    impl_->setRenderer(std::move(renderer_ptr));
 }
 
-const rcbe::rendering::GLRendererPtr& XWWindow::get_renderer() const {
-    return impl_->get_renderer();
+const rcbe::rendering::GLRendererPtr& XWWindow::getRenderer() const {
+    return impl_->getRenderer();
 }
 
-void XWWindow::start_window_loop() {
-    impl_->start_window_loop();
+void XWWindow::startWindowLoop() {
+    impl_->startWindowLoop();
 }
 
-void XWWindow::stop_window_loop() {
-    impl_->stop_window_loop();
+void XWWindow::stopWindowLoop() {
+    impl_->stopWindowLoop();
 }
 
-void XWWindow::on_configure(window::ConfigureHandlerType&& handler) {
-    impl_->on_configure(std::move(handler));
+void XWWindow::onConfigure(window::ConfigureHandlerType&& handler) {
+    impl_->onConfigure(std::move(handler));
 }
 
-void XWWindow::on_unmap(window::UunmapHandlerType&& handler) {
-    impl_->on_unmap(std::move(handler));
+void XWWindow::onUnmap(window::UunmapHandlerType&& handler) {
+    impl_->onUnmap(std::move(handler));
 }
 }

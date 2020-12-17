@@ -95,7 +95,6 @@ private:
     std::optional<rcbe::math::Vector2d> mouse_coordinates_;
     rcbe::core::EngineScalar zoom_ = 45.;
 
-    // TODO: these should and can be relocated to the Ticker class
     uint64_t previous_time_ = 0;
     uint64_t current_time_ = 0;
 };
@@ -103,7 +102,7 @@ private:
 using RenderingContextPtr = std::shared_ptr<RenderingContext>;
 using RenderingContextConstPtr = std::shared_ptr<const RenderingContext>;
 
-using renderer_stop_handler_t = std::function<void(RenderingContextPtr)>; // context ptr reserved for future use
+using RendererStopHandlerType = std::function<void(RenderingContextPtr)>; // context ptr reserved for future use
 }
 
 #endif // RCBE_RENDERINGCONTEXT_HPP

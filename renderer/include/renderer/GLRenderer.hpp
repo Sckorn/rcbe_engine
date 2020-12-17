@@ -29,20 +29,20 @@ public:
 
     [[nodiscard]]bool running() const;
 
-    [[nodiscard]]const renderer_config &config() const;
+    [[nodiscard]]const renderer_config &config() const noexcept;
 
-    decltype(auto) start_async() {
+    decltype(auto) startAsync() {
         return std::async(std::launch::async, [this]() {
             start();
         });
     }
     void start();
     void stop();
-    void add_object(rcbe::geometry::Mesh &&mesh);
+    void addObject(rcbe::geometry::Mesh &&mesh);
 
     void reshape();
 
-    void on_stop(renderer_stop_handler_t&& handler);
+    void onStop(RendererStopHandlerType&& handler);
 private:
     std::unique_ptr<GLRendererImplementation> impl_;
 };

@@ -2,9 +2,9 @@
 
 #include <X11/keysym.h>
 
-#include <core/EditorInputManager.hpp>
+#include <rcbe-engine/core/EditorInputManager.hpp>
 
-#include <core/gl_helpers.hpp>
+#include <rcbe-engine/core/gl_helpers.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 

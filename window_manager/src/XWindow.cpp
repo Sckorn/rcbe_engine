@@ -31,27 +31,34 @@ GLXFBConfig *chooseFbConfig(Display *d, int screen) {
 }
 
 namespace rcbe::core {
-XWindow::XWindow(window_config &&config, Display *root_display, int screen_number, const Window &root_window,
-                 const Atom &delete_msg)
-        :
-        config_{std::move(config)}, root_display_(root_display)
-        , rendering_context_{(config_.type == window_config::WindowType::gl_rendering_window) ? std::make_shared<rendering::RenderingContext>() : nullptr}
+XWindow::XWindow(window_config &&config, const WindowContextPtr& window_context)
+:
+config_{std::move(config)},
+root_display_(window_context->getRootDisplay())
+, rendering_context_{
+    (config_.type == window_config::WindowType::gl_rendering_window)
+    ? std::make_shared<rendering::RenderingContext>() : nullptr
+}
 {
-    GLXFBConfig *fbConfigs = chooseFbConfig(root_display_, screen_number);
+    GLXFBConfig *fbConfigs = chooseFbConfig(root_display_, window_context->getScreenNumber());
     XVisualInfo *visInfo = glXGetVisualFromFBConfig(root_display_, fbConfigs[0]);
 
     if (visInfo == nullptr)
         throw std::runtime_error("VisualInfo is null pointer");
 
-    rendering_context_->setDisplay(XOpenDisplay(NULL)); // TODO: use nullptr
+    rendering_context_->setDisplay(XOpenDisplay(nullptr));
     rendering_context_->setBackgroundColor(config_.background_color);
     rendering_context_->setWindowDimensions(config.size);
-    rendering_context_->setDeleteMessage(delete_msg);
+    rendering_context_->setDeleteMessage(window_context->getDeleteMsg());
 
-    attributes_.colormap = XCreateColormap(rendering_context_->getDisplay(), root_window, visInfo->visual, AllocNone);
+    attributes_.colormap = XCreateColormap(
+            rendering_context_->getDisplay(),
+            window_context->getRootWindow(),
+            visInfo->visual, AllocNone
+    );
     switch (config_.type) {
         case window_config::WindowType::gl_rendering_window: {
-            rendering_context_->setDrawable(XCreateWindow(rendering_context_->getDisplay(), root_window,
+            rendering_context_->setDrawable(XCreateWindow(rendering_context_->getDisplay(), window_context->getRootWindow(),
                                                           config_.position.x(), config_.position.y(),
                                                           config_.size.width, config_.size.height, 0,
                                                           visInfo->depth, InputOutput, visInfo->visual, CWColormap,
@@ -63,7 +70,7 @@ XWindow::XWindow(window_config &&config, Display *root_display, int screen_numbe
         }
             break;
         case window_config::WindowType::drawing_window: {
-            rendering_context_->setDrawable(XCreateSimpleWindow(rendering_context_->getDisplay(), root_window,
+            rendering_context_->setDrawable(XCreateSimpleWindow(rendering_context_->getDisplay(), window_context->getRootWindow(),
                                                                 config_.position.x(), config_.position.y(),
                                                                 config_.size.width, config_.size.height, 0, 0, 0));
         }
@@ -74,7 +81,11 @@ XWindow::XWindow(window_config &&config, Display *root_display, int screen_numbe
         }
             break;
     }
-    XSetStandardProperties(rendering_context_->getDisplay(), rendering_context_->getDrawable(), config_.caption.c_str(), "", None, nullptr, 0, nullptr);
+    XSetStandardProperties(
+            rendering_context_->getDisplay(),
+            rendering_context_->getDrawable(),
+            config_.caption.c_str(),
+            "", None, nullptr, 0, nullptr);
 
     // TODO: remove this creation, input manager should be manually set from the outside
     if (config_.process_input) {
@@ -106,15 +117,15 @@ XWindow::~XWindow() {
         kill();
 }
 
-void XWindow::on_configure(window::ConfigureHandlerType &&handler) {
+void XWindow::onConfigure(window::ConfigureHandlerType &&handler) {
     configure_handler_ = std::move(handler);
 }
 
-void XWindow::on_unmap(window::UunmapHandlerType &&handler) {
+void XWindow::onUnmap(window::UunmapHandlerType &&handler) {
     unmap_handler_ = std::move(handler);
 }
 
-void XWindow::window_loop() {
+void XWindow::windowLoop() {
 
     std::thread worker{
             [this]() {
@@ -167,7 +178,7 @@ void XWindow::window_loop() {
                 break;
             case DestroyNotify: {
                 BOOST_LOG_TRIVIAL(warning) << "DestroyNotify event signals that a running window was killed_, in order for window to stop gracefully use stop_window_loop!";
-                stop_window_loop();
+                stopWindowLoop();
             }
                 break;
             case GravityNotify:
@@ -192,7 +203,7 @@ void XWindow::window_loop() {
                     renderer_->stop();
 
                 if (running_)
-                    stop_window_loop();
+                    stopWindowLoop();
             }
                 break;
             case ClientMessage: {
@@ -230,52 +241,52 @@ void XWindow::kill() {
         XCloseDisplay(rendering_context_->getDisplay());
         renderer_->stop();
         if (running_)
-            stop_window_loop();
+            stopWindowLoop();
 
         killed_ = true;
     }
 }
 
-void XWindow::map_window() {
+void XWindow::mapWindow() {
     XMapWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
 }
 
-const std::shared_ptr<AbstractInputManager>& XWindow::get_input_manager() const {
+const std::shared_ptr<AbstractInputManager>& XWindow::getInputManager() const {
     std::lock_guard lg {input_manager_access_mutex_};
     return input_manager_;
 }
 
-const window_config &XWindow::get_config() const {
+const window_config &XWindow::getConfig() const {
     return config_;
 }
 
-const std::shared_ptr<rendering::RenderingContext> &XWindow::get_context() const {
+const std::shared_ptr<rendering::RenderingContext> &XWindow::getRenderingContext() const {
     return rendering_context_;
 }
 
-void XWindow::start_window_loop() {
+void XWindow::startWindowLoop() {
     {
         std::lock_guard lg{running_mutex_};
         running_ = true;
     }
 
-    window_loop();
+    windowLoop();
 #ifdef __GNUC__
     BOOST_LOG_TRIVIAL(debug) << "Leaving " << __func__ ;
 #endif
 }
 
-void XWindow::stop_window_loop() {
+void XWindow::stopWindowLoop() {
     std::lock_guard lg {running_mutex_};
     running_ = false;
 }
 
-[[nodiscard]] const rendering::GLRendererPtr& XWindow::get_renderer() const {
+[[nodiscard]] const rendering::GLRendererPtr& XWindow::getRenderer() const {
     std::lock_guard lg {renderer_access_mutex_};
     return renderer_;
 }
 
-void XWindow::set_renderer(rendering::GLRendererPtr renderer_ptr) {
+void XWindow::setRenderer(rendering::GLRendererPtr renderer_ptr) {
     std::lock_guard lg {renderer_access_mutex_};
     if (renderer_ptr == nullptr)
         throw std::runtime_error("Null pointer assigned into renderer ptr");
@@ -283,7 +294,7 @@ void XWindow::set_renderer(rendering::GLRendererPtr renderer_ptr) {
     renderer_ =  std::move(renderer_ptr);
 }
 
-void XWindow::set_manager(const std::shared_ptr<AbstractInputManager>& manager) {
+void XWindow::setInputManager(const std::shared_ptr<AbstractInputManager>& manager) {
     std::lock_guard lg {input_manager_access_mutex_};
     input_manager_ = manager;
 }

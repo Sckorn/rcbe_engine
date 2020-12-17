@@ -5,6 +5,7 @@ cc_library(
         exclude = ["src/main.cpp"],
     ),
     hdrs = glob(["include/renderer/**/*.hpp"]),
+    include_prefix = "rcbe-engine",
     includes = ["include"],
     linkopts = [
         "-lpthread",
@@ -13,6 +14,7 @@ cc_library(
         "-lGLX",
         "-lX11",
     ],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//camera:rcbe_engine_camera",
@@ -113,7 +115,7 @@ pkg_tar(
         "include/renderer/GLRenderer.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/renderer",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/renderer",
 )
 
 pkg_tar(

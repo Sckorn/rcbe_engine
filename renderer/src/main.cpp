@@ -5,7 +5,7 @@
 #include <memory>
 #include <span> // left to clarify that c++20 is used
 
-#include <renderer/GLRenderer.hpp>
+#include <rcbe-engine/renderer/GLRenderer.hpp>
 #include <rcbe-engine/camera/Camera.hpp>
 
 #include <rcbe-engine/utils/json_utils.hpp>
@@ -14,14 +14,14 @@
 #include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
 #include <rcbe-engine/datamodel/rendering/camera_config.hpp>
 
-#include <core/WindowManager.hpp>
+#include <rcbe-engine/core/WindowManager.hpp>
 
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
 
 #include <rcbe-engine/utils/output_utils.hpp>
 #include <rcbe-engine/utils/profiling_utils.hpp>
 #include <rcbe-engine/core/AbstractInputManager.hpp>
-#include <core/EditorInputManager.hpp>
+#include <rcbe-engine/core/EditorInputManager.hpp>
 
 int main(int argc, char * argv[]) {
     using rcbe::core::InputManagerImplementation;
@@ -32,9 +32,9 @@ int main(int argc, char * argv[]) {
         auto wconf = rcbe::utils::read_from_file<rcbe::core::window_config>(
                 "datamodel/data/system/default_window_config.json");
 
-        auto window = manager.create_window(std::move(wconf));
+        auto window = manager.createWindow(std::move(wconf));
 
-        auto window_handle = window->start_window_loop_aync();
+        auto window_handle = window->startWindowLoopAync();
 
         auto renderer_conf = rcbe::utils::read_from_file<rcbe::rendering::renderer_config>(
                 "datamodel/data/rendering/default_renderer_config.json");
@@ -42,14 +42,14 @@ int main(int argc, char * argv[]) {
         window->show();
 
         {
-            auto renderer = rcbe::rendering::make_renderer_ptr(std::move(renderer_conf), window->get_context());
+            auto renderer = rcbe::rendering::make_renderer_ptr(std::move(renderer_conf), window->getRenderingContext());
 
-            window->set_renderer(std::move(renderer));
+            window->setRenderer(std::move(renderer));
         }
 
-        const auto& renderer = window->get_renderer();
+        const auto& renderer = window->getRenderer();
 
-        auto renderer_handle = renderer->start_async();
+        auto renderer_handle = renderer->startAsync();
 
         auto meshes = rcbe::parsers::parse_meshes("parsers/test/resources/corner.x3d");
         auto second_mesh = meshes[0];
@@ -77,18 +77,19 @@ int main(int argc, char * argv[]) {
 
         auto camera_conf = rcbe::utils::read_from_file<rcbe::rendering::camera_config>(
                 "datamodel/data/rendering/default_camera_config.json");
-        auto camera = rcbe::rendering::make_camera(window->get_context(), camera_conf);
+        auto camera = rcbe::rendering::make_camera(window->getRenderingContext(), camera_conf);
         auto start =  std::chrono::steady_clock::now();
-        auto aim = std::make_shared<rcbe::core::AbstractInputManager>(rcbe::core::EditorInputManager::create(window->get_context(), camera));
+        auto aim = std::make_shared<rcbe::core::AbstractInputManager>(rcbe::core::EditorInputManager::create(
+                window->getRenderingContext(), camera));
         auto end =  std::chrono::steady_clock::now();
         BOOST_LOG_TRIVIAL(debug) << "Editor Input Manager created in " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " nsecs";
-        window->set_input_manager(aim);
+        window->setInputManager(aim);
 
         std::this_thread::sleep_for(std::chrono::milliseconds (1000));
         BOOST_LOG_TRIVIAL(debug) << "Meshes should be visible now";
 
-        renderer->add_object(std::move(meshes[0]));
-        renderer->add_object(std::move(second_mesh));
+        renderer->addObject(std::move(meshes[0]));
+        renderer->addObject(std::move(second_mesh));
 
         renderer_handle.wait();
         window_handle.wait();
