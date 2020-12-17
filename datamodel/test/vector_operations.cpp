@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <data_types/math/Vector.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
 
 TEST(VectorTest, VectorAddition)
 {

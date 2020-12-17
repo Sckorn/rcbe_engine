@@ -18,7 +18,7 @@ std::vector<rcbe::math::Vector3d> parseVertices(std::string &&str)
 
     while (!iss.eof())
     {
-        rcbe::geometry::Mesh::vertex_type v;
+        rcbe::geometry::Mesh::VertexType v;
         iss >> v;
         ret.push_back(v);
     }
@@ -33,7 +33,7 @@ std::vector<rcbe::math::Vector3d> parseNormals(std::string &&str)
 
     while (!iss.eof())
     {
-        rcbe::geometry::Mesh::normal_type n;
+        rcbe::geometry::Mesh::NormalType n;
         iss >> n;
         ret.push_back(n);
     }
@@ -41,15 +41,15 @@ std::vector<rcbe::math::Vector3d> parseNormals(std::string &&str)
     return ret;
 }
 
-std::vector<rcbe::geometry::Mesh::triangle_type> parseFacets(std::string &&str)
+std::vector<rcbe::geometry::Mesh::TriangleType> parseFacets(std::string &&str)
 {
-    std::vector<rcbe::geometry::Mesh::triangle_type> ret;
+    std::vector<rcbe::geometry::Mesh::TriangleType> ret;
 
     std::istringstream iss { str };
 
     while (!iss.eof()) 
     {
-        rcbe::geometry::Triangle facet;
+        rcbe::geometry::triangle_indices facet;
         iss >> facet;
         ret.push_back(facet);
     }

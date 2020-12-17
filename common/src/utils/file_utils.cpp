@@ -1,8 +1,8 @@
-#include <common/utils/file_utils.h>
+#include <rcbe-engine/utils/file_utils.hpp>
 
 namespace rcbe::utils
 {
-std::filesystem::path makePathFromParts(const std::vector<std::string> &parts)
+std::filesystem::path make_path_from_parts(const std::vector<std::string> &parts)
 {
   std::filesystem::path ret;
   for(const auto &part: parts)
@@ -12,8 +12,8 @@ std::filesystem::path makePathFromParts(const std::vector<std::string> &parts)
   return ret;
 }
 
-std::string makeStringPathFromParts(const std::vector<std::string> &parts)
+std::string make_string_path_from_parts(const std::vector<std::string> &parts)
 {
-  return makePathFromParts(parts).string();
+  return make_path_from_parts(parts).string();
 }
 }

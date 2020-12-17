@@ -1,22 +1,25 @@
 // TODO: consider making this into a separate pacakge that will be later transformed into engine package
 
-#include <renderer/GLRenderer.hpp>
-#include <rcbe/camera/Camera.hpp>
-
-#include <common/utils/json_utils.hpp>
-
-#include <data_types/math/Vector.hpp>
-
-#include <core/WindowManager.hpp>
-
-#include <parsers/x3d/X3dParser.hpp>
-
 #include <iostream>
 #include <chrono>
 #include <memory>
 #include <span> // left to clarify that c++20 is used
 
-#include <common/utils/output_utils.hpp>
+#include <renderer/GLRenderer.hpp>
+#include <rcbe-engine/camera/Camera.hpp>
+
+#include <rcbe-engine/utils/json_utils.hpp>
+
+#include <rcbe-engine/datamodel/math/Vector.hpp>
+#include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
+#include <rcbe-engine/datamodel/rendering/camera_config.hpp>
+
+#include <core/WindowManager.hpp>
+
+#include <parsers/x3d/X3dParser.hpp>
+
+#include <rcbe-engine/utils/output_utils.hpp>
+#include <rcbe-engine/utils/profiling_utils.hpp>
 #include <core/AbstractInputManager.hpp>
 #include <core/EditorInputManager.hpp>
 
@@ -26,18 +29,18 @@ int main(int argc, char * argv[]) {
         rcbe::utils::setup_logging();
         rcbe::core::WindowManager manager { true };
 
-        auto wconf = rcbe::utils::readFromFile<rcbe::core::WindowConfig>("datamodel/data/system/default_window_config.json");
+        auto wconf = rcbe::utils::read_from_file<rcbe::core::window_config>(
+                "datamodel/data/system/default_window_config.json");
 
         auto window = manager.create_window(std::move(wconf));
 
         auto window_handle = window->start_window_loop_aync();
 
-        auto renderer_conf = rcbe::utils::readFromFile<rcbe::rendering::RendererConfig>("datamodel/data/rendering/default_renderer_config.json");
+        auto renderer_conf = rcbe::utils::read_from_file<rcbe::rendering::renderer_config>(
+                "datamodel/data/rendering/default_renderer_config.json");
 
         window->show();
 
-        auto camera_pos = renderer_conf.camera_position;
-        auto camera_lookat = renderer_conf.camera_lookat;
         {
             auto renderer = rcbe::rendering::make_renderer_ptr(std::move(renderer_conf), window->get_context());
 
@@ -52,7 +55,10 @@ int main(int argc, char * argv[]) {
         auto second_mesh = meshes[0];
 
         {
-            rcbe::math::Quaternion<rcbe::core::EngineScalar> q { 0.0, 0.0, 90.0 };
+            rcbe::math::yaw y(rcbe::math::deg(0));
+            rcbe::math::pitch p(rcbe::math::deg(0));
+            rcbe::math::roll r(rcbe::math::deg(90));
+            rcbe::math::Quaternion<rcbe::core::EngineScalar> q { y, p, r };
 
             rcbe::math::Matrix3x3 rotation { q };
             rcbe::math::Vector3d translation { 0.0, 0.0, 0.0 };
@@ -69,7 +75,9 @@ int main(int argc, char * argv[]) {
             second_mesh.transform(t);
         }
 
-        auto camera = rcbe::rendering::make_camera(window->get_context(), camera_pos, camera_lookat);
+        auto camera_conf = rcbe::utils::read_from_file<rcbe::rendering::camera_config>(
+                "datamodel/data/rendering/default_camera_config.json");
+        auto camera = rcbe::rendering::make_camera(window->get_context(), camera_conf);
         auto start =  std::chrono::steady_clock::now();
         auto aim = std::make_shared<rcbe::core::AbstractInputManager>(rcbe::core::EditorInputManager::create(window->get_context(), camera));
         auto end =  std::chrono::steady_clock::now();

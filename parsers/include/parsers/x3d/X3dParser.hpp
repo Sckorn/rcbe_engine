@@ -1,7 +1,7 @@
 #ifndef RCBE_X3DPARSER_HPP
 #define RCBE_X3DPARSER_HPP
 
-#include <data_types/geometry/Mesh.hpp>
+#include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 
 namespace rcbe::parsers
 {

@@ -4,8 +4,8 @@
 #include <memory>
 #include <future>
 
-#include <data_types/system/WindowConfig.hpp>
-#include <data_types/rendering/RenderingContext.hpp>
+#include <rcbe-engine/datamodel/system/window_config.hpp>
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 
 #include <X11/Xlib.h>
 
@@ -30,11 +30,11 @@ public:
     XWWindow() = delete;
 
     // TODO: add WindowContext class, to hide details about rott window and stuff
-    XWWindow(WindowConfig &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg);
+    XWWindow(window_config &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg);
 
     ~XWWindow();
 
-    [[nodiscard]] const WindowConfig& get_config() const;
+    [[nodiscard]] const window_config& get_config() const;
 
     decltype(auto) start_window_loop_aync() {
         return std::async(std::launch::async, [this]() {
@@ -49,8 +49,8 @@ public:
     [[nodiscard]]const std::shared_ptr<core::AbstractInputManager>& get_input_manager() const;
     void set_input_manager(const std::shared_ptr<AbstractInputManager>& manager);
 
-    void on_configure(window::configure_handler_t&& handler);
-    void on_unmap(window::unmap_handler_t&& handler);
+    void on_configure(window::ConfigureHandlerType&& handler);
+    void on_unmap(window::UunmapHandlerType&& handler);
 
     [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const; // TODO: rename to getRenderingContext
 

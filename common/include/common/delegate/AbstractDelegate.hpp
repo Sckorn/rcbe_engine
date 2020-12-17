@@ -5,18 +5,18 @@
 
 #include <boost/log/trivial.hpp>
 
-#include <common/delegate/Delegate.hpp>
+#include <rcbe-engine/delegate/Delegate.hpp>
 
 namespace rcbe::core {
 class AbstractDelegate {
 public:
     template <typename ... Signature>
     AbstractDelegate(Delegate<Signature...>&& d)
-            :
-            impl_ { std::make_shared< DelegateImpl < Delegate < Signature... > >  >(std::move(d)) }
+    :
+    impl_ { std::make_shared< DelegateImpl < Delegate < Signature... > >  >(std::move(d)) }
     {
-        // TODO: string is too long, add line break
-        static_assert(std::is_rvalue_reference_v<decltype(d)>, "Abstract delegate owns the actual delegate invoked, provide rvalue reference!!!");
+        static_assert(std::is_rvalue_reference_v<decltype(d)>,
+                "Abstract delegate owns the actual delegate invoked, provide rvalue reference!!!");
     }
 
     template <typename ... Signature>
@@ -33,8 +33,8 @@ public:
         return impl_->size();
     }
 
-    [[nodiscard]] size_t max_size() const noexcept {
-        return impl_->max_size();
+    [[nodiscard]] size_t maxSize() const noexcept {
+        return impl_->maxSize();
     }
 
     template <typename ... Signature>
@@ -58,7 +58,7 @@ public:
     }
 
     template <typename ... Signature>
-    void add(typename Delegate<void, Signature&&...>::invocation_type&& inv) {
+    void add(typename Delegate<void, Signature&&...>::InvocationType&& inv) {
         auto actual_type_ptr = std::dynamic_pointer_cast<DelegateImpl<Delegate<void, Signature...>>>(impl_);
         if (actual_type_ptr) {
             actual_type_ptr->add(std::move(inv));
@@ -70,7 +70,7 @@ public:
 private:
 
     struct DelegateImplInterface {
-        [[nodiscard]] virtual size_t max_size() const noexcept = 0;
+        [[nodiscard]] virtual size_t maxSize() const noexcept = 0;
         [[nodiscard]] virtual size_t size() const noexcept = 0;
     };
 
@@ -78,12 +78,12 @@ private:
     struct DelegateImpl : public DelegateImplInterface {
     public:
         DelegateImpl(T&& delegate)
-                :
-                delegate_ { std::move(delegate) }
+        :
+        delegate_ { std::move(delegate) }
         {}
 
-        [[nodiscard]] size_t max_size() const noexcept override {
-            return delegate_.max_size();
+        [[nodiscard]] size_t maxSize() const noexcept override {
+            return delegate_.maxSize();
         }
 
         [[nodiscard]] size_t size() const noexcept override {
@@ -96,7 +96,7 @@ private:
         }
 
 
-        void add(typename T::invocation_type&& inv) {
+        void add(typename T::InvocationType&& inv) {
             delegate_.add(std::move(inv));
         }
 

@@ -8,7 +8,7 @@
 
 #include <X11/Xlib.h>
 
-#include <data_types/system/WindowConfig.hpp>
+#include <rcbe-engine/datamodel/system/window_config.hpp>
 
 #include <nlohmann/json_fwd.hpp>
 #include <core/XWWindow.hpp>
@@ -21,7 +21,7 @@ public:
     explicit WindowManager(bool multi_thread, size_t max_windows = 5);
     ~WindowManager();
 
-    WindowPtr create_window(WindowConfig &&config);
+    WindowPtr create_window(window_config &&config);
     WindowPtr create_window(const nlohmann::json &json_config);
 
 private:

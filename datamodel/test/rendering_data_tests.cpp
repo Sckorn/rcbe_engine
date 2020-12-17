@@ -1,16 +1,16 @@
 #include <gtest/gtest.h>
 
-#include <data_types/rendering/RendererConfig.hpp>
+#include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
 #include <nlohmann/json.hpp>
 
 #include <fstream>
 
-#include <common/utils/json_utils.hpp>
+#include <rcbe-engine/utils/json_utils.hpp>
 
 static constexpr const char * path = "datamodel/data/rendering/default_renderer_config.json";
 
 TEST(RendererConfigTests, FromJson) {
-    auto config = rcbe::utils::readFromFile<rcbe::rendering::RendererConfig>(path);
+    auto config = rcbe::utils::read_from_file<rcbe::rendering::renderer_config>(path);
 
     ASSERT_TRUE(config.resizable);
     ASSERT_EQ(config.initial_dimensions.width, 1280);

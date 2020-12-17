@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 
 #include <core/InputManagerImplementation.hpp>
-#include <data_types/system/InputScheme.hpp>
+#include <rcbe-engine/datamodel/system/InputScheme.hpp>
 
 namespace rcbe::core {
 class GameInputManager final : protected InputManagerImplementation {

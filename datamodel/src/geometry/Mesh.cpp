@@ -1,128 +1,128 @@
-#include <data_types/geometry/Mesh.hpp>
+#include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 
 namespace rcbe::geometry
 {
-const Mesh::vertex_storage &Mesh::vertices() const
+const Mesh::VertexStorage &Mesh::vertices() const noexcept
 {
-    return _vertices;
+    return vertices_;
 }
 
-const Mesh::normal_storage &Mesh::normals() const
+const Mesh::NormalStorage &Mesh::normals() const noexcept
 {
-    return _normals;
+    return normals_;
 }
 
-const Mesh::facet_storage &Mesh::facets() const
+const Mesh::FacetStorage &Mesh::facets() const noexcept
 {
-    return _facets;
+    return facets_;
 }
 
-size_t Mesh::vertices_size() const
+size_t Mesh::verticesSize() const noexcept
 {
-    return _vertices.size();
+    return vertices_.size();
 }
 
-size_t Mesh::normals_size() const
+size_t Mesh::normalsSize() const noexcept
 {
-    return _normals.size();
+    return normals_.size();
 }
 
-size_t Mesh::facets_size() const
+size_t Mesh::facetsSize() const noexcept
 {
-    return _facets.size();
+    return facets_.size();
 }
 
-Mesh::vertices_iterator Mesh::vertices_begin()
+Mesh::VerticesIterator Mesh::verticesBegin() noexcept
 {
-    return _vertices.begin();
+    return vertices_.begin();
 }
 
-Mesh::const_vertices_iterator Mesh::vertices_cbegin() const
+Mesh::VerticesConstIterator Mesh::verticesCbegin() const noexcept
 {
-    return _vertices.cbegin();
+    return vertices_.cbegin();
 }
 
-Mesh::vertices_iterator Mesh::vertices_end()
+Mesh::VerticesIterator Mesh::verticesEnd() noexcept
 {
-    return _vertices.end();
+    return vertices_.end();
 }
 
-Mesh::const_vertices_iterator Mesh::vertices_cend() const
+Mesh::VerticesConstIterator Mesh::verticesCend() const noexcept
 {
-    return  _vertices.cend();
+    return  vertices_.cend();
 }
 
-Mesh::normals_iterator Mesh::normals_begin()
+Mesh::NormalsIterator Mesh::normalsBegin() noexcept
 {
-    return _normals.begin();
+    return normals_.begin();
 }
 
-Mesh::const_normals_iterator Mesh::normals_cbegin() const
+Mesh::NormalsConstIterator Mesh::normalsCbegin() const noexcept
 {
-    return _normals.cbegin();
+    return normals_.cbegin();
 }
 
-Mesh::normals_iterator Mesh::normals_end()
+Mesh::NormalsIterator Mesh::normalsEnd() noexcept
 {
-    return _normals.end();
+    return normals_.end();
 }
 
-Mesh::const_normals_iterator Mesh::normals_cend() const
+Mesh::NormalsConstIterator Mesh::normalsCend() const noexcept
 {
-    return _normals.cend();
+    return normals_.cend();
 }
 
-Mesh::facets_iterator Mesh::facets_begin()
+Mesh::FacetsIterator Mesh::facetsBegin() noexcept
 {
-    return _facets.begin();
+    return facets_.begin();
 }
 
-Mesh::const_facets_iterator Mesh::facets_cbegin() const
+Mesh::FacetsConstIterator Mesh::facetsCbegin() const noexcept
 {
-    return _facets.cbegin();
+    return facets_.cbegin();
 }
 
-Mesh::facets_iterator Mesh::facets_end()
+Mesh::FacetsIterator Mesh::facetsEnd() noexcept
 {
-    return _facets.end();
+    return facets_.end();
 }
 
-Mesh::const_facets_iterator Mesh::facets_cend() const
+Mesh::FacetsConstIterator Mesh::facetsCend() const noexcept
 {
-    return _facets.cend();
+    return facets_.cend();
 }
 
-const Mesh::color_type &Mesh::color() const
+const Mesh::ColorType &Mesh::color() const noexcept
 {
-    return _color;
+    return color_;
 }
 
-const Mesh::transform_type &Mesh::get_transform() const
+const Mesh::TransformType &Mesh::getTransform() const noexcept
 {
-    return _transform;
+    return transform_;
 }
 
-void Mesh::transform(const transform_type &t)
+void Mesh::transform(const TransformType &t)
 {
-    _transform = t * _transform;
+    transform_ = t * transform_;
 
-    if (!_vertices.empty())
+    if (!vertices_.empty())
     {
-        std::transform(_vertices.begin(), _vertices.end(), _vertices.begin(), _transform);
+        std::transform(vertices_.begin(), vertices_.end(), vertices_.begin(), transform_);
     }
 
-    if (!_normals.empty())
+    if (!normals_.empty())
     {
-        std::transform(_normals.begin(), _normals.end(), _normals.begin(), _transform);
+        std::transform(normals_.begin(), normals_.end(), normals_.begin(), transform_);
     }
 }
 
-void Mesh::set_transform(const transform_type &t)
+void Mesh::setTransform(const TransformType &t)
 {
-    _transform = t;
+    transform_ = t;
 }
 
-Mesh operator*(const Mesh::transform_type &t, Mesh m)
+Mesh operator*(const Mesh::TransformType &t, Mesh m)
 {
     m.transform(t);
     return m;
@@ -143,10 +143,10 @@ void adl_serializer<rcbe::geometry::Mesh>::to_json(nlohmann::json &j, const rcbe
 
 void adl_serializer<rcbe::geometry::Mesh>::from_json(const nlohmann::json &j, rcbe::geometry::Mesh &m)
 {
-    auto vertices = j.at("vertices").get<rcbe::geometry::Mesh::vertex_storage>();
-    auto normals = j.at("normals").get<rcbe::geometry::Mesh::normal_storage>();
-    auto facets = j.at("facets").get<rcbe::geometry::Mesh::facet_storage>();
-    auto color = j.at("color").get<rcbe::geometry::Mesh::color_type>();
+    auto vertices = j.at("vertices").get<rcbe::geometry::Mesh::VertexStorage>();
+    auto normals = j.at("normals").get<rcbe::geometry::Mesh::NormalStorage>();
+    auto facets = j.at("facets").get<rcbe::geometry::Mesh::FacetStorage>();
+    auto color = j.at("color").get<rcbe::geometry::Mesh::ColorType>();
 
     m = { 
         std::make_move_iterator(vertices.begin()), std::make_move_iterator(vertices.end()), 

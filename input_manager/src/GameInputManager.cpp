@@ -1,7 +1,5 @@
 #include <core/GameInputManager.hpp>
 
-#include <common/utils/stack_utils.hpp>
-
 #include <nlohmann/json.hpp>
 
 namespace rcbe::core {

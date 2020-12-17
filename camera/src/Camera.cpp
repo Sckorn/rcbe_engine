@@ -1,30 +1,30 @@
-#include <rcbe/camera/Camera.hpp>
+#include <rcbe-engine/camera/Camera.hpp>
 
-#include <data_types/math/math_constants.hpp>
+#include <rcbe-engine/datamodel/math/math_constants.hpp>
 
 namespace rcbe::rendering {
-Camera::Camera(const rendering::RenderingContextPtr &context, const math::Vector3d &position, const math::Vector3d &lookat, const math::Vector3d &up)
+Camera::Camera(const rendering::RenderingContextPtr &context, const rendering::camera_config &config)
 :
-initial_position_ { position }
-, initial_lookat_ { lookat }
-, initial_up_ { up }
+initial_position_ { config.camera_position }
+, initial_lookat_ { config.camera_lookat }
+, initial_up_ { config.camera_up }
 , context_ { context }
-, transform_ { look_at(initial_position_, initial_lookat_, initial_up_) }
+, transform_ {lookAt(initial_position_, initial_lookat_, initial_up_) }
 {
     if (!context_)
         throw std::runtime_error("Rendering context for Camera is nullptr!");
 
     BOOST_LOG_TRIVIAL(debug) << transform_.matrix();
 
-    update_context(transform_);
+    updateContext(transform_);
 }
 
-void Camera::update_context(const transform_type &t) {
+void Camera::updateContext(const TransformType &t) {
     transform_ = t;
-    context_->update_transform(t);
+    context_->updateTransform(t);
 }
 
-math::Matrix4x4 Camera::look_at(const math::Vector3d& camera_position, const math::Vector3d& lookat, const math::Vector3d& up) {
+math::Matrix4x4 Camera::lookAt(const math::Vector3d& camera_position, const math::Vector3d& lookat, const math::Vector3d& up) {
     position_ = camera_position;
     direction_ = -((lookat - position_).normalized());  // direction is negated due to OpenGL's positive Z pointing towards camera,
                                                         // and as such a vector pointing forward out of the camera is negative Z
@@ -48,32 +48,32 @@ math::Matrix4x4 Camera::look_at(const math::Vector3d& camera_position, const mat
     return left_part * right_part;
 }
 
-const Camera::transform_type& Camera::get_transform() const {
+const Camera::TransformType& Camera::getTransform() const {
     std::lock_guard lg{translate_mutex_};
     return transform_;
 }
 
-void Camera::reset_view() {
+void Camera::resetView() {
     std::lock_guard lg{rotate_mutex_};
     std::lock_guard lg2{translate_mutex_};
     zoom_ = 45.;
-    context_->update_zoom(zoom_);
-    update_context(math::Transform(look_at(initial_position_, initial_lookat_, initial_up_)));
+    context_->updateZoom(zoom_);
+    updateContext(math::Transform(lookAt(initial_position_, initial_lookat_, initial_up_)));
     yaw_ = math::yaw(math::deg(-90.));
     pitch_ = math::pitch(math::deg(0.));
 
 }
 
-math::Vector3d Camera::camera_direction() const {
+math::Vector3d Camera::cameraDirection() const {
     return -(direction_.normalized());
 }
 
-math::Vector3d Camera::camera_up() const {
+math::Vector3d Camera::cameraUp() const {
     return up_.normalized();
 }
 
-math::Vector3d Camera::camera_right() const {
-    return math::Vector3d::cross(camera_direction(), camera_up()).normalized();
+math::Vector3d Camera::cameraRight() const {
+    return math::Vector3d::cross(cameraDirection(), cameraUp()).normalized();
 }
 
 void Camera::translate(const rcbe::math::Vector3d& direction, const rcbe::math::Vector3d& look_direction) {
@@ -81,25 +81,25 @@ void Camera::translate(const rcbe::math::Vector3d& direction, const rcbe::math::
     const auto curr_pos = position_;
     const auto new_pos = direction + curr_pos;
 
-    update_context(math::Transform(look_at(new_pos, new_pos + look_direction, initial_up_)));
+    updateContext(math::Transform(lookAt(new_pos, new_pos + look_direction, initial_up_)));
 }
 
-math::Matrix4x4 Camera::rotation_impl() {
+math::Matrix4x4 Camera::rotationImpl() {
     const auto x = std::cos(static_cast<const double>(yaw_.as_rad())) * std::cos(static_cast<const double>(pitch_.as_rad()));
     const auto y = std::sin(static_cast<const double>(pitch_.as_rad()));
     const auto z = std::sin(static_cast<const double>(yaw_.as_rad())) * std::cos(static_cast<const double>(pitch_.as_rad()));
     math::Vector3d new_direction(x, y, z);
 
-    return look_at(position_, position_ + new_direction.normalized(), initial_up_);
+    return lookAt(position_, position_ + new_direction.normalized(), initial_up_);
 }
 
-const math::pitch &Camera::get_pitch() const {
+const math::pitch &Camera::getPitch() const noexcept {
     std::lock_guard lg{rotate_mutex_};
 
     return pitch_;
 }
 
-const math::yaw &Camera::get_yaw() const {
+const math::yaw &Camera::getYaw() const noexcept {
     std::lock_guard lg{rotate_mutex_};
 
     return yaw_;
@@ -110,62 +110,62 @@ void Camera::rotate(math::pitch&& pstep, math::yaw&& ystep) {
 
     pitch_ += pstep;
     yaw_ += ystep;
-    update_context( math::Transform(rotation_impl()));
+    updateContext(math::Transform(rotationImpl()));
 }
 
 void Camera::rotate(math::pitch&& step) {
     std::lock_guard lg{rotate_mutex_};
 
     pitch_ += step;
-    update_context( math::Transform(rotation_impl()));
+    updateContext(math::Transform(rotationImpl()));
 }
 
 void Camera::rotate(math::yaw&& step) {
     std::lock_guard lg{rotate_mutex_};
 
     yaw_ += step;
-    update_context( math::Transform(rotation_impl()));
+    updateContext(math::Transform(rotationImpl()));
 }
 
-void Camera::set_angles(math::pitch&& p, math::yaw&& y) {
+void Camera::setAngles(math::pitch&& p, math::yaw&& y) {
     std::lock_guard lg{rotate_mutex_};
 
     pitch_ = p;
     yaw_ = y;
-    update_context( math::Transform(rotation_impl()));
+    updateContext(math::Transform(rotationImpl()));
 }
 
-void Camera::set_pitch(math::pitch&& p) {
+void Camera::setPitch(math::pitch&& p) {
     std::lock_guard lg{rotate_mutex_};
     pitch_ = p;
-    update_context( math::Transform(rotation_impl()));
+    updateContext(math::Transform(rotationImpl()));
 }
 
-void Camera::set_yaw(math::yaw&& y) {
+void Camera::setYaw(math::yaw&& y) {
     std::lock_guard lg{rotate_mutex_};
     yaw_ = y;
-    update_context( math::Transform(rotation_impl()));
+    updateContext(math::Transform(rotationImpl()));
 }
 
-void Camera::zoom_in(rcbe::core::EngineScalar step) {
+void Camera::zoomIn(rcbe::core::EngineScalar step) {
     auto zoom_copy = zoom_;
     zoom_copy -= step;
     if (zoom_copy >= 1.) {
         zoom_ = zoom_copy;
     }
-    context_->update_zoom(zoom_);
+    context_->updateZoom(zoom_);
 }
 
-void Camera::zoom_out(rcbe::core::EngineScalar step) {
+void Camera::zoomOut(rcbe::core::EngineScalar step) {
     auto zoom_copy = zoom_;
     zoom_copy += step;
     if (zoom_copy <= 45.) {
         zoom_ = zoom_copy;
     }
-    context_->update_zoom(zoom_);
+    context_->updateZoom(zoom_);
 }
 
-CameraPtr make_camera(rendering::RenderingContextPtr ctx, const rcbe::math::Vector3d& pos, const rcbe::math::Vector3d& lookat) {
-    return std::make_shared<Camera>(ctx, pos, lookat, math::WORLD_UP);
+CameraPtr make_camera(rendering::RenderingContextPtr ctx, const rendering::camera_config &config) {
+    return std::make_shared<Camera>(ctx, config);
 }
 }

@@ -16,6 +16,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        "//common:engine_json_utils",
         "//datamodel:engine_datamodel_core",
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_system",
@@ -50,6 +51,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 ## SO
 
@@ -86,8 +89,8 @@ pkg_deb(
         "libboost-log{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine window manager libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_window_manager",
     version = ENGINE_VERSION,
 )
@@ -129,8 +132,8 @@ pkg_deb(
         "nlohmann-json3-dev",
     ],
     description = "RCBE game engine window manager headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_window_manager_dev",
     version = ENGINE_VERSION,
 )

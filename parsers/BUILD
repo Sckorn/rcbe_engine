@@ -41,6 +41,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 ## SO
 
@@ -73,8 +75,8 @@ pkg_deb(
         "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine parser libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_parsers",
     version = ENGINE_VERSION,
 )
@@ -111,8 +113,8 @@ pkg_deb(
         "rcbe_parsers_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine parser headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_parsers_dev",
     version = ENGINE_VERSION,
 )

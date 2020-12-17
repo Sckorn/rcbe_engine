@@ -29,6 +29,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 ## SO
 
@@ -59,8 +61,8 @@ pkg_deb(
         "libboost-log{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine ticker libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_ticker",
     version = ENGINE_VERSION,
 )
@@ -95,8 +97,8 @@ pkg_deb(
         "rcbe_ticker_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine ticker headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_ticker_dev",
     version = ENGINE_VERSION,
 )

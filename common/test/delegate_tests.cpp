@@ -4,8 +4,8 @@
 #include <iostream>
 #include <bitset>
 
-#include <common/delegate/Delegate.hpp>
-#include <common/delegate/AbstractDelegate.hpp>
+#include <rcbe-engine/delegate/Delegate.hpp>
+#include <rcbe-engine/delegate/AbstractDelegate.hpp>
 
 TEST(DelegateTests, MainDelegateTest) {
     rcbe::core::Delegate<void, int, int&> delegate {};
@@ -20,7 +20,7 @@ TEST(DelegateTests, MainDelegateTest) {
 
     delegate(1, accumulator);
 
-    ASSERT_EQ(delegate.max_size(), 100);
+    ASSERT_EQ(delegate.maxSize(), 100);
     ASSERT_EQ(delegate.size(), 2);
     ASSERT_EQ(accumulator, 3);
 }
@@ -43,7 +43,7 @@ TEST(DelegateTests, AbstractDelegateTest) {
     });
     ad.invoke(1, accumulate);
 
-    ASSERT_EQ(ad.max_size(), 10);
+    ASSERT_EQ(ad.maxSize(), 10);
     ASSERT_EQ(ad.size(), 3);
     ASSERT_EQ(accumulate, 6);
 }
