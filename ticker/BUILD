@@ -2,7 +2,9 @@ cc_library(
     name = "rcbe_ticker",
     srcs = glob(["src/**/*.cpp"]),
     hdrs = glob(["include/**/*.hpp"]),
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//traits:rcbe_traits",
@@ -75,7 +77,7 @@ pkg_tar(
         "include/ticker/Ticker.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/ticker",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/ticker",
 )
 
 pkg_tar(

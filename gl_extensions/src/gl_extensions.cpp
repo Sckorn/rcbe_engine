@@ -14,7 +14,7 @@
 
 #include <iostream>
 #include <algorithm>
-#include <core/gl_extensions.hpp>
+#include <rcbe-engine/core/gl_extensions.hpp>
 #include <GL/glx.h>
 
 namespace rcbe::core {
@@ -23,7 +23,7 @@ public:
     GLErrorProcImpl() {};
     ~GLErrorProcImpl() {};
 
-    std::string get_error_msg(GLenum);
+    std::string getErrorMsg(GLenum);
 private:
     const std::unordered_map<GLenum, std::string> gl_errors_ = {
             {GL_INVALID_ENUM, "An enumeration parameter is not a legal enumeration for that function."},
@@ -37,7 +37,7 @@ private:
     };
 };
 
-std::string GLErrorProcImpl::get_error_msg(GLenum error) {
+std::string GLErrorProcImpl::getErrorMsg(GLenum error) {
     auto it = gl_errors_.find(error);
     if (it == gl_errors_.end()) {
         return "unknown error";
@@ -54,12 +54,12 @@ impl_ { std::make_unique<GLErrorProcImpl>() }
 GLErrorProcessor::~GLErrorProcessor() {}
 
 std::string GLErrorProcessor::operator()(GLenum gl_error) {
-    return impl_->get_error_msg(gl_error);
+    return impl_->getErrorMsg(gl_error);
 }
 
 
-std::string GLErrorProcessor::gl_error_as_string(GLenum gl_error) {
-    return impl_->get_error_msg(gl_error);
+std::string GLErrorProcessor::glErrorAsString(GLenum gl_error) {
+    return impl_->getErrorMsg(gl_error);
 }
 }
 

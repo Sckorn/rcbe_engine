@@ -45,7 +45,7 @@ class GLErrorProcessor {
 public:
     GLErrorProcessor();
     ~GLErrorProcessor();
-    std::string gl_error_as_string(GLenum gl_error);
+    std::string glErrorAsString(GLenum gl_error);
     std::string operator()(GLenum gl_error);
 private:
     std::unique_ptr<GLErrorProcImpl> impl_;

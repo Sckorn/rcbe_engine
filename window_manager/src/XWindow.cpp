@@ -2,9 +2,9 @@
 
 #include <boost/log/trivial.hpp>
 
-#include <core/EditorInputManager.hpp>
-#include <core/GameInputManager.hpp>
-#include <core/AbstractInputManager.hpp>
+#include <rcbe-engine/core/EditorInputManager.hpp>
+#include <rcbe-engine/core/GameInputManager.hpp>
+#include <rcbe-engine/core/AbstractInputManager.hpp>
 
 #include <rcbe-engine/utils/json_utils.hpp>
 
@@ -79,7 +79,7 @@ XWindow::XWindow(window_config &&config, Display *root_display, int screen_numbe
     // TODO: remove this creation, input manager should be manually set from the outside
     if (config_.process_input) {
         if (config.editor) {
-            input_manager_ = std::make_shared<AbstractInputManager>(EditorInputManager(EditorInputManager::handler_collection{}));
+            input_manager_ = std::make_shared<AbstractInputManager>(EditorInputManager(EditorInputManager::HandlerCollection{}));
         } else {
             if (!config_.input_scheme.empty()) {
                 input_manager_ = std::make_shared<AbstractInputManager>(GameInputManager(utils::read_raw(config_.input_scheme)));
@@ -144,7 +144,7 @@ void XWindow::window_loop() {
         std::lock_guard lg {input_event_mutex_};
         XNextEvent(root_display_, &event);
 
-        if (! input_manager_->try_process_event(event))
+        if (!input_manager_->tryProcessEvent(event))
         switch (event.type) {
             // Structure notify
             case ConfigureNotify: {   // size or position change

@@ -1,7 +1,7 @@
 cc_library(
     name = "rcbe_traits",
     hdrs = glob(["include/**/*.hpp"]),
-    include_prefix = "rcbe",
+    include_prefix = "rcbe-engine",
     includes = ["include"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
@@ -25,7 +25,7 @@ pkg_tar(
         "include/traits/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/traits",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/traits",
 )
 
 pkg_tar(

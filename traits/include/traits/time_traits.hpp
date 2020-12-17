@@ -6,28 +6,28 @@
 
 namespace rcbe::utility {
 template <typename Duration>
-struct IsDurationType : public std::false_type {};
+struct is_duration_type : public std::false_type {};
 
 template <>
-struct IsDurationType<std::chrono::hours> : public std::true_type {};
+struct is_duration_type<std::chrono::hours> : public std::true_type {};
 
 template <>
-struct IsDurationType<std::chrono::minutes> : public std::true_type {};
+struct is_duration_type<std::chrono::minutes> : public std::true_type {};
 
 template <>
-struct IsDurationType<std::chrono::seconds> : public std::true_type {};
+struct is_duration_type<std::chrono::seconds> : public std::true_type {};
 
 template <>
-struct IsDurationType<std::chrono::milliseconds> : public std::true_type {};
+struct is_duration_type<std::chrono::milliseconds> : public std::true_type {};
 
 template <>
-struct IsDurationType<std::chrono::microseconds> : public std::true_type {};
+struct is_duration_type<std::chrono::microseconds> : public std::true_type {};
 
 template <>
-struct IsDurationType<std::chrono::nanoseconds> : public std::true_type {};
+struct is_duration_type<std::chrono::nanoseconds> : public std::true_type {};
 
 template <typename Duration>
-static constexpr bool duration_type_v = IsDurationType<Duration>::value;
+static constexpr bool duration_type_v = is_duration_type<Duration>::value;
 }
 
 #endif //RCBE_ENGINE_TIME_TRAITS_HPP

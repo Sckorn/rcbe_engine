@@ -9,7 +9,7 @@
 #include <core/EditorInputManager.hpp>
 #include <core/GameInputManager.hpp>
 
-#include <traits/input_manager.hpp>
+#include <rcbe-engine/traits/input_manager.hpp>
 
 namespace rcbe::core {
 using InputManagerVariant = std::variant<EditorInputManager, GameInputManager>;
@@ -31,16 +31,16 @@ public:
 
     }
 
-    decltype(auto) try_process_event(XEvent& event) {
+    decltype(auto) tryProcessEvent(XEvent& event) {
         return std::visit([&event](auto& arg) mutable -> bool {
-            auto ret = arg.try_process_event(event);
+            auto ret = arg.tryProcessEvent(event);
             return ret;
         }, variant_);
     }
 
 #ifdef RCBE_DEBUG
     //*For the simplicity of debug*/
-    InputManagerVariant& get_variant() {
+    InputManagerVariant& getVariant() {
         return variant_;
     }
 #endif

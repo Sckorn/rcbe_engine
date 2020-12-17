@@ -7,11 +7,11 @@
 #include <GL/gl.h>
 
 namespace rcbe::core {
-static constexpr std::size_t gl_transform_size = 16; //TODO: constant to Upper case
+static constexpr std::size_t GL_TRANSFORM_SIZE = 16; //TODO: constant to Upper case
 
 template <typename MatrixType, typename UnderlyingValueType = GLfloat>
 MatrixType gl_matrix_get(GLenum matrix_type) {
-    UnderlyingValueType m[gl_transform_size];
+    UnderlyingValueType m[GL_TRANSFORM_SIZE];
     glGetFloatv(matrix_type, m);
 
     return MatrixType(m);

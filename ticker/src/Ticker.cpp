@@ -11,11 +11,11 @@ Ticker::~Ticker() {
     wait();
 }
 
-Ticker::period_type Ticker::delta_time() const {
+Ticker::PeriodType Ticker::deltaTime() const {
     return period_;
 }
 
-Ticker::clock_type ::time_point Ticker::start_time() const {
+Ticker::ClockType ::time_point Ticker::startTime() const {
     return start_time_;
 }
 
@@ -25,7 +25,7 @@ void Ticker::stop() {
     BOOST_LOG_TRIVIAL(debug) << "Ticker is stopped " << std::boolalpha << running_;
 }
 
-void Ticker::set_handler(rcbe::core::Ticker::handler_type &&handler) {
+void Ticker::setHandler(rcbe::core::Ticker::HandlerType &&handler) {
     handler_ = std::move(handler);
 }
 
