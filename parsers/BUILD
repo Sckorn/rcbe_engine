@@ -1,8 +1,10 @@
 cc_library(
     name = "x3d_parser",
-    srcs = ["src/x3d/X3dParser.cpp"],
-    hdrs = ["include/parsers/x3d/X3dParser.hpp"],
+    srcs = ["src/x3d/x3d_parser.cpp"],
+    hdrs = ["include/parsers/x3d/x3d_parser.hpp"],
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//common:engine_filesystem_utils",
@@ -86,10 +88,10 @@ pkg_deb(
 pkg_tar(
     name = "parsers-headers-data",
     srcs = [
-        "include/parsers/x3d/X3dParser.hpp",
+        "include/parsers/x3d/x3d_parser.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/parsers/x3d",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/parsers/x3d",
 )
 
 pkg_tar(

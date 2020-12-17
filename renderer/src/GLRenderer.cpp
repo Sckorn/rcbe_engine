@@ -3,10 +3,10 @@
 #include <mutex>
 #include <cmath>
 
-#include <core/gl_extensions.hpp>
+#include <rcbe-engine/core/gl_extensions.hpp>
 
 #include <rcbe-engine/datamodel/rendering/BufferObject.hpp>
-#include <ticker/Ticker.hpp>
+#include <rcbe-engine/ticker/Ticker.hpp>
 
 #include <boost/log/trivial.hpp>
 

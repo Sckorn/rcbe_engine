@@ -6,7 +6,7 @@
 
 namespace rcbe::core {
 
-bool InputManagerImplementation::try_process_event(XEvent& event) {
+bool InputManagerImplementation::tryProcessEvent(XEvent& event) {
     auto event_type = static_cast<InputEventType>(event.type);
     auto it = handlers_.find(event_type);
     if (it != handlers_.end()) {
@@ -20,7 +20,7 @@ bool InputManagerImplementation::try_process_event(XEvent& event) {
             keyboard_buttons_states_.insert_or_assign(key, true);
         }
 
-        exclude_event(event_type);
+        excludeEvent(event_type);
 
         try {
             it->second.invoke(*this, event, previous_event_);
@@ -34,12 +34,12 @@ bool InputManagerImplementation::try_process_event(XEvent& event) {
         return true;
     } else {
         BOOST_LOG_TRIVIAL(warning) << "Can't find handler for event type " << event.type;
-        exclude_event(event_type);
+        excludeEvent(event_type);
         return false;
     }
 }
 
-bool InputManagerImplementation::event_active(InputEventType event_type) const {
+bool InputManagerImplementation::eventActive(InputEventType event_type) const {
     auto intetype = static_cast<int>(event_type);
     if (active_events_.find(intetype) != active_events_.end())
     {
@@ -48,7 +48,7 @@ bool InputManagerImplementation::event_active(InputEventType event_type) const {
     return false;
 }
 
-bool InputManagerImplementation::get_value(MouseEventType type) const {
+bool InputManagerImplementation::getValue(MouseEventType type) const {
     auto it = mouse_buttons_states_.find(type);
     if (it != mouse_buttons_states_.end()) {
         return it->second;
@@ -57,7 +57,7 @@ bool InputManagerImplementation::get_value(MouseEventType type) const {
     return false;
 }
 
-bool InputManagerImplementation::get_value(KeyboardEventType type) const {
+bool InputManagerImplementation::getValue(KeyboardEventType type) const {
     auto it = keyboard_buttons_states_.find(type);
     if (it != keyboard_buttons_states_.end()) {
         return it->second;
@@ -66,28 +66,28 @@ bool InputManagerImplementation::get_value(KeyboardEventType type) const {
     return false;
 }
 
-void InputManagerImplementation::disable_all_mouse() {
+void InputManagerImplementation::disableAllMouse() {
     for (auto& i : mouse_buttons_states_) {
         i.second = false;
     }
 }
 
-void InputManagerImplementation::disable_all_keyboard() {
+void InputManagerImplementation::disableAllKeyboard() {
     for (auto& i : keyboard_buttons_states_) {
         i.second = false;
     }
 }
 
-void InputManagerImplementation::exclude_event(const InputEventType event_type) {
-    auto itt = exclusive_events_.find(event_type);
+void InputManagerImplementation::excludeEvent(const InputEventType event_type_raw) {
+    auto itt = exclusive_events_.find(event_type_raw);
 
     if (itt != exclusive_events_.end()) {
         active_events_[static_cast<int>(itt->second)] = false;
 
         if (itt->second == InputEventType::button_press) {
-            disable_all_mouse();
+            disableAllMouse();
         } else if (itt->second == InputEventType::key_press) {
-            disable_all_keyboard();
+            disableAllKeyboard();
         }
     }
 }

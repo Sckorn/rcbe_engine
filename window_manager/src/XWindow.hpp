@@ -13,8 +13,8 @@
 
 #include <renderer/GLRenderer.hpp>
 
-#include <core/InputManagerImplementation.hpp>
-#include <core/AbstractInputManager.hpp>
+#include <rcbe-engine/core/InputManagerImplementation.hpp>
+#include <rcbe-engine/core/AbstractInputManager.hpp>
 
 namespace rcbe::core {
 class XWindow {

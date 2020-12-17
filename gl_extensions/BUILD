@@ -5,7 +5,9 @@ cc_library(
         exclude = ["src/main.cpp"],
     ),
     hdrs = glob(["include/core/*.hpp"]),
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [],
 )
@@ -59,7 +61,7 @@ pkg_tar(
         "include/core/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/core/",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/core/",
 )
 
 pkg_tar(

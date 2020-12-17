@@ -16,11 +16,11 @@
 
 #include <core/WindowManager.hpp>
 
-#include <parsers/x3d/X3dParser.hpp>
+#include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
 
 #include <rcbe-engine/utils/output_utils.hpp>
 #include <rcbe-engine/utils/profiling_utils.hpp>
-#include <core/AbstractInputManager.hpp>
+#include <rcbe-engine/core/AbstractInputManager.hpp>
 #include <core/EditorInputManager.hpp>
 
 int main(int argc, char * argv[]) {
@@ -51,7 +51,7 @@ int main(int argc, char * argv[]) {
 
         auto renderer_handle = renderer->start_async();
 
-        auto meshes = rcbe::parsers::parseMeshes("parsers/test/resources/corner.x3d");
+        auto meshes = rcbe::parsers::parse_meshes("parsers/test/resources/corner.x3d");
         auto second_mesh = meshes[0];
 
         {

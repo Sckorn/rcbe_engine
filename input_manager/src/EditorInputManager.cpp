@@ -9,10 +9,9 @@
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 
 namespace rcbe::core {
-//TODO: looks useless, consider relocating to header
-EditorInputManager::EditorInputManager(handler_collection&& h)
+EditorInputManager::EditorInputManager(HandlerCollection&& h)
 {
-    register_handlers(std::move(h));
+    registerHandlers(std::move(h));
 }
 
 }

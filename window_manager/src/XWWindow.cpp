@@ -7,7 +7,7 @@
 #include "WinWindow.hpp"
 #endif
 
-#include <core/AbstractInputManager.hpp>
+#include <rcbe-engine/core/AbstractInputManager.hpp>
 
 namespace rcbe::core {
 XWWindow::XWWindow(window_config &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg)
