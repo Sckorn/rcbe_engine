@@ -8,50 +8,51 @@
 #include <future>
 #include <optional>
 
-#include <data_types/system/WindowConfig.hpp>
-#include <data_types/rendering/RenderingContext.hpp>
+#include <rcbe-engine/datamodel/system/window_config.hpp>
+#include <rcbe-engine/datamodel/system/WindowContext.hpp>
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 
-#include <renderer/GLRenderer.hpp>
+#include <rcbe-engine/renderer/GLRenderer.hpp>
 
-#include <core/InputManagerImplementation.hpp>
-#include <core/AbstractInputManager.hpp>
+#include <rcbe-engine/core/InputManagerImplementation.hpp>
+#include <rcbe-engine/core/AbstractInputManager.hpp>
 
 namespace rcbe::core {
 class XWindow {
 public:
 
-    XWindow(WindowConfig &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg);
+    XWindow(window_config &&config_, const WindowContextPtr& window_context);
     ~XWindow();
 
-    [[nodiscard]] const WindowConfig& get_config() const;
+    [[nodiscard]] const window_config& getConfig() const;
 
 
-    decltype(auto) start_window_loop_aync() {
+    decltype(auto) startWindowLoopAync() {
         return std::async(std::launch::async, [this]() {
-            start_window_loop();
+            startWindowLoop();
         });
     }
-    void start_window_loop();
-    void stop_window_loop();
+    void startWindowLoop();
+    void stopWindowLoop();
 
-    void on_configure(window::configure_handler_t&& handler);
-    void on_unmap(window::unmap_handler_t&& handler);
+    void onConfigure(window::ConfigureHandlerType&& handler);
+    void onUnmap(window::UunmapHandlerType&& handler);
 
-    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const;
+    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& getRenderingContext() const;
 
     void kill();
-    void map_window();
-    void set_renderer(rendering::GLRendererPtr renderer_ptr);
-    void set_manager(const std::shared_ptr<AbstractInputManager>& manager);
+    void mapWindow();
+    void setRenderer(rendering::GLRendererPtr renderer_ptr);
+    void setInputManager(const std::shared_ptr<AbstractInputManager>& manager);
 
-    [[nodiscard]] const rendering::GLRendererPtr& get_renderer() const;
-    [[nodiscard]] const std::shared_ptr<AbstractInputManager>& get_input_manager() const;
+    [[nodiscard]] const rendering::GLRendererPtr& getRenderer() const;
+    [[nodiscard]] const std::shared_ptr<AbstractInputManager>& getInputManager() const;
 
 private:
 
-    void window_loop();
+    void windowLoop();
 
-    WindowConfig config_;
+    window_config config_;
     std::mutex running_mutex_;
     std::mutex input_event_mutex_;
     mutable std::mutex renderer_access_mutex_;
@@ -66,8 +67,8 @@ private:
     std::mutex kill_mutex_;
     bool killed_ = false;
 
-    window::unmap_handler_t unmap_handler_;
-    window::configure_handler_t configure_handler_;
+    window::UunmapHandlerType unmap_handler_;
+    window::ConfigureHandlerType configure_handler_;
 };
 }
 

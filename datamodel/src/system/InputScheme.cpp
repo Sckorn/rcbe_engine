@@ -1,4 +1,4 @@
-#include <data_types/system/InputScheme.hpp>
+#include <rcbe-engine/datamodel/system/InputScheme.hpp>
 
 #include <nlohmann/json.hpp>
 
@@ -7,27 +7,27 @@ InputDeviceScheme::InputDeviceScheme(nlohmann::json&& j) {
     const auto highlevel = j.at("highlevel");
 
     for (auto it = highlevel.begin(); it != highlevel.end(); ++it) {
-        HighLevelNode node = *it;
+        high_level_node node = *it;
         highlevel_.insert({node.name, node});
     }
 
     const auto lowlevel = j.at("lowlevel");
 
     for (auto it = lowlevel.begin(); it!= lowlevel.end(); ++it) {
-        LowLevelNode node = *it;
+        low_level_node node = *it;
         lowlevel_.insert({node.keycode, node});
     }
 }
 
-const InputDeviceScheme::high_level_events& InputDeviceScheme::highlevel() const {
+const InputDeviceScheme::HighLevelEvents& InputDeviceScheme::highlevel() const noexcept {
     return highlevel_;
 }
 
-InputDeviceScheme::high_level_events& InputDeviceScheme::highlevel() {
+InputDeviceScheme::HighLevelEvents& InputDeviceScheme::highlevel() {
     return highlevel_;
 }
 
-const InputDeviceScheme::low_level_events& InputDeviceScheme::lowlevel() const {
+const InputDeviceScheme::LowLevelEvents& InputDeviceScheme::lowlevel() const noexcept {
     return lowlevel_;
 }
 

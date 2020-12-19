@@ -4,11 +4,11 @@
 #include <memory>
 #include <future>
 
-#include <data_types/rendering/RendererConfig.hpp>
-#include <data_types/geometry/Mesh.hpp>
-#include <data_types/math/Vector.hpp>
+#include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
+#include <rcbe-engine/datamodel/geometry/Mesh.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
 
-#include <data_types/rendering/RenderingContext.hpp>
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 
 namespace rcbe::rendering {
 class GLRendererImplementation;
@@ -17,7 +17,7 @@ class GLRenderer
 {
 public:
     GLRenderer() = delete;
-    GLRenderer(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context);
+    GLRenderer(renderer_config &&config, const std::shared_ptr<RenderingContext>& context);
 
     ~GLRenderer();
 
@@ -29,20 +29,20 @@ public:
 
     [[nodiscard]]bool running() const;
 
-    [[nodiscard]]const RendererConfig &config() const;
+    [[nodiscard]]const renderer_config &config() const noexcept;
 
-    decltype(auto) start_async() {
+    decltype(auto) startAsync() {
         return std::async(std::launch::async, [this]() {
             start();
         });
     }
     void start();
     void stop();
-    void add_object(rcbe::geometry::Mesh &&mesh);
+    void addObject(rcbe::geometry::Mesh &&mesh);
 
     void reshape();
 
-    void on_stop(renderer_stop_handler_t&& handler);
+    void onStop(RendererStopHandlerType&& handler);
 private:
     std::unique_ptr<GLRendererImplementation> impl_;
 };
@@ -50,7 +50,7 @@ private:
 using GLRendererPtr = std::unique_ptr<GLRenderer>;
 using GLRendererConstPtr = std::unique_ptr<const GLRenderer>;
 
-GLRendererPtr make_renderer_ptr(RendererConfig &&config, const std::shared_ptr<RenderingContext>& context);
+GLRendererPtr make_renderer_ptr(renderer_config &&config, const std::shared_ptr<RenderingContext>& context);
 }
 
 #endif //RCBE_ENGINE_GLRENDERER_HPP

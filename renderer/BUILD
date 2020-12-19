@@ -5,6 +5,7 @@ cc_library(
         exclude = ["src/main.cpp"],
     ),
     hdrs = glob(["include/renderer/**/*.hpp"]),
+    include_prefix = "rcbe-engine",
     includes = ["include"],
     linkopts = [
         "-lpthread",
@@ -13,6 +14,7 @@ cc_library(
         "-lGLX",
         "-lX11",
     ],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//camera:rcbe_engine_camera",
@@ -46,6 +48,7 @@ cc_binary(
         "//camera:rcbe_engine_camera",
         "//common:engine_json_utils",
         "//common:engine_output_utils",
+        "//common:rcbe_profiling",
         "//datamodel:engine_datamodel_math",
         "//parsers:x3d_parser",
         "//window_manager:rcbe_window_manager",
@@ -59,6 +62,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 ## SO
 
@@ -96,8 +101,8 @@ pkg_deb(
         "libboost-log{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine renderer libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_renderer",
     version = ENGINE_VERSION,
 )
@@ -110,7 +115,7 @@ pkg_tar(
         "include/renderer/GLRenderer.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/renderer",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/renderer",
 )
 
 pkg_tar(
@@ -140,8 +145,8 @@ pkg_deb(
         "nlohmann-json3-dev",
     ],
     description = "RCBE game engine renderer headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_renderer_dev",
     version = ENGINE_VERSION,
 )

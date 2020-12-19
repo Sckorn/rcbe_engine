@@ -4,8 +4,9 @@
 #include <memory>
 #include <future>
 
-#include <data_types/system/WindowConfig.hpp>
-#include <data_types/rendering/RenderingContext.hpp>
+#include <rcbe-engine/datamodel/system/window_config.hpp>
+#include <rcbe-engine/datamodel/system/WindowContext.hpp>
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 
 #include <X11/Xlib.h>
 
@@ -29,32 +30,32 @@ class XWWindow
 public:
     XWWindow() = delete;
 
-    XWWindow(WindowConfig &&config_, Display* root_display, int screen_number, const Window& root_window, const Atom& delete_msg);
+    XWWindow(window_config &&config_, const WindowContextPtr& window_context);
 
     ~XWWindow();
 
-    [[nodiscard]] const WindowConfig& get_config() const;
+    [[nodiscard]] const window_config& getConfig() const;
 
-    decltype(auto) start_window_loop_aync() {
+    decltype(auto) startWindowLoopAync() {
         return std::async(std::launch::async, [this]() {
-            start_window_loop();
+            startWindowLoop();
         });
     }
-    void start_window_loop();
-    void stop_window_loop();
+    void startWindowLoop();
+    void stopWindowLoop();
 
     void kill();
     void show();
-    [[nodiscard]]const std::shared_ptr<core::AbstractInputManager>& get_input_manager() const;
-    void set_input_manager(const std::shared_ptr<AbstractInputManager>& manager);
+    [[nodiscard]]const std::shared_ptr<core::AbstractInputManager>& getInputManager() const;
+    void setInputManager(const std::shared_ptr<AbstractInputManager>& manager);
 
-    void on_configure(window::configure_handler_t&& handler);
-    void on_unmap(window::unmap_handler_t&& handler);
+    void onConfigure(window::ConfigureHandlerType&& handler);
+    void onUnmap(window::UunmapHandlerType&& handler);
 
-    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& get_context() const;
+    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& getRenderingContext() const;
 
-    void set_renderer(rcbe::rendering::GLRendererPtr renderer_ptr);
-    [[nodiscard]]const rcbe::rendering::GLRendererPtr& get_renderer() const;
+    void setRenderer(rcbe::rendering::GLRendererPtr renderer_ptr);
+    [[nodiscard]]const rcbe::rendering::GLRendererPtr& getRenderer() const;
 
 private:
     std::shared_ptr<XWindow> impl_;

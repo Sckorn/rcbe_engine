@@ -1,8 +1,10 @@
 cc_library(
     name = "x3d_parser",
-    srcs = ["src/x3d/X3dParser.cpp"],
-    hdrs = ["include/parsers/x3d/X3dParser.hpp"],
+    srcs = ["src/x3d/x3d_parser.cpp"],
+    hdrs = ["include/parsers/x3d/x3d_parser.hpp"],
+    include_prefix = "rcbe-engine",
     includes = ["include"],
+    strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//common:engine_filesystem_utils",
@@ -41,6 +43,8 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
 ## SO
 
@@ -73,8 +77,8 @@ pkg_deb(
         "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine parser libraries package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_parsers",
     version = ENGINE_VERSION,
 )
@@ -84,10 +88,10 @@ pkg_deb(
 pkg_tar(
     name = "parsers-headers-data",
     srcs = [
-        "include/parsers/x3d/X3dParser.hpp",
+        "include/parsers/x3d/x3d_parser.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/parsers/x3d",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/parsers/x3d",
 )
 
 pkg_tar(
@@ -111,8 +115,8 @@ pkg_deb(
         "rcbe_parsers_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
     ],
     description = "RCBE game engine parser headers package",
-    homepage = "http://rcbe.com",
-    maintainer = "Daniil Kireev <sckorn@gmail.com>",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
     package = "rcbe_parsers_dev",
     version = ENGINE_VERSION,
 )

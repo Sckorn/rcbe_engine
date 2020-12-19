@@ -9,15 +9,5 @@
     "a": 1.0
   },
   "initial_dimensions": {"width":  1280, "height":  720},
-  "initial_window_position": {"x":  100, "y":  100},
-  "camera_position" : {
-    "x": 0.0,
-    "y": 0.0,
-    "z": 10.0
-  },
-  "camera_lookat": {
-    "x": 0.0,
-    "y": 0.0,
-    "z": 0.0
-  }
+  "initial_window_position": {"x":  100, "y":  100}
 }

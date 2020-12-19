@@ -1,6 +1,7 @@
 #ifndef RCBE_ENGINE_JSON_UTILS_HPP
 #define RCBE_ENGINE_JSON_UTILS_HPP
 
+#include <iostream>
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -9,12 +10,12 @@ namespace rcbe::utils {
 nlohmann::json read_raw(const std::string &path);
 
 template <typename ReturnConfig>
-ReturnConfig readFromFile(const std::string &path)
+ReturnConfig read_from_file(const std::string &path)
 {
     std::ifstream ifs(path);
 
     if(!ifs)
-        throw std::runtime_error("File doesn't exist or malfromed!");
+        throw std::runtime_error("File " + path + " doesn't exist or malfromed!");
 
     nlohmann::json j;
     ifs >> j;
