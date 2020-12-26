@@ -35,6 +35,7 @@ cc_library(
         ":engine_datamodel_core",
         "//common:engine_fuzzy_logic",
         "//common:engine_math_utils",
+        "//common:rcbe_binary_tools",
         "@nlohmann",
     ],
 )
@@ -71,7 +72,9 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_core",
+        ":engine_datamodel_math",
         ":engine_datamodel_visual",
+        "//common:rcbe_binary_tools",
         "@nlohmann",
     ],
 )
@@ -142,10 +145,39 @@ filegroup(
 ### tests
 
 cc_test(
-    name = "engine_datamodel_test",
-    srcs = glob(["test/*.cpp"]),
+    name = "rcbe_all_datamodel_tests",
+    srcs = glob(
+        ["test/*.cpp"],
+        exclude = ["test/geometry_tests.cpp"],
+    ),
     copts = ["-Iexternal/gtest/include"],
-    data = [":datamodel_rendering_resources"],
+    data = [
+        ":datamodel_rendering_resources",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":engine_datamodel_math",
+        ":engine_datamodel_rendering",
+        ":engine_datamodel_visual",
+        "//common:engine_fuzzy_logic",
+        "//common:engine_json_utils",
+        "@gtest",
+        "@nlohmann",
+    ],
+)
+
+cc_test(
+    name = "rcbe_geometry_datamodel_tests",
+    srcs = [
+        "test/datamodel_tests.cpp",
+        "test/geometry_tests.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    data = [
+        ":datamodel_rendering_resources",
+        "@low_poly_wolf_stl//file",
+    ],
+    tags = ["local"],
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_math",

@@ -36,12 +36,14 @@ cc_binary(
         "//datamodel:datamodel_rendering_resources",
         "//datamodel:datamodel_system_resources",
         "//parsers:x3d_test_resources",
+        "@low_poly_wolf_stl//file",
     ],
     linkopts = [
         "-lpthread",
         "-lX11",
         "-lXext",
     ],
+    tags = ["local"],
     visibility = ["//visibility:public"],
     deps = [
         ":rcbe_renderer",
@@ -50,6 +52,7 @@ cc_binary(
         "//common:engine_output_utils",
         "//common:rcbe_profiling",
         "//datamodel:engine_datamodel_math",
+        "//parsers:rcbe_stl_parser",
         "//parsers:x3d_parser",
         "//window_manager:rcbe_window_manager",
         "@boost//:log",

@@ -24,13 +24,13 @@ jobs:
       env:
         CC: gcc-10
         CXX: g++-10
-      run: bazel build //...
+      run: bazel build --build_tag_filters=-local //...
 
     - name: bazel-test
       env:
         CC: gcc-10
         CXX: g++-10
-      run: bazel test --test_output=all //...
+      run: bazel test --test_tag_filters=-local --build_tag_filters=-local --test_output=all //...
 
     - name: deploy-packages
       if: ${{ github.event_name == 'release' }}

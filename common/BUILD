@@ -102,14 +102,25 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "rcbe_binary_tools",
+    srcs = glob(["src/binary/**/*.cpp"]),
+    hdrs = glob(["include/common/binary/**/*.hpp"]),
+    include_prefix = "rcbe-engine",
+    includes = ["include/common"],
+    strip_include_prefix = "include/common",
+    visibility = ["//visibility:public"],
+)
+
 ### tests
 
 cc_test(
-    name = "common_test",
+    name = "rcbe_common_tests",
     srcs = glob(["test/*.cpp"]),
     copts = ["-Iexternal/gtest/include"],
     visibility = ["//visibility:public"],
     deps = [
+        ":rcbe_binary_tools",
         ":rcbe_delegate",
         "@gtest",
     ],
@@ -216,6 +227,38 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_output",
+    version = ENGINE_VERSION,
+)
+
+# binary-tools
+
+pkg_tar(
+    name = "common-binary-tools-data",
+    srcs = [
+        "//common:rcbe_binary_tools",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "common-binary-tools-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":common-binary-tools-data",
+    ],
+)
+
+pkg_deb(
+    name = "common-binary-tools-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":common-binary-tools-package-data",
+    description = "RCBE game engine binary data manipulation utilities package",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rcbe_common_binary_tools",
     version = ENGINE_VERSION,
 )
 
@@ -460,5 +503,37 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_delegate_dev",
+    version = ENGINE_VERSION,
+)
+
+# binary-tools-dev
+
+pkg_tar(
+    name = "binary-tools-data-headers",
+    srcs = glob([
+        "include/common/binary/**/*.hpp",
+    ]),
+    mode = "0644",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/binary",
+)
+
+pkg_tar(
+    name = "binary-tools-dev-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":binary-tools-data-headers",
+    ],
+)
+
+pkg_deb(
+    name = "binary-tools-dev-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":binary-tools-dev-package-data",
+    description = "RCBE game engine abstract and concrete delegate function headers package",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rcbe_binary_tools_dev",
     version = ENGINE_VERSION,
 )
