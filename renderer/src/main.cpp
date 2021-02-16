@@ -17,6 +17,7 @@
 #include <rcbe-engine/core/WindowManager.hpp>
 
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
+#include <rcbe-engine/parsers/stl/stl_parser.hpp>
 
 #include <rcbe-engine/utils/output_utils.hpp>
 #include <rcbe-engine/utils/profiling_utils.hpp>
@@ -54,6 +55,8 @@ int main(int argc, char * argv[]) {
         auto meshes = rcbe::parsers::parse_meshes("parsers/test/resources/corner.x3d");
         auto second_mesh = meshes[0];
 
+        auto low_poly_wolf_mesh = rcbe::parsers::stl::parse_mesh("external/low_poly_wolf_stl/file/LowPolyWolf.stl");
+
         {
             rcbe::math::yaw y(rcbe::math::deg(0));
             rcbe::math::pitch p(rcbe::math::deg(0));
@@ -75,6 +78,13 @@ int main(int argc, char * argv[]) {
             second_mesh.transform(t);
         }
 
+        {
+            rcbe::math::Vector3d translation { 0.0, 0.0, -50.0 };
+            rcbe::math::Transform t { {}, translation };
+
+            low_poly_wolf_mesh.transform(t);
+        }
+
         auto camera_conf = rcbe::utils::read_from_file<rcbe::rendering::camera_config>(
                 "datamodel/data/rendering/default_camera_config.json");
         auto camera = rcbe::rendering::make_camera(window->getRenderingContext(), camera_conf);
@@ -90,6 +100,7 @@ int main(int argc, char * argv[]) {
 
         renderer->addObject(std::move(meshes[0]));
         renderer->addObject(std::move(second_mesh));
+        renderer->addObject(std::move(low_poly_wolf_mesh));
 
         renderer_handle.wait();
         window_handle.wait();

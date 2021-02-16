@@ -52,6 +52,24 @@ http_archive(
     url = "https://github.com/nlohmann/json/releases/download/v3.7.3/include.zip",
 )
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+http_file(
+    name = "low_poly_wolf_stl",
+    downloaded_file_path = "LowPolyWolf.stl",
+    sha256 = "3da76bfc52b98e7e7cc8e805345b7c54fc7d53e24cb501c1e4ae542760947aa1",
+    tags = ["local"],
+    urls = ["http://localhost:8080/static/LowPolyWolf.stl"],
+)
+
+http_archive(
+    name = "stl_test_data_archive",
+    build_file = "@//thirdparty:stl_tests_archive.BUILD",
+    sha256 = "8e045f19f73320715bea8162161a3107b1c3a26d6c822a252bd201836897c7de",
+    tags = ["local"],
+    urls = ["http://localhost:8080/static/test_stls.tar.gz"],
+)
+
 http_archive(
     name = "rules_pkg",
     sha256 = "aeca78988341a2ee1ba097641056d168320ecc51372ef7ff8e64b139516a4937",

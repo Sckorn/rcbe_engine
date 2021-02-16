@@ -11,7 +11,13 @@
 
 #include <rcbe-engine/fundamentals/types.hpp>
 
+// TODO: replace the two below by corresponding fwd header (introduce one for binary)
+
+#include <rcbe-engine/binary/BinaryBuffer.hpp>
+
 #include <nlohmann/json.hpp>
+
+
 
 namespace rcbe::math
 {
@@ -42,6 +48,21 @@ public:
     {}
 
     ~Vector() = default;
+
+    template <typename ValT, typename = std::enable_if_t<(std::is_convertible_v<ValT, ValueType>), void> >
+    Vector(const std::array<ValT, DIMENSION>& a)
+    {
+        for (size_t i = 0; i < DIMENSION; ++i) {
+            v_[i] = a[i];
+        }
+    }
+
+    template <typename ValT, size_t S, typename = std::enable_if_t<std::is_convertible_v<ValT, ValueType> && S == DIMENSION>>
+    Vector(const Vector<ValT, S> &source) {
+        for (size_t i = 0; i < DIMENSION; ++i) {
+            v_[i] = static_cast<ValueType>(source.at(i));
+        }
+    }
 
     template <typename... valt, typename = std::enable_if_t<(std::is_convertible_v<valt, ValueType> && ... ) && (sizeof...(valt) == DIMENSION) > >
     constexpr Vector(valt&&... args)
@@ -197,6 +218,7 @@ private:
 using Vector4d = Vector<core::EngineScalar, 4>;
 using Vector3d = Vector<core::EngineScalar, 3>;
 using Vector2d = Vector<core::EngineScalar, 2>;
+using Vector3f = Vector<float, 3>;
 }
 
 namespace nlohmann
@@ -214,6 +236,13 @@ struct adl_serializer<rcbe::math::Vector2d>
 static void to_json(nlohmann::json &j, const rcbe::math::Vector2d &v);
 static void from_json(const nlohmann::json &j, rcbe::math::Vector2d &v);
 };
+}
+
+namespace rcbe::binary {
+template <>
+void from_binary(const BinaryBuffer &b, rcbe::math::Vector3f &v);
+template <>
+void to_binary(BinaryBuffer &b, const rcbe::math::Vector3f &v);
 }
 
 rcbe::core::EngineScalar operator*(const rcbe::math::Vector3d &lhs, const rcbe::math::Vector3d &rhs);
