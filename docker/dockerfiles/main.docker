@@ -83,7 +83,9 @@ RUN mv /bin/sh /bin/sh-old && \
         libsdl2-image-dev \
         libglm-dev \
         libfreetype6-dev \
-        lsb-release && \
+        lsb-release \
+        valgrind \
+        massif-visualizer && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
