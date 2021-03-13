@@ -1,6 +1,5 @@
 // TODO: consider making this into a separate pacakge that will be later transformed into engine package
 
-#include <iostream>
 #include <chrono>
 #include <memory>
 #include <span> // left to clarify that c++20 is used
@@ -20,7 +19,6 @@
 #include <rcbe-engine/parsers/stl/stl_parser.hpp>
 
 #include <rcbe-engine/utils/output_utils.hpp>
-#include <rcbe-engine/utils/profiling_utils.hpp>
 #include <rcbe-engine/core/AbstractInputManager.hpp>
 #include <rcbe-engine/core/EditorInputManager.hpp>
 
@@ -79,7 +77,7 @@ int main(int argc, char * argv[]) {
         }
 
         {
-            rcbe::math::Vector3d translation { 0.0, 0.0, -50.0 };
+            rcbe::math::Vector3d translation { -10.0, 0.0, -10.0 };
             rcbe::math::Transform t { {}, translation };
 
             low_poly_wolf_mesh.transform(t);
@@ -109,7 +107,7 @@ int main(int argc, char * argv[]) {
         return 1;
     }
 
-#ifdef  RCBE_DEBUG
+#ifdef  RCBE_DEBUG_MODE
     std::array<int, 2> arr = {0, 1};
     std::span s{arr};
 #endif

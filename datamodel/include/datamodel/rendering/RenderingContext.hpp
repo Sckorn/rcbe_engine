@@ -4,6 +4,7 @@
 #include <memory>
 #include <atomic>
 #include <mutex>
+#include <optional>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -17,6 +18,7 @@
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/Transform.hpp>
 #include <rcbe-engine/datamodel/math/MatrixColumnMajorAdaptor.hpp>
+#include <rcbe-engine/datamodel/math/rotation_units.hpp>
 
 namespace rcbe::rendering
 {
@@ -64,14 +66,14 @@ public:
     [[nodiscard]] const rcbe::core::Dimensions& getWindowDimensions() const;
 
     void updateTransform(const rcbe::math::Transform& trn);
-    [[nodiscard]] const math::MatrixColumnMajorAdaptor& getTransformColumnMajor() const;
+    [[nodiscard]] const math::MatrixColumnMajorAdaptor<core::EngineScalar>& getTransformColumnMajor() const;
 
     void setMouseCoordinates(const rcbe::math::Vector2d& v);
     [[nodiscard]] const std::optional<rcbe::math::Vector2d>& getMouseCoordinates() const;
 
-    [[nodiscard]] rcbe::core::EngineScalar getZoom() const;
+    [[nodiscard]] rcbe::math::deg getFov() const;
 
-    void updateZoom(const rcbe::core::EngineScalar zoom);
+    void updateFov(const rcbe::math::deg zoom);
 
     [[nodiscard]]double deltaTime() const;
     void setCurrentTime(std::chrono::microseconds t);
@@ -90,10 +92,10 @@ private:
     rcbe::visual::RGBAColor background_color_;
     rcbe::core::Dimensions window_dimensions_;
 
-    math::MatrixColumnMajorAdaptor scene_transform_;
+    math::MatrixColumnMajorAdaptor<core::EngineScalar> scene_transform_;
 
     std::optional<rcbe::math::Vector2d> mouse_coordinates_;
-    rcbe::core::EngineScalar zoom_ = 45.;
+    rcbe::math::deg zoom_ = rcbe::math::deg(45.);
 
     uint64_t previous_time_ = 0;
     uint64_t current_time_ = 0;

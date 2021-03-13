@@ -25,7 +25,10 @@ cc_library(
     hdrs = glob([
         "include/datamodel/math/**/*.hpp",
     ]),
-    copts = ["-Iexternal/nlohmann/include"],
+    copts = [
+        "-Iexternal/nlohmann/include",
+        "-DRCBE_GLM_INTEGRATION",
+    ],
     defines = ["RCBE_SCALAR_LINALG"],
     include_prefix = "rcbe-engine",
     includes = ["include"],
@@ -124,6 +127,7 @@ cc_library(
         ":engine_datamodel_geometry",
         ":engine_datamodel_math",
         ":engine_datamodel_visual",
+        "//common:engine_fundamentals",
         "//gl_extensions",
         "@boost//:log",
         "@nlohmann",
@@ -132,7 +136,7 @@ cc_library(
 
 filegroup(
     name = "datamodel_rendering_resources",
-    srcs = glob(["data/rendering/*"]),
+    srcs = glob(["data/rendering/**/*"]),
     visibility = ["//visibility:public"],
 )
 

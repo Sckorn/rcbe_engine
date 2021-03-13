@@ -2,124 +2,117 @@
 
 namespace rcbe::geometry
 {
-const Mesh::VertexStorage &Mesh::vertices() const noexcept
-{
+const Mesh::VertexStorage &Mesh::vertices() const noexcept {
     return vertices_;
 }
 
-const Mesh::NormalStorage &Mesh::normals() const noexcept
-{
+const Mesh::NormalStorage &Mesh::normals() const noexcept {
     return normals_;
 }
 
-const Mesh::FacetStorage &Mesh::facets() const noexcept
-{
+const Mesh::FacetStorage &Mesh::facets() const noexcept {
     return facets_;
 }
 
-size_t Mesh::verticesSize() const noexcept
-{
+size_t Mesh::verticesSize() const noexcept {
     return vertices_.size();
 }
 
-size_t Mesh::normalsSize() const noexcept
-{
+size_t Mesh::normalsSize() const noexcept {
     return normals_.size();
 }
 
-size_t Mesh::facetsSize() const noexcept
-{
+size_t Mesh::facetsSize() const noexcept {
     return facets_.size();
 }
 
-Mesh::VerticesIterator Mesh::verticesBegin() noexcept
-{
+Mesh::VerticesIterator Mesh::verticesBegin() noexcept {
     return vertices_.begin();
 }
 
-Mesh::VerticesConstIterator Mesh::verticesCbegin() const noexcept
-{
+Mesh::VerticesConstIterator Mesh::verticesCbegin() const noexcept {
     return vertices_.cbegin();
 }
 
-Mesh::VerticesIterator Mesh::verticesEnd() noexcept
-{
+Mesh::VerticesIterator Mesh::verticesEnd() noexcept {
     return vertices_.end();
 }
 
-Mesh::VerticesConstIterator Mesh::verticesCend() const noexcept
-{
+Mesh::VerticesConstIterator Mesh::verticesCend() const noexcept {
     return  vertices_.cend();
 }
 
-Mesh::NormalsIterator Mesh::normalsBegin() noexcept
-{
+Mesh::NormalsIterator Mesh::normalsBegin() noexcept {
     return normals_.begin();
 }
 
-Mesh::NormalsConstIterator Mesh::normalsCbegin() const noexcept
-{
+Mesh::NormalsConstIterator Mesh::normalsCbegin() const noexcept {
     return normals_.cbegin();
 }
 
-Mesh::NormalsIterator Mesh::normalsEnd() noexcept
-{
+Mesh::NormalsIterator Mesh::normalsEnd() noexcept {
     return normals_.end();
 }
 
-Mesh::NormalsConstIterator Mesh::normalsCend() const noexcept
-{
+Mesh::NormalsConstIterator Mesh::normalsCend() const noexcept {
     return normals_.cend();
 }
 
-Mesh::FacetsIterator Mesh::facetsBegin() noexcept
-{
+Mesh::FacetsIterator Mesh::facetsBegin() noexcept {
     return facets_.begin();
 }
 
-Mesh::FacetsConstIterator Mesh::facetsCbegin() const noexcept
-{
+Mesh::FacetsConstIterator Mesh::facetsCbegin() const noexcept {
     return facets_.cbegin();
 }
 
-Mesh::FacetsIterator Mesh::facetsEnd() noexcept
-{
+Mesh::FacetsIterator Mesh::facetsEnd() noexcept {
     return facets_.end();
 }
 
-Mesh::FacetsConstIterator Mesh::facetsCend() const noexcept
-{
+Mesh::FacetsConstIterator Mesh::facetsCend() const noexcept {
     return facets_.cend();
 }
 
-const Mesh::ColorType &Mesh::color() const noexcept
-{
+const Mesh::ColorType &Mesh::color() const noexcept {
     return color_;
 }
 
-const Mesh::TransformType &Mesh::getTransform() const noexcept
-{
+const Mesh::TransformType &Mesh::getTransform() const noexcept {
     return transform_;
 }
 
-void Mesh::transform(const TransformType &t)
-{
+void Mesh::transform(const TransformType &t) {
     transform_ = t * transform_;
 
-    if (!vertices_.empty())
-    {
+    if (!vertices_.empty()) {
         std::transform(vertices_.begin(), vertices_.end(), vertices_.begin(), transform_);
     }
 
-    if (!normals_.empty())
-    {
+    if (!normals_.empty()) {
         std::transform(normals_.begin(), normals_.end(), normals_.begin(), transform_);
+    }
+    vertices_trnasformed_ = true;
+}
+
+Mesh::NormalStorage Mesh::normalsOriginal() const {
+    if (vertices_trnasformed_) {
+        return revertTransform(normals_, transform_);
+    } else {
+        return normals_;
     }
 }
 
-void Mesh::setTransform(const TransformType &t)
-{
-    transform_ = t;
+Mesh::VertexStorage Mesh::verticesOriginal() const {
+    if (vertices_trnasformed_) {
+        return revertTransform(vertices_, transform_);
+    } else {
+        return vertices_;
+    }
+}
+
+bool Mesh::verticesTransformed() const {
+    return vertices_trnasformed_;
 }
 
 Mesh operator*(const Mesh::TransformType &t, Mesh m)

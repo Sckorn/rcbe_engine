@@ -38,7 +38,7 @@ public:
         }, variant_);
     }
 
-#ifdef RCBE_DEBUG
+#ifdef RCBE_DEBUG_MODE
     //*For the simplicity of debug*/
     InputManagerVariant& getVariant() {
         return variant_;

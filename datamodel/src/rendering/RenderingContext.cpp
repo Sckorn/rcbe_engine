@@ -60,7 +60,7 @@ void RenderingContext::updateTransform(const rcbe::math::Transform& trn) {
     scene_transform_ = rcbe::math::MatrixColumnMajorAdaptor(trn.matrix());
 }
 
-const math::MatrixColumnMajorAdaptor& RenderingContext::getTransformColumnMajor() const {
+const math::MatrixColumnMajorAdaptor<core::EngineScalar>& RenderingContext::getTransformColumnMajor() const {
     std::lock_guard lg {transform_mutex_};
 
     return scene_transform_;
@@ -78,13 +78,13 @@ const std::optional<rcbe::math::Vector2d>& RenderingContext::getMouseCoordinates
     return mouse_coordinates_;
 }
 
-rcbe::core::EngineScalar RenderingContext::getZoom() const {
+rcbe::math::deg RenderingContext::getFov() const {
     std::lock_guard lg {zoom_mutex_};
 
     return zoom_;
 }
 
-void RenderingContext::updateZoom(const rcbe::core::EngineScalar zoom) {
+void RenderingContext::updateFov(const rcbe::math::deg zoom) {
     std::lock_guard lg {zoom_mutex_};
 
     zoom_ = zoom;
