@@ -21,7 +21,7 @@ bazel_skylib_workspace()
 
 git_repository(
     name = "com_github_nelhage_rules_boost",
-    commit = "fbac9be7640ecc0fab075233d394f08f1a37e449",
+    commit = "2598b37ce68226fab465c0f0e10988af872b6dc9",
     remote = "https://github.com/nelhage/rules_boost",
 )
 

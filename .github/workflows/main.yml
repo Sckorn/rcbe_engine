@@ -22,21 +22,21 @@ jobs:
 
     - name: bazel-build
       env:
-        CC: gcc-10
-        CXX: g++-10
+        CC: gcc-11
+        CXX: g++-11
       run: bazel build --build_tag_filters=-local //...
 
     - name: bazel-test
       env:
-        CC: gcc-10
-        CXX: g++-10
+        CC: gcc-11
+        CXX: g++-11
       run: bazel test --test_tag_filters=-local --build_tag_filters=-local --test_output=all //...
 
     - name: deploy-packages
       if: ${{ github.event_name == 'release' }}
       env:
-        CC: gcc-10
-        CXX: g++-10
+        CC: gcc-11
+        CXX: g++-11
       run: python3 deploy_packages.py
 
     - uses: actions/upload-artifact@v2

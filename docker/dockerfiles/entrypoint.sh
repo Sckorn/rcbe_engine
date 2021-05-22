@@ -47,6 +47,8 @@ if ! $(grep -q '^oper' /etc/passwd); then
 
 fi
 
+export MESA_GL_VERSION_OVERRIDE=3.3
+
 [[ -f ${OPER_HOME}/.ssh/id_rsa ]] && chmod go-rw ${OPER_HOME}/.ssh/id_rsa
 
 chmod +x /start_storage.sh
