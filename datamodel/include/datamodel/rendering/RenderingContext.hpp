@@ -4,6 +4,7 @@
 #include <memory>
 #include <atomic>
 #include <mutex>
+#include <optional>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
