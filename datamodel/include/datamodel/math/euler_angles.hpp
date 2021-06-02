@@ -20,7 +20,7 @@ struct euler_base {
 
     [[nodiscard]] deg as_deg() const {
         if (rotation_.index() == 0) {
-            return deg(rad_to_deg(static_cast<const core::EngineScalar >(std::get<rad>(rotation_))));
+            return std::get<rad>(rotation_).as_deg();
         }
 
         return std::get<deg>(rotation_);
@@ -28,7 +28,7 @@ struct euler_base {
 
     [[nodiscard]] rad as_rad() const {
         if (rotation_.index() == 1) {
-            return rad(deg_to_rad(static_cast<const core::EngineScalar>(std::get<deg>(rotation_))));
+            return std::get<deg>(rotation_).as_rad();
         }
 
         return std::get<rad>(rotation_);

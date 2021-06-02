@@ -9,5 +9,6 @@
     "a": 1.0
   },
   "initial_dimensions": {"width":  1280, "height":  720},
-  "initial_window_position": {"x":  100, "y":  100}
+  "initial_window_position": {"x":  100, "y":  100},
+  "renderer_type": "hardware"
 }

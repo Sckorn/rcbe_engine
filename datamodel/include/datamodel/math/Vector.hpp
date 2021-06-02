@@ -76,6 +76,10 @@ public:
     Vector(Vector &&other) = default;
     Vector &operator=(Vector &&other) = default;
 
+    auto rawData() const {
+        return v_.data();
+    }
+
     ValueType &operator[](const size_t index)
     {
         return v_[index];
@@ -211,6 +215,18 @@ public:
         return is;
     }
 
+    template <typename TargetType, typename = std::enable_if_t<std::is_convertible_v<ValueType, TargetType>, void>>
+    [[nodiscard]] Vector<TargetType, DIMENSION> convertUnderlyingType() const {
+        StorageBase<TargetType, DIMENSION> tmp;
+        for (size_t i = 0; i < DIMENSION; ++i) {
+            tmp[i] = static_cast<TargetType>(v_[i]);
+        }
+        return Vector<TargetType, DIMENSION> {
+            tmp
+        };
+    }
+
+
 private:
     StorageBase<ValueType, dim> v_;
 };
@@ -218,7 +234,9 @@ private:
 using Vector4d = Vector<core::EngineScalar, 4>;
 using Vector3d = Vector<core::EngineScalar, 3>;
 using Vector2d = Vector<core::EngineScalar, 2>;
+using Vector4f = Vector<float, 4>;
 using Vector3f = Vector<float, 3>;
+using Vector2f = Vector<float, 2>;
 }
 
 namespace nlohmann

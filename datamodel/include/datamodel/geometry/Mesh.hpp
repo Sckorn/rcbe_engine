@@ -41,7 +41,7 @@ public:
         VertsInIter vbegin, VertsInIter vend,
         NormsInIter nbegin, NormsInIter nend,
         FacesInIter fbegin, FacesInIter fend,
-        const ColorType &color = {0.5, 0.5, 0.5}
+        const ColorType &color = {0.25, 0.5, 0.5}
     )
     :
     vertices_(vbegin, vend)
@@ -66,7 +66,9 @@ public:
     Mesh &operator=(Mesh &&other) = default;
 
     [[nodiscard]] const VertexStorage &vertices() const noexcept;
+    [[nodiscard]] VertexStorage verticesOriginal() const;
     [[nodiscard]] const NormalStorage &normals() const noexcept;
+    [[nodiscard]] NormalStorage normalsOriginal() const;
     [[nodiscard]] const FacetStorage &facets() const noexcept;
 
     [[nodiscard]] size_t verticesSize() const noexcept;
@@ -91,16 +93,26 @@ public:
     FacetsIterator facetsEnd() noexcept;
     FacetsConstIterator facetsCend() const noexcept;
 
-    const ColorType &color() const noexcept;
+    [[nodiscard]] const ColorType &color() const noexcept;
 
-    const TransformType &getTransform() const noexcept;
+    [[nodiscard]] const TransformType &getTransform() const noexcept;
 
     void transform(const TransformType &t);
-    void setTransform(const TransformType &t);
+
+    [[nodiscard]] bool verticesTransformed() const;
 
     friend Mesh operator*(const TransformType &t, Mesh m);
-
 private:
+    template <typename Storage>
+    Storage revertTransform(const Storage &s, const TransformType &t) const {
+        Storage storage {};
+        if (!s.empty()) {
+            storage.reserve(s.size());
+            std::transform(s.begin(), s.end(), std::back_inserter(storage), t.inversed());
+        }
+        return storage;
+    }
+
     VertexStorage vertices_;
     NormalStorage normals_;
     FacetStorage facets_;
@@ -109,6 +121,8 @@ private:
     ColorType color_;
 
     TransformType transform_;
+
+    bool vertices_trnasformed_ = false;
 };
 } // namespace rcbe::geometry
 

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <variant>
+#include <optional>
 
 #include <GL/gl.h>
 
@@ -14,11 +15,40 @@ namespace rcbe::rendering {
 
 class VertexBufferObject {
 public:
+
     using ValueType = GLfloat;
     using StorageType = std::vector<ValueType>;
     using RawDataType = const ValueType *;
 
-    explicit VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes);
+    class VertexArrayObject {
+    public:
+        VertexArrayObject();
+        ~VertexArrayObject();
+
+        VertexArrayObject(const VertexArrayObject &other) = delete;
+        VertexArrayObject &operator=(const VertexArrayObject &other) = delete;
+
+        VertexArrayObject(VertexArrayObject &&other);
+        VertexArrayObject &operator=(VertexArrayObject &&other);
+
+        void bind() const;
+        void unbind() const;
+        void setData(const StorageType &vertices) const;
+        void setData(const StorageType &vertices, const StorageType &normals) const;
+        void setData(const StorageType &vertices, const StorageType &normals, const StorageType &colors) const;
+    private:
+
+        unsigned int id_ = 0;
+        mutable bool binded_ = false;
+    };
+
+    explicit VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes, bool use_vao = false);
+
+    VertexBufferObject(const VertexBufferObject &other) = delete;
+    VertexBufferObject &operator=(const VertexBufferObject &other) = delete;
+
+    VertexBufferObject(VertexBufferObject &&other);
+    VertexBufferObject &operator=(VertexBufferObject &&other);
 
     ~VertexBufferObject();
 
@@ -40,10 +70,12 @@ public:
     [[nodiscard]] RawDataType normalsData() const noexcept;
     [[nodiscard]] RawDataType colorsData() const noexcept;
 
-    [[nodiscard]] const std::vector<size_t>& offsets() const noexcept;
+    [[nodiscard]] const VertexArrayObject &vao() const;
 
 private:
+
     bool normals_intact_ = false;
+    mutable bool binded_ = false;
 
     GLuint id_ = 0;
 
@@ -58,7 +90,7 @@ private:
     StorageType normals_;
     StorageType colors_;
 
-    std::vector<size_t> vertices_offset_;
+    std::optional<VertexArrayObject> vao_ {};
 };
 
 class IndexBufferObject {
@@ -67,10 +99,36 @@ public:
     using StorageType = std::vector<ValueType>;
     using RawDataType = const ValueType *;
 
+    class ElementBufferObject {
+    public:
+        ElementBufferObject();
+        ~ElementBufferObject();
+
+        ElementBufferObject(const ElementBufferObject &other) = delete;
+        ElementBufferObject &operator=(const ElementBufferObject &other) = delete;
+
+        ElementBufferObject(ElementBufferObject &&other);
+        ElementBufferObject &operator=(ElementBufferObject &&other);
+
+        void bind() const;
+        void unbind() const;
+        void setData(const StorageType &indices) const;
+
+    private:
+        unsigned int id_ = 0;
+        mutable bool binded_ = false;
+    };
+
     IndexBufferObject() = delete;
     ~IndexBufferObject();
 
-    IndexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes, const VertexBufferObject& vbo);
+    IndexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes, const VertexBufferObject& vbo, bool use_ebo = false);
+
+    IndexBufferObject(const IndexBufferObject &other) = delete;
+    IndexBufferObject &operator=(const IndexBufferObject &other) = delete;
+
+    IndexBufferObject(IndexBufferObject &&other);
+    IndexBufferObject &operator=(IndexBufferObject &&other);
 
     void bind() const;
     void unbind() const;
@@ -79,10 +137,14 @@ public:
 
     [[nodiscard]] RawDataType data() const noexcept;
 
+    [[nodiscard]] const ElementBufferObject &ebo() const;
+
 private:
     GLuint id_;
-    std::vector<size_t> vertices_offset_;
     StorageType indices_;
+    mutable bool binded_ = false;
+
+    std::optional<ElementBufferObject> ebo_ = {};
 };
 
 }
