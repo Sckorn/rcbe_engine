@@ -35,7 +35,7 @@ public:
 #endif
 
 public:
-    Matrix()
+    constexpr Matrix()
     {
         for (size_t row = 0; row < ROWS; ++row)
         {
@@ -297,8 +297,10 @@ private:
     StorageType m_;
 };
 
+// TODO: rename the two below, adding a d (for double) suffix
 using Matrix3x3 = Matrix<rcbe::core::EngineScalar, 3, 3>;
 using Matrix4x4 = Matrix<rcbe::core::EngineScalar, 4, 4>;
+using Matrix4x4f = Matrix<float, 4, 4>;
 }
 
 namespace nlohmann

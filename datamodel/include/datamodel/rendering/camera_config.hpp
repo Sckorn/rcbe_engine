@@ -10,6 +10,9 @@ struct camera_config {
     math::Vector3d camera_position;
     math::Vector3d camera_lookat;
     math::Vector3d camera_up = math::WORLD_UP;
+    core::EngineScalar max_fov;
+    core::EngineScalar min_fov;
+    core::EngineScalar def_fov;
 };
 }
 

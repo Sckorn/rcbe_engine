@@ -6,7 +6,7 @@ void RenderingContext::setDisplay(Display* d) {
     x_display_ = d;
 }
 
-Display* RenderingContext::getDisplay() const noexcept {
+Display *RenderingContext::getDisplay() const noexcept {
     return x_display_;
 }
 
@@ -38,7 +38,7 @@ void RenderingContext::setBackgroundColor(const rcbe::visual::RGBAColor& color) 
     background_color_ = color;
 }
 
-const rcbe::visual::RGBAColor& RenderingContext::getBackgroundColor() const noexcept {
+const rcbe::visual::RGBAColor &RenderingContext::getBackgroundColor() const noexcept {
     return background_color_;
 }
 
@@ -48,7 +48,7 @@ void RenderingContext::setWindowDimensions(const rcbe::core::Dimensions& d) {
     window_dimensions_ = d;
 }
 
-const rcbe::core::Dimensions& RenderingContext::getWindowDimensions() const {
+const rcbe::core::Dimensions &RenderingContext::getWindowDimensions() const {
     std::lock_guard lg {dimensions_mutex_};
 
     return window_dimensions_;
@@ -60,7 +60,7 @@ void RenderingContext::updateTransform(const rcbe::math::Transform& trn) {
     scene_transform_ = rcbe::math::MatrixColumnMajorAdaptor(trn.matrix());
 }
 
-const math::MatrixColumnMajorAdaptor& RenderingContext::getTransformColumnMajor() const {
+const math::MatrixColumnMajorAdaptor<core::EngineScalar> &RenderingContext::getTransformColumnMajor() const {
     std::lock_guard lg {transform_mutex_};
 
     return scene_transform_;
@@ -72,19 +72,19 @@ void RenderingContext::setMouseCoordinates(const rcbe::math::Vector2d& v) {
     mouse_coordinates_ = v;
 }
 
-const std::optional<rcbe::math::Vector2d>& RenderingContext::getMouseCoordinates() const {
+const std::optional<rcbe::math::Vector2d> &RenderingContext::getMouseCoordinates() const {
     std::lock_guard lg {mouse_mutex_};
 
     return mouse_coordinates_;
 }
 
-rcbe::core::EngineScalar RenderingContext::getZoom() const {
+rcbe::math::deg RenderingContext::getFov() const {
     std::lock_guard lg {zoom_mutex_};
 
     return zoom_;
 }
 
-void RenderingContext::updateZoom(const rcbe::core::EngineScalar zoom) {
+void RenderingContext::updateFov(const rcbe::math::deg zoom) {
     std::lock_guard lg {zoom_mutex_};
 
     zoom_ = zoom;

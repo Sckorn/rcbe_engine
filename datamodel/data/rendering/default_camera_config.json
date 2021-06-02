@@ -8,5 +8,8 @@
     "x": 0.0,
     "y": 0.0,
     "z": 0.0
-  }
+  },
+  "minimum_fov": 1.0,
+  "maximum_fov": 60.0,
+  "default_fov": 45.0
 }

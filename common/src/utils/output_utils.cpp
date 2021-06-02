@@ -20,6 +20,9 @@ void coloring_formatter(boost::log::record_view const& rec, boost::log::formatti
             case boost::log::trivial::fatal:
                 strm << "\033[31m";
                 break;
+            case boost::log::trivial::debug:
+                strm << "\033[36m";
+                break;
             default:
                 break;
         }

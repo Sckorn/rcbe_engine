@@ -6,12 +6,14 @@
 #include <ostream>
 
 #include <rcbe-engine/utils/math_utils.hpp>
+#include <rcbe-engine/fundamentals/types.hpp>
 
 namespace rcbe::math {
 
 namespace detail {
 template <typename Actual>
 struct rotations_base {
+
     explicit rotations_base(double rot)
     :
     rotation_(rot)
@@ -19,6 +21,10 @@ struct rotations_base {
 
     explicit operator double() const {
         return rotation_;
+    }
+
+    explicit operator float() const {
+        return static_cast<float>(rotation_);
     }
 
     rotations_base& operator+=(rotations_base d) {
@@ -38,7 +44,7 @@ struct rotations_base {
 
     rotations_base& operator-=(Actual a) {
         const auto& base = static_cast<const rotations_base&>(a);
-        return this->operator+=(base);
+        return this->operator-=(base);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const rotations_base& d) {
@@ -49,38 +55,37 @@ struct rotations_base {
     friend auto operator<=>(const rotations_base& l, const rotations_base& r) = default;
 
 protected:
+    void clamp(const double clamp_value) {
+        while (rotation_ > clamp_value) {
+            rotation_ -= clamp_value;
+        }
+
+        while (rotation_ < -clamp_value) {
+            rotation_ += clamp_value;
+        }
+    }
+
     double rotation_;
 };
 }
 
-struct deg : public detail::rotations_base<deg> {
-    explicit deg(double rot)
-    :
-    detail::rotations_base<deg>( rot)
-    {
-        while (rotation_ > 360.0) {
-            rotation_ -= 360;
-        }
+struct deg; // need forward declaration only for rad but leaving two for consistency (?)
+struct rad;
 
-        while (rotation_ < -360.) {
-            rotation_ += 360.;
-        }
-    }
+struct deg : public detail::rotations_base<deg> {
+    static constexpr double ABS_MAX_VALUE = 360.;
+
+    explicit deg(double rot);
+
+    [[nodiscard]] rad as_rad() const;
 };
 
 struct rad : public detail::rotations_base<rad> {
-    explicit rad(double rot )
-    :
-    detail::rotations_base<rad>(rot)
-    {
-        while (rotation_ > 2 * M_PI) {
-            rotation_ -= 2 * M_PI;
-        }
+    static constexpr double ABS_MAX_VALUE = 2 * M_PI;
 
-        while (rotation_ < -2 * M_PI) {
-            rotation_ += 2 * M_PI;
-        }
-    }
+    explicit rad(double rot);
+
+    [[nodiscard]] deg as_deg() const;
 };
 
 }

@@ -15,6 +15,7 @@ public:
 
     BinaryBuffer() = default;
     explicit BinaryBuffer(std::istream& is);
+    explicit BinaryBuffer(std::basic_ifstream<char> &is);
 
     explicit BinaryBuffer(std::vector<ByteType> &&buf);
 
@@ -125,6 +126,10 @@ template <>
 BinaryBuffer::BinaryBuffer(uint32_t c);
 template <>
 BinaryBuffer::BinaryBuffer(uint16_t c);
+template <>
+BinaryBuffer::BinaryBuffer(uint8_t c);
+template <>
+BinaryBuffer::BinaryBuffer(const std::string &s);
 
 template <>
 size_t BinaryBuffer::get();
@@ -136,6 +141,10 @@ template <>
 uint32_t BinaryBuffer::get();
 template <>
 uint16_t BinaryBuffer::get();
+template <>
+uint8_t BinaryBuffer::get();
+template <>
+std::string BinaryBuffer::get();
 
 }
 

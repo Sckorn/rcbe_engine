@@ -51,6 +51,10 @@ public:
     const ValueType &a() const noexcept;
     ValueType &a();
 
+    std::array<typename StorageType::ValueType, DIMENSION> asArray() const;
+
+    explicit operator uint32_t() const;
+
 private:
     StorageType storage_;
 };

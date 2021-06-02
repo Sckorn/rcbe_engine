@@ -8,6 +8,9 @@ Camera::Camera(const rendering::RenderingContextPtr &context, const rendering::c
 initial_position_ { config.camera_position }
 , initial_lookat_ { config.camera_lookat }
 , initial_up_ { config.camera_up }
+, max_fov_ { config.max_fov }
+, min_fov_ { config.min_fov }
+, def_fov_ { config.def_fov }
 , context_ { context }
 , transform_ {lookAt(initial_position_, initial_lookat_, initial_up_) }
 {
@@ -54,10 +57,11 @@ const Camera::TransformType& Camera::getTransform() const {
 }
 
 void Camera::resetView() {
-    std::lock_guard lg{rotate_mutex_};
-    std::lock_guard lg2{translate_mutex_};
-    zoom_ = 45.;
-    context_->updateZoom(zoom_);
+    std::lock(rotate_mutex_, translate_mutex_);
+    std::lock_guard lg{rotate_mutex_, std::adopt_lock};
+    std::lock_guard lg2{translate_mutex_, std::adopt_lock};
+    fov_ = def_fov_;
+    context_->updateFov(fov_);
     updateContext(math::Transform(lookAt(initial_position_, initial_lookat_, initial_up_)));
     yaw_ = math::yaw(math::deg(-90.));
     pitch_ = math::pitch(math::deg(0.));
@@ -148,21 +152,21 @@ void Camera::setYaw(math::yaw&& y) {
 }
 
 void Camera::zoomIn(rcbe::core::EngineScalar step) {
-    auto zoom_copy = zoom_;
-    zoom_copy -= step;
-    if (zoom_copy >= 1.) {
-        zoom_ = zoom_copy;
+    auto zoom_copy = fov_;
+    zoom_copy -= math::deg(step);
+    if (zoom_copy >= min_fov_) {
+        fov_ = zoom_copy;
     }
-    context_->updateZoom(zoom_);
+    context_->updateFov(fov_);
 }
 
 void Camera::zoomOut(rcbe::core::EngineScalar step) {
-    auto zoom_copy = zoom_;
-    zoom_copy += step;
-    if (zoom_copy <= 45.) {
-        zoom_ = zoom_copy;
+    auto zoom_copy = fov_;
+    zoom_copy += math::deg(step);
+    if (zoom_copy <= max_fov_) {
+        fov_ = zoom_copy;
     }
-    context_->updateZoom(zoom_);
+    context_->updateFov(fov_);
 }
 
 CameraPtr make_camera(rendering::RenderingContextPtr ctx, const rendering::camera_config &config) {

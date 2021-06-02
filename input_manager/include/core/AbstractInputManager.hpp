@@ -10,6 +10,7 @@
 #include <rcbe-engine/core/GameInputManager.hpp>
 
 #include <rcbe-engine/traits/input_manager.hpp>
+#include <rcbe-engine/datamodel/system/input_system_types.hpp>
 
 namespace rcbe::core {
 using InputManagerVariant = std::variant<EditorInputManager, GameInputManager>;
@@ -31,14 +32,22 @@ public:
 
     }
 
-    decltype(auto) tryProcessEvent(XEvent& event) {
+    [[nodiscard]] decltype(auto) tryProcessEvent(XEvent& event) {
         return std::visit([&event](auto& arg) mutable -> bool {
             auto ret = arg.tryProcessEvent(event);
             return ret;
         }, variant_);
     }
 
-#ifdef RCBE_DEBUG
+    [[nodiscard]] decltype(auto) getValue(core::MouseEventType event) const {
+        return std::visit([event](const auto &m) { return m.getValue(event); }, variant_);
+    }
+
+    [[nodiscard]] decltype(auto) getValue(core::KeyboardEventType event) const {
+        return std::visit([event](const auto &m) { return m.getValue(event); }, variant_);
+    }
+
+#ifdef RCBE_DEBUG_MODE
     //*For the simplicity of debug*/
     InputManagerVariant& getVariant() {
         return variant_;

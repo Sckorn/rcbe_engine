@@ -2,14 +2,19 @@ cc_library(
     name = "rcbe_renderer",
     srcs = glob(
         ["src/**/*.cpp"],
-        exclude = ["src/main.cpp"],
+        exclude = [
+            "src/main.cpp",
+        ],
     ),
     hdrs = glob(["include/renderer/**/*.hpp"]),
+    copts = [
+        "-DRCBE_GLM_INTEGRATION",
+        "-DRCBE_DEBUG_MODE",
+    ],
     include_prefix = "rcbe-engine",
     includes = ["include"],
     linkopts = [
         "-lpthread",
-        "-lOpenGL",
         "-lGL",
         "-lGLX",
         "-lX11",
@@ -36,6 +41,8 @@ cc_binary(
         "//datamodel:datamodel_rendering_resources",
         "//datamodel:datamodel_system_resources",
         "//parsers:x3d_test_resources",
+        "@awesomeface_texture//file",
+        "@brick_wall_texture//file",
         "@low_poly_wolf_stl//file",
     ],
     linkopts = [

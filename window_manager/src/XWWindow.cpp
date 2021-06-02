@@ -10,7 +10,7 @@
 #include <rcbe-engine/core/AbstractInputManager.hpp>
 
 namespace rcbe::core {
-XWWindow::XWWindow(window_config &&config_, const WindowContextPtr& window_context)
+XWWindow::XWWindow(window_config &&config_, const WindowContextPtr &window_context)
 :
 impl_ { std::make_shared<XWindow>(std::move(config_), window_context) }
 {
@@ -29,19 +29,19 @@ void XWWindow::show() {
     impl_->mapWindow();
 }
 
-const std::shared_ptr<core::AbstractInputManager>& XWWindow::getInputManager() const {
+const std::shared_ptr<core::AbstractInputManager> &XWWindow::getInputManager() const {
     return impl_->getInputManager();
 }
 
-void XWWindow::setInputManager(const std::shared_ptr<AbstractInputManager>& manager) {
+void XWWindow::setInputManager(const std::shared_ptr<AbstractInputManager> &manager) {
     impl_->setInputManager(manager);
 }
 
-const window_config& XWWindow::getConfig() const {
+const window_config &XWWindow::getConfig() const {
     return impl_->getConfig();
 }
 
-const std::shared_ptr<rendering::RenderingContext>& XWWindow::getRenderingContext() const {
+const std::shared_ptr<rendering::RenderingContext> &XWWindow::getRenderingContext() const {
     return impl_->getRenderingContext();
 }
 
@@ -49,8 +49,12 @@ void XWWindow::setRenderer(rcbe::rendering::GLRendererPtr renderer_ptr) {
     impl_->setRenderer(std::move(renderer_ptr));
 }
 
-const rcbe::rendering::GLRendererPtr& XWWindow::getRenderer() const {
+const rcbe::rendering::GLRendererPtr &XWWindow::getRenderer() const {
     return impl_->getRenderer();
+}
+
+std::optional<GC> XWWindow::getGraphicContext() const {
+    return impl_->getGraphicContext();
 }
 
 void XWWindow::startWindowLoop() {
@@ -61,11 +65,11 @@ void XWWindow::stopWindowLoop() {
     impl_->stopWindowLoop();
 }
 
-void XWWindow::onConfigure(window::ConfigureHandlerType&& handler) {
+void XWWindow::onConfigure(window::ConfigureHandlerType &&handler) {
     impl_->onConfigure(std::move(handler));
 }
 
-void XWWindow::onUnmap(window::UunmapHandlerType&& handler) {
+void XWWindow::onUnmap(window::UunmapHandlerType &&handler) {
     impl_->onUnmap(std::move(handler));
 }
 }
