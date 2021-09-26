@@ -42,6 +42,8 @@ cc_binary(
         "//datamodel:datamodel_rendering_resources",
         "//datamodel:datamodel_system_resources",
         "//parsers:x3d_test_resources",
+        "@awesomeface_texture//file",
+        "@brick_wall_texture//file",
         "@low_poly_wolf_stl//file",
     ],
     linkopts = [

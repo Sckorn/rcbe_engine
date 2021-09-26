@@ -29,6 +29,7 @@ struct triangle_indices
     {}
 
     std::array<ValueType, 3> indices;
+    std::array<ValueType, 3> tex_coords_indices = {0, 0, 0};
 };
 }
 

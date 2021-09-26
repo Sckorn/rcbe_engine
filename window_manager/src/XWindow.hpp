@@ -38,7 +38,8 @@ public:
     void onConfigure(window::ConfigureHandlerType&& handler);
     void onUnmap(window::UunmapHandlerType&& handler);
 
-    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& getRenderingContext() const;
+    [[nodiscard]] const std::shared_ptr<rendering::RenderingContext>& getRenderingContext() const;
+    [[nodiscard]] std::optional<GC> getGraphicContext() const;
 
     void kill();
     void mapWindow();
@@ -49,8 +50,12 @@ public:
     [[nodiscard]] const std::shared_ptr<AbstractInputManager>& getInputManager() const;
 
 private:
+    using WindowCreateHandler = std::function<bool(const WindowContextPtr &window_context)>;
 
     void windowLoop();
+
+    bool createRaterizerWindow(const WindowContextPtr &window_context);
+    bool createSimpleDrawingWindow(const WindowContextPtr &window_context);
 
     window_config config_;
     std::mutex running_mutex_;
@@ -63,6 +68,8 @@ private:
     std::shared_ptr<rendering::RenderingContext> rendering_context_ = nullptr;
     rendering::GLRendererPtr renderer_ = nullptr;
     std::shared_ptr<core::AbstractInputManager> input_manager_ = nullptr;
+
+    GC gc_;
 
     std::mutex kill_mutex_;
     bool killed_ = false;

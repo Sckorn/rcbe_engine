@@ -62,6 +62,22 @@ http_file(
     urls = ["http://localhost:8080/static/LowPolyWolf.stl"],
 )
 
+http_file(
+    name = "brick_wall_texture",
+    downloaded_file_path = "brick_wall_texture.tga",
+    sha256 = "bc1f3b97a10dbe671abd2cce7393e67094273c6fcf1c136c872380dd91ec8646",
+    tags = ["local"],
+    urls = ["http://localhost:8080/static/tex.tga"],
+)
+
+http_file(
+    name = "awesomeface_texture",
+    downloaded_file_path = "awesomeface_texture.tga",
+    sha256 = "66510d10328a164669a8d3690f98c669a72e7cfd72bc8c2cebfbcbcc5f450cd6",
+    tags = ["local"],
+    urls = ["http://localhost:8080/static/tex2.tga"],
+)
+
 http_archive(
     name = "stl_test_data_archive",
     build_file = "@//thirdparty:stl_tests_archive.BUILD",

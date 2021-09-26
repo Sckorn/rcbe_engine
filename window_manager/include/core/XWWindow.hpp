@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <future>
+#include <optional>
 
 #include <rcbe-engine/datamodel/system/window_config.hpp>
 #include <rcbe-engine/datamodel/system/WindowContext.hpp>
@@ -52,10 +53,12 @@ public:
     void onConfigure(window::ConfigureHandlerType&& handler);
     void onUnmap(window::UunmapHandlerType&& handler);
 
-    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& getRenderingContext() const;
+    [[nodiscard]] const std::shared_ptr<rendering::RenderingContext>& getRenderingContext() const;
 
     void setRenderer(rcbe::rendering::GLRendererPtr renderer_ptr);
-    [[nodiscard]]const rcbe::rendering::GLRendererPtr& getRenderer() const;
+    [[nodiscard]] const rcbe::rendering::GLRendererPtr& getRenderer() const;
+
+    [[nodiscard]] std::optional<GC> getGraphicContext() const;
 
 private:
     std::shared_ptr<XWindow> impl_;

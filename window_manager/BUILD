@@ -5,7 +5,7 @@ cc_library(
             "src/**/*.cpp",
             "src/**/*.hpp",
         ],
-        exclude = ["src/test_tool.cpp"],
+        exclude = ["src/main.cpp"],
     ),
     hdrs = glob(["include/**/*.hpp"]),
     include_prefix = "rcbe-engine",
@@ -27,6 +27,25 @@ cc_library(
         "//renderer:rcbe_renderer",
         "@boost//:log",
         "@nlohmann",
+    ],
+)
+
+cc_binary(
+    name = "check_tga",
+    srcs = ["src/main.cpp"],
+    data = [
+        "@awesomeface_texture//file",
+    ],
+    linkopts = [
+        "-lpthread",
+        "-lX11",
+        "-lXext",
+    ],
+    deps = [
+        ":rcbe_window_manager",
+        "//common:engine_output_utils",
+        "//datamodel:engine_datamodel_visual",
+        "@boost//:log",
     ],
 )
 

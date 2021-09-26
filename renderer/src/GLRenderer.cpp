@@ -14,6 +14,7 @@
 #include <rcbe-engine/ticker/Ticker.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
+#include <rcbe-engine/datamodel/visual/Texture.hpp>
 
 #include <boost/log/trivial.hpp>
 #include <datamodel/rendering/Shader.hpp>
@@ -251,6 +252,14 @@ void GLRendererImplementation::drawBuffers(
                 // When buffer object is bound with its ID, all pointers in gl*Pointer()
                 // are treated as offset instead of real pointer.
 
+                visual::texture_config tex_conf;
+                tex_conf.component_order = decltype(tex_conf.component_order)::RGBA;
+                tex_conf.filtering_type = decltype(tex_conf.filtering_type)::linear;
+                tex_conf.texture_type = decltype(tex_conf.texture_type)::texture_2d;
+                tex_conf.wrapping_type = decltype(tex_conf.wrapping_type)::repeat;
+                visual::Texture tex("external/brick_wall_texture/file/brick_wall_texture.tga", tex_conf, true);
+                visual::Texture tex2("external/awesomeface_texture/file/awesomeface_texture.tga", tex_conf, true);
+
                 if (hardware_renderer) {
                     vbo.vao().bind();
                     ibo.ebo().bind();
@@ -273,8 +282,13 @@ void GLRendererImplementation::drawBuffers(
 
                 if (hardware_renderer) {
                     shader_prog->use();
+                    shader_prog->setInteger("ourTexture", 0);
+                    shader_prog->setInteger("ourTexture2", 1);
                     // TODO: add orthographic projection computation and test it later
                     //auto perspective = glm::ortho(0.0f, static_cast<float>(dimensions.width), 0.0f, static_cast<float>(dimensions.height), 0.1f, 100.0f);
+
+                    tex.bind(0);
+                    tex2.bind(1);
 
                     auto perspective = math::makePerspectiveMatrix(
                             0.1,
@@ -313,6 +327,9 @@ void GLRendererImplementation::drawBuffers(
                                    nullptr);               // ptr to indices
                     glDrawArrays( GL_TRIANGLES, 0, ibo.size());
                 }
+
+                tex.unbind();
+                tex2.unbind();
 
                 if (!hardware_renderer)
                     vbo.disableState();

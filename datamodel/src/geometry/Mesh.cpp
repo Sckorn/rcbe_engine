@@ -14,6 +14,10 @@ const Mesh::FacetStorage &Mesh::facets() const noexcept {
     return facets_;
 }
 
+const Mesh::TexCoordStorage &Mesh::texCoord() const noexcept {
+    return tex_coord_;
+}
+
 size_t Mesh::verticesSize() const noexcept {
     return vertices_.size();
 }
@@ -24,6 +28,10 @@ size_t Mesh::normalsSize() const noexcept {
 
 size_t Mesh::facetsSize() const noexcept {
     return facets_.size();
+}
+
+size_t Mesh::texCoordSize() const noexcept {
+    return tex_coord_.size();
 }
 
 Mesh::VerticesIterator Mesh::verticesBegin() noexcept {
@@ -72,6 +80,22 @@ Mesh::FacetsIterator Mesh::facetsEnd() noexcept {
 
 Mesh::FacetsConstIterator Mesh::facetsCend() const noexcept {
     return facets_.cend();
+}
+
+Mesh::TexCoordIterator Mesh::texCoordBegin() noexcept {
+    return tex_coord_.begin();
+}
+
+Mesh::TexCoordConstIterator Mesh::texCoordCbegin() const noexcept {
+    return tex_coord_.cbegin();
+}
+
+Mesh::TexCoordIterator Mesh::texCoordEnd() noexcept {
+    return tex_coord_.end();
+}
+
+Mesh::TexCoordConstIterator Mesh::texCoordCend() const noexcept {
+    return tex_coord_.cend();
 }
 
 const Mesh::ColorType &Mesh::color() const noexcept {
@@ -130,6 +154,7 @@ void adl_serializer<rcbe::geometry::Mesh>::to_json(nlohmann::json &j, const rcbe
         {"vertices", m.vertices()},
         {"normals", m.normals()},
         {"facets", m.facets()},
+        {"tex_coord", m.texCoord()},
         {"color", m.color()}
     };
 }
@@ -140,11 +165,13 @@ void adl_serializer<rcbe::geometry::Mesh>::from_json(const nlohmann::json &j, rc
     auto normals = j.at("normals").get<rcbe::geometry::Mesh::NormalStorage>();
     auto facets = j.at("facets").get<rcbe::geometry::Mesh::FacetStorage>();
     auto color = j.at("color").get<rcbe::geometry::Mesh::ColorType>();
+    auto tex_coord = j.value<rcbe::geometry::Mesh::TexCoordStorage>("tex_coord", rcbe::geometry::Mesh::TexCoordStorage {});
 
     m = { 
         std::make_move_iterator(vertices.begin()), std::make_move_iterator(vertices.end()), 
         std::make_move_iterator(normals.begin()), std::make_move_iterator(normals.end()),
         std::make_move_iterator(facets.begin()), std::make_move_iterator(facets.end()),
+        std::make_move_iterator(tex_coord.begin()), std::make_move_iterator(tex_coord.end()),
         color
     };
 }

@@ -14,6 +14,10 @@ BinaryBuffer::BinaryBuffer(std::istream &is) {
     read(is, buffer_);
 }
 
+BinaryBuffer::BinaryBuffer(std::basic_ifstream<char> &is) {
+    read(is, buffer_);
+}
+
 BinaryBuffer::BinaryBuffer(std::vector<ByteType> &&buf)
 :
 buffer_(std::move(buf))
@@ -163,6 +167,21 @@ BinaryBuffer::BinaryBuffer(uint16_t c) {
 }
 
 template <>
+BinaryBuffer::BinaryBuffer(uint8_t c) {
+    buffer_.resize(sizeof(uint8_t));
+    auto * _v = reinterpret_cast<uint8_t*>(&c);
+    std::copy(_v, _v + sizeof(uint8_t), buffer_.data());
+}
+
+template <>
+BinaryBuffer::BinaryBuffer(const std::string &s) {
+    for (const auto &c : s) {
+        BinaryBuffer bb(c);
+        this->append(std::move(bb));
+    }
+}
+
+template <>
 size_t BinaryBuffer::get() {
     if (view_) {
         std::array<ByteType, sizeof(size_t)> tmp;
@@ -225,6 +244,31 @@ uint16_t BinaryBuffer::get() {
     } else {
         return *reinterpret_cast<const uint16_t*>(buffer_.data());
     }
+}
+
+template <>
+uint8_t BinaryBuffer::get() {
+    if (view_) {
+        std::array<ByteType, sizeof(uint8_t)> tmp;
+        std::transform(buffer_view_.begin(), buffer_view_.end(), tmp.begin(), [](const auto &entry) {
+            return *entry;
+        });
+        return *reinterpret_cast<const uint8_t *>(tmp.data());
+    } else {
+        return *reinterpret_cast<const uint8_t*>(buffer_.data());
+    }
+}
+
+template <>
+std::string BinaryBuffer::get() {
+    static_assert(sizeof(std::string::value_type) == sizeof(uint8_t), "std::string char type is bigger than one byte!");
+    std::string ret;
+    ret.reserve(buffer_.size());
+    for (size_t i = 0; i < size(); ++i) {
+        ret.push_back(at(i, sizeof(char)).get<char>());
+    }
+
+    return ret;
 }
 
 }

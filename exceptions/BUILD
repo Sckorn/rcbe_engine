@@ -3,7 +3,9 @@ cc_library(
     hdrs = glob([
         "include/rcbe_exceptions/**/*.hpp",
     ]),
-    includes = ["include"],
+    include_prefix = "rcbe-engine/exceptions",
+    includes = ["include/rcbe_exceptions"],
+    strip_include_prefix = "include/rcbe_exceptions",
     visibility = ["//visibility:public"],
     deps = [],
 )

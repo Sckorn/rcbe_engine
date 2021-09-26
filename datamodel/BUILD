@@ -47,6 +47,7 @@ cc_library(
     name = "engine_datamodel_visual",
     srcs = glob([
         "src/visual/**/*.cpp",
+        "src/visual/**/*.hpp",
     ]),
     hdrs = glob([
         "include/datamodel/visual/**/*.hpp",
@@ -54,10 +55,18 @@ cc_library(
     copts = ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
     includes = ["include"],
+    linkopts = [
+        "-lpthread",
+        "-lOpenGL",
+        "-lGL",
+    ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_datamodel_math",
+        "//exceptions:rcbe_exception",
+        "//gl_extensions",
+        "@boost//:log",
         "@nlohmann",
     ],
 )
@@ -152,7 +161,10 @@ cc_test(
     name = "rcbe_all_datamodel_tests",
     srcs = glob(
         ["test/*.cpp"],
-        exclude = ["test/geometry_tests.cpp"],
+        exclude = [
+            "test/geometry_tests.cpp",
+            "test/texture_tests.cpp",
+        ],
     ),
     copts = ["-Iexternal/gtest/include"],
     data = [
@@ -189,6 +201,28 @@ cc_test(
         ":engine_datamodel_visual",
         "//common:engine_fuzzy_logic",
         "//common:engine_json_utils",
+        "@gtest",
+        "@nlohmann",
+    ],
+)
+
+cc_test(
+    name = "rcbe_textures_datamodel_tests",
+    srcs = [
+        "test/datamodel_tests.cpp",
+        "test/texture_tests.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    data = [
+        ":datamodel_rendering_resources",
+        "@brick_wall_texture//file",
+    ],
+    tags = ["local"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":engine_datamodel_math",
+        ":engine_datamodel_rendering",
+        ":engine_datamodel_visual",
         "@gtest",
         "@nlohmann",
     ],

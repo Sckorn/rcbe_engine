@@ -36,6 +36,12 @@ public:
         void setData(const StorageType &vertices) const;
         void setData(const StorageType &vertices, const StorageType &normals) const;
         void setData(const StorageType &vertices, const StorageType &normals, const StorageType &colors) const;
+        void setData(
+                const StorageType &vertices,
+                const StorageType &normals,
+                const StorageType &colors,
+                const StorageType &tex_coords
+                ) const;
     private:
 
         unsigned int id_ = 0;
@@ -85,10 +91,12 @@ private:
     size_t vertices_byte_size_;
     size_t normals_byte_size_;
     size_t colors_byte_size_;
+    size_t tex_coords_byte_size_;
 
     StorageType vertices_;
     StorageType normals_;
     StorageType colors_;
+    StorageType tex_coords_;
 
     std::optional<VertexArrayObject> vao_ {};
 };

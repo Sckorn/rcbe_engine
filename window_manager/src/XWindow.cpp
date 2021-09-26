@@ -33,22 +33,38 @@ GLXFBConfig *chooseFbConfig(Display *d, int screen) {
 namespace rcbe::core {
 XWindow::XWindow(window_config &&config, const WindowContextPtr& window_context)
 :
-config_{std::move(config)},
-root_display_(window_context->getRootDisplay())
-, rendering_context_{
-    (config_.type == window_config::WindowType::gl_rendering_window)
-    ? std::make_shared<rendering::RenderingContext>() : nullptr
-}
+config_{ std::move(config) }
+, root_display_( window_context->getRootDisplay() )
+, rendering_context_ { std::make_shared<rendering::RenderingContext>() }
 {
+    using window_type_enum = decltype(config_.type);
+    const std::unordered_map<window_type_enum, WindowCreateHandler> handlers = {
+            {window_type_enum::drawing_window, [this](const WindowContextPtr &window_context) -> bool { return this->createSimpleDrawingWindow(window_context); }},
+            {window_type_enum::gl_rendering_window, [this](const WindowContextPtr &window_context) -> bool {return this->createRaterizerWindow(window_context); }},
+            {window_type_enum::unknown, [](const WindowContextPtr &) -> bool { return false; }}
+    };
+
+    if(!handlers.at(config_.type)(window_context))
+        throw std::runtime_error("Can't create window of type " + std::to_string(static_cast<size_t>(config_.type)));
+}
+
+XWindow::~XWindow() {
+    if (!killed_)
+        kill();
+}
+
+bool XWindow::createRaterizerWindow(const WindowContextPtr &window_context) {
     GLXFBConfig *fbConfigs = chooseFbConfig(root_display_, window_context->getScreenNumber());
     XVisualInfo *visInfo = glXGetVisualFromFBConfig(root_display_, fbConfigs[0]);
 
-    if (visInfo == nullptr)
-        throw std::runtime_error("VisualInfo is null pointer");
+    if (visInfo == nullptr) {
+        BOOST_LOG_TRIVIAL(error) << "VisualInfo is null pointer";
+        return false;
+    }
 
     rendering_context_->setDisplay(XOpenDisplay(nullptr));
     rendering_context_->setBackgroundColor(config_.background_color);
-    rendering_context_->setWindowDimensions(config.size);
+    rendering_context_->setWindowDimensions(config_.size);
     rendering_context_->setDeleteMessage(window_context->getDeleteMsg());
 
     attributes_.colormap = XCreateColormap(
@@ -56,31 +72,19 @@ root_display_(window_context->getRootDisplay())
             window_context->getRootWindow(),
             visInfo->visual, AllocNone
     );
-    switch (config_.type) {
-        case window_config::WindowType::gl_rendering_window: {
-            rendering_context_->setDrawable(XCreateWindow(rendering_context_->getDisplay(), window_context->getRootWindow(),
-                                                          config_.position.x(), config_.position.y(),
-                                                          config_.size.width, config_.size.height, 0,
-                                                          visInfo->depth, InputOutput, visInfo->visual, CWColormap,
-                                                          &attributes_));
-            rendering_context_->setGlxContext(
-                    glXCreateContext(rendering_context_->getDisplay(), visInfo, nullptr, true));
-            if (rendering_context_->getGlxContext() == nullptr)
-                throw std::runtime_error("GLX create context is NULL");
-        }
-            break;
-        case window_config::WindowType::drawing_window: {
-            rendering_context_->setDrawable(XCreateSimpleWindow(rendering_context_->getDisplay(), window_context->getRootWindow(),
-                                                                config_.position.x(), config_.position.y(),
-                                                                config_.size.width, config_.size.height, 0, 0, 0));
-        }
-            break;
-        case window_config::WindowType::unknown:
-        default: {
-            throw std::runtime_error("Unknown type of the window!");
-        }
-            break;
+
+    rendering_context_->setDrawable(XCreateWindow(rendering_context_->getDisplay(), window_context->getRootWindow(),
+                                                  config_.position.x(), config_.position.y(),
+                                                  config_.size.width, config_.size.height, 0,
+                                                  visInfo->depth, InputOutput, visInfo->visual, CWColormap,
+                                                  &attributes_));
+    rendering_context_->setGlxContext(
+            glXCreateContext(rendering_context_->getDisplay(), visInfo, nullptr, true));
+    if (rendering_context_->getGlxContext() == nullptr) {
+        BOOST_LOG_TRIVIAL(error) << "GLX create context is NULL";
+        return false;
     }
+
     XSetStandardProperties(
             rendering_context_->getDisplay(),
             rendering_context_->getDrawable(),
@@ -89,13 +93,14 @@ root_display_(window_context->getRootDisplay())
 
     // TODO: remove this creation, input manager should be manually set from the outside
     if (config_.process_input) {
-        if (config.editor) {
+        if (config_.editor) {
             input_manager_ = std::make_shared<AbstractInputManager>(EditorInputManager(EditorInputManager::HandlerCollection{}));
         } else {
             if (!config_.input_scheme.empty()) {
                 input_manager_ = std::make_shared<AbstractInputManager>(GameInputManager(utils::read_raw(config_.input_scheme)));
             } else {
-                throw std::runtime_error("Input requested but no input scheme provided!");
+                BOOST_LOG_TRIVIAL(error) << "Input requested but no input scheme provided!";
+                return false;
             }
         }
     }
@@ -110,11 +115,45 @@ root_display_(window_context->getRootDisplay())
 
     XFree(visInfo);
     XFree(fbConfigs);
+
+    return true;
 }
 
-XWindow::~XWindow() {
-    if (!killed_)
-        kill();
+bool XWindow::createSimpleDrawingWindow(const WindowContextPtr &window_context) {
+    rendering_context_->setDisplay(XOpenDisplay(nullptr));
+    rendering_context_->setBackgroundColor(config_.background_color);
+    rendering_context_->setWindowDimensions(config_.size);
+    rendering_context_->setDeleteMessage(window_context->getDeleteMsg());
+
+    unsigned long black,white;
+    black = BlackPixel(rendering_context_->getDisplay(), window_context->getScreenNumber());	/* get color black */
+    white = WhitePixel(rendering_context_->getDisplay(), window_context->getScreenNumber());  /* get color white */
+
+    rendering_context_->setDrawable(XCreateSimpleWindow(rendering_context_->getDisplay(), window_context->getRootWindow(),
+                                                        config_.position.x(), config_.position.y(),
+                                                        config_.size.width, config_.size.height, 5, black, white));
+
+    XSetStandardProperties(
+            rendering_context_->getDisplay(),
+            rendering_context_->getDrawable(),
+            config_.caption.c_str(),
+            "", None, nullptr, 0, nullptr);
+
+    auto mask = ExposureMask | StructureNotifyMask;
+    if (config_.process_input)
+        mask = mask | ButtonPressMask | ButtonReleaseMask | KeyPressMask | KeyReleaseMask | PointerMotionMask;
+
+    XSelectInput(rendering_context_->getDisplay(), rendering_context_->getDrawable(), mask);
+
+    gc_ = XCreateGC(rendering_context_->getDisplay(), rendering_context_->getDrawable(), 0, nullptr);
+
+    XSetBackground(rendering_context_->getDisplay(), gc_, white);
+    XSetForeground(rendering_context_->getDisplay(), gc_, black);
+
+    XClearWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
+    XMapRaised(rendering_context_->getDisplay(), rendering_context_->getDrawable());
+
+    return true;
 }
 
 void XWindow::onConfigure(window::ConfigureHandlerType &&handler) {
@@ -137,6 +176,16 @@ void XWindow::windowLoop() {
                                                                    rendering_context_->getDeleteMessage()) {
                             BOOST_LOG_TRIVIAL(info) << "Window close event received.";
                             break;
+                        } else if (event.type == Expose && event.xexpose.count == 0 && config_.type == decltype(config_.type)::drawing_window) {
+                            BOOST_LOG_TRIVIAL(info) << "Window exposure event received.";
+                            // redraw X11 window
+                            XClearWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
+                        }
+
+                        if (config_.type == decltype(config_.type)::drawing_window) {
+                            if (config_.process_input)
+                            if (!input_manager_->tryProcessEvent(event))
+                                BOOST_LOG_TRIVIAL(warning) << "Event handler is absent! Event won't be handled!";
                         }
                     }
                 }
@@ -155,6 +204,7 @@ void XWindow::windowLoop() {
         std::lock_guard lg {input_event_mutex_};
         XNextEvent(root_display_, &event);
 
+        if (config_.process_input)
         if (!input_manager_->tryProcessEvent(event))
         switch (event.type) {
             // Structure notify
@@ -236,7 +286,10 @@ void XWindow::windowLoop() {
 void XWindow::kill() {
     std::lock_guard lg {kill_mutex_};
     if (!killed_) {
-        glXDestroyContext(rendering_context_->getDisplay(), rendering_context_->getGlxContext());
+        if (config_.type == decltype(config_.type)::gl_rendering_window)
+            glXDestroyContext(rendering_context_->getDisplay(), rendering_context_->getGlxContext());
+        else
+            XFreeGC(rendering_context_->getDisplay(), gc_);
         XDestroyWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
         XCloseDisplay(rendering_context_->getDisplay());
         renderer_->stop();
@@ -262,6 +315,14 @@ const window_config &XWindow::getConfig() const {
 
 const std::shared_ptr<rendering::RenderingContext> &XWindow::getRenderingContext() const {
     return rendering_context_;
+}
+
+std::optional<GC> XWindow::getGraphicContext() const {
+    if (config_.type == decltype(config_.type)::drawing_window) {
+        return {gc_};
+    }
+
+    return std::nullopt;
 }
 
 void XWindow::startWindowLoop() {

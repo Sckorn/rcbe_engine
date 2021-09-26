@@ -53,6 +53,10 @@ const rcbe::rendering::GLRendererPtr& XWWindow::getRenderer() const {
     return impl_->getRenderer();
 }
 
+[[nodiscard]] std::optional<GC> XWWindow::getGraphicContext() const {
+    return impl_->getGraphicContext();
+}
+
 void XWWindow::startWindowLoop() {
     impl_->startWindowLoop();
 }

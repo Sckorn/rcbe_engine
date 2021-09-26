@@ -10,6 +10,7 @@ VertexBufferObject::VertexArrayObject::VertexArrayObject() {
 
 VertexBufferObject::VertexArrayObject::~VertexArrayObject() {
     if (id_ != 0) {
+        glDisableVertexAttribArray(3);
         glDisableVertexAttribArray(2);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(0);
@@ -80,6 +81,24 @@ void VertexBufferObject::VertexArrayObject::setData(
     glEnableVertexAttribArray(2);
 }
 
+void VertexBufferObject::VertexArrayObject::setData(
+        const StorageType &vertices,
+        const StorageType &normals,
+        const StorageType &colors,
+        const StorageType &tex_coords
+) const {
+    setData(vertices, normals, colors);
+    glVertexAttribPointer(
+            3, 2, GL_FLOAT, false,
+            sizeof(float) * 2,
+            reinterpret_cast<void*>(
+                    vertices.size() * sizeof(GLfloat) +
+                    normals.size() * sizeof(GLfloat) +
+                    colors.size() * sizeof(GLfloat))
+    );
+    glEnableVertexAttribArray(3);
+}
+
 VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes, bool use_vao ) {
     // right now keeping it simple, it's not a VBO's business to validate meshes
     // they'll be validated by scene graph
@@ -94,6 +113,7 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
 
     vertices_.reserve(source_size_ * 3);
     colors_.reserve(source_size_ * 3);
+    tex_coords_.reserve(source_size_ * 2);
 
     if (!normals_intact_) {
         BOOST_LOG_TRIVIAL(warning) << "Normals are of wrong size!";
@@ -106,6 +126,7 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
         const auto &normals = (m.verticesTransformed() && use_vao) ? m.normalsOriginal() : m.normals();
         const auto &color = m.color();
         const auto &facets = m.facets();
+        const auto &tex_coord = m.texCoord();
 
         for (const auto &f : facets) {
             for (size_t j = 0; j < 3; ++j) {
@@ -124,6 +145,13 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
                 normals_.push_back(n.x());
                 normals_.push_back(n.y());
                 normals_.push_back(n.z());
+
+                if (!tex_coord.empty()) {
+                    const auto &tc = tex_coord[f.tex_coords_indices[j]];
+
+                    tex_coords_.push_back(tc.x());
+                    tex_coords_.push_back(tc.y());
+                }
             }
         }
     }
@@ -131,12 +159,14 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
     BOOST_LOG_TRIVIAL(debug) << "Vertices size " << vertices_.size();
     BOOST_LOG_TRIVIAL(debug) << "Normals size " << normals_.size();
     BOOST_LOG_TRIVIAL(debug) << "Colors size " << colors_.size();
+    BOOST_LOG_TRIVIAL(debug) << "Texture coordinates size " << tex_coords_.size();
 
     vertices_byte_size_ = (sizeof(decltype(vertices_)::value_type) * vertices_.size());
     normals_byte_size_ = (sizeof(decltype(normals_)::value_type) * normals_.size());
     colors_byte_size_ = (sizeof(decltype(colors_)::value_type) * colors_.size());
+    tex_coords_byte_size_ = (sizeof(decltype(tex_coords_)::value_type) * tex_coords_.size());
 
-    buffer_size_bytes_ = vertices_byte_size_ + normals_byte_size_ + colors_byte_size_;
+    buffer_size_bytes_ = vertices_byte_size_ + normals_byte_size_ + colors_byte_size_ + tex_coords_byte_size_;
 
     if (use_vao)
         vao_ = VertexArrayObject();
@@ -153,9 +183,15 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertices_byte_size_, vertices_.data());
     glBufferSubData(GL_ARRAY_BUFFER, vertices_byte_size_, normals_byte_size_, normals_.data());
     glBufferSubData(GL_ARRAY_BUFFER, vertices_byte_size_ + normals_byte_size_, colors_byte_size_, colors_.data());
+    glBufferSubData(
+            GL_ARRAY_BUFFER,
+            vertices_byte_size_ + normals_byte_size_ + colors_byte_size_,
+            tex_coords_byte_size_,
+            tex_coords_.data()
+            );
 
     if (use_vao)
-        vao_->setData(vertices_, normals_, colors_);
+        vao_->setData(vertices_, normals_, colors_, tex_coords_);
 
     if (use_vao)
         vao_->unbind();
@@ -175,10 +211,12 @@ VertexBufferObject::VertexBufferObject(VertexBufferObject &&other) {
     this->vertices_byte_size_ = other.vertices_byte_size_;
     this->normals_byte_size_ = other.normals_byte_size_;
     this->colors_byte_size_ = other.colors_byte_size_;
+    this->tex_coords_byte_size_ = other.tex_coords_byte_size_;
 
     this->vertices_ = std::move(other.vertices_);
     this->normals_ = std::move(other.normals_);
     this->colors_ = std::move(other.colors_);
+    this->tex_coords_ = std::move(other.tex_coords_);
 
     if (other.vao_.has_value())
         this->vao_ = std::move(*(other.vao_));
@@ -201,10 +239,12 @@ VertexBufferObject &VertexBufferObject::operator=(VertexBufferObject &&other) {
     this->vertices_byte_size_ = other.vertices_byte_size_;
     this->normals_byte_size_ = other.normals_byte_size_;
     this->colors_byte_size_ = other.colors_byte_size_;
+    this->tex_coords_byte_size_ = other.tex_coords_byte_size_;
 
     this->vertices_ = std::move(other.vertices_);
     this->normals_ = std::move(other.normals_);
     this->colors_ = std::move(other.colors_);
+    this->tex_coords_ = std::move(other.tex_coords_);
 
     if (other.vao_.has_value())
         this->vao_ = std::move(*(other.vao_));
@@ -224,6 +264,7 @@ void VertexBufferObject::enableState() const {
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void VertexBufferObject::bind() const {
@@ -244,6 +285,7 @@ void VertexBufferObject::disableState() const {
     glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 size_t VertexBufferObject::size() const noexcept {

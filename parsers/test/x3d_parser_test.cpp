@@ -1,5 +1,4 @@
 #include <iostream>
-#include <filesystem>
 
 #include "gtest/gtest.h"
 
@@ -14,4 +13,9 @@ TEST(ParsersTest, TestX3dParse)
     ASSERT_EQ(mesh.verticesSize(), 12);
     ASSERT_EQ(mesh.normalsSize(), 20);
     ASSERT_EQ(mesh.facetsSize(), 20);
+    ASSERT_EQ(mesh.texCoordSize(), 4);
+
+    ASSERT_NE(mesh.facets()[0].tex_coords_indices[0], mesh.facets()[0].tex_coords_indices[1]);
+    ASSERT_NE(mesh.facets()[0].tex_coords_indices[1], mesh.facets()[0].tex_coords_indices[2]);
+    ASSERT_NE(mesh.facets()[0].tex_coords_indices[2], mesh.facets()[0].tex_coords_indices[0]);
 }

@@ -106,6 +106,30 @@ RGBAColor::ValueType &RGBAColor::a()
 {
     return storage_.w();
 }
+
+std::array<typename RGBAColor::StorageType::ValueType, RGBAColor::DIMENSION> RGBAColor::asArray() const {
+    std::array<ValueType, DIMENSION> ret;
+
+    size_t counter = 0;
+    for (auto &r : ret) {
+        r = this->storage_.at(counter++);
+    }
+
+    return ret;
+}
+
+RGBAColor::operator uint32_t() const {
+
+    std::array<uint8_t, DIMENSION> tmp;
+
+    for (size_t i = 0; i < DIMENSION; ++i) {
+        tmp[i] = storage_.at(i) * 0xFF;
+    }
+
+    uint32_t ret = *reinterpret_cast<const uint32_t *>(tmp.data());
+    return ret;
+}
+
 }
 
 namespace nlohmann
