@@ -10,6 +10,7 @@
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/datamodel/math/math_constants.hpp>
+#include <rcbe-engine/datamodel/math/rotation_units.hpp>
 #include <rcbe-engine/datamodel/rendering/camera_config.hpp>
 
 namespace rcbe::rendering {
@@ -67,9 +68,13 @@ private:
     math::Vector3d right_;
     math::Vector3d up_;
 
+    const math::deg max_fov_;
+    const math::deg min_fov_;
+    const math::deg def_fov_;
+
     math::pitch pitch_ { math::deg(0.)};
     math::yaw yaw_ { math::deg(-90.)};
-    core::EngineScalar zoom_ = 45.;
+    math::deg fov_ = def_fov_;
 
     rendering::RenderingContextPtr context_;
 

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <future>
+#include <optional>
 
 #include <rcbe-engine/datamodel/system/window_config.hpp>
 #include <rcbe-engine/datamodel/system/WindowContext.hpp>
@@ -30,11 +31,11 @@ class XWWindow
 public:
     XWWindow() = delete;
 
-    XWWindow(window_config &&config_, const WindowContextPtr& window_context);
+    XWWindow(window_config &&config_, const WindowContextPtr &window_context);
 
     ~XWWindow();
 
-    [[nodiscard]] const window_config& getConfig() const;
+    [[nodiscard]] const window_config &getConfig() const;
 
     decltype(auto) startWindowLoopAync() {
         return std::async(std::launch::async, [this]() {
@@ -46,16 +47,18 @@ public:
 
     void kill();
     void show();
-    [[nodiscard]]const std::shared_ptr<core::AbstractInputManager>& getInputManager() const;
-    void setInputManager(const std::shared_ptr<AbstractInputManager>& manager);
+    [[nodiscard]]const std::shared_ptr<core::AbstractInputManager> &getInputManager() const;
+    void setInputManager(const std::shared_ptr<AbstractInputManager> &manager);
 
-    void onConfigure(window::ConfigureHandlerType&& handler);
-    void onUnmap(window::UunmapHandlerType&& handler);
+    void onConfigure(window::ConfigureHandlerType &&handler);
+    void onUnmap(window::UunmapHandlerType &&handler);
 
-    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& getRenderingContext() const;
+    [[nodiscard]] const std::shared_ptr<rendering::RenderingContext> &getRenderingContext() const;
 
     void setRenderer(rcbe::rendering::GLRendererPtr renderer_ptr);
-    [[nodiscard]]const rcbe::rendering::GLRendererPtr& getRenderer() const;
+    [[nodiscard]] const rcbe::rendering::GLRendererPtr &getRenderer() const;
+
+    [[nodiscard]] std::optional<GC> getGraphicContext() const;
 
 private:
     std::shared_ptr<XWindow> impl_;

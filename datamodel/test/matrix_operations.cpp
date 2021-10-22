@@ -3,7 +3,12 @@
 #include <iostream>
 
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
+#include <rcbe-engine/datamodel/math/MatrixColumnMajorAdaptor.hpp>
+#include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
 #include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 TEST(MatrixTest, IdentityTest)
 {
@@ -324,4 +329,23 @@ TEST(MatrixQuaternion, CreateMatrixFromQuat)
     ASSERT_TRUE(rcbe::core::fuzzy_equal(m.at(2, 0), 0.0));
     ASSERT_TRUE(rcbe::core::fuzzy_equal(m.at(2, 1), 1.0));
     ASSERT_TRUE(rcbe::core::fuzzy_equal(m.at(2, 2), 0.0));
+}
+
+TEST(MatrixHelpers, Perspective) {
+    rcbe::math::deg fov(45.0);
+    rcbe::core::Dimensions view{ 1280, 720 };
+    const auto far = 100.0f;
+    const auto near = 0.1f;
+
+    const auto aspect = static_cast<float>(view.width) / static_cast<float>(view.height);
+
+    auto glm_persp = glm::perspective(static_cast<float>(static_cast<double>(fov.as_rad())), aspect, near, far);
+
+    auto rcbe_persp = rcbe::math::makePerspectiveMatrix(near, far, fov, view);
+
+    ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(0, 0)), glm_persp[0][0]));
+    ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(1, 1)), glm_persp[1][1]));
+    ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(2, 2)), glm_persp[2][2]));
+    ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(2, 3)), glm_persp[3][2]));
+    ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(3, 2)), glm_persp[2][3]));
 }

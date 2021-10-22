@@ -21,10 +21,10 @@ namespace rcbe::core {
 class XWindow {
 public:
 
-    XWindow(window_config &&config_, const WindowContextPtr& window_context);
+    XWindow(window_config &&config_, const WindowContextPtr &window_context);
     ~XWindow();
 
-    [[nodiscard]] const window_config& getConfig() const;
+    [[nodiscard]] const window_config &getConfig() const;
 
 
     decltype(auto) startWindowLoopAync() {
@@ -35,22 +35,27 @@ public:
     void startWindowLoop();
     void stopWindowLoop();
 
-    void onConfigure(window::ConfigureHandlerType&& handler);
-    void onUnmap(window::UunmapHandlerType&& handler);
+    void onConfigure(window::ConfigureHandlerType &&handler);
+    void onUnmap(window::UunmapHandlerType &&handler);
 
-    [[nodiscard]]const std::shared_ptr<rendering::RenderingContext>& getRenderingContext() const;
+    [[nodiscard]] const std::shared_ptr<rendering::RenderingContext> &getRenderingContext() const;
+    [[nodiscard]] std::optional<GC> getGraphicContext() const;
 
     void kill();
     void mapWindow();
     void setRenderer(rendering::GLRendererPtr renderer_ptr);
-    void setInputManager(const std::shared_ptr<AbstractInputManager>& manager);
+    void setInputManager(const std::shared_ptr<AbstractInputManager> &manager);
 
-    [[nodiscard]] const rendering::GLRendererPtr& getRenderer() const;
-    [[nodiscard]] const std::shared_ptr<AbstractInputManager>& getInputManager() const;
+    [[nodiscard]] const rendering::GLRendererPtr &getRenderer() const;
+    [[nodiscard]] const std::shared_ptr<AbstractInputManager> &getInputManager() const;
 
 private:
+    using WindowCreateHandler = std::function<bool(const WindowContextPtr &window_context)>;
 
     void windowLoop();
+
+    bool createRasterizerWindow(const WindowContextPtr &window_context);
+    bool createSimpleDrawingWindow(const WindowContextPtr &window_context);
 
     window_config config_;
     std::mutex running_mutex_;
@@ -63,6 +68,8 @@ private:
     std::shared_ptr<rendering::RenderingContext> rendering_context_ = nullptr;
     rendering::GLRendererPtr renderer_ = nullptr;
     std::shared_ptr<core::AbstractInputManager> input_manager_ = nullptr;
+
+    GC gc_;
 
     std::mutex kill_mutex_;
     bool killed_ = false;

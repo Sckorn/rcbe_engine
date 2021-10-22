@@ -21,7 +21,7 @@ bazel_skylib_workspace()
 
 git_repository(
     name = "com_github_nelhage_rules_boost",
-    commit = "fbac9be7640ecc0fab075233d394f08f1a37e449",
+    commit = "2598b37ce68226fab465c0f0e10988af872b6dc9",
     remote = "https://github.com/nelhage/rules_boost",
 )
 
@@ -60,6 +60,22 @@ http_file(
     sha256 = "3da76bfc52b98e7e7cc8e805345b7c54fc7d53e24cb501c1e4ae542760947aa1",
     tags = ["local"],
     urls = ["http://localhost:8080/static/LowPolyWolf.stl"],
+)
+
+http_file(
+    name = "brick_wall_texture",
+    downloaded_file_path = "brick_wall_texture.tga",
+    sha256 = "bc1f3b97a10dbe671abd2cce7393e67094273c6fcf1c136c872380dd91ec8646",
+    tags = ["local"],
+    urls = ["http://localhost:8080/static/tex.tga"],
+)
+
+http_file(
+    name = "awesomeface_texture",
+    downloaded_file_path = "awesomeface_texture.tga",
+    sha256 = "66510d10328a164669a8d3690f98c669a72e7cfd72bc8c2cebfbcbcc5f450cd6",
+    tags = ["local"],
+    urls = ["http://localhost:8080/static/tex2.tga"],
 )
 
 http_archive(

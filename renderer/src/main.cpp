@@ -1,6 +1,5 @@
 // TODO: consider making this into a separate pacakge that will be later transformed into engine package
 
-#include <iostream>
 #include <chrono>
 #include <memory>
 #include <span> // left to clarify that c++20 is used
@@ -20,11 +19,18 @@
 #include <rcbe-engine/parsers/stl/stl_parser.hpp>
 
 #include <rcbe-engine/utils/output_utils.hpp>
-#include <rcbe-engine/utils/profiling_utils.hpp>
 #include <rcbe-engine/core/AbstractInputManager.hpp>
 #include <rcbe-engine/core/EditorInputManager.hpp>
+#include <rcbe-engine/datamodel/core/CoreObject.hpp>
+#include <rcbe-engine/datamodel/visual/texture_types.hpp>
+#include <rcbe-engine/datamodel/visual/Texture.hpp>
+#include <rcbe-engine/datamodel/rendering/Shader.hpp>
+#include <rcbe-engine/datamodel/rendering/Material.hpp>
+#include <rcbe-engine/core/gl_extensions.hpp>
 
 int main(int argc, char * argv[]) {
+    struct some_object {};
+
     using rcbe::core::InputManagerImplementation;
     try {
         rcbe::utils::setup_logging();
@@ -52,9 +58,38 @@ int main(int argc, char * argv[]) {
 
         auto renderer_handle = renderer->startAsync();
 
+        renderer->waitRendererReady();
+
+        BOOST_LOG_TRIVIAL(debug) << "Renderer is ready";
+
+        rcbe::visual::texture_config tex_conf;
+        tex_conf.component_order = decltype(tex_conf.component_order)::RGBA;
+        tex_conf.filtering_type = decltype(tex_conf.filtering_type)::linear;
+        tex_conf.texture_type = decltype(tex_conf.texture_type)::texture_2d;
+        tex_conf.wrapping_type = decltype(tex_conf.wrapping_type)::repeat;
+
+        std::vector<rcbe::rendering::Material::ShaderArguments> shader_args;
+        shader_args.reserve(2);
+        shader_args.push_back({"datamodel/data/rendering/shaders/default.vert", rcbe::rendering::ShaderType::vertex});
+        shader_args.push_back({"datamodel/data/rendering/shaders/default.frag", rcbe::rendering::ShaderType::fragment});
+
+        std::vector<rcbe::rendering::Material::TextureArguments> texture_args;
+        texture_args.reserve(2);
+        texture_args.push_back({"external/brick_wall_texture/file/brick_wall_texture.tga", tex_conf, true});
+        texture_args.push_back({"external/awesomeface_texture/file/awesomeface_texture.tga", tex_conf, true});
+
+        rcbe::rendering::Material material(
+                std::move(shader_args),
+                std::move(texture_args),
+                true
+        );
+
+        rcbe::core::CoreObject first_corner_wall{some_object{}};
+        rcbe::core::CoreObject second_corner_wall{some_object{}};
+        rcbe::core::CoreObject wolf{some_object{}};
+
         auto meshes = rcbe::parsers::parse_meshes("parsers/test/resources/corner.x3d");
         auto second_mesh = meshes[0];
-
         auto low_poly_wolf_mesh = rcbe::parsers::stl::parse_mesh("external/low_poly_wolf_stl/file/LowPolyWolf.stl");
 
         {
@@ -69,6 +104,11 @@ int main(int argc, char * argv[]) {
             rcbe::math::Transform t { rotation, translation };
 
             meshes[0].transform(t);
+
+            auto material_copy = material;
+
+            first_corner_wall.addComponent("mesh", std::move(meshes[0]));
+            first_corner_wall.addComponent("material", std::move(material_copy));
         }
 
         {
@@ -76,13 +116,27 @@ int main(int argc, char * argv[]) {
 
             rcbe::math::Transform t { {}, translation };
             second_mesh.transform(t);
+
+            auto material_copy = material;
+            second_corner_wall.addComponent("mesh", std::move(second_mesh));
+            second_corner_wall.addComponent("material", std::move(material_copy));
         }
 
         {
-            rcbe::math::Vector3d translation { 0.0, 0.0, -50.0 };
+            rcbe::math::Vector3d translation { -10.0, 0.0, -10.0 };
             rcbe::math::Transform t { {}, translation };
 
             low_poly_wolf_mesh.transform(t);
+
+            std::vector<rcbe::rendering::Material::ShaderArguments> shader_args_;
+            shader_args_.reserve(2);
+            shader_args_.push_back({"datamodel/data/rendering/shaders/default.vert", rcbe::rendering::ShaderType::vertex});
+            shader_args_.push_back({"datamodel/data/rendering/shaders/wolf.frag", rcbe::rendering::ShaderType::fragment});
+
+            rcbe::rendering::Material mat(std::move(shader_args_), {}, true);
+
+            wolf.addComponent("mesh", std::move(low_poly_wolf_mesh));
+            wolf.addComponent("material", std::move(mat));
         }
 
         auto camera_conf = rcbe::utils::read_from_file<rcbe::rendering::camera_config>(
@@ -98,9 +152,9 @@ int main(int argc, char * argv[]) {
         std::this_thread::sleep_for(std::chrono::milliseconds (1000));
         BOOST_LOG_TRIVIAL(debug) << "Meshes should be visible now";
 
-        renderer->addObject(std::move(meshes[0]));
-        renderer->addObject(std::move(second_mesh));
-        renderer->addObject(std::move(low_poly_wolf_mesh));
+        renderer->addObject(std::move(first_corner_wall));
+        renderer->addObject(std::move(second_corner_wall));
+        renderer->addObject(std::move(wolf));
 
         renderer_handle.wait();
         window_handle.wait();
@@ -109,7 +163,7 @@ int main(int argc, char * argv[]) {
         return 1;
     }
 
-#ifdef  RCBE_DEBUG
+#ifdef  RCBE_DEBUG_MODE
     std::array<int, 2> arr = {0, 1};
     std::span s{arr};
 #endif

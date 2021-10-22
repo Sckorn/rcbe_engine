@@ -13,7 +13,7 @@ void to_binary(Buffer &c, const ActualType &a) {
 
 template <typename Buffer, typename ActualType>
 void from_binary(const Buffer &c, ActualType& a) {
-    throw std::runtime_error("Please provide from_binary implementation for the type !");
+    throw std::runtime_error("Please provide from_binary implementation for the type " + std::string(typeid(ActualType).name()) +  " !");
 }
 
 class BinaryBuffer;

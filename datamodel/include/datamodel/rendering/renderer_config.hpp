@@ -9,7 +9,42 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+#include <boost/bimap.hpp>
+#include <boost/assign.hpp>
+
 namespace rcbe::rendering {
+enum class RendererType {
+    hardware,
+    software,
+    unknown
+};
+
+using RendererTypeBimap = boost::bimap<std::string, RendererType>;
+
+static const RendererTypeBimap met_table = boost::assign::list_of<RendererTypeBimap::relation>
+        ("hardware", RendererType::hardware)
+        ("software", RendererType::software)
+        ;
+
+static std::string str_from_renderer_type(RendererType type) {
+    auto it = met_table.right.find(type);
+    if (it != met_table.right.end())
+    {
+        return it->second;
+    }
+    return "uknown";
+}
+
+static RendererType renderer_type_from_string(const std::string& type) {
+    auto it = met_table.left.find(type);
+    if (it != met_table.left.end())
+    {
+        return it->second;
+    }
+
+    return RendererType ::unknown;
+}
+
 struct renderer_config
 {
     std::string window_caption;
@@ -17,6 +52,7 @@ struct renderer_config
     bool resizable;
     rcbe::math::Vector2d initial_window_position;
     rcbe::visual::RGBAColor clear_color;
+    RendererType renderer_type;
 };
 
 }

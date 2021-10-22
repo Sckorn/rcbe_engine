@@ -6,6 +6,7 @@
 
 #include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
+#include <rcbe-engine/datamodel/core/CoreObject.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 
 #include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
@@ -38,11 +39,12 @@ public:
     }
     void start();
     void stop();
-    void addObject(rcbe::geometry::Mesh &&mesh);
+    void addObject(rcbe::core::CoreObject &&renderer_objects);
 
     void reshape();
 
-    void onStop(RendererStopHandlerType&& handler);
+    void onStop(RendererStopHandlerType &&handler);
+    void waitRendererReady();
 private:
     std::unique_ptr<GLRendererImplementation> impl_;
 };

@@ -9,7 +9,6 @@ cc_library(
     includes = ["include"],
     linkopts = [
         "-lpthread",
-        "-lOpenGL",
         "-lGL",
         "-lGLX",
         "-lX11",

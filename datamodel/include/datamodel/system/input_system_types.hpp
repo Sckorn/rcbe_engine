@@ -154,6 +154,8 @@ enum class KeyboardEventType {
     symbol_S = XK_S,      // XK_S
     symbol_d = XK_d,      // XK_d
     symbol_D = XK_D,      // XK_D
+    symbol_o = XK_o,      // XK_o
+    symbol_O = XK_O,      // XK_O
     arrow_up = XK_Up,      // XK_uparrow
     arrow_left = XK_Left,    // XK_leftarrow
     arrow_right = XK_Right,   // XK_rightarrow
