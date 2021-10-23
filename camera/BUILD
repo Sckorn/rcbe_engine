@@ -15,7 +15,7 @@ cc_library(
 ### Packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -47,14 +47,14 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":camera-package-data",
     depends = [
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine camera libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_camera",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 ## Headers
@@ -83,13 +83,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":camera-headers-package-data",
     depends = [
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_rendering_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_camera_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_rendering_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_camera_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine camera headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_camera_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )

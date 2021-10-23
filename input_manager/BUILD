@@ -30,7 +30,7 @@ cc_library(
 ## SO
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -60,7 +60,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":input-manager-package-data",
     depends = [
-        "rcbe_datamodel_system_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_system_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-log{}.0".format(BOOST_TARGET_VERSION),
         "libboost-container{}.0".format(BOOST_TARGET_VERSION),
     ],
@@ -68,7 +68,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_input_manager",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 ## Headers
@@ -96,10 +96,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":input-manager-headers-package-data",
-    depends = ["rcbe_input_manager_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
+    depends = ["rcbe_input_manager_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH)],
     description = "RCBE game engine input manager headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_input_manager_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )

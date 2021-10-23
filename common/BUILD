@@ -33,6 +33,7 @@ cc_library(
     hdrs = glob([
         "include/common/fundamentals/**/*.hpp",
     ]),
+    data = ["//meta_package:engine_config"],
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -129,7 +130,7 @@ cc_test(
 ### packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -164,7 +165,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_filesystem",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 pkg_tar(
@@ -194,7 +195,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_json",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # output-utils
@@ -227,7 +228,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_output",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # binary-tools
@@ -259,7 +260,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_binary_tools",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 ## Headers (dev)
@@ -289,12 +290,12 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-filesystem-dev-package-data",
-    depends = ["rcbe_common_utils_filesystem_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
+    depends = ["rcbe_common_utils_filesystem_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH)],
     description = "RCBE game engine common filesystem functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_filesystem_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # json-dev
@@ -329,7 +330,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_json_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # fundamentals-dev
@@ -357,11 +358,12 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-fundamentals-dev-package-data",
+    depends = ["rcbe_engine_config_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH)],
     description = "RCBE game engine common fundamental types and functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_fundamentals_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # math-utils-dev
@@ -389,12 +391,12 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-math-utils-dev-package-data",
-    depends = ["rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
+    depends = ["rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH)],
     description = "RCBE game engine common math functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_math_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # output-utils-dev
@@ -423,15 +425,15 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-output-utils-dev-package-data",
     depends = [
-        "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
-        "rcbe_common_output_utils_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_common_output_utils_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine common math functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_output_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # fuzzy-logic-dev
@@ -460,13 +462,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-fuzzy-logic-dev-package-data",
     depends = [
-        "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine fuzzy logics functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_fuzzy_logic_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # delegate-dev
@@ -496,14 +498,14 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-delegate-dev-package-data",
     depends = [
-        "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine abstract and concrete delegate function headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_delegate_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # binary-tools-dev
@@ -535,5 +537,5 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_binary_tools_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )

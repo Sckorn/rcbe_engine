@@ -229,7 +229,7 @@ cc_test(
 ### packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -266,7 +266,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_core",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-geometry
@@ -295,14 +295,14 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-geometry-package-data",
     depends = [
-        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel geometry libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_geometry",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-math
@@ -331,13 +331,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-math-package-data",
     depends = [
-        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel math libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_math",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-rendering
@@ -366,18 +366,18 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-rendering-package-data",
     depends = [
-        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-log{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel rendering libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_rendering",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-system
@@ -406,16 +406,16 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-system-package-data",
     depends = [
-        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-container{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel system libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_system",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-visual
@@ -443,12 +443,12 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":datamodel-visual-package-data",
-    depends = ["rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
+    depends = ["rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH)],
     description = "RCBE game engine datamodel visual libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_visual",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 ## Headers
@@ -479,14 +479,14 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-core-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_config_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_config_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel core headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_core_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-geometry-headers
@@ -515,15 +515,15 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-geometry-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel geometry headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_geometry_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-math-headers
@@ -552,14 +552,14 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-math-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel math headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_math_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-rendering-headers
@@ -588,19 +588,19 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-rendering-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_gl_extensions_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_gl_extensions_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel rendering headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_rendering_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-system-headers
@@ -629,17 +629,17 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-system-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_system_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_system_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-container{}-dev".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel system headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_system_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # datamodel-visual-headers
@@ -668,12 +668,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-visual-headers-package-data",
     depends = [
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel visual headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_datamodel_visual_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
