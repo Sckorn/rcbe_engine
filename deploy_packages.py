@@ -9,7 +9,7 @@ from shutil import copyfile
 def parse_arguments(argv):
     parser = argparse.ArgumentParser(description="RCBE deb packages deploy script")
     parser.add_argument('-d', '--packages-directory', default='bazel-bin', help='Path to directory with built deb pacakges')
-    parser.add_argument('-e', '--engine-version', default='0.0.3', help='Engine version for which deb packages were built')
+    parser.add_argument('-e', '--engine-version', default='0.0.4', help='Engine version for which deb packages were built')
     parser.add_argument('-a', '--target-architecture', default='amd64', help='Engine target architecture for which deb pacakges were built')
     parser.add_argument('-o', '--output-directory', default='/tmp', help='Output directory where a tar.gz file containing all deployed deb pacakges will be created')
     parser.add_argument('-p', '--packages-extension', default='deb', help='Extension of packages to be deployed')

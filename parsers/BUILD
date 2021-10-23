@@ -80,7 +80,7 @@ cc_test(
 ### packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -114,15 +114,15 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_common_filesystem_utils_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine parser libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_parsers",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # STL
@@ -151,16 +151,16 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":stl-parsers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_common_binary_tools_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_common_filesystem_utils_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_common_binary_tools_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine parser libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_stl_parsers",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 ## Headers
@@ -191,16 +191,16 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-headers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_parsers_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_common_filesystem_utils_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_parsers_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine parser headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_parsers_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 # STL
@@ -229,14 +229,14 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-stl-headers-package-data-dev",
     depends = [
-        "rcbe_common_filesystem_utils_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_stl_parsers_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_common_filesystem_utils_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_stl_parsers_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine STL parser headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_stl_parsers_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )

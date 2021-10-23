@@ -1,5 +1,8 @@
-ENGINE_VERSION = "0.0.3"
+ENGINE_VERSION_MAJOR = "0"
+ENGINE_VERSION_MINOR = "0"
+ENGINE_VERSION_PATCH = "4"
+ENGINE_VERSION_FULL = "{}.{}.{}".format(ENGINE_VERSION_MAJOR, ENGINE_VERSION_MINOR, ENGINE_VERSION_PATCH)
 TARGET_ARCH = "amd64"
-BOOST_TARGET_VERSION = "1.71"  # change to 1.74 when nelhage rules fork is done by you
+BOOST_TARGET_VERSION = "1.74"
 PROJECT_URL = "https://github.com/Sckorn/rcbe_engine"
 PROJECT_MAINTAINER = "Daniil Kireev <sckorn@gmail.com>"

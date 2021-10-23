@@ -53,7 +53,7 @@ cc_binary(
 ### packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -85,19 +85,19 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":wm-package-data",
     depends = [
-        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_system_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_input_manager_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_renderer_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_system_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_input_manager_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_renderer_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-log{}.0".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine window manager libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_window_manager",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 ## Headers
@@ -126,13 +126,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":wm-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_system_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_input_manager_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_renderer_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_window_manager_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_datamodel_core_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_system_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_input_manager_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_renderer_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_window_manager_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
         "nlohmann-json3-dev",
     ],
@@ -140,5 +140,5 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_window_manager_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )

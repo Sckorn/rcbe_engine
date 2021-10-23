@@ -28,7 +28,7 @@ cc_test(
 ### Packaging
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -66,7 +66,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_ticker",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 ## Headers
@@ -95,12 +95,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":ticker-headers-package-data",
     depends = [
-        "rcbe_type_traits_dev_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
-        "rcbe_ticker_{}_{}".format(ENGINE_VERSION, TARGET_ARCH),
+        "rcbe_type_traits_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_ticker_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine ticker headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_ticker_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )

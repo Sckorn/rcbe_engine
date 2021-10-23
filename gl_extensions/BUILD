@@ -17,7 +17,7 @@ cc_library(
 ## SO
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("//meta_package:global_variables.bzl", "ENGINE_VERSION")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -50,7 +50,7 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_gl_extensions",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
 
 ## Headers
@@ -78,10 +78,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":gl-extensions-headers-package-data",
-    depends = ["rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION, TARGET_ARCH)],
+    depends = ["rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH)],
     description = "RCBE game engine gl extensions headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_gl_extensions_dev",
-    version = ENGINE_VERSION,
+    version = ENGINE_VERSION_FULL,
 )
