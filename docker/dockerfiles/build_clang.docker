@@ -1,0 +1,45 @@
+# Docker container with clang as a main compiler
+
+FROM radameon/build_base:latest
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Installing all clang packages
+
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
+    apt-get -qq update && \
+    apt-get -y -qq install \
+        # LLVM
+        libllvm-13-ocaml-dev \
+        libllvm13 \
+        llvm-13 \
+        llvm-13-dev \
+        llvm-13-doc \
+        llvm-13-examples \
+        llvm-13-runtime \
+        # Clang and co
+        clang-13 \
+        clang-tools-13 \
+        clang-13-doc \
+        libclang-common-13-dev \
+        libclang-13-dev \
+        libclang1-13 \
+        clang-format-13 \
+        clangd-13 \
+        # libfuzzer
+        libfuzzer-13-dev \
+        # lldb
+        lldb-13 \
+        # lld (linker)
+        lld-13 \
+        # libc++
+        libc++-13-dev \
+        libc++abi-13-dev \
+        # OpenMP
+        libomp-13-dev \
+        # libclc
+        libclc-13-dev \
+        # libunwind
+        libunwind-13-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*

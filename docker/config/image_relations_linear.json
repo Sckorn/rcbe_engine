@@ -1,0 +1,40 @@
+{
+  "base.docker": {
+    "name": "base",
+    "tag": "latest",
+    "depends": ""
+  },
+  "build_base.docker": {
+    "name": "build_base",
+    "tag": "latest",
+    "depends":"base.docker"
+  },
+  "build_gcc.docker": {
+    "name": "build_gcc",
+    "tag": "latest",
+    "depends":"build_base.docker"
+  },
+  "build_clang.docker": {
+    "name": "build_clang",
+    "tag": "latest",
+    "depends":"build_gcc.docker"
+  },
+  "build.docker": {
+    "name": "build",
+    "tag": "latest",
+    "args" : {
+      "COMPILER":"clang"
+    },
+    "depends":"build_clang.docker"
+  },
+  "dev.docker": {
+    "name": "dev",
+    "tag": "latest",
+    "depends":"build.docker"
+  },
+  "rust_dev.docker": {
+    "name": "rust_dev",
+    "tag": "latest",
+    "depends":"dev.docker"
+  }
+}

@@ -1,0 +1,63 @@
+# Everything needed to build radameon engine project
+
+FROM radameon/base:latest
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Installing from deb packages
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring 
+
+RUN apt-get -qq update && \
+    apt-get install --fix-missing -q -y \
+        pkg-config \
+        g++ \
+        bash-completion \
+        default-jdk \
+        build-essential \
+        mesa-utils \
+        valgrind \
+        massif-visualizer \
+        libopenblas-dev \
+        # cmake is left just in case although seems to be more needed in devs container
+        cmake \
+        # now goes python and it's stuff
+        cython3 \
+        python \
+        python-jinja2 \
+        python3.6 \
+        python3-distutils \
+        python3-tk \
+        python3-lib2to3 \
+        python3-pip \
+        python-tk \
+        python3.6 \
+        # libraries
+        zlib1g-dev \
+        libnotify4 \
+        libxkbfile1 \
+        libsecret-1-0 \
+        libgtk-3-0 \
+        libxss1 \
+        libgtkmm-3.0-dev \
+        libvtk7-dev \
+        libboost-all-dev \
+        libbullet-dev \
+        libgmp-dev \
+        libmpfr-dev \
+        libxau-dev \
+        libxdmcp-dev \
+        libxcb1-dev \
+        libxext-dev \
+        libx11-dev \
+        freeglut3-dev \
+        libglew-dev \
+        libsdl2-dev \
+        libsdl2-image-dev \
+        libglm-dev \
+        libfreetype6-dev
+
+# Install pip packages
+
+RUN pip install --no-cache-dir scipy numpy scikit-learn matplotlib pwlf plyfile protobuf tornado

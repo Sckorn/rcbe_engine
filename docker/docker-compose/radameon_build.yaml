@@ -1,0 +1,19 @@
+version: '2.3'
+services:
+  radameon_build:
+    extends:
+      file: build.yaml
+      service: radameon_build
+
+    container_name: radameon_build
+
+    volumes:
+      # tools
+      - type: bind
+        source: $HOME/.gitconfig
+        target: /home/oper/.gitconfig
+
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    network_mode: "host"
+    privileged: true

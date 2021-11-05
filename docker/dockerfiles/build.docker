@@ -1,0 +1,30 @@
+ARG COMPILER=gcc
+
+FROM radameon/build_${COMPILER}:latest
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get -qq update && \
+    apt-get install --fix-missing -q -y \
+        wget && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+#
+# Install Bazel
+#
+
+ENV BAZEL_VERSION=4.2.1
+
+# Original link:
+RUN BAZEL_DOWNLOAD_URL="https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb"; \
+    wget --output-document=/tmp/bazel.deb --tries=3 --continue --no-verbose "${BAZEL_DOWNLOAD_URL}" && \
+    dpkg -i /tmp/bazel.deb && \
+    rm /tmp/bazel.deb
+
+# Get radameon web server
+
+RUN RADAMEON_WEB_SERVER_URL="https://github.com/Sckorn/rcbe_static_storage/archive/refs/heads/master.zip" && \
+    wget --output-document=/tmp/web_server.zip --tries=3 --continue --no-verbose "${RADAMEON_WEB_SERVER_URL}" && \
+    mkdir -p /radameon/web_server/ && \
+    unzip /tmp/web_server.zip -d /radameon/web_server/

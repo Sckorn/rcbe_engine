@@ -1,0 +1,19 @@
+version: '2.3'
+services:
+  radameon_rust:
+    extends:
+      file: rust.yaml
+      service: radameon_rust
+
+    container_name: radameon_rust
+
+    volumes:
+      # tools
+      - type: bind
+        source: $HOME/.gitconfig
+        target: /home/oper/.gitconfig
+
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    network_mode: "host"
+    privileged: true

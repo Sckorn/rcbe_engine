@@ -1,0 +1,45 @@
+{
+  "compiler": "clang",
+  "base.docker": {
+    "name": "base",
+    "tag": "latest",
+    "depends": ""
+  },
+  "build_base.docker": {
+    "name": "build_base",
+    "tag": "latest",
+    "depends": "base.docker"
+  },
+  "build_gcc.docker": {
+    "name": "build_gcc",
+    "tag": "latest",
+    "depends":"build_base.docker",
+    "enabled_by": {
+      "condition": "compiler",
+      "value": "gcc"
+    }
+  },
+  "build_clang.docker": {
+    "name": "build_clang",
+    "tag": "latest",
+    "depends":"build_base.docker",
+    "enabled_by": {
+      "condition": "compiler",
+      "value": "clang"
+    }
+  },
+  "build.docker": {
+    "name": "build",
+    "tag": "latest",
+    "condition": "compiler",
+    "args" : {
+      "COMPILER":"clang"
+    },
+    "depends":"build_{}.docker"
+  },
+  "dev.docker": {
+    "name": "dev",
+    "tag": "latest",
+    "depends":"build.docker"
+  }
+}

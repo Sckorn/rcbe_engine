@@ -1,12 +1,11 @@
-# This is a replace for run_docker.sh
 version: '2.3'
 services:
-  rcbe_dev:
+  radameon_dev:
     extends:
-      file: rcbe.yaml
-      service: rcbe
+      file: radameon.yaml
+      service: radameon
 
-    container_name: rcbe_dev
+    container_name: radameon_dev
 
     volumes:
       # tools

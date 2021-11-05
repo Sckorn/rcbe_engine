@@ -6,8 +6,13 @@ export DISPLAY
 
 usage () { 
 echo "Usage:
-$0 -t <container_tag>	- use specified container tag
-$0 -h			- show this message"
+$0 -t <image_tag>	       - use specified image tag
+$0 -c <source_dir_host>  - dir to mount from host
+$0 -v <target_dir>       - dir to mount the volume into
+$0 -i <image_name>       - name of the image to run
+$0 -f <compose_file>     - docker compose file to use
+$0 -s <compose_service>  - docker compose service to invoke
+$0 -h			             - show this message"
 }
 
 SOURCE="${BASH_SOURCE[0]}"
@@ -19,25 +24,39 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 _compose_directory="$DIR/../docker-compose"
-_default_container_tag="latest"
-export _container_tag="$_default_container_tag"
-
-# Check OS
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-  if [[ ! -z $(which nvidia-docker) ]]; then
-      service=rcbe_nvidia_dev
-      yaml_file=$_compose_directory/$service.yaml
-  else service=rcbe_dev
-      yaml_file=$_compose_directory/$service.yaml
-  fi
-fi
+_default_image_tag="latest"
+_default_image_name="dev"
+export _image_tag="$_default_image_tag"
+export _image_name="$_default_image_name"
+yaml_file="$_compose_directory/radameon_dev.yaml"
+service="radameon_dev"
 
 # Check script options
-while getopts "t:h" opts; do
+while getopts "t:v:i:c:s:f:h" opts; do
   case "${opts}" in
     t)
-       export _container_tag="${OPTARG}";
-       echo "Using tag $_container_tag"
+       export _image_tag="${OPTARG}";
+       echo "Using tag $_image_tag"
+    ;;
+    c)
+       export _source_dir_host="$(realpath ${OPTARG})";
+       echo "Using source dir on host $_source_dir_host"
+    ;;
+    v)
+       export _source_dir_target="${OPTARG}";
+       echo "Using source dir in docker $_source_dir_target"
+    ;;
+    i)
+       export _image_name="${OPTARG}";
+       echo "Using image_name $_image_name"
+    ;;
+    f)
+       yaml_file=$_compose_directory/${OPTARG}
+       echo "Using compose file $yaml_file"
+    ;;
+    s)
+       service=${OPTARG}
+       echo "Invoking docker compose service $service"
     ;;
     h)
        usage
