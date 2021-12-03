@@ -1,0 +1,16 @@
+FROM radameon/dev:latest
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN useradd -ms /bin/bash rust_oper
+
+USER rust_oper
+WORKDIR /home/rust_oper
+
+# Install rust
+
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+
+RUN echo "" >> $HOME/.bashrc
+RUN echo "source $HOME/.cargo/env" >> $HOME/.bashrc

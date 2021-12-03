@@ -1,7 +1,6 @@
-# This is a replace for run_docker.sh
 version: '2.3'
 services:
-  rcbe:
+  radameon:
     environment:
       - OPER_HOME=/home/oper
       - HUID
@@ -9,8 +8,8 @@ services:
       - DISPLAY
       - QT_X11_NO_MITSHM=1
 
-    image: "rcbe_dev:${_container_tag}"
-    container_name: rcbe_dev
+    image: "radameon/${_image_name}:${_image_tag}"
+    container_name: radameon_dev
 
     # --it 
     stdin_open: true
@@ -19,7 +18,7 @@ services:
     # mount volumes
     volumes:
       # mount root source dir
-      - ../../../rcbe_engine:/rcbe_engine
+      - "${_source_dir_host}:${_source_dir_target}"
 
       # caches 
       - ~/.cache/bazel:/bazel
@@ -33,4 +32,3 @@ services:
 
       # x11
       - /tmp/.X11-unix:/tmp/.X11-unix
-

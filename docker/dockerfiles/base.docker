@@ -1,0 +1,39 @@
+# Base docker build from latest available ubuntu version
+
+FROM ubuntu:impish
+
+# Set some essential enviromental variables
+
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    TZ=Europe/Moscow \
+    TERM=xterm \
+    PYTHONIOENCODING=UTF-8
+
+# Replace sh with bash
+
+RUN mv /bin/sh /bin/sh-old && \
+       ln -s /bin/bash /bin/sh
+
+# Install basic utilities
+
+RUN apt-get -qq update && \
+    apt-get install --fix-missing -q -y \
+        dirmngr \
+        gnupg2 \
+        iputils-ping \
+        net-tools \
+        nano \
+        # vim is a good editor just in case
+        vim \
+        vim-pathogen \
+        vim-fugitive \
+        vim-syntastic \
+        lsb-release \
+        software-properties-common \
+        sudo \
+        dialog \
+        apt-utils

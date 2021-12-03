@@ -1,0 +1,34 @@
+version: '2.3'
+services:
+  radameon_rust:
+    environment:
+      - OPER_HOME=/home/rust_oper
+      - HUID
+      - HGID
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+
+    image: "radameon/rust_dev:${_image_tag}"
+    container_name: radameon_rust
+
+    # --it 
+    stdin_open: true
+    tty: true
+
+    # mount volumes
+    volumes:
+      # mount root source dir
+      - "${_source_dir_host}:${_source_dir_target}"
+
+      # caches 
+      - ~/.cache/bazel:/bazel
+      - ~/.cache/clion:/clion
+
+      # file exchange
+      - ~/exchange:/exchange
+
+      # clion and .ssh
+      - ./additional:/home/oper/additional
+
+      # x11
+      - /tmp/.X11-unix:/tmp/.X11-unix
