@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: UTF-8 -*-
 
 import sys
 import argparse
@@ -54,8 +55,11 @@ def main(major, minor, patch, url, maintainer):
 
         my_file_handle.write("#endif // RCBE_ENGINE_CONFIG_H\n")
         my_file_handle.close()
+        
     except IOError:
         print("File not found or path is incorrect")
+        
+    print("Done generating engine config")
 
 if __name__ == "__main__":
     engine_version_major, engine_version_minor, engine_version_patch, project_url, maintainer = parse_arguments(sys.argv[1:])

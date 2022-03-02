@@ -2,7 +2,7 @@
 
 build --distinct_host_configuration=false
 build --dynamic_mode=fully
-build --force_pic
+#build --force_pic
 
 # there are 3 possible compilation_modes in bazel: fast-build (default, optimized for build time), dbg (debug), opt (-O2, -DNDEBUG)
 build -c opt

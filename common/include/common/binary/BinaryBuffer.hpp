@@ -2,10 +2,10 @@
 #define RCBE_ENGINE_BINARYBUFFER_HPP
 
 #include <algorithm>
-#include <fstream>
-#include <vector>
 #include <array>
+#include <fstream>
 #include <numeric>
+#include <vector>
 
 #include <rcbe-engine/binary/base_serializer.hpp>
 
@@ -114,8 +114,8 @@ private:
     void appendImplementation(const StorageType &storage);
     void appendImplementation(const ViewType &storage);
 
-    std::vector<ByteType> buffer_;
-    std::vector<const ByteType*> buffer_view_;
+    std::vector<ByteType> buffer_; // TODO: StorageType buffer_;
+    std::vector<const ByteType*> buffer_view_; // TODO: ViewType buffer_view_;
     bool view_ = false;
 };
 

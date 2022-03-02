@@ -1,25 +1,30 @@
 cc_library(
     name = "engine_filesystem_utils",
-    srcs = glob([
+    srcs = [
         "src/utils/file_utils.cpp",
-    ]),
-    hdrs = glob([
+    ],
+    hdrs = [
         "include/common/utils/file_utils.hpp",
-    ]),
+    ],
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     linkopts = ["-lpthread"],
     strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }),
 )
 
 cc_library(
     name = "engine_json_utils",
     srcs = ["src/utils/json_utils.cpp"],
-    hdrs = glob([
+    hdrs = [
         "include/common/utils/json_utils.hpp",
-    ]),
-    copts = ["-Iexternal/nlohmann/include"],
+    ],
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }) + ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     linkopts = ["-lpthread"],
@@ -33,7 +38,13 @@ cc_library(
     hdrs = glob([
         "include/common/fundamentals/**/*.hpp",
     ]),
-    data = ["//meta_package:engine_config"],
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }),
+    data = select({
+        "@bazel_tools//src/conditions:windows": [], # FIXME: find a reason why python generator script doesn't produce the file
+        "//conditions:default": ["//meta_package:engine_config"]
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -42,9 +53,12 @@ cc_library(
 
 cc_library(
     name = "engine_math_utils",
-    hdrs = glob([
+    hdrs = [
         "include/common/utils/math_utils.hpp",
-    ]),
+    ],
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -56,6 +70,9 @@ cc_library(
     name = "engine_output_utils",
     srcs = ["src/utils/output_utils.cpp"],
     hdrs = ["include/common/utils/output_utils.hpp"],
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -71,6 +88,9 @@ cc_library(
     hdrs = glob([
         "include/common/fuzzy_logic/*.hpp",
     ]),
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -81,6 +101,9 @@ cc_library(
 cc_library(
     name = "rcbe_delegate",
     hdrs = glob(["include/common/delegate/**/*.hpp"]),
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -93,7 +116,10 @@ cc_library(
 
 cc_library(
     name = "rcbe_profiling",
-    hdrs = glob(["include/common/utils/profiling_utils.hpp"]),
+    hdrs = ["include/common/utils/profiling_utils.hpp"],
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -107,6 +133,9 @@ cc_library(
     name = "rcbe_binary_tools",
     srcs = glob(["src/binary/**/*.cpp"]),
     hdrs = glob(["include/common/binary/**/*.hpp"]),
+    copts = select({
+        "@bazel_tools//src/conditions:windows": ["/std:c++20"],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",

@@ -22,6 +22,10 @@ genrule(
     python3 $(location //meta_package:engine_config_header_generator) -M {} -m {} -p {} -u '{}' -o '{}'
     cp rcbe_engine_config.h $@
     """.format(ENGINE_VERSION_MAJOR, ENGINE_VERSION_MINOR, ENGINE_VERSION_PATCH, PROJECT_URL, PROJECT_MAINTAINER),
+    cmd_bat = """
+    $(location //meta_package:engine_config_header_generator) -M {} -m {} -p {} -u '{}' -o '{}'
+    cp rcbe_engine_config.h $@
+    """.format(ENGINE_VERSION_MAJOR, ENGINE_VERSION_MINOR, ENGINE_VERSION_PATCH, PROJECT_URL, PROJECT_MAINTAINER),
     tools = [":engine_config_header_generator"],
     visibility = ["//visibility:public"],
 )
