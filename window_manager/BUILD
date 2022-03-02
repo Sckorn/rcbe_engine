@@ -26,7 +26,7 @@ cc_library(
         "//input_manager:rcbe_input_manager",
         "//renderer:rdmn_renderer",
         "@boost//:log",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 

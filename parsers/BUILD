@@ -74,7 +74,7 @@ cc_library(
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_rendering",
         "@boost//:log",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -111,7 +111,7 @@ cc_test(
     deps = [
         ":x3d_parser",
         "//datamodel:engine_datamodel_math",
-        "@gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -131,7 +131,7 @@ cc_test(
     deps = [
         ":rcbe_stl_parser",
         "//datamodel:engine_datamodel_math",
-        "@gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -151,7 +151,7 @@ cc_test(
     deps = [
         ":rdmn_tga_parser",
         "//datamodel:engine_datamodel_math",
-        "@gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 

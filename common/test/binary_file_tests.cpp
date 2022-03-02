@@ -67,7 +67,12 @@ public:
 
 private:
 
+/// TODO: introduce wrapper for different OS paths, or better use std::filesystem @radameon @sckorn
+#ifdef __linux__
     const std::string file_path_str_ = "/tmp/binary_test.dat";
+#elif _WIN32
+    const std::string file_path_str_ = "C:\\Windows\\Temp\\binary_test.dat";
+#endif
 };
 
 TEST_F(BinaryFileTests, OutputSimple) {

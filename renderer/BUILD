@@ -52,7 +52,7 @@ cc_library(
         "//parsers:x3d_parser",  # will be used for skybox
         "//ticker:rcbe_ticker",
         "@boost//:log",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
         "//meta_package:rdmn_engine_config",
     ],
 )

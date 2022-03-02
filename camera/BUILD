@@ -36,8 +36,8 @@ cc_test(
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_rendering",
         "//datamodel:engine_datamodel_visual",
-        "@gtest",
-        "@nlohmann",
+        "@com_google_googletest//:gtest_main",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 

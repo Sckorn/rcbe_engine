@@ -1,14 +1,17 @@
 cc_library(
     name = "engine_filesystem_utils",
-    srcs = glob([
+    srcs = [
         "src/utils/file_utils.cpp",
-    ]),
-    hdrs = glob([
+    ],
+    hdrs = [
         "include/common/utils/file_utils.hpp",
-    ]),
+    ],
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
-    linkopts = ["-lpthread"],
+    linkopts = select({
+        "@bazel_tools//src/conditions:windows": [""],
+        "//conditions:default": ["-lpthread"],
+    }),
     strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
 )
@@ -16,16 +19,19 @@ cc_library(
 cc_library(
     name = "engine_json_utils",
     srcs = ["src/utils/json_utils.cpp"],
-    hdrs = glob([
+    hdrs = [
         "include/common/utils/json_utils.hpp",
-    ]),
+    ],
     copts = ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
-    linkopts = ["-lpthread"],
+    linkopts = select({
+        "@bazel_tools//src/conditions:windows": [""],
+        "//conditions:default": ["-lpthread"],
+    }),
     strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
-    deps = ["@nlohmann"],
+    deps = ["@nlohmann//:nlohmann_json"],
 )
 
 cc_library(
@@ -33,6 +39,10 @@ cc_library(
     hdrs = glob([
         "include/common/fundamentals/**/*.hpp",
     ]),
+    data = select({
+        "@bazel_tools//src/conditions:windows": [],
+        "//conditions:default": ["//meta_package:rdmn_engine_config"]
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -42,9 +52,9 @@ cc_library(
 
 cc_library(
     name = "engine_math_utils",
-    hdrs = glob([
+    hdrs = [
         "include/common/utils/math_utils.hpp",
-    ]),
+    ],
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -87,13 +97,12 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":engine_fundamentals",
-        "@boost//:log",
     ],
 )
 
 cc_library(
     name = "rcbe_profiling",
-    hdrs = glob(["include/common/utils/profiling_utils.hpp"]),
+    hdrs = ["include/common/utils/profiling_utils.hpp"],
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
@@ -111,6 +120,7 @@ cc_library(
     includes = ["include/common"],
     strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
+    deps = ["//meta_package/windows_api:rdmn_public_api"],
 )
 
 ### tests
@@ -123,8 +133,9 @@ cc_test(
     deps = [
         ":rcbe_binary_tools",
         ":rcbe_delegate",
-        "@gtest",
+        "@com_google_googletest//:gtest_main",
     ],
+    linkstatic = 1,
 )
 
 ### packaging

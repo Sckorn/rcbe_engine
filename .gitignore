@@ -66,3 +66,5 @@ bazel-testlogs
 
 # Lock files
 *.lock
+
+.vs/

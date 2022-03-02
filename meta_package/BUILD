@@ -9,6 +9,7 @@ load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 
 expand_template(
     name = "rdmn_engine_config_template",
@@ -92,6 +93,25 @@ config_setting(
     name = "rdmn_dx_rasterizer_backend",
     flag_values = {
         ":rdmn_rasterizer_back": "directx",
+    },
+)
+
+bool_flag(
+    name = "rdmn_build_shared_libs",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "rdmn_shared_libs_build",
+    flag_values  = {
+        ":rdmn_build_shared_libs": "True",
+    },
+)
+
+config_setting(
+    name = "rdmn_static_libs_build",
+    flag_values  = {
+        ":rdmn_build_shared_libs": "False",
     },
 )
 

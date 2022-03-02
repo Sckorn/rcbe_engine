@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include <boost/log/trivial.hpp>
-
 #include <rcbe-engine/delegate/Delegate.hpp>
 
 namespace rcbe::core {

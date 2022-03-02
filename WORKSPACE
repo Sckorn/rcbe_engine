@@ -19,10 +19,20 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 bazel_skylib_workspace()
 # External deps
 
-git_repository(
+#git_repository(
+#    name = "com_github_nelhage_rules_boost",
+#    commit = "fc556bef57fad1b522ddae919d978597351d5147",
+#    remote = "https://github.com/nelhage/rules_boost",
+#)
+
+http_archive(
     name = "com_github_nelhage_rules_boost",
-    commit = "c3fae06e819ed8b93e31b150387dce4864758643",
-    remote = "https://github.com/nelhage/rules_boost",
+
+    # Replace the commit hash in both places (below) with the latest, rather than using the stale one here.
+    # Even better, set up Renovate and let it do the work for you (see "Suggestion: Updates" in the README).
+    url = "https://github.com/nelhage/rules_boost/archive/5d04542e52164931841d06d5a6b3fd2f43c436d0.tar.gz",
+    strip_prefix = "rules_boost-5d04542e52164931841d06d5a6b3fd2f43c436d0",
+    # When you first run this tool, it'll recommend a sha256 hash to put here with a message like: "DEBUG: Rule 'com_github_nelhage_rules_boost' indicated that a canonical reproducible form can be obtained by modifying arguments sha256 = ..."
 )
 
 load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
@@ -30,19 +40,9 @@ load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 boost_deps()
 
 http_archive(
-    name = "CGAL",
-    build_file = "@//thirdparty:CGAL.BUILD",
-    sha256 = "112c4e1ce8969a3c29e77ee8d58c2b9e4b3cbab5234af187207ab8ca7ddd2575",
-    strip_prefix = "CGAL-4.13.1",
-    url = "http://localhost:8080/static/CGAL-4.13.1.tar.gz",
-)
-
-http_archive(
-    name = "gtest",
-    build_file = "@//thirdparty:gtest.BUILD",
-    sha256 = "b58cb7547a28b2c718d1e38aee18a3659c9e3ff52440297e965f5edffe34b6d0",
-    strip_prefix = "googletest-release-1.7.0",
-    url = "https://github.com/google/googletest/archive/release-1.7.0.zip",
+  name = "com_google_googletest",
+  urls = ["https://github.com/google/googletest/archive/5ab508a01f9eb089207ee87fd547d290da39d015.zip"],
+  strip_prefix = "googletest-5ab508a01f9eb089207ee87fd547d290da39d015",
 )
 
 http_archive(

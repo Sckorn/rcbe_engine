@@ -27,7 +27,7 @@ cc_test(
     visibility = ["//visibility:public"],
     deps = [
         ":rcbe_ticker",
-        "@gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
