@@ -4,11 +4,11 @@
 #include <string>
 
 namespace rdmn::core {
-static constexpr size_t RDMN_ENGINE_MAJOR_VERSION = @RDMN_ENGINE_MAJOR_VERSION@;
-static constexpr size_t RDMN_ENGINE_MINOR_VERSION = @RDMN_ENGINE_MINOR_VERSION@;
-static constexpr size_t RDMN_ENGINE_PATCH_VERSION = @RDMN_ENGINE_PATCH_VERSION@;
-static constexpr const char * RDMN_ENGINE_PROJECT_URL = "@RDMN_ENGINE_PROJECT_URL@";
-static constexpr const char * RDMN_ENGINE_PROJECT_MAINTAINER = "@RDMN_ENGINE_PROJECT_MAINTAINER@";
+inline constexpr size_t RDMN_ENGINE_MAJOR_VERSION = @RDMN_ENGINE_MAJOR_VERSION@;
+inline constexpr size_t RDMN_ENGINE_MINOR_VERSION = @RDMN_ENGINE_MINOR_VERSION@;
+inline constexpr size_t RDMN_ENGINE_PATCH_VERSION = @RDMN_ENGINE_PATCH_VERSION@;
+inline constexpr const char * RDMN_ENGINE_PROJECT_URL = "@RDMN_ENGINE_PROJECT_URL@";
+inline constexpr const char * RDMN_ENGINE_PROJECT_MAINTAINER = "@RDMN_ENGINE_PROJECT_MAINTAINER@";
 
 static std::string getEngineVersionString() {
     return std::to_string(RDMN_ENGINE_MAJOR_VERSION) + "." + std::to_string(RDMN_ENGINE_MINOR_VERSION) + "."

@@ -13,7 +13,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common:engine_fundamentals",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -41,7 +41,7 @@ cc_library(
         "//common:engine_math_utils",
         "//common:rcbe_binary_tools",
         "@boost//:log",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -72,7 +72,7 @@ cc_library(
         ":engine_datamodel_math",
         "//exceptions:rcbe_exception",
         "@boost//:log",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -92,7 +92,7 @@ cc_library(
         ":engine_datamodel_math",
         ":engine_datamodel_visual",
         "//common:rcbe_binary_tools",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -114,7 +114,7 @@ cc_library(
         ":engine_datamodel_math",
         ":engine_datamodel_visual",
         "@boost//:bimap",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -200,7 +200,7 @@ cc_library(
         ":engine_datamodel_visual",
         "//common:engine_fundamentals",
         "@boost//:log",
-        "@nlohmann",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -240,8 +240,8 @@ cc_test(
         ":engine_datamodel_visual",
         "//common:engine_fuzzy_logic",
         "//common:engine_json_utils",
-        "@gtest",
-        "@nlohmann",
+        "@com_google_googletest//:gtest_main",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -264,8 +264,8 @@ cc_test(
         ":engine_datamodel_visual",
         "//common:engine_fuzzy_logic",
         "//common:engine_json_utils",
-        "@gtest",
-        "@nlohmann",
+        "@com_google_googletest//:gtest_main",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -287,8 +287,8 @@ cc_test(
         ":engine_datamodel_rendering",
         ":engine_datamodel_visual",
         "//parsers:rdmn_tga_parser",
-        "@gtest",
-        "@nlohmann",
+        "@com_google_googletest//:gtest_main",
+        "@nlohmann//:nlohmann_json",
     ],
 )
 

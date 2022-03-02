@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <rcbe-engine/binary/BinaryBuffer.hpp>
+#include <rcbe-engine/fundamentals/constants.hpp>
 
 /**
  *
@@ -62,12 +63,9 @@ class BinaryFileTests : public ::testing::Test {
 public:
 
     [[nodiscard]] std::filesystem::path filePath(size_t invocation) const {
-        return file_path_str_ + std::to_string(invocation);
+        std::string file_name = "binary_test.dat" + std::to_string(invocation);
+        return rcbe::core::TEMP_PATH / std::filesystem::path{ file_name };
     }
-
-private:
-
-    const std::string file_path_str_ = "/tmp/binary_test.dat";
 };
 
 TEST_F(BinaryFileTests, OutputSimple) {
