@@ -24,6 +24,8 @@ namespace rcbe::rendering
 {
 class RenderingContext {
 public:
+    using TimePointType = std::chrono::steady_clock::time_point;
+
     RenderingContext() = default;
     ~RenderingContext() = default;
 
@@ -33,6 +35,7 @@ public:
     RenderingContext(RenderingContext&& other) = delete;
     RenderingContext &operator=(RenderingContext&& other) = delete;
 
+#ifdef RDMN_OPENGL
     void glContextFromThis() const {
         auto status = glXMakeCurrent(x_display_, gl_x_window_, gl_x_context_);
         if (status == False) {
@@ -46,6 +49,7 @@ public:
             throw std::runtime_error("Can't set rendering context to default value");
         }
     }
+#endif
 
     void setDisplay(Display* d);
     [[nodiscard]] Display *getDisplay() const noexcept;
@@ -59,30 +63,35 @@ public:
     void setDrawable(GLXDrawable d);
     [[nodiscard]] GLXDrawable getDrawable() const noexcept;
 
-    void setBackgroundColor(const rcbe::visual::RGBAColor& color);
+    void setBackgroundColor(const rcbe::visual::RGBAColor &color);
     [[nodiscard]] const rcbe::visual::RGBAColor &getBackgroundColor() const noexcept;
 
-    void setWindowDimensions(const rcbe::core::Dimensions& d);
-    [[nodiscard]] const rcbe::core::Dimensions &getWindowDimensions() const;
+    void setWindowDimensions(const rcbe::core::IntegralDimensions &d);
+    [[nodiscard]] const rcbe::core::IntegralDimensions &getWindowDimensions() const;
 
     void updateTransform(const rcbe::math::Transform& trn);
-    [[nodiscard]] const math::MatrixColumnMajorAdaptor<core::EngineScalar> &getTransformColumnMajor() const;
+    [[nodiscard]] const math::MatrixColumnMajorAdaptor<core::EngineScalar> &getSceneTransformColumnMajor() const;
+    [[nodiscard]] const math::Transform &getSceneTransform() const;
 
-    void setMouseCoordinates(const rcbe::math::Vector2d& v);
+    void setMouseCoordinates(const rcbe::math::Vector2d &v);
     [[nodiscard]] const std::optional<rcbe::math::Vector2d> &getMouseCoordinates() const;
 
     [[nodiscard]] rcbe::math::deg getFov() const;
 
-    void updateFov(const rcbe::math::deg zoom);
+    void updateFov(rcbe::math::deg zoom);
 
-    [[nodiscard]]double deltaTime() const;
-    void setCurrentTime(std::chrono::microseconds t);
+    [[nodiscard]] VisualID visualId() const;
+    void setVisualId(VisualID id);
+
+    void startTime(TimePointType &&t);
+    [[nodiscard]] float computeDeltaTime();
 private:
     mutable std::mutex transform_mutex_;
     mutable std::mutex dimensions_mutex_;
     mutable std::mutex mouse_mutex_;
     mutable std::mutex zoom_mutex_;
     mutable std::mutex time_mutex_;
+    mutable std::mutex visualid_mutex_;
 
     // I presume pointer to X Display, should not be deleted, research
     Display* x_display_ = nullptr;
@@ -90,15 +99,24 @@ private:
     GLXContext gl_x_context_;
     GLXDrawable gl_x_window_;
     rcbe::visual::RGBAColor background_color_;
-    rcbe::core::Dimensions window_dimensions_;
+    rcbe::core::IntegralDimensions window_dimensions_;
+    VisualID visual_id_;
 
     math::MatrixColumnMajorAdaptor<core::EngineScalar> scene_transform_;
+    math::Transform rowmajor_scene_transform_;
 
     std::optional<rcbe::math::Vector2d> mouse_coordinates_;
+
+    /// TODO: read this from config @sckorn @radameon
     rcbe::math::deg zoom_ = rcbe::math::deg(45.);
 
+    TimePointType start_time_;
+    float delta_time_ = 0;
+
+#ifdef RDMN_OPENGL
     uint64_t previous_time_ = 0;
     uint64_t current_time_ = 0;
+#endif
 };
 
 using RenderingContextPtr = std::shared_ptr<RenderingContext>;

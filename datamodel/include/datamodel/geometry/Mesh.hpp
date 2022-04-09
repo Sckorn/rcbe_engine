@@ -9,15 +9,14 @@
 #include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 
-namespace rcbe::geometry
-{
-class Mesh
-{
+namespace rcbe::geometry {
+
+class Mesh {
 public:
     using VertexType = math::Vector3d;
     using NormalType = math::Vector3d;
     using TriangleType = triangle_indices;
-    using TexCoordType = math::Vector2d;
+    using TexCoordType = math::Vector2f; /// TODO: consider making Vertices and Normals on float as well @sckorn
 
     using VertexStorage = std::vector<VertexType>;
     using NormalStorage = std::vector<NormalType>;

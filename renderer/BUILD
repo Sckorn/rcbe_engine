@@ -1,36 +1,59 @@
 cc_library(
-    name = "rcbe_renderer",
-    srcs = glob(
-        ["src/**/*.cpp"],
-        exclude = [
-            "src/main.cpp",
+    name = "rdmn_renderer",
+    srcs = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": [
+            "src/VulkanRenderer.cpp",
+            "src/VulkanRenderer.hpp",
         ],
-    ),
-    hdrs = glob(["include/renderer/**/*.hpp"]),
-    copts = [
-        "-DRCBE_GLM_INTEGRATION",
-        "-DRCBE_DEBUG_MODE",
+        "//meta_package:rdmn_gl_rasterizer_backend": [
+            "src/GLRenderer.cpp",
+            "src/GLRenderer.hpp",
+        ],
+    }) + [
+        "src/Renderer.cpp",
     ],
+    hdrs = ["include/renderer/Renderer.hpp"],
+    data = [
+        "//datamodel:datamodel_rendering_resources",
+        "//parsers:x3d_test_resources",
+    ],
+    defines = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
+        "//meta_package:rdmn_gl_rasterizer_backend": [
+            "RDMN_OPENGL",
+        ],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include"],
-    linkopts = [
+    linkopts = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": ["-lvulkan"],
+        "//meta_package:rdmn_gl_rasterizer_backend": [
+            "-lGL",
+            "-lGLX",
+        ],
+    }) + [
         "-lpthread",
-        "-lGL",
-        "-lGLX",
         "-lX11",
     ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
-    deps = [
+    deps = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": [],
+        "//meta_package:rdmn_gl_rasterizer_backend": [
+            "//gl_extensions",
+        ],
+    }) + [
         "//camera:rcbe_engine_camera",
         "//datamodel:engine_datamodel_core",
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_rendering",
         "//datamodel:engine_datamodel_visual",
-        "//gl_extensions",
+        "//parsers:rdmn_tga_parser",  # will be used for skybox
+        "//parsers:x3d_parser",  # will be used for skybox
         "//ticker:rcbe_ticker",
         "@boost//:log",
         "@nlohmann",
+        "//meta_package:rdmn_engine_config",
     ],
 )
 
@@ -43,6 +66,7 @@ cc_binary(
         "//parsers:x3d_test_resources",
         "@awesomeface_texture//file",
         "@brick_wall_texture//file",
+        "@gltf_test_data_archive//:gltf_tests_archive",
         "@low_poly_wolf_stl//file",
     ],
     linkopts = [
@@ -53,13 +77,15 @@ cc_binary(
     tags = ["local"],
     visibility = ["//visibility:public"],
     deps = [
-        ":rcbe_renderer",
+        ":rdmn_renderer",
         "//camera:rcbe_engine_camera",
         "//common:engine_json_utils",
         "//common:engine_output_utils",
         "//common:rcbe_profiling",
         "//datamodel:engine_datamodel_math",
         "//parsers:rcbe_stl_parser",
+        "//parsers:rdmn_gltf_parser",
+        "//parsers:rdmn_tga_parser",
         "//parsers:x3d_parser",
         "//window_manager:rcbe_window_manager",
         "@boost//:log",
@@ -80,7 +106,7 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 pkg_tar(
     name = "renderer-data",
     srcs = [
-        ":rcbe_renderer",
+        ":rdmn_renderer",
     ],
     mode = "0644",
     package_dir = "/usr/local/lib",
@@ -113,7 +139,7 @@ pkg_deb(
     description = "RCBE game engine renderer libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_renderer",
+    package = "rdmn_renderer",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -122,7 +148,7 @@ pkg_deb(
 pkg_tar(
     name = "renderer-headers-data",
     srcs = [
-        "include/renderer/GLRenderer.hpp",
+        "include/renderer/Renderer.hpp",
     ],
     mode = "0644",
     package_dir = "/usr/local/include/rcbe/rcbe-engine/renderer",
@@ -150,13 +176,13 @@ pkg_deb(
         "rcbe_gl_extensions_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_window_manager_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_ticker_dev{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_renderer_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rdmn_renderer_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
         "nlohmann-json3-dev",
     ],
     description = "RCBE game engine renderer headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_renderer_dev",
+    package = "rdmn_renderer_dev",
     version = ENGINE_VERSION_FULL,
 )

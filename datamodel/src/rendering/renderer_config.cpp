@@ -17,7 +17,7 @@ void adl_serializer<rcbe::rendering::renderer_config>::to_json(json &j, const rc
 void adl_serializer<rcbe::rendering::renderer_config>::from_json(const json& j, rcbe::rendering::renderer_config &conf) {
     conf.window_caption = j.at("window_caption").get<std::string>();
     conf.initial_window_position = j.at("initial_window_position").get<rcbe::math::Vector2d>();
-    conf.initial_dimensions = j.at("initial_dimensions").get<rcbe::core::Dimensions>();
+    conf.initial_dimensions = j.at("initial_dimensions").get<rcbe::core::IntegralDimensions>();
     conf.clear_color = j.at("clear_color").get<rcbe::visual::RGBAColor>();
     conf.resizable = j.at("resizable").get<bool>();
     conf.renderer_type = rcbe::rendering::renderer_type_from_string(j.at("renderer_type").get<std::string>());

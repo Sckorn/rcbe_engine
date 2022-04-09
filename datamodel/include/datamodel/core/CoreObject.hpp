@@ -13,6 +13,12 @@ namespace rcbe::core
 {
 class CoreObject {
 public:
+    struct default_core_object_t{};
+
+    explicit CoreObject(std::string &&name)
+    :
+    impl_(std::make_shared<CObjectImpl<default_core_object_t>>(default_core_object_t{}, std::move(name)))
+    {}
 
     template <typename T>
     explicit CoreObject(const T &obj)
@@ -31,7 +37,12 @@ public:
         return std::static_pointer_cast<CObjectImpl<T>>(impl_)->get();
     }
 
-    size_t id() const noexcept {
+    template <typename T>
+    T &as() {
+      return std::static_pointer_cast<CObjectImpl<T>>(impl_)->get();
+    }
+
+    [[nodiscard]] size_t id() const noexcept {
         return impl_->id();
     }
 
@@ -39,13 +50,33 @@ public:
         return impl_->hash();
     }
 
+    [[nodiscard]] const std::string &name() const noexcept {
+        return impl_->name();
+    }
+
     /// TODO: handle a possibly unsafe case of passing a function or an array here. @sckorn
-    /// TODO: think of optimiation using const reference to ptr @sckorn
+    /// TODO: think of optimisation using const reference to ptr @sckorn
     template <typename T>
     void addComponent(T &&component) {
         const auto type_ind = std::type_index(typeid(std::decay_t<T>));
-        CoreObject comp_co { std::forward<T>(component) };
-        components_.insert_or_assign(type_ind, std::make_shared<CoreObject>(std::move(comp_co)));
+        components_.insert_or_assign(type_ind, std::make_shared<CoreObject>(std::forward<T>(component)));
+    }
+
+    template <typename U>
+    void addComponent(const std::shared_ptr<CoreObject> &component) {
+      const auto type_ind = std::type_index(typeid(std::decay_t<U>));
+      components_.insert_or_assign(type_ind, component);
+    }
+
+    template <typename T>
+    bool removeComponent() {
+      const auto type_ind = std::type_index(typeid(std::decay_t<T>));
+      const auto it = components_.find(type_ind);
+      if (it == components_.end())
+        return false;
+
+      components_.erase(it);
+      return true;
     }
 
     /// TODO: handle a possibly unsafe case of passing a function or an array here. @sckorn
@@ -80,6 +111,7 @@ private:
     struct CObjectImplInterface {
         virtual size_t hash() const = 0;
         virtual size_t id() const noexcept = 0;
+        virtual const std::string &name() const noexcept = 0;
     };
 
     template <typename T>
@@ -98,6 +130,20 @@ private:
         , id_ { std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count()) }
         {}
 
+        explicit CObjectImpl(const T &o, std::string &&name)
+        :
+        value_ { o }
+        , id_ { std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count()) }
+        , name_ {name}
+        {}
+
+        explicit CObjectImpl(T &&o, std::string &&name)
+        :
+        value_ { std::move(o) }
+        , id_ { std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count()) }
+        , name_ {name}
+        {}
+
         [[nodiscard]] size_t hash() const override {
             return std::hash<size_t>()(id_);
         }
@@ -106,13 +152,22 @@ private:
             return id_;
         }
 
-        const T &get() const noexcept {
+        [[nodiscard]] const std::string &name() const noexcept override {
+            return name_;
+        }
+
+        [[nodiscard]] const T &get() const noexcept {
             return value_;
+        }
+
+        [[nodiscard]] T &get() noexcept {
+          return value_;
         }
 
     private:
         T value_;
         const size_t id_;
+        const std::string name_;
     };
 
     std::shared_ptr<CObjectImplInterface> impl_;

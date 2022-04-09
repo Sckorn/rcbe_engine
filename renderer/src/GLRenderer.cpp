@@ -1,4 +1,4 @@
-#include <rcbe-engine/renderer/GLRenderer.hpp>
+#include "GLRenderer.hpp"
 
 #include <mutex>
 #include <cmath>
@@ -9,12 +9,11 @@
 
 #include <rcbe-engine/core/gl_extensions.hpp>
 
-#include <rcbe-engine/datamodel/rendering/BufferObject.hpp>
 #include <rcbe-engine/datamodel/rendering/Shader.hpp>
 #include <rcbe-engine/datamodel/rendering/ShaderProgram.hpp>
-#include <rcbe-engine/ticker/Ticker.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
+#include <rcbe-engine/datamodel/rendering/matrix_helpers.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
 #include <rcbe-engine/datamodel/rendering/Material.hpp>
 
@@ -31,73 +30,12 @@ bool isErrorIgnored(const GLint errnum) {
 }
 }
 
-namespace rcbe::rendering {
-class GLRendererImplementation {
-public:
-    using DrawBuffersHandlerType = std::function<
-            void(const VertexBufferObject &, const IndexBufferObject &, const std::unordered_map<size_t, core::CoreObject> &)
-            >;
+namespace rdmn::render {
 
-    GLRendererImplementation(renderer_config &&config, const std::shared_ptr<RenderingContext>& context);
-    ~GLRendererImplementation();
-
-    [[nodiscard]] bool running() const;
-
-    void start();
-    void stop();
-
-    [[nodiscard]] const renderer_config& getConfig() const noexcept;
-
-    void addObject(core::CoreObject &&object);
-
-    void reshapeWindow();
-
-    void onStop(RendererStopHandlerType&& handler);
-
-    void rendererReady();
-
-private:
-    void renderFrame();
-
-    void initGL();
-
-    void initLights();
-
-    void setPerspective(const double fov, const double aspect, const double near, const double far);
-
-    void drawBuffers(const VertexBufferObject &vbo, const IndexBufferObject &ibo);
-    void drawBuffers(
-            const VertexBufferObject &vbo,
-            const IndexBufferObject &ibo,
-            const std::unordered_map<size_t, core::CoreObject> &objects
-            );
-
-    renderer_config config_;
-    std::shared_ptr<RenderingContext> rendering_context_;
-    
-    std::mutex changed_mutex_;
-    std::mutex reshape_mutex_;
-    std::mutex ready_mutex_;
-    std::atomic_bool running_ = false;
-    bool ready_ = false;
-    std::condition_variable renderer_ready_cv_;
-    bool vbo_supported_ = false;
-
-    std::unordered_map<size_t, core::CoreObject> objects_;
-
-    std::unique_ptr<VertexBufferObject> vertex_buffer_ = nullptr;
-    std::unique_ptr<IndexBufferObject> index_buffer_ = nullptr;
-
-    std::atomic_bool changed_ = false;
-
-    RendererStopHandlerType stop_handler_;
-
-    std::shared_ptr<rcbe::core::Ticker> ticker_;
-
-    std::chrono::steady_clock::time_point start_ = std::chrono::steady_clock::now();
-};
-
-GLRendererImplementation::GLRendererImplementation(renderer_config &&config, const std::shared_ptr<RenderingContext> &context)
+GLRenderer::GLRenderer(
+        rcbe::rendering::renderer_config &&config,
+        const std::shared_ptr<rcbe::rendering::RenderingContext> &context
+)
 :
  config_ { std::move(config) }
  , rendering_context_ { context }
@@ -109,11 +47,11 @@ GLRendererImplementation::GLRendererImplementation(renderer_config &&config, con
         throw std::runtime_error("GLX context is null");
 }
 
-GLRendererImplementation::~GLRendererImplementation() {
+GLRenderer::~GLRenderer() {
     stop();
 }
 
-void GLRendererImplementation::setPerspective(const double fov, const double aspect, const double near, const double far) {
+void GLRenderer::setPerspective(const double fov, const double aspect, const double near, const double far) {
     auto field_height = std::tan( (fov / 360 ) * M_PI ) * near;
     auto field_width = field_height * aspect;
 
@@ -121,7 +59,7 @@ void GLRendererImplementation::setPerspective(const double fov, const double asp
 }
 
 
-void GLRendererImplementation::initGL() {
+void GLRenderer::initGL() {
     glShadeModel(GL_SMOOTH);                    // shading mathod: GL_SMOOTH or GL_FLAT
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
 
@@ -150,7 +88,7 @@ void GLRendererImplementation::initGL() {
     initLights();
 }
 
-void GLRendererImplementation::initLights() {
+void GLRenderer::initLights() {
     // set up light colors (ambient, diffuse, specular)
     GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
     GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
@@ -166,17 +104,17 @@ void GLRendererImplementation::initLights() {
     glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
 }
 
-void GLRendererImplementation::rendererReady() {
+void GLRenderer::waitRendererReady() {
     std::unique_lock ul { ready_mutex_ };
     if (this->ready_) return;
     renderer_ready_cv_.wait(ul, [this]() { return this->ready_; });
 }
 
-void GLRendererImplementation::onStop(RendererStopHandlerType&& handler) {
+void GLRenderer::onStop(rcbe::rendering::RendererStopHandlerType&& handler) {
     stop_handler_ = std::move(handler);
 }
 
-void GLRendererImplementation::reshapeWindow() {
+void GLRenderer::reshape() {
     const auto &dimensions = rendering_context_->getWindowDimensions();
     glViewport(0, 0, dimensions.width, dimensions.height);
 
@@ -186,7 +124,7 @@ void GLRendererImplementation::reshapeWindow() {
 
     setPerspective(static_cast<float>(rendering_context_->getFov()), static_cast<float>(dimensions.width) / static_cast<float>(dimensions.height), 0.1f, 100.0f);
 
-    const auto trn = rendering_context_->getTransformColumnMajor();
+    const auto trn = rendering_context_->getSceneTransformColumnMajor();
     glMultMatrixd(static_cast<const GLdouble *>(trn.getRaw()));
 
     glMatrixMode(GL_MODELVIEW);
@@ -200,11 +138,11 @@ void GLRendererImplementation::reshapeWindow() {
     renderer_ready_cv_.notify_all();
 }
 
-bool GLRendererImplementation::running() const {
+bool GLRenderer::running() const {
     return running_.load();
 }
 
-void GLRendererImplementation::start() {
+void GLRenderer::start() {
     bool expected = false;
     if (!running_.compare_exchange_strong(expected, true)) return;
 
@@ -212,6 +150,8 @@ void GLRendererImplementation::start() {
         ticker_ = std::make_shared<rcbe::core::Ticker>(std::chrono::milliseconds(1), [this]() {
             renderFrame();
         });
+
+        rendering_context_->startTime(std::chrono::steady_clock::now());
 
         ticker_->wait();
 
@@ -224,7 +164,7 @@ void GLRendererImplementation::start() {
     objects_.clear();
 }
 
-void GLRendererImplementation::stop() {
+void GLRenderer::stop() {
     bool expected = true;
     if (!running_.compare_exchange_strong(expected, false)) return;
 
@@ -235,8 +175,8 @@ void GLRendererImplementation::stop() {
         stop_handler_(rendering_context_);
 }
 
-void GLRendererImplementation::addObject(core::CoreObject &&object) {
-    if (!object.hasComponent<rendering::Material>() && !object.hasComponent<geometry::Mesh>()) {
+void GLRenderer::addObject(rcbe::core::CoreObject &&object) {
+    if (!object.hasComponent<rcbe::rendering::Material>() && !object.hasComponent<rcbe::geometry::Mesh>()) {
         BOOST_LOG_TRIVIAL(error) << "Can't add object to renderer!";
         return;
     }
@@ -250,20 +190,23 @@ void GLRendererImplementation::addObject(core::CoreObject &&object) {
     changed_.store(true);
 }
 
-void GLRendererImplementation::drawBuffers(
-        const VertexBufferObject& vbo,
-        const IndexBufferObject& ibo
+void GLRenderer::drawBuffers(
+        const rcbe::rendering::VertexBufferObject& vbo,
+        const rcbe::rendering::IndexBufferObject& ibo
 ) {
     drawBuffers(vbo, ibo, {});
 }
 
-void GLRendererImplementation::drawBuffers(
-        const VertexBufferObject& vbo,
-        const IndexBufferObject& ibo,
-        const std::unordered_map<size_t, core::CoreObject> &objects
+void GLRenderer::drawBuffers(
+        const rcbe::rendering::VertexBufferObject& vbo,
+        const rcbe::rendering::IndexBufferObject& ibo,
+        const std::unordered_map<size_t, rcbe::core::CoreObject> &objects
 ) {
     const std::vector<DrawBuffersHandlerType> draw_impls = {
-            {[this](const VertexBufferObject &vbo, const IndexBufferObject &ibo, const std::unordered_map<size_t, core::CoreObject> &objects) {
+            {[this](
+                    const rcbe::rendering::VertexBufferObject &vbo,
+                    const rcbe::rendering::IndexBufferObject &ibo,
+                    const std::unordered_map<size_t, rcbe::core::CoreObject> &objects) {
                 vbo.enableState();
 
                 // before draw, specify vertex arrays
@@ -278,8 +221,12 @@ void GLRendererImplementation::drawBuffers(
 
                 vbo.disableState();
             }},
-            {[this](const VertexBufferObject &vbo, const IndexBufferObject &ibo, const std::unordered_map<size_t, core::CoreObject> &shader_prog) {
-                bool hardware_renderer = (config_.renderer_type == RendererType ::hardware);
+            {[this](
+                    const rcbe::rendering::VertexBufferObject &vbo,
+                    const rcbe::rendering::IndexBufferObject &ibo,
+                    const std::unordered_map<size_t, rcbe::core::CoreObject> &shader_prog) {
+                /// TODO: renderer is hardware, this only changes wheather shaders are used or not.
+                bool hardware_renderer = (config_.renderer_type == rcbe::rendering::RendererType ::hardware);
                 BOOST_LOG_TRIVIAL(debug) << "Renderer is " << ((hardware_renderer) ? "hardware." : "software.");
                 // bind VBOs with IDs and set the buffer offsets of the bound VBOs
                 // When buffer object is bound with its ID, all pointers in gl*Pointer()
@@ -297,14 +244,14 @@ void GLRendererImplementation::drawBuffers(
                 if (!hardware_renderer)
                     vbo.enableState();
 
-                auto v = static_cast<float>(rendering_context_->deltaTime());
+                auto v = rendering_context_->computeDeltaTime();
                 float greenValue = std::sin(v) + 0.5f;
 
                 if (hardware_renderer) {
                     // TODO: add orthographic projection computation and test it later
                     //auto perspective = glm::ortho(0.0f, static_cast<float>(dimensions.width), 0.0f, static_cast<float>(dimensions.height), 0.1f, 100.0f);
 
-                    auto perspective = math::makePerspectiveMatrix(
+                    auto perspective = rdmn::render::makePerspectiveMatrix(
                             0.1,
                             100.0,
                             rendering_context_->getFov(),
@@ -313,21 +260,21 @@ void GLRendererImplementation::drawBuffers(
 
                     size_t offset = 0;
                     for (const auto &[id, object] : objects_) {
-                        const auto mesh_comp = object.getComponent<geometry::Mesh>();
+                        const auto mesh_comp = object.getComponent<rcbe::geometry::Mesh>();
                         if (!mesh_comp)
                             throw std::runtime_error("Can't retrieve mesh component from rendering object!");
 
-                        const auto &mesh = mesh_comp->as<geometry::Mesh>();
+                        const auto &mesh = mesh_comp->as<rcbe::geometry::Mesh>();
                         const auto indices_to_draw = mesh.facetsSize() * 3;
 
-                        const auto material_comp = object.getComponent<rendering::Material>();
+                        const auto material_comp = object.getComponent<rcbe::rendering::Material>();
                         if (!material_comp)
                             throw std::runtime_error("Can't retrieve material component from rendering object!");
 
-                        const auto &material = material_comp->as<rendering::Material>();
+                        const auto &material = material_comp->as<rcbe::rendering::Material>();
                         material.apply();
 
-                        const auto trn = rendering_context_->getTransformColumnMajor();
+                        const auto trn = rendering_context_->getSceneTransformColumnMajor();
                         material.getShaderProgram()->setFloat("customGreen", greenValue);
 
                         auto trnf = trn.convertValuesTo<float>();
@@ -370,10 +317,8 @@ void GLRendererImplementation::drawBuffers(
     draw_impls[vbo_supported_](vbo, ibo, objects);
 }
 
-void GLRendererImplementation::renderFrame() {
-    auto current = std::chrono::steady_clock::now();
-    rendering_context_->setCurrentTime(std::chrono::duration_cast<std::chrono::milliseconds>(current - start_));
-    start_ = current;
+void GLRenderer::renderFrame() {
+    [[maybe_unused]] const auto delta_time = rendering_context_->computeDeltaTime();
 
     rendering_context_->glContextFromThis();
 
@@ -385,9 +330,9 @@ void GLRendererImplementation::renderFrame() {
     initGL();
 
     for (const auto &[id, object] : objects_) {
-        const auto material_component = object.getComponent<rendering::Material>();
+        const auto material_component = object.getComponent<rcbe::rendering::Material>();
         if (material_component) {
-            const auto &material = material_component->as<rendering::Material>();
+            const auto &material = material_component->as<rcbe::rendering::Material>();
             if (material.isDeferred())
                 material.initializeDeferredMaterial();
         }
@@ -395,33 +340,34 @@ void GLRendererImplementation::renderFrame() {
 
     BOOST_LOG_TRIVIAL(debug) << "VBO is " << (vbo_supported_ ? "" : "not ") << "supported";
 
-    core::GLErrorProcessor error_processor {};
+    rcbe::core::GLErrorProcessor error_processor {};
 
     {
         std::lock_guard lg {reshape_mutex_};
-        reshapeWindow();
+        reshape();
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
     /// main rendering start
     if (!objects_.empty()) {
-        bool hardware_renderer = config_.renderer_type == RendererType ::hardware;
+        /// TODO: renderer is hardware, this only changes wheather shaders are used or not.
+        bool hardware_renderer = config_.renderer_type == rcbe::rendering::RendererType ::hardware;
 
-        std::vector<geometry::Mesh> meshes;
+        std::vector<rcbe::geometry::Mesh> meshes;
         meshes.reserve(objects_.size());
 
         for (const auto &[id, object] : objects_) {
-            auto mesh_component = object.getComponent<geometry::Mesh>();
-            auto mesh = mesh_component->as<geometry::Mesh>();
+            auto mesh_component = object.getComponent<rcbe::geometry::Mesh>();
+            auto mesh = mesh_component->as<rcbe::geometry::Mesh>();
             meshes.push_back(mesh);
         }
 
         {
             std::lock_guard lg { changed_mutex_ };
             if (changed_) {
-                vertex_buffer_ = std::make_unique<VertexBufferObject>(meshes, hardware_renderer);
-                index_buffer_ = std::make_unique<IndexBufferObject>(meshes, *vertex_buffer_, hardware_renderer);
+                vertex_buffer_ = std::make_unique<rcbe::rendering::VertexBufferObject>(meshes, hardware_renderer);
+                index_buffer_ = std::make_unique<rcbe::rendering::IndexBufferObject>(meshes, *vertex_buffer_, hardware_renderer);
                 changed_ = false;
             }
         }
@@ -442,54 +388,7 @@ void GLRendererImplementation::renderFrame() {
     glXSwapBuffers(rendering_context_->getDisplay(), rendering_context_->getDrawable());
 }
 
-const renderer_config& GLRendererImplementation::getConfig() const noexcept {
+const rcbe::rendering::renderer_config& GLRenderer::getConfig() const noexcept {
     return config_;
-}
-
-GLRenderer::GLRenderer(renderer_config &&config, const std::shared_ptr<RenderingContext>& context)
-:
-impl_ { std::make_unique<GLRendererImplementation>(std::move(config), context) }
-{
-
-}
-
-GLRenderer::~GLRenderer() {
-
-}
-
-const renderer_config &GLRenderer::config() const noexcept {
-    return impl_->getConfig();
-}
-
-void GLRenderer::start() {
-    impl_->start();
-}
-
-void GLRenderer::stop() {
-    impl_->stop();
-}
-
-void GLRenderer::addObject(rcbe::core::CoreObject &&renderer_objects) {
-    impl_->addObject(std::move(renderer_objects));
-}
-
-void GLRenderer::reshape() {
-    impl_->reshapeWindow();
-}
-
-void GLRenderer::onStop(RendererStopHandlerType&& handler) {
-    impl_->onStop(std::move(handler));
-}
-
-bool GLRenderer::running() const {
-    return impl_->running();
-}
-
-void GLRenderer::waitRendererReady() {
-    impl_->rendererReady();
-}
-
-GLRendererPtr make_renderer_ptr(renderer_config &&config, const std::shared_ptr<RenderingContext>& context) {
-    return std::make_unique<GLRenderer>(std::move(config), context);
 }
 }

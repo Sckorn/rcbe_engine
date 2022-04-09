@@ -8,6 +8,10 @@ namespace detail {
 
 template <typename Actual>
 struct euler_base {
+    euler_base()
+    :
+    rotation_ (rad(0.)) {}
+
     explicit euler_base(rad r)
     :
     rotation_(r) {}
@@ -15,6 +19,16 @@ struct euler_base {
     explicit euler_base(deg d)
     :
     rotation_(d) {}
+
+    euler_base &operator=(deg &&other) noexcept {
+        rotation_ = other;
+        return *this;
+    }
+
+    euler_base &operator=(rad &&other) noexcept {
+        rotation_ = other;
+        return *this;
+    }
 
     virtual ~euler_base() = default;
 
@@ -34,7 +48,7 @@ struct euler_base {
         return std::get<rad>(rotation_);
     }
 
-    // TODO: implement clamping
+    // TODO: implement clamping @sckorn
     euler_base& operator+=(const deg& addition) {
         if (rotation_.index() == 0) {
             auto& r = std::get<rad>(rotation_);
@@ -82,6 +96,12 @@ struct euler_base {
         return l.as_deg() <=> r.as_deg();
     }
 
+    Actual operator-() const {
+        const auto d = this->as_deg();
+        deg neg_deg(-static_cast<double>(d));
+        return Actual(neg_deg);
+    }
+
 private:
     std::variant<rad, deg> rotation_;
 };
@@ -89,14 +109,20 @@ private:
 
 struct roll : public detail::euler_base<roll>{
     using euler_base::euler_base;
+    using euler_base::operator=;
+    using euler_base::operator-;
 };
 
 struct yaw : public detail::euler_base<yaw> {
     using euler_base::euler_base;
+    using euler_base::operator=;
+    using euler_base::operator-;
 };
 
 struct pitch : public detail::euler_base<pitch> {
     using euler_base::euler_base;
+    using euler_base::operator=;
+    using euler_base::operator-;
 };
 }
 

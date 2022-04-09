@@ -1,66 +1,88 @@
+#include <cstddef>
+#include <string>
+
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
-#include "TGATexture.hpp"
+
+#include <rcbe-engine/fundamentals/convinience.hpp>
+
+inline constexpr size_t BITS_IN_BYTE = 8;
 
 namespace rcbe::visual {
 
-Texture::Texture(
-        const core::EnginePath &path,
-        texture_config config,
-        bool for_rasterizer)
+Texture::Texture(rdmn::vis::image_data &&data)
 :
-impl_(std::make_unique<TextureImplementation>(path, config, for_rasterizer)) {}
+data_ {
+        rdmn::vis::image_data {
+            .metadata = {
+                .origin = {data.metadata.origin},
+                .dimensions = {data.metadata.dimensions},
+                .pixel_depth_bytes = data.metadata.pixel_depth_bytes,
+                .component_order = data.metadata.component_order,
+            },
+            .pixels = data.pixels->shared_from_this(), // TODO: dubious solution, think of a better one! @sckorn
+        }
+} {}
 
-Texture::Texture(const Texture &other)
+Texture::Texture(const core::EnginePath &path, ParserType &&parser)
 :
-impl_(
-        std::make_unique<TextureImplementation>(
-                other.impl_->getTexturePath(),
-                other.impl_->getTextureConfig(),
-                other.impl_->forRasterizer()
-        )
-) {
-
+data_ {
+    parser(path)
 }
-
-Texture &Texture::operator=(const Texture &other) {
-    if (this == &other)
-        return *this;
-
-    impl_ = std::make_unique<TextureImplementation>(
-            other.impl_->getTexturePath(), other.impl_->getTextureConfig(), other.impl_->forRasterizer()
-    );
-
-    return *this;
-}
-
-Texture &Texture::operator=(Texture &&other) = default;
+{}
 
 Texture::~Texture() = default;
 
-Texture::Texture(Texture &&other) = default;
-
 size_t Texture::getWidth() const {
-    return impl_->getWidth();
+    return data_.metadata.dimensions.width;
 }
 
 size_t Texture::getHeight() const {
-    return impl_->getHeight();
+    return data_.metadata.dimensions.height;
 }
 
 size_t Texture::getBitsPerPixel() const {
-    return impl_->getBitsPerPixel();
+    return data_.metadata.pixel_depth_bytes * BITS_IN_BYTE;
 }
 
-const Texture::ImageBodyType &Texture::getImageBody() const {
-    return impl_->getBody();
+size_t Texture::getBytesPerPixel() const {
+    return data_.metadata.pixel_depth_bytes;
 }
 
-void Texture::bind(const size_t index) const {
-    impl_->bind(index);
+size_t Texture::getImageSizeBytes() const {
+    return sizeof(typename decltype(data_)::PixelsType::ValueType) * getWidth() * getHeight();
 }
 
-void Texture::unbind() const {
-    impl_->unbind();
+const texture_config::ImageBodyType &Texture::getPixels() const {
+    return *(data_.pixels);
+}
+
+rdmn::vis::image_data Texture::cloneImageData() const {
+    rdmn::vis::image_data r {
+        .metadata = data_.metadata,
+        .pixels = data_.pixels->shared_from_this(),
+    };
+
+    return r;
+}
+
+TexturePtr make_tex_ptr(const core::EnginePath &path, Texture::ParserType &&parser) {
+    return std::make_shared<Texture>(path, std::move(parser));
+}
+
+TextureConstPtr make_tex_const_ptr(const core::EnginePath &path, Texture::ParserType &&parser) {
+    return std::make_shared<const Texture>(path, std::move(parser));
+}
+
+VisualTextureSet::VisualTextureSet(std::initializer_list<TexturePtr> &&tex_data)
+:
+grouped_textures(tex_data) {
+
+}
+
+VisualTextureSet::VisualTextureSet(std::unordered_set<TexturePtr> &&tex_data)
+:
+grouped_textures(std::move(tex_data)) {
+
 }
 
 }

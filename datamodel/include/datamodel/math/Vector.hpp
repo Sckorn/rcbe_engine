@@ -18,6 +18,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include <boost/log/trivial.hpp>
 
 
 namespace rcbe::math
@@ -73,10 +74,10 @@ public:
     Vector(const Vector &other) = default;
     Vector &operator=(const Vector &other) = default;
 
-    Vector(Vector &&other) = default;
-    Vector &operator=(Vector &&other) = default;
+    Vector(Vector &&other) noexcept = default;
+    Vector &operator=(Vector &&other) noexcept = default;
 
-    auto rawData() const {
+    [[nodiscard]] auto rawData() const {
         return v_.data();
     }
 
@@ -90,7 +91,7 @@ public:
         return v_[index];
     }
 
-    const ValueType &at(const size_t index) const
+    [[nodiscard]] const ValueType &at(const size_t index) const
     {
         return v_.at(index);
     }
@@ -100,7 +101,7 @@ public:
         return v_[0];
     }
 
-    const ValueType &x() const
+    [[nodiscard]] const ValueType &x() const
     {
         return v_[0];
     }
@@ -110,7 +111,7 @@ public:
         return v_[1];
     }
 
-    const ValueType &y() const
+    [[nodiscard]] const ValueType &y() const
     {
         return v_[1];
     }
@@ -122,7 +123,7 @@ public:
     }
 
     template <typename T = void, typename = std::enable_if_t< (dim > 2), T > >
-    const ValueType &z() const
+    [[nodiscard]] const ValueType &z() const
     {
         return v_[2];
     }
@@ -134,15 +135,15 @@ public:
     }
 
     template < typename T = void, typename = typename std::enable_if_t< (dim == 4), T > >
-    const ValueType &w() const
+    [[nodiscard]] const ValueType &w() const
     {
         return v_[3];
     }
 
     template < typename T = void, typename = typename std::enable_if_t< (dim < 4), T > >
-    ValueType length() const
+    [[nodiscard]] ValueType length() const
     {
-        size_t sum = 0;
+        ValueType sum = 0;
         for (const auto &e : v_)
         {
             sum += e * e;
@@ -152,7 +153,7 @@ public:
     }
 
     template < typename T = void, typename = typename std::enable_if_t< (dim < 4), T > >
-    Vector normalized() const
+    [[nodiscard]] Vector normalized() const
     {
         auto copy = *this;
         copy.normalize();
@@ -192,7 +193,26 @@ public:
     template < typename T = void, typename = typename std::enable_if_t< (dim == 3), T > >
     static Vector cross(const Vector& v1, const Vector& v2)
     {
-        return { v1.y() * v2.z() - v1.z() * v2.y(), v1.z() * v2.x() - v1.x() * v2.z(), v1.x() * v2.y() - v1.y() * v2.x()  };
+        std::array<ValueType, dim> tmp{};
+        tmp[0] = v1.y() * v2.z() - v1.z() * v2.y();
+        tmp[1] = v1.z() * v2.x() - v1.x() * v2.z();
+        tmp[2] = v1.x() * v2.y() - v1.y() * v2.x();
+
+        return Vector{tmp};
+    }
+
+    [[nodiscard]] Vector inversed() const {
+        Vector copy(*this);
+
+        for (auto &e : copy.v_) {
+            e *= -1;
+        }
+
+        return copy;
+    }
+
+    [[nodiscard]] friend Vector operator-(const Vector& v) {
+        return v.inversed();
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Vector &vec) {
@@ -215,6 +235,12 @@ public:
         return is;
     }
 
+    template <typename U>
+    explicit operator Vector<U, DIMENSION>() const {
+        return convertUnderlyingType<U>();
+    }
+
+    /// TODO: deprecate this, introduce conversion operator (explicit!!!) @sckorn
     template <typename TargetType, typename = std::enable_if_t<std::is_convertible_v<ValueType, TargetType>, void>>
     [[nodiscard]] Vector<TargetType, DIMENSION> convertUnderlyingType() const {
         StorageBase<TargetType, DIMENSION> tmp;
@@ -224,6 +250,17 @@ public:
         return Vector<TargetType, DIMENSION> {
             tmp
         };
+    }
+
+    template <typename T = void, typename = std::enable_if_t< (dim == 3 || dim == 4), T>>
+    [[nodiscard]] Vector<ValueType, dim - 1> lowerDimension() const {
+        Vector<ValueType, dim - 1> ret {};
+
+        for (size_t i = 0; i < dim - 1; ++i) {
+            ret[i] = v_[i];
+        }
+
+        return ret;
     }
 
 
@@ -237,22 +274,48 @@ using Vector2d = Vector<core::EngineScalar, 2>;
 using Vector4f = Vector<float, 4>;
 using Vector3f = Vector<float, 3>;
 using Vector2f = Vector<float, 2>;
+using Vector2i = Vector<int32_t, 2>;
 }
 
-namespace nlohmann
-{
-template <>
-struct adl_serializer<rcbe::math::Vector3d>
-{
-static void to_json(nlohmann::json &j, const rcbe::math::Vector3d &v);
-static void from_json(const nlohmann::json &j, rcbe::math::Vector3d &v);
+namespace nlohmann {
+
+template <typename T>
+struct adl_serializer<rcbe::math::Vector<T, 3>> {
+    static void to_json(nlohmann::json &j, const rcbe::math::Vector<T, 3> &v) {
+        j = {
+            {"dimension", v.DIMENSION},
+            {"x", static_cast<T>(v.x())},
+            {"y", static_cast<T>(v.y())},
+            {"z", static_cast<T>(v.z())},
+        };
+    }
+
+    static void from_json(const nlohmann::json &j, rcbe::math::Vector<T, 3> &v) {
+        v = rcbe::math::Vector3d {
+            j.at("x").get<T>(),
+            j.at("y").get<T>(),
+            j.at("z").get<T>()
+        };
+    }
 };
 
-template <>
-struct adl_serializer<rcbe::math::Vector2d>
+template <typename T>
+struct adl_serializer<rcbe::math::Vector<T, 2>>
 {
-static void to_json(nlohmann::json &j, const rcbe::math::Vector2d &v);
-static void from_json(const nlohmann::json &j, rcbe::math::Vector2d &v);
+    static void to_json(nlohmann::json &j, const rcbe::math::Vector<T, 2> &v) {
+        j = {
+            {"dimension", v.DIMENSION},
+            {"x", static_cast<T>(v.x())},
+            {"y", static_cast<T>(v.y())},
+        };
+    }
+
+    static void from_json(const nlohmann::json &j, rcbe::math::Vector<T, 2> &v) {
+        v = rcbe::math::Vector<T, 2> {
+            j.at("x").get<T>(),
+            j.at("y").get<T>()
+        };
+    }
 };
 }
 
@@ -261,6 +324,12 @@ template <>
 void from_binary(const BinaryBuffer &b, rcbe::math::Vector3f &v);
 template <>
 void to_binary(BinaryBuffer &b, const rcbe::math::Vector3f &v);
+
+template <>
+void from_binary(const BinaryBuffer &b, rcbe::math::Vector2f &v);
+
+template <>
+void to_binary(BinaryBuffer &b, const rcbe::math::Vector2f &v);
 }
 
 template <typename V, size_t D>
@@ -316,6 +385,5 @@ template <typename V, size_t D>
 rcbe::math::Vector<V, D> operator-(const rcbe::math::Vector<V, D> &v) {
     return v * static_cast<typename rcbe::math::Vector<V, D>::ValueType>(-1);
 }
-
 
 #endif

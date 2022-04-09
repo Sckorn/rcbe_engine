@@ -12,7 +12,7 @@
 #include <rcbe-engine/datamodel/system/WindowContext.hpp>
 #include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 
-#include <rcbe-engine/renderer/GLRenderer.hpp>
+#include <rcbe-engine/renderer/Renderer.hpp>
 
 #include <rcbe-engine/core/InputManagerImplementation.hpp>
 #include <rcbe-engine/core/AbstractInputManager.hpp>
@@ -27,7 +27,7 @@ public:
     [[nodiscard]] const window_config &getConfig() const;
 
 
-    decltype(auto) startWindowLoopAync() {
+    decltype(auto) startWindowLoopAsync() {
         return std::async(std::launch::async, [this]() {
             startWindowLoop();
         });
@@ -43,10 +43,10 @@ public:
 
     void kill();
     void mapWindow();
-    void setRenderer(rendering::GLRendererPtr renderer_ptr);
+    void setRenderer(rdmn::render::RendererPtr renderer_ptr);
     void setInputManager(const std::shared_ptr<AbstractInputManager> &manager);
 
-    [[nodiscard]] const rendering::GLRendererPtr &getRenderer() const;
+    [[nodiscard]] const rdmn::render::RendererPtr &getRenderer() const;
     [[nodiscard]] const std::shared_ptr<AbstractInputManager> &getInputManager() const;
 
 private:
@@ -62,11 +62,11 @@ private:
     std::mutex input_event_mutex_;
     mutable std::mutex renderer_access_mutex_;
     mutable std::mutex input_manager_access_mutex_;
-    bool running_ = false;
+    std::atomic_bool running_ = false;
     Display* root_display_ = nullptr;
     XSetWindowAttributes attributes_;
     std::shared_ptr<rendering::RenderingContext> rendering_context_ = nullptr;
-    rendering::GLRendererPtr renderer_ = nullptr;
+    rdmn::render::RendererPtr renderer_ = nullptr;
     std::shared_ptr<core::AbstractInputManager> input_manager_ = nullptr;
 
     GC gc_;

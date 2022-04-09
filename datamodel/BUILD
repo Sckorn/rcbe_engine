@@ -27,9 +27,10 @@ cc_library(
     ]),
     copts = [
         "-Iexternal/nlohmann/include",
-        "-DRCBE_GLM_INTEGRATION",
     ],
-    defines = ["RCBE_SCALAR_LINALG"],
+    defines = [
+        "RCBE_SCALAR_LINALG",
+    ],
     include_prefix = "rcbe-engine",
     includes = ["include"],
     strip_include_prefix = "include",
@@ -39,6 +40,7 @@ cc_library(
         "//common:engine_fuzzy_logic",
         "//common:engine_math_utils",
         "//common:rcbe_binary_tools",
+        "@boost//:log",
         "@nlohmann",
     ],
 )
@@ -55,16 +57,20 @@ cc_library(
     copts = ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
     includes = ["include"],
-    linkopts = [
+    linkopts = select({
+        "//meta_package:rdmn_gl_rasterizer_backend": ["-lGL"],
+        "//meta_package:rdmn_vk_rasterizer_backend": [],
+    }) + [
         "-lpthread",
-        "-lGL",
     ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
-    deps = [
+    deps = select({
+        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions"],
+        "//meta_package:rdmn_vk_rasterizer_backend": [],
+    }) + [
         ":engine_datamodel_math",
         "//exceptions:rcbe_exception",
-        "//gl_extensions",
         "@boost//:log",
         "@nlohmann",
     ],
@@ -114,32 +120,91 @@ cc_library(
 
 cc_library(
     name = "engine_datamodel_rendering",
-    srcs = glob([
-        "src/rendering/**/*.cpp",
-    ]),
-    hdrs = glob([
-        "include/datamodel/rendering/**/*.hpp",
-    ]),
-    copts = ["-Iexternal/nlohmann/include"],
+    srcs = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": glob(
+            [
+                "src/rendering/**/*.cpp",
+                "src/rendering/**/*.hpp",
+            ],
+            exclude = [
+                "src/rendering/GLShader.hpp",
+                "src/rendering/GLShader.cpp",
+                "src/rendering/GLRasterizerTexture.hpp",
+                "src/rendering/GLRasterizerTexture.cpp",
+                "src/rendering/BufferObject.cpp",
+                "src/rendering/ShaderProgram.cpp",
+            ],
+        ),
+        "//meta_package:rdmn_gl_rasterizer_backend": glob(
+            [
+                "src/rendering/**/*.cpp",
+                "src/rendering/**/*.hpp",
+            ],
+            exclude = [
+                "src/rendering/VulkanShader.hpp",
+                "src/rendering/VulkanShader.cpp",
+                "src/rendering/VulkanGraphicsPipeline.cpp",
+                "src/rendering/VulkanBufferObject.cpp",
+                "src/rendering/VulkanRasterizerTexture.hpp",
+                "src/rendering/rasterizer_texture_helpers.cpp",
+            ],
+        ),
+    }),
+    hdrs = select({
+        "//meta_package:rdmn_gl_rasterizer_backend": glob(
+            [
+                "include/datamodel/rendering/**/*.hpp",
+            ],
+            exclude = [
+                "include/datamodel/rendering/VulkanBufferObject.hpp",
+                "include/datamodel/rendering/VulkanGraphicsPipeline.hpp",
+                "include/datamodel/rendering/vk_texture_types.hpp",
+                "include/datamodel/rendering/rasterizer_texture_helpers.hpp",
+            ],
+        ),
+        "//meta_package:rdmn_vk_rasterizer_backend": glob(
+            [
+                "include/datamodel/rendering/**/*.hpp",
+            ],
+            exclude = [
+                "include/datamodel/rendering/gl_texture_types.hpp",
+                "include/datamodel/rendering/BufferObject.hpp",
+                "include/datamodel/rendering/ShaderProgram.hpp",
+            ],
+        ),
+    }),
+    copts = [
+        "-Iexternal/nlohmann/include",
+    ],
+    defines = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include"],
-    linkopts = [
+    linkopts = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": ["-lvulkan"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["-lGL"],
+    }) + [
         "-lpthread",
-        "-lGL",
     ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
-    deps = [
+    deps = select({
+        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions"],
+        "//meta_package:rdmn_vk_rasterizer_backend": [],
+    }) + [
         ":engine_datamodel_core",
         ":engine_datamodel_geometry",
         ":engine_datamodel_math",
         ":engine_datamodel_visual",
         "//common:engine_fundamentals",
-        "//gl_extensions",
         "@boost//:log",
         "@nlohmann",
     ],
 )
+
+### File groups
 
 filegroup(
     name = "datamodel_rendering_resources",
@@ -221,6 +286,7 @@ cc_test(
         ":engine_datamodel_math",
         ":engine_datamodel_rendering",
         ":engine_datamodel_visual",
+        "//parsers:rdmn_tga_parser",
         "@gtest",
         "@nlohmann",
     ],

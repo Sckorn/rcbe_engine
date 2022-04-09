@@ -8,11 +8,14 @@
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/MatrixColumnMajorAdaptor.hpp>
 
+/// TODO: fix this nested namespace later
+namespace rdmn::render {
+class Shader;
+}
+
 namespace rcbe::rendering {
 
-class Shader;
-
-using ShaderCollection = std::vector<Shader>;
+using ShaderCollection = std::vector<rdmn::render::Shader>;
 
 class ShaderProgram {
 public:

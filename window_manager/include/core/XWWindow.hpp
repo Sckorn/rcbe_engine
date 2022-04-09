@@ -11,10 +11,10 @@
 
 #include <X11/Xlib.h>
 
-namespace rcbe::rendering {
-class GLRenderer;
+namespace rdmn::render {
+class Renderer;
 
-using GLRendererPtr = std::unique_ptr<GLRenderer>;
+using RendererPtr = std::unique_ptr<Renderer>;
 }
 
 namespace rcbe::core {
@@ -37,7 +37,7 @@ public:
 
     [[nodiscard]] const window_config &getConfig() const;
 
-    decltype(auto) startWindowLoopAync() {
+    decltype(auto) startWindowLoopAsync() {
         return std::async(std::launch::async, [this]() {
             startWindowLoop();
         });
@@ -55,8 +55,8 @@ public:
 
     [[nodiscard]] const std::shared_ptr<rendering::RenderingContext> &getRenderingContext() const;
 
-    void setRenderer(rcbe::rendering::GLRendererPtr renderer_ptr);
-    [[nodiscard]] const rcbe::rendering::GLRendererPtr &getRenderer() const;
+    void setRenderer(rdmn::render::RendererPtr renderer_ptr);
+    [[nodiscard]] const rdmn::render::RendererPtr &getRenderer() const;
 
     [[nodiscard]] std::optional<GC> getGraphicContext() const;
 

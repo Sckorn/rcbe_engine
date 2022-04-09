@@ -8,6 +8,8 @@
 #include <rcbe-engine/datamodel/math/euler_angles.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 
+inline constexpr float MOVE_AND_STRAFE_SPEED = 25;
+
 namespace rcbe::core {
 class EditorInputManager final : protected InputManagerImplementation {
     using InputEventReference = InputManagerImplementation::InputEventReference;
@@ -23,6 +25,7 @@ public:
     EditorInputManager& operator=(const EditorInputManager& other) = delete;
     EditorInputManager& operator=(EditorInputManager&& other) = default;
 
+    /// TODO: @sckorn pack expansions were introduced, DO IT!!!
     // no pack expansions for lambda capture in c++17 so waiting on c++20
     // until then only one object for capture here
     template <typename ContextPtr, typename Capture>
@@ -51,7 +54,7 @@ public:
                         InputManagerImplementation::PreviousEventReference previous
                 ) {
 
-                    const auto speed = rendering_context->deltaTime() * 10;
+                    const auto speed = rendering_context->computeDeltaTime() * MOVE_AND_STRAFE_SPEED;
 
                     if (im.getValue(rcbe::core::KeyboardEventType::symbol_w)) {
                         c->translate(c->cameraDirection() * speed, c->cameraDirection());
@@ -86,22 +89,31 @@ public:
                     }
 
                     if (im.getValue(rcbe::core::KeyboardEventType::arrow_up)) {
+#ifdef RDMN_OPENGL
                         auto pitch = c->getPitch();
                         if (static_cast<double>(pitch.as_deg()) <= 90.) {
                             pitch += rcbe::math::deg(1. * speed);
                             c->setPitch(std::move(pitch));
                         }
+#elif defined(RDMN_VULKAN)
+                        rcbe::math::pitch step { rcbe::math::deg{ 1. * speed } };
+                        c->rotate(std::move(step));
+#endif
 
                         return;
                     }
 
                     if (im.getValue(rcbe::core::KeyboardEventType::arrow_down)) {
+#ifdef RDMN_OPENGL
                         auto pitch = c->getPitch();
                         if (static_cast<double>(pitch.as_deg()) >= -90.) {
                             pitch += rcbe::math::deg(-1. * speed);
                             c->setPitch(std::move(pitch));
                         }
-
+#elif defined(RDMN_VULKAN)
+                        rcbe::math::pitch step { rcbe::math::deg{ -1. * speed } };
+                        c->rotate(std::move(step));
+#endif
                         return;
                     }
                 }
@@ -158,6 +170,12 @@ public:
                         auto yaw = c->getYaw();
                         auto pitch = c->getPitch();
 
+#ifdef RDMN_VULKAN
+                        math::yaw ystep { rcbe::math::deg(x_offset) };
+                        math::pitch pstep { rcbe::math::deg(y_offset) };
+
+                        c->rotate(std::move(pstep), std::move(ystep));
+#elif defined(RDMN_OPENGL)
                         yaw += rcbe::math::deg(x_offset);
                         pitch += rcbe::math::deg(y_offset);
 
@@ -170,6 +188,7 @@ public:
                         }
 
                         c->setAngles(std::move(pitch), std::move(yaw));
+#endif
                         return;
                     }
 

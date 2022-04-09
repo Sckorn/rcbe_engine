@@ -20,7 +20,7 @@ void checkStorageInRange(const rcbe::visual::RGBAColor::StorageType &storage)
 
 uint8_t extract_color_byte(const uint32_t hex, uint8_t position) {
     const uint8_t check = 0b1111'1111;
-    return (hex >> position * 8) & check;
+    return (hex >> (position * 8)) & check;
 }
 }
 
@@ -29,10 +29,10 @@ namespace rcbe::visual
 RGBAColor::RGBAColor(uint32_t hex_code)
 :
 storage_(
-        extract_color_byte(hex_code, 3) / COLOR_COMPONENT_DIVIDER,
-        extract_color_byte(hex_code, 2) / COLOR_COMPONENT_DIVIDER,
-        extract_color_byte(hex_code, 1) / COLOR_COMPONENT_DIVIDER,
-        extract_color_byte(hex_code, 0) / COLOR_COMPONENT_DIVIDER
+        static_cast<ValueType>(extract_color_byte(hex_code, 3)) / COLOR_COMPONENT_DIVIDER,
+        static_cast<ValueType>(extract_color_byte(hex_code, 2)) / COLOR_COMPONENT_DIVIDER,
+        static_cast<ValueType>(extract_color_byte(hex_code, 1)) / COLOR_COMPONENT_DIVIDER,
+        static_cast<ValueType>(extract_color_byte(hex_code, 0)) / COLOR_COMPONENT_DIVIDER
 )
 {
     checkStorageInRange(storage_);

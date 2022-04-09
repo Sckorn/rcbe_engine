@@ -19,7 +19,7 @@ void adl_serializer<rcbe::core::window_config>::to_json(json& j, const rcbe::cor
 
 void adl_serializer<rcbe::core::window_config>::from_json(const json& j, rcbe::core::window_config& config) {
     config.type = rcbe::core::wnd_type_from_string(j.at("type").get<std::string>());
-    config.size = j.at("size").get<rcbe::core::Dimensions>();
+    config.size = j.at("size").get<rcbe::core::IntegralDimensions>();
     config.fullscreen = j.at("fullscreen").get<bool>();
     config.position = j.at("position").get<rcbe::math::Vector2d>();
     config.caption = j.at("caption").get<std::string>();

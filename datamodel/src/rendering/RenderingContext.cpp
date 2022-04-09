@@ -42,13 +42,13 @@ const rcbe::visual::RGBAColor &RenderingContext::getBackgroundColor() const noex
     return background_color_;
 }
 
-void RenderingContext::setWindowDimensions(const rcbe::core::Dimensions& d) {
+void RenderingContext::setWindowDimensions(const rcbe::core::IntegralDimensions& d) {
     std::lock_guard lg {dimensions_mutex_};
 
     window_dimensions_ = d;
 }
 
-const rcbe::core::Dimensions &RenderingContext::getWindowDimensions() const {
+const rcbe::core::IntegralDimensions &RenderingContext::getWindowDimensions() const {
     std::lock_guard lg {dimensions_mutex_};
 
     return window_dimensions_;
@@ -58,12 +58,19 @@ void RenderingContext::updateTransform(const rcbe::math::Transform& trn) {
     std::lock_guard lg {transform_mutex_};
 
     scene_transform_ = rcbe::math::MatrixColumnMajorAdaptor(trn.matrix());
+    rowmajor_scene_transform_ = trn;
 }
 
-const math::MatrixColumnMajorAdaptor<core::EngineScalar> &RenderingContext::getTransformColumnMajor() const {
+const math::MatrixColumnMajorAdaptor<core::EngineScalar> &RenderingContext::getSceneTransformColumnMajor() const {
     std::lock_guard lg {transform_mutex_};
 
     return scene_transform_;
+}
+
+const math::Transform &RenderingContext::getSceneTransform() const {
+    std::lock_guard lg {transform_mutex_};
+
+    return rowmajor_scene_transform_;
 }
 
 void RenderingContext::setMouseCoordinates(const rcbe::math::Vector2d& v) {
@@ -90,16 +97,27 @@ void RenderingContext::updateFov(const rcbe::math::deg zoom) {
     zoom_ = zoom;
 }
 
-double RenderingContext::deltaTime() const {
-    std::lock_guard lg{time_mutex_};
-    auto delta_time = std::abs(static_cast<long long>(current_time_ - previous_time_));
-    BOOST_LOG_TRIVIAL(debug) << "Delta " << delta_time << " and divided " << static_cast<double>(delta_time) / 1000000;
-    return static_cast<double>(delta_time) / 1000000;
+VisualID RenderingContext::visualId() const {
+    std::lock_guard lg{visualid_mutex_};
+    return visual_id_;
 }
 
-void RenderingContext::setCurrentTime(std::chrono::microseconds t) {
-    std::lock_guard lg{time_mutex_};
-    previous_time_ = current_time_;
-    current_time_ = t.count();
+void RenderingContext::setVisualId(VisualID id) {
+    std::lock_guard lg{visualid_mutex_};
+    visual_id_ = id;
 }
+
+void RenderingContext::startTime(TimePointType &&t) {
+    std::lock_guard lg {time_mutex_};
+    start_time_ = t;
+}
+
+float RenderingContext::computeDeltaTime() {
+    std::lock_guard lg {time_mutex_};
+    auto current = std::chrono::steady_clock::now();
+    delta_time_ = std::chrono::duration<float, std::chrono::seconds::period>(current - start_time_).count();
+    start_time_ = current;
+    return delta_time_;
+}
+
 }

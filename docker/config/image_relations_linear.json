@@ -17,6 +17,9 @@
   "build_clang.docker": {
     "name": "build_clang",
     "tag": "latest",
+    "args" : {
+      "BASE" : "gcc"
+    },
     "depends":"build_gcc.docker"
   },
   "build.docker": {

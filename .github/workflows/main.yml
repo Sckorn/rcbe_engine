@@ -1,4 +1,4 @@
-name: CI
+name: GCC and Clang, Vulkan and OpenGL, build and test
 
 on:
   push:
@@ -10,50 +10,107 @@ on:
     branches: [ master ]
 
 jobs:
-
-  build-test-deploy: # done in a single job to save time, since splitting these into three separate jobs makes the overall time 5 times bigger
+  clang-14-opengl-build-test:
     runs-on: ubuntu-latest
-
+    container:
+      image: radameon/build:latest
+      #ports: # left here for quick reference, do no t remove
+      #  - 80
+      #volumes:
+      #  - my_docker_volume:/volume_mount
+      options: --cpus 2
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-    # Due to github actions making installing bleeding edge compilers impossible
-    # and thirdparty actions, only providing GCC 11 and Clang 13, I had to remove clang build
-    # and leave only GCC 11 build.
-    # Locally I build with both GCC 12.2 and Clang 14
+      - name: Check for dockerenv file
+        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
 
-    - name: Set up GCC
-      uses: egor-tensin/setup-gcc@v1
-      with:
-        version: 11
-        platform: x64
+      - name: Print bazel version
+        run: bazel --version
 
-    - name: install OpenGL
-      run: sudo apt-get update && sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev libglm-dev
+      - name: bazel-build
+        env:
+          CC: /usr/bin/clang-14
+          CXX: /usr/bin/clang++-14
+        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl //...
 
-    - name: bazel-build
-      env:
-        CC: /usr/bin/gcc-11
-        CXX: /usr/bin/g++-11
-      run: bazel build --build_tag_filters=-local //...
+      - name: bazel-test
+        env:
+          CC: /usr/bin/clang-14
+          CXX: /usr/bin/clang++-14
+        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl --test_output=all //...
 
-    - name: bazel-test
-      env:
-        CC: /usr/bin/gcc-11
-        CXX: /usr/bin/g++-11
-      run: bazel test --test_tag_filters=-local --build_tag_filters=-local --test_output=all //...
+  gcc-12-vulkan-build-test:
+    runs-on: ubuntu-latest
+    container:
+      image: radameon/build:latest
+      #ports: # left here for quick reference, do no t remove
+      #  - 80
+      #volumes:
+      #  - my_docker_volume:/volume_mount
+      options: --cpus 2
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: deploy-packages
-      if: ${{ github.event_name == 'release' }}
-      env:
-        CC: /usr/bin/gcc-11
-        CXX: /usr/bin/g++-11
-      run: python3 deploy_packages.py
+      - name: Check for dockerenv file
+        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
 
-    - uses: actions/upload-artifact@v2
-      env:
-        engine_version: "0.0.4"
-        target_architecture: "amd64"
-      with:
-        name: ${{ format('rcbe_engine_{0}_{1}_{2}', env.engine_version, env.target_architecture, github.sha) }}
-        path: ${{ format('/tmp/rcbe_engine_{0}_{1}.tar.gz', env.engine_version, env.target_architecture) }}
+      - name: Print bazel version
+        run: bazel --version
+
+      - name: bazel-build
+        env:
+          CC: /usr/bin/gcc-12
+          CXX: /usr/bin/g++-12
+        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan //...
+
+      - name: bazel-test
+        env:
+          CC: /usr/bin/gcc-12
+          CXX: /usr/bin/g++-12
+        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all //...
+
+  clang-14-vulkan-build-test:
+    runs-on: ubuntu-latest
+    container:
+      image: radameon/build:latest
+      #ports: # left here for quick reference, do no t remove
+      #  - 80
+      #volumes:
+      #  - my_docker_volume:/volume_mount
+      options: --cpus 2
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check for dockerenv file
+        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
+
+      - name: Print bazel version
+        run: bazel --version
+
+      - name: bazel-build
+        env:
+          CC: /usr/bin/clang-14
+          CXX: /usr/bin/clang++-14
+        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan //...
+
+      - name: bazel-test
+        env:
+          CC: /usr/bin/clang-14
+          CXX: /usr/bin/clang++-14
+        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all //...
+
+      - name: deploy-packages
+        if: ${{ github.event_name == 'release' }}
+        env:
+          CC: /usr/bin/clang-14
+          CXX: /usr/bin/clang++-14
+        run: python3 deploy_packages.py # replace with corresponding gen rule
+
+      - uses: actions/upload-artifact@v3
+        env:
+          engine_version: "0.0.4"
+          target_architecture: "amd64"
+        with:
+          name: ${{ format('rcbe_engine_{0}_{1}_{2}', env.engine_version, env.target_architecture, github.sha) }}
+          path: ${{ format('/tmp/rcbe_engine_{0}_{1}.tar.gz', env.engine_version, env.target_architecture) }}

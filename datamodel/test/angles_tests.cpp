@@ -47,3 +47,19 @@ TEST(AngleTests, AdditionsPitch) {
     auto double_rep = static_cast<double>(p.as_deg());
     ASSERT_EQ(double_rep, 135);
 }
+
+TEST(AngleTests, SubtractDeg) {
+    rcbe::math::deg ld(90.0);
+    rcbe::math::deg rd(30.0);
+
+    auto double_rep = static_cast<double>(ld - rd);
+    ASSERT_EQ(double_rep, 60);
+}
+
+TEST(AngleTests, SubtractRad) {
+    rcbe::math::rad lr(M_PI * 2);
+    rcbe::math::rad rr(M_PI);
+
+    auto double_rep = static_cast<double>(lr - rr);
+    ASSERT_EQ(double_rep, M_PI);
+}

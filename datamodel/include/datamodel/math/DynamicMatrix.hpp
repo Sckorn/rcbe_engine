@@ -1,6 +1,7 @@
 #ifndef RCBE_ENGINE_DYNAMICMATRIX_HPP
 #define RCBE_ENGINE_DYNAMICMATRIX_HPP
 
+#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -8,9 +9,10 @@
 
 namespace rcbe::math {
 template <typename Value>
-class DynamicMatrix {
+class DynamicMatrix : public std::enable_shared_from_this<DynamicMatrix<Value>> {
 public:
     using ValueType = Value;
+    using StorageType = std::vector<ValueType>;
     using RawValueType = const ValueType *;
 
     DynamicMatrix()
@@ -57,12 +59,29 @@ public:
         return storage_[index];
     }
 #endif
+    /// TODO: the below solution to copying is dubios, in the very least,
+    /// maybe it's more practical, to just enable copy ctor, think about it @sckorn
+    DynamicMatrix clone() const {
+        return DynamicMatrix(rows_, cols_, storage_);
+    }
 
 private:
+
+    DynamicMatrix(const size_t rows, const size_t cols, StorageType storage)
+    :
+    rows_ {rows}
+    , cols_ {cols}
+    , storage_ {storage} {}
+
     size_t rows_;
     size_t cols_;
-    std::vector<ValueType> storage_;
+    StorageType storage_;
 };
+
+template <typename V>
+using DynamicMatrixPtr = std::shared_ptr<DynamicMatrix<V>>;
+template <typename V>
+using ConstDynamicMatrixPtr = std::shared_ptr<const DynamicMatrix<V>>;
 }
 
 #endif //RCBE_ENGINE_DYNAMICMATRIX_HPP

@@ -1,4 +1,5 @@
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_MAJOR")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_MINOR")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_PATCH")
@@ -7,22 +8,28 @@ load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 
-py_binary(
-    name = "engine_config_header_generator",
-    srcs = ["generate_engine_config_h.py"],
-    main = "generate_engine_config_h.py",
-    visibility = ["//visibility:public"],
+expand_template(
+    name = "rdmn_engine_config_template",
+    out = "engine_config.hpp",
+    substitutions = {
+        "@RDMN_ENGINE_MAJOR_VERSION@": ENGINE_VERSION_MAJOR,
+        "@RDMN_ENGINE_MINOR_VERSION@": ENGINE_VERSION_MINOR,
+        "@RDMN_ENGINE_PATCH_VERSION@": ENGINE_VERSION_PATCH,
+        "@RDMN_ENGINE_PROJECT_URL@": PROJECT_URL,
+        "@RDMN_ENGINE_PROJECT_MAINTAINER@": PROJECT_MAINTAINER,
+    },
+    template = "engine_config_header/engine_config.hpp.in",
 )
 
-genrule(
-    name = "engine_config",
-    outs = ["rcbe_engine_config.h"],
-    cmd = """
-    python3 $(location //meta_package:engine_config_header_generator) -M {} -m {} -p {} -u '{}' -o '{}'
-    cp rcbe_engine_config.h $@
-    """.format(ENGINE_VERSION_MAJOR, ENGINE_VERSION_MINOR, ENGINE_VERSION_PATCH, PROJECT_URL, PROJECT_MAINTAINER),
-    tools = [":engine_config_header_generator"],
+cc_library(
+    name = "rdmn_engine_config",
+    srcs = [],
+    hdrs = ["engine_config.hpp"],
+    data = [":rdmn_engine_config_template"],
+    include_prefix = "rcbe-engine",
+    includes = ["."],
     visibility = ["//visibility:public"],
 )
 
@@ -33,7 +40,7 @@ genrule(
 pkg_tar(
     name = "engine-config-data",
     srcs = [
-        "//meta_package:engine_config",
+        "//meta_package:rdmn_engine_config",
     ],
     mode = "0644",
     package_dir = "/usr/local/lib/rcbe/rcbe-engine/",
@@ -58,4 +65,39 @@ pkg_deb(
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_engine_config",
     version = ENGINE_VERSION_FULL,
+)
+
+# Configs Settings
+
+string_flag(
+    name = "rdmn_rasterizer_back",
+    build_setting_default = "vulkan",
+)
+
+config_setting(
+    name = "rdmn_gl_rasterizer_backend",
+    flag_values = {
+        ":rdmn_rasterizer_back": "opengl",
+    },
+)
+
+config_setting(
+    name = "rdmn_vk_rasterizer_backend",
+    flag_values = {
+        ":rdmn_rasterizer_back": "vulkan",
+    },
+)
+
+config_setting(
+    name = "rdmn_dx_rasterizer_backend",
+    flag_values = {
+        ":rdmn_rasterizer_back": "directx",
+    },
+)
+
+config_setting(
+    name = "rdmn_debug",
+    values = {
+        "compilation_mode": "dbg",
+    },
 )

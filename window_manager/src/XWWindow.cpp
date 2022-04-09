@@ -3,7 +3,7 @@
 #include <rcbe-engine/core/XWWindow.hpp>
 #ifdef __linux__
 #include "XWindow.hpp"
-#elif __WIN32
+#elif _WIN32
 #include "WinWindow.hpp"
 #endif
 
@@ -45,11 +45,11 @@ const std::shared_ptr<rendering::RenderingContext> &XWWindow::getRenderingContex
     return impl_->getRenderingContext();
 }
 
-void XWWindow::setRenderer(rcbe::rendering::GLRendererPtr renderer_ptr) {
+void XWWindow::setRenderer(rdmn::render::RendererPtr renderer_ptr) {
     impl_->setRenderer(std::move(renderer_ptr));
 }
 
-const rcbe::rendering::GLRendererPtr &XWWindow::getRenderer() const {
+const rdmn::render::RendererPtr &XWWindow::getRenderer() const {
     return impl_->getRenderer();
 }
 

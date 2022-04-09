@@ -28,7 +28,7 @@ public:
 
     math::Matrix4x4 lookAt(const math::Vector3d& camera_position, const math::Vector3d& lookat, const math::Vector3d& up);
 
-    [[nodiscard]]const TransformType& getTransform() const;
+    [[nodiscard]] const TransformType& getTransform() const;
 
     void resetView();
 
@@ -52,12 +52,27 @@ public:
     void zoomOut(rcbe::core::EngineScalar step = 1.);
 
 private:
+#ifdef RDMN_OPENGL
+    math::Matrix4x4 lookAtGL(const math::Vector3d& camera_position, const math::Vector3d& lookat, const math::Vector3d& up);
+    math::Matrix4x4 directionVectorGL();
+#endif
+
+#ifdef RDMN_VULKAN
+    math::Matrix4x4 lookAtVulkan(const math::Vector3d& camera_position, const math::Vector3d& lookat, const math::Vector3d& up);
+    math::Matrix4x4 directionVectorVulkan();
+#endif
+
+    math::pitch clampPitch(math::pitch pitch) const;
+
     void updateContext(const TransformType &t);
 
     mutable std::mutex translate_mutex_;
     mutable std::mutex rotate_mutex_;
 
+    math::Matrix4x4 matrixFromYPR(const math::yaw &ystep, const math::pitch &pstep);
+
     math::Matrix4x4 rotationImpl();
+    math::Matrix4x4 rotationImpl(const math::yaw &ystep, const math::pitch &pstep);
 
     math::Vector3d initial_position_;
     math::Vector3d initial_lookat_;
@@ -72,13 +87,20 @@ private:
     const math::deg min_fov_;
     const math::deg def_fov_;
 
-    math::pitch pitch_ { math::deg(0.)};
-    math::yaw yaw_ { math::deg(-90.)};
     math::deg fov_ = def_fov_;
 
     rendering::RenderingContextPtr context_;
 
     TransformType transform_;
+#ifdef RDMN_OPENGL
+    math::yaw yaw_ { math::deg(-90.)};
+    math::pitch pitch_ { math::deg(0.)};
+#endif
+#ifdef RDMN_VULKAN
+    std::tuple<math::yaw, math::pitch, math::roll> initial_euler_;
+    math::yaw yaw_;
+    math::pitch pitch_;
+#endif
 };
 
 using CameraPtr = std::shared_ptr<Camera>;

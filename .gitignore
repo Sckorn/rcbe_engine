@@ -60,3 +60,6 @@ bazel-testlogs
 .Trash-1000/
 
 .clwb/
+
+# Binary SPIR-V shaders
+*.spv

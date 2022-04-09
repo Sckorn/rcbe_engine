@@ -16,3 +16,11 @@ TEST(ColorsTest, RedToInt) {
 
     ASSERT_EQ(red_as_int, static_cast<uint32_t>(red));
 }
+
+TEST(ColorsTest, HexLightGray) {
+    rcbe::visual::RGBAColor light_gray(0x88AABBFF);
+    ASSERT_EQ(light_gray.r() * 255, 136);
+    ASSERT_EQ(light_gray.g() * 255, 170);
+    ASSERT_EQ(light_gray.b() * 255, 187);
+    ASSERT_EQ(light_gray.a() * 255, 255);
+}

@@ -1,6 +1,6 @@
 # Base docker build from latest available ubuntu version
 
-FROM ubuntu:kinetic
+FROM ubuntu:jammy
 
 # Set some essential enviromental variables
 
