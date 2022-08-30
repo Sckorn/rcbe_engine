@@ -24,8 +24,8 @@ RUN apt-get -qq update && \
         cmake \
         # now goes python and it's stuff
         cython3 \
-        python \
-        python-jinja2 \
+        python3 \
+        python3-jinja2 \
         python3.6 \
         python3-distutils \
         python3-tk \

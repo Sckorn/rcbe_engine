@@ -17,26 +17,37 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    # Due to github actions making installing bleeding edge compilers impossible
+    # and thirdparty actions, only providing GCC 11 and Clang 13, I had to remove clang build
+    # and leave only GCC 11 build.
+    # Locally I build with both GCC 12.2 and Clang 14
+
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: 11
+        platform: x64
+
     - name: install OpenGL
       run: sudo apt-get update && sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev libglm-dev
 
     - name: bazel-build
       env:
-        CC: gcc-10
-        CXX: g++-10
+        CC: /usr/bin/gcc-11
+        CXX: /usr/bin/g++-11
       run: bazel build --build_tag_filters=-local //...
 
     - name: bazel-test
       env:
-        CC: gcc-10
-        CXX: g++-10
+        CC: /usr/bin/gcc-11
+        CXX: /usr/bin/g++-11
       run: bazel test --test_tag_filters=-local --build_tag_filters=-local --test_output=all //...
 
     - name: deploy-packages
       if: ${{ github.event_name == 'release' }}
       env:
-        CC: gcc-10
-        CXX: g++-10
+        CC: /usr/bin/gcc-11
+        CXX: /usr/bin/g++-11
       run: python3 deploy_packages.py
 
     - uses: actions/upload-artifact@v2

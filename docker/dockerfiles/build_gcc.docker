@@ -4,18 +4,18 @@ FROM radameon/build_base:latest
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Install gcc 11
+# Install gcc 12
 
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt-get -qq update && \
     apt-get -y -qq install \
-            gcc-11 \
-            g++-11 && \
+            gcc-12 \
+            g++-12 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 150 \
-                        --slave   /usr/bin/g++ g++ /usr/bin/g++-11
+RUN  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 150 \
+                        --slave   /usr/bin/g++ g++ /usr/bin/g++-12
 
-ENV CC=/usr/bin/gcc-11 \
-    CXX=/usr/bin/g++-11
+ENV CC=/usr/bin/gcc-12 \
+    CXX=/usr/bin/g++-12

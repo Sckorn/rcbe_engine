@@ -1,6 +1,7 @@
 #ifndef RCBE_ENGINE_BINARYBUFFER_HPP
 #define RCBE_ENGINE_BINARYBUFFER_HPP
 
+#include <algorithm>
 #include <fstream>
 #include <vector>
 #include <array>

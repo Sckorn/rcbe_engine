@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include <rcbe-engine/fundamentals/types.hpp>
+#include <rcbe-engine/fundamentals/concepts.hpp>
 
 // TODO: replace the two below by corresponding fwd header (introduce one for binary)
 
@@ -66,7 +67,7 @@ public:
     template <typename... valt, typename = std::enable_if_t<(std::is_convertible_v<valt, ValueType> && ... ) && (sizeof...(valt) == DIMENSION) > >
     constexpr Vector(valt&&... args)
     :
-    v_({args...} )
+    v_({static_cast<ValueType>(args)...} )
     {}
 
     Vector(const Vector &other) = default;
@@ -171,6 +172,10 @@ public:
         }
     }
 
+    [[nodiscard]] size_t dimension() const {
+        return DIMENSION;
+    }
+
     static ValueType dot(const Vector& v1, const Vector& v2)
     {
         return v1 * v2;
@@ -188,10 +193,6 @@ public:
     static Vector cross(const Vector& v1, const Vector& v2)
     {
         return { v1.y() * v2.z() - v1.z() * v2.y(), v1.z() * v2.x() - v1.x() * v2.z(), v1.x() * v2.y() - v1.y() * v2.x()  };
-    }
-
-    [[nodiscard]] friend Vector operator-(const Vector& v) {
-        return v * -1;
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Vector &vec) {
@@ -262,10 +263,59 @@ template <>
 void to_binary(BinaryBuffer &b, const rcbe::math::Vector3f &v);
 }
 
-rcbe::core::EngineScalar operator*(const rcbe::math::Vector3d &lhs, const rcbe::math::Vector3d &rhs);
-rcbe::math::Vector3d operator+(const rcbe::math::Vector3d &lhs, const rcbe::math::Vector3d &rhs);
-rcbe::math::Vector3d operator-(const rcbe::math::Vector3d &lhs, const rcbe::math::Vector3d &rhs);
-rcbe::math::Vector3d operator*(const rcbe::core::EngineScalar &lhs, const rcbe::math::Vector3d &rhs);
-rcbe::math::Vector3d operator*(const rcbe::math::Vector3d &lhs, const rcbe::core::EngineScalar &rhs);
+template <typename V, size_t D>
+typename rcbe::math::Vector<V, D>::ValueType operator*(const rcbe::math::Vector<V, D> &lhs, const rcbe::math::Vector<V, D> &rhs) {
+    typename rcbe::math::Vector<V, D>::ValueType ret {};
+
+    for (size_t i = 0; i < lhs.dimension(); ++i) {
+        ret += lhs.at(i) * rhs.at(i);
+    }
+
+    return ret;
+}
+
+template <typename V, size_t D>
+rcbe::math::Vector<V, D> operator+(const rcbe::math::Vector<V, D> &lhs, const rcbe::math::Vector<V, D> &rhs) {
+    rcbe::math::Vector<V, D> ret{};
+
+    for (size_t i = 0; i < ret.dimension(); ++i) {
+        ret[i] = lhs[i] + rhs[i];
+    }
+
+    return ret;
+}
+
+template <typename V, size_t D>
+rcbe::math::Vector3d operator-(const rcbe::math::Vector<V, D> &lhs, const rcbe::math::Vector<V, D> &rhs) {
+    rcbe::math::Vector<V, D> ret{};
+
+    for (size_t i = 0; i < ret.dimension(); ++i) {
+        ret[i] = lhs[i] - rhs[i];
+    }
+
+    return ret;
+}
+
+template <rdmn::core::NumberValue NV, typename V, size_t D>
+rcbe::math::Vector<V, D> operator*(const rcbe::math::Vector<V, D> &lhs, NV &&rhs) {
+    rcbe::math::Vector<V, D> ret{};
+
+    for (size_t i = 0; i < ret.dimension(); ++i) {
+        ret[i] = lhs[i] * static_cast<V>(rhs);
+    }
+
+    return ret;
+}
+
+template <rdmn::core::NumberValue NV, typename V, size_t D>
+rcbe::math::Vector<V, D> operator*(NV &&lhs, const rcbe::math::Vector<V, D> &rhs) {
+    return rhs * lhs;
+}
+
+template <typename V, size_t D>
+rcbe::math::Vector<V, D> operator-(const rcbe::math::Vector<V, D> &v) {
+    return v * static_cast<typename rcbe::math::Vector<V, D>::ValueType>(-1);
+}
+
 
 #endif

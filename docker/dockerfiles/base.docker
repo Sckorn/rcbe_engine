@@ -1,6 +1,6 @@
 # Base docker build from latest available ubuntu version
 
-FROM ubuntu:impish
+FROM ubuntu:kinetic
 
 # Set some essential enviromental variables
 
@@ -36,4 +36,5 @@ RUN apt-get -qq update && \
         software-properties-common \
         sudo \
         dialog \
-        apt-utils
+        apt-utils \
+        unzip
