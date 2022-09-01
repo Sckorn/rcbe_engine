@@ -68,7 +68,7 @@ TEST(DelegateTests, SeveralAbstractDelegatesTest) {
         std::cout << std::hex << "0x" << out << std::endl;
     };
     sd += [](int out) -> void {
-        std::bitset<sizeof(decltype(out)) * 8> bts { out };
+        std::bitset<sizeof(decltype(out)) * 8> bts { static_cast<size_t>(out) }; /// @sckorn: TODO: clang 14 detected defect, figure out
         std::cout << "0b" << bts << std::endl;
     };
 

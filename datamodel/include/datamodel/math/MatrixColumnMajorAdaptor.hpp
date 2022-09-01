@@ -63,7 +63,7 @@ public:
         }
     }
 
-    [[nodiscard]] const StorageType ::value_type * getRaw() const {
+    [[nodiscard]] const typename StorageType ::value_type * getRaw() const {
         return adapted_storage_.data();
     }
 

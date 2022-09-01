@@ -14,7 +14,7 @@ RUN apt-get -qq update && \
 # Install Bazel
 #
 
-ENV BAZEL_VERSION=4.2.1
+ENV BAZEL_VERSION=5.3.0
 
 # Original link:
 RUN BAZEL_DOWNLOAD_URL="https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb"; \
