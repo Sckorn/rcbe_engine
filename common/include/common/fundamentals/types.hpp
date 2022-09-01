@@ -3,8 +3,7 @@
 
 #include <filesystem>
 
-namespace rcbe::core
-{
+namespace rcbe::core {
 using EngineScalar = double;
 using EngineIntergral = int;
 // TODO: rename to EngineFsPath, consider moving to a separate header.

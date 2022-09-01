@@ -4,13 +4,14 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <typeindex>
+#include <typeinfo>
 #include <unordered_map>
 #include <unordered_set>
 
 namespace rcbe::core
 {
-class CoreObject
-{
+class CoreObject {
 public:
 
     template <typename T>
@@ -38,29 +39,40 @@ public:
         return impl_->hash();
     }
 
+    /// TODO: handle a possibly unsafe case of passing a function or an array here. @sckorn
+    /// TODO: think of optimiation using const reference to ptr @sckorn
     template <typename T>
-    void addComponent(std::string &&tag, T &&component) {
-        auto [it, result] = system_tags_.insert(std::move(tag));
+    void addComponent(T &&component) {
+        const auto type_ind = std::type_index(typeid(std::decay_t<T>));
         CoreObject comp_co { std::forward<T>(component) };
-        components_.insert_or_assign(*it, std::make_shared<CoreObject>(std::move(comp_co)));
+        components_.insert_or_assign(type_ind, std::make_shared<CoreObject>(std::move(comp_co)));
     }
 
-    std::shared_ptr<CoreObject> getComponent(const std::string &tag) const {
-        auto it = system_tags_.find(tag);
-        if (it != system_tags_.end()) {
-            auto it_map = components_.find(*it);
-            if (it_map != components_.end()) {
-                return it_map->second;
-            } else {
-                return nullptr;
-            }
-        } else {
+    /// TODO: handle a possibly unsafe case of passing a function or an array here. @sckorn
+    template <typename ComponentType>
+    std::shared_ptr<CoreObject> getComponent() const {
+        const auto type_ind = std::type_index(typeid(std::decay_t<ComponentType>));
+        const auto it = components_.find(type_ind);
+        if (it == components_.end())
             return nullptr;
-        }
+
+        return it->second;
+    }
+
+    [[nodiscard]] bool addSystemTag(std::string &&tag) {
+        const auto res = system_tags_.insert(std::move(tag));
+        return res.second;
     }
 
     [[nodiscard]] bool hasSystemTag(const std::string &tag) const {
         return (system_tags_.find(tag) != system_tags_.end());
+    }
+
+    /// TODO: handle a possibly unsafe case of passing a function or an array here. @sckorn
+    template <typename ComponentType>
+    [[nodiscard]] bool hasComponent() const {
+        const auto type_ind = std::type_index(typeid(std::decay_t<ComponentType>));
+        return (components_.find(type_ind) != components_.end());
     }
 
 private:
@@ -106,7 +118,7 @@ private:
     std::shared_ptr<CObjectImplInterface> impl_;
     std::unordered_set<std::string> user_tags_; // reserved for a later use
     std::unordered_set<std::string> system_tags_;
-    std::unordered_map<std::string, std::shared_ptr<CoreObject> > components_;
+    std::unordered_map<std::type_index, std::shared_ptr<CoreObject> > components_;
 };
 }
 

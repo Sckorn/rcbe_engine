@@ -236,7 +236,7 @@ void GLRendererImplementation::stop() {
 }
 
 void GLRendererImplementation::addObject(core::CoreObject &&object) {
-    if (!object.hasSystemTag("material") && !object.hasSystemTag("mesh")) {
+    if (!object.hasComponent<rendering::Material>() && !object.hasComponent<geometry::Mesh>()) {
         BOOST_LOG_TRIVIAL(error) << "Can't add object to renderer!";
         return;
     }
@@ -313,28 +313,33 @@ void GLRendererImplementation::drawBuffers(
 
                     size_t offset = 0;
                     for (const auto &[id, object] : objects_) {
-                        const auto mesh_comp_ptr = object.getComponent("mesh");
-                        if (!mesh_comp_ptr)
-                            throw std::runtime_error("Can't retrieve mesh component from rendering object");
-                        const auto &mesh_comp = object.getComponent("mesh")->as<geometry::Mesh>();
-                        const auto indices_to_draw = mesh_comp.facetsSize() * 3;
+                        const auto mesh_comp = object.getComponent<geometry::Mesh>();
+                        if (!mesh_comp)
+                            throw std::runtime_error("Can't retrieve mesh component from rendering object!");
 
-                        const auto &material_comp = object.getComponent("material")->as<rendering::Material>();
-                        material_comp.apply();
+                        const auto &mesh = mesh_comp->as<geometry::Mesh>();
+                        const auto indices_to_draw = mesh.facetsSize() * 3;
+
+                        const auto material_comp = object.getComponent<rendering::Material>();
+                        if (!material_comp)
+                            throw std::runtime_error("Can't retrieve material component from rendering object!");
+
+                        const auto &material = material_comp->as<rendering::Material>();
+                        material.apply();
 
                         const auto trn = rendering_context_->getTransformColumnMajor();
-                        material_comp.getShaderProgram()->setFloat("customGreen", greenValue);
+                        material.getShaderProgram()->setFloat("customGreen", greenValue);
 
                         auto trnf = trn.convertValuesTo<float>();
-                        material_comp.getShaderProgram()->setMatrix("view", trnf);
+                        material.getShaderProgram()->setMatrix("view", trnf);
 
                         auto persp = rcbe::math::MatrixColumnMajorAdaptor<float>(perspective);
 
-                        material_comp.getShaderProgram()->setMatrix("perspective", persp);
+                        material.getShaderProgram()->setMatrix("perspective", persp);
 
-                        const auto &mesh_trn = mesh_comp.getTransform().matrix();
+                        const auto &mesh_trn = mesh.getTransform().matrix();
                         auto mesh_trnf = rcbe::math::MatrixColumnMajorAdaptor<float>(mesh_trn);
-                        material_comp.getShaderProgram()->setMatrix("model", mesh_trnf);
+                        material.getShaderProgram()->setMatrix("model", mesh_trnf);
                         glDrawArrays( GL_TRIANGLES, offset, indices_to_draw);
                         offset += indices_to_draw;
                     }
@@ -380,7 +385,7 @@ void GLRendererImplementation::renderFrame() {
     initGL();
 
     for (const auto &[id, object] : objects_) {
-        const auto material_component = object.getComponent("material");
+        const auto material_component = object.getComponent<rendering::Material>();
         if (material_component) {
             const auto &material = material_component->as<rendering::Material>();
             if (material.isDeferred())
@@ -407,7 +412,7 @@ void GLRendererImplementation::renderFrame() {
         meshes.reserve(objects_.size());
 
         for (const auto &[id, object] : objects_) {
-            auto mesh_component = object.getComponent("mesh");
+            auto mesh_component = object.getComponent<geometry::Mesh>();
             auto mesh = mesh_component->as<geometry::Mesh>();
             meshes.push_back(mesh);
         }
