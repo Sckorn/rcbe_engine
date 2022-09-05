@@ -107,8 +107,8 @@ int main(int argc, char * argv[]) {
 
             auto material_copy = material;
 
-            first_corner_wall.addComponent("mesh", std::move(meshes[0]));
-            first_corner_wall.addComponent("material", std::move(material_copy));
+            first_corner_wall.addComponent<rcbe::geometry::Mesh>(std::move(meshes[0]));
+            first_corner_wall.addComponent<rcbe::rendering::Material>(std::move(material_copy));
         }
 
         {
@@ -118,8 +118,8 @@ int main(int argc, char * argv[]) {
             second_mesh.transform(t);
 
             auto material_copy = material;
-            second_corner_wall.addComponent("mesh", std::move(second_mesh));
-            second_corner_wall.addComponent("material", std::move(material_copy));
+            second_corner_wall.addComponent<rcbe::geometry::Mesh>(std::move(second_mesh));
+            second_corner_wall.addComponent<rcbe::rendering::Material>(std::move(material_copy));
         }
 
         {
@@ -135,8 +135,8 @@ int main(int argc, char * argv[]) {
 
             rcbe::rendering::Material mat(std::move(shader_args_), {}, true);
 
-            wolf.addComponent("mesh", std::move(low_poly_wolf_mesh));
-            wolf.addComponent("material", std::move(mat));
+            wolf.addComponent<rcbe::geometry::Mesh>(std::move(low_poly_wolf_mesh));
+            wolf.addComponent<rcbe::rendering::Material>(std::move(mat));
         }
 
         auto camera_conf = rcbe::utils::read_from_file<rcbe::rendering::camera_config>(
