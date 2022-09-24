@@ -12,14 +12,10 @@ void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_header &bsh) {
 
 void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_chunk &bsc) {
     size_t offset = 0;
-    bsc.normal = b.at(0, sizeof(float) * 3).get<rcbe::math::Vector3f>();
-    offset += sizeof(float) * 3;
+    bsc.normal = b.at(offset, sizeof(float) * 3).get<rcbe::math::Vector3f>();
     bsc.v1 = b.at(offset, sizeof(float) * 3).get<rcbe::math::Vector3f>();
-    offset += sizeof(float) * 3;
     bsc.v2 = b.at(offset, sizeof(float) * 3).get<rcbe::math::Vector3f>();
-    offset += sizeof(float) * 3;
     bsc.v3 = b.at(offset, sizeof(float) * 3).get<rcbe::math::Vector3f>();
-    offset += sizeof(float) * 3;
     bsc.extra_bytes_count = b.at(offset, sizeof(uint16_t)).get<uint16_t>();
 }
 

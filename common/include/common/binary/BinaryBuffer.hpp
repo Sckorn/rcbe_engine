@@ -63,7 +63,8 @@ public:
         return os;
     }
 
-    [[nodiscard]] BinaryBuffer at(size_t offset, size_t size = 0) const;
+    [[nodiscard]] BinaryBuffer at(size_t &&offset, size_t size = 0) const;
+    [[nodiscard]] BinaryBuffer at(size_t &offset, size_t size = 0) const;
 
     template <typename ReturnType>
     [[nodiscard]] ReturnType get() {
@@ -88,13 +89,14 @@ private:
     BinaryBuffer(ViewType::const_iterator begin, ViewType::const_iterator end);
 
     template <typename BinaryBufferContainer>
-    BinaryBuffer constructFromChunk(const BinaryBufferContainer &bbc, const size_t offset, const size_t size) const {
+    BinaryBuffer constructFromChunk(const BinaryBufferContainer &bbc, size_t &offset, const size_t size) const {
         if (bbc.empty())
             throw std::runtime_error("BinaryBuffer::at on empty buffer");
         auto it = bbc.begin();
         std::advance(it, offset);
         auto eit = it;
         std::advance(eit, size);
+        offset += size;
         return rcbe::binary::BinaryBuffer(it, eit);
     }
 
