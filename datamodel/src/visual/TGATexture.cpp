@@ -22,9 +22,10 @@ void to_binary(rcbe::binary::BinaryBuffer &bb, const rcbe::visual::TextureImplem
 
 template <>
 void from_binary(const rcbe::binary::BinaryBuffer &bb, rcbe::visual::TextureImplementation::ColorMapSpecification &v) {
-    v.first_entry_index = bb.at(0, sizeof(uint16_t)).get<uint16_t>();
-    v.color_map_length = bb.at(sizeof(uint16_t), sizeof(uint16_t)).get<uint16_t>();
-    v.color_map_entry_size = bb.at(sizeof(uint16_t) * 2, sizeof(uint8_t)).get<uint8_t>();
+    BinaryBuffer::BinaryBufferConstIterator it;
+    std::tie(v.first_entry_index, it) = bb.at(bb.constBegin(), sizeof(uint16_t)).get<uint16_t>();
+    std::tie(v.color_map_length, it) = bb.at(it, sizeof(uint16_t)).get<uint16_t>();
+    std::tie(v.color_map_entry_size, it) = bb.at(it, sizeof(uint8_t)).get<uint8_t>();
 }
 
 template <>
@@ -41,12 +42,13 @@ void to_binary(rcbe::binary::BinaryBuffer &bb, const rcbe::visual::TextureImplem
 
 template <>
 void from_binary(const rcbe::binary::BinaryBuffer &bb, rcbe::visual::TextureImplementation::ImageSpecification &v) {
-    v.x_origin = bb.at(0, sizeof(uint16_t)).get<uint16_t>();
-    v.y_origin = bb.at(sizeof(uint16_t), sizeof(uint16_t)).get<uint16_t>();
-    v.width = bb.at(sizeof(uint16_t) * 2, sizeof(uint16_t)).get<uint16_t>();
-    v.height = bb.at(sizeof(uint16_t) * 3, sizeof(uint16_t)).get<uint16_t>();
-    v.pixel_depth = bb.at(sizeof(uint16_t) * 4, sizeof(uint8_t)).get<uint8_t>();
-    v.image_descriptor = bb.at(sizeof(uint16_t) * 4 + sizeof(uint8_t), sizeof(uint8_t)).get<uint8_t>();
+    rcbe::binary::BinaryBuffer::BinaryBufferConstIterator it;
+    std::tie(v.x_origin, it) = bb.at(bb.constBegin(), sizeof(uint16_t)).get<uint16_t>();
+    std::tie(v.y_origin, it) = bb.at(it, sizeof(uint16_t)).get<uint16_t>();
+    std::tie(v.width, it) = bb.at(it, sizeof(uint16_t)).get<uint16_t>();
+    std::tie(v.height, it) = bb.at(it, sizeof(uint16_t)).get<uint16_t>();
+    std::tie(v.pixel_depth, it) = bb.at(it, sizeof(uint8_t)).get<uint8_t>();
+    std::tie(v.image_descriptor, it) = bb.at(it, sizeof(uint8_t)).get<uint8_t>();
 }
 }
 
@@ -77,7 +79,7 @@ config_ (config)
     binary::BinaryBuffer bb;
     ifs >> bb;
 
-    auto check_str = bb.at(bb.size() - 19, 16).get<std::string>();
+    auto check_str = bb.at(std::prev(bb.constEnd(), 19), 16).get<std::string>().return_value;
 
     BOOST_LOG_TRIVIAL(debug) << "Check str is " << check_str << " check string size " << check_str.size();
 
@@ -103,21 +105,18 @@ void TextureImplementation::parseV2(rcbe::binary::BinaryBuffer &&bb) {
 }
 
 void TextureImplementation::parseV1(rcbe::binary::BinaryBuffer &&bb) {
-    size_t offset = 0;
-    const auto id_length = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
-    offset += sizeof(uint8_t);
+    auto offset = bb.constBegin();
+    uint8_t id_length;
+    std::tie(id_length, offset) = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
 
-    const auto color_map_type = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
-    offset += sizeof(uint8_t);
+    uint8_t color_map_type;
+    std::tie(color_map_type, offset) = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
 
-    const auto image_type = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
-    offset += sizeof(uint8_t);
+    uint8_t image_type;
+    std::tie(image_type, offset) = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
 
-    color_map_spec_ = bb.at(offset, ColorMapSpecification::SIZE).get<ColorMapSpecification>();
-    offset += ColorMapSpecification::SIZE;
-
-    image_spec_ = bb.at(offset, ImageSpecification::SIZE).get<ImageSpecification>();
-    offset += ImageSpecification::SIZE;
+    std::tie(color_map_spec_, offset) = bb.at(offset, ColorMapSpecification::SIZE).get<ColorMapSpecification>();
+    std::tie(image_spec_, offset) = bb.at(offset, ImageSpecification::SIZE).get<ImageSpecification>();
 
     image_body_ = ImageBodyType {image_spec_.height, image_spec_.width};
 
@@ -131,8 +130,7 @@ void TextureImplementation::parseV1(rcbe::binary::BinaryBuffer &&bb) {
             std::vector<uint8_t> color_comp_bytes(pixel_depth_bytes, 0);
 
             for (size_t j = 0; j < pixel_depth_bytes; ++j) {
-                color_comp_bytes[j] = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
-                offset += sizeof(uint8_t);
+                std::tie(color_comp_bytes[j], offset) = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
             }
 
             // TGA is RGB(A) by default, so if we need GBR(A), we need to reverse the order of bytes

@@ -39,9 +39,11 @@ void adl_serializer<rcbe::math::Vector2d>::from_json(const nlohmann::json &j, rc
 namespace rcbe::binary {
 template <>
 void from_binary(const BinaryBuffer &b, rcbe::math::Vector3f &v) {
-    auto x = b.at(0, sizeof(float)).get<float>();
-    auto y = b.at(sizeof(float), sizeof(float)).get<float>();
-    auto z = b.at(sizeof(float) * 2, sizeof(float)).get<float>();
+    auto pos = b.constBegin();
+    rcbe::math::Vector3f ::ValueType x, y, z;
+    std::tie(x, pos) = b.at(pos, sizeof(float)).get<float>();
+    std::tie(y, pos) = b.at(pos, sizeof(float)).get<float>();
+    std::tie(z, pos) = b.at(pos, sizeof(float)).get<float>();
 
     v = {x, y, z};
 }

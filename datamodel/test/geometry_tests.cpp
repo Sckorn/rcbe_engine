@@ -16,11 +16,13 @@ TEST(GeometryTests, BinaryStlFileTest) {
     rcbe::binary::from_binary(bb, bsh);
     ASSERT_EQ(bsh.number_triangles, TOTAL_TRIANGLES);
 
-    auto offset = rcbe::geometry::binary_stl_header::SIZE;
+    auto offset = bb.constBegin();
+    std::advance(offset, rcbe::geometry::binary_stl_header::SIZE);
     size_t i = 0;
     for (; i < bsh.number_triangles; ++i) {
         rcbe::geometry::binary_stl_chunk bsc {};
-        auto bbb = bb.at(offset + rcbe::geometry::binary_stl_chunk::SIZE * i, rcbe::geometry::binary_stl_chunk::SIZE);
+        std::advance(offset, rcbe::geometry::binary_stl_chunk::SIZE * i);
+        auto bbb = bb.at(offset, rcbe::geometry::binary_stl_chunk::SIZE);
         rcbe::binary::from_binary(bbb, bsc);
     }
     ASSERT_EQ(i, TOTAL_TRIANGLES);

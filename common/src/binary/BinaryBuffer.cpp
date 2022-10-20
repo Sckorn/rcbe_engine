@@ -38,7 +38,7 @@ BinaryBuffer::BinaryBuffer(std::vector<BinaryBuffer> &&bb) {
 }
 
 BinaryBuffer &BinaryBuffer::operator=(const BinaryBuffer &bb) {
-    (void)append(bb);
+    append(bb);
     return *this;
 }
 
@@ -55,22 +55,12 @@ BinaryBuffer &BinaryBuffer::append(BinaryBuffer &&bb) {
     return appendImplementation(bb);
 }
 
-BinaryBuffer BinaryBuffer::at(size_t offset, size_t size) const {
-    if (view_)
-        return constructFromChunk(buffer_view_, offset, size);
-    else
-        return constructFromChunk(buffer_, offset, size);
+BinaryBuffer::BinaryBufferView BinaryBuffer::at(BinaryBuffer::BinaryBufferConstIterator offset, size_t size) const {
+    return BinaryBuffer::constructFromChunk(buffer_, offset, size);
 }
 
 size_t BinaryBuffer::size() const {
-    if (view_)
-        return buffer_view_.size();
-    else
-        return buffer_.size();
-}
-
-[[nodiscard]] bool BinaryBuffer::isView() const {
-    return view_;
+    return buffer_.size();
 }
 
 void BinaryBuffer::read(std::istream &is, StorageType &s) {
@@ -81,42 +71,10 @@ void BinaryBuffer::read(std::istream &is, StorageType &s) {
     }
 }
 
-BinaryBuffer::BinaryBuffer(StorageType::const_iterator begin, StorageType::const_iterator end)
-:
-view_(true)
-{
-    initView([](const auto &entry) {
-        return &(entry);
-    }, begin, end);
-
-    for (auto p : buffer_view_) {
-        if (p == nullptr)
-            throw std::runtime_error("Null pointer detected in binary buffer chunk!");
-    }
-}
-
-BinaryBuffer::BinaryBuffer(ViewType::const_iterator begin, ViewType::const_iterator end)
-:
-view_(true)
-{
-    initView([](const auto &entry) {
-        if (entry == nullptr)
-            throw std::runtime_error("Null pointer detected in binary buffer chunk!");
-        return entry;
-    }, begin, end);
-}
-
 BinaryBuffer &BinaryBuffer::appendImplementation(const BinaryBuffer &source) {
-    if (view_)
-        throw std::runtime_error("Appending to BinaryBuffer view is prohibited!");
-
     buffer_.reserve(buffer_.size() + source.size());
 
-    if (source.isView()) {
-        appendImplementation(source.buffer_view_);
-    } else {
-        appendImplementation(source.buffer_);
-    }
+    appendImplementation(source.buffer_);
 
     return *this;
 }
@@ -125,10 +83,12 @@ void BinaryBuffer::appendImplementation(const StorageType &storage) {
     buffer_.insert(buffer_.end(), storage.begin(), storage.end());
 }
 
-void BinaryBuffer::appendImplementation(const ViewType &storage) {
-    std::transform(storage.begin(), storage.end(), std::back_inserter(buffer_), [](auto entry) {
-        return *entry;
-    });
+BinaryBuffer::BinaryBufferConstIterator BinaryBuffer::constBegin() const noexcept {
+    return buffer_.cbegin();
+}
+
+BinaryBuffer::BinaryBufferConstIterator BinaryBuffer::constEnd() const noexcept {
+    return buffer_.cbegin();
 }
 
 template <>
@@ -181,93 +141,70 @@ BinaryBuffer::BinaryBuffer(const std::string &s) {
 }
 
 template <>
-size_t BinaryBuffer::get() {
-    if (view_) {
-        std::array<ByteType, sizeof(size_t)> tmp;
-        std::transform(buffer_view_.begin(), buffer_view_.end(), tmp.begin(), [](const auto &entry) {
-            return *entry;
-        });
-        return *reinterpret_cast<const size_t*>(tmp.data());
-    } else {
-        return *reinterpret_cast<const size_t*>(buffer_.data());
-    }
+BinaryBuffer::BinaryBufferView::BinBuffGetResult<size_t> BinaryBuffer::BinaryBufferView::get() {
+    std::array<ByteType, sizeof(size_t)> tmp;
+    std::transform(view_.begin(), view_.end(), tmp.begin(), [](const auto &entry) {
+        return *entry;
+    });
+    return {*reinterpret_cast<const size_t*>(tmp.data()), current_pos_};
 }
 
 template <>
-float BinaryBuffer::get() {
-    if (view_) {
-        std::array<ByteType, sizeof(float)> tmp;
-        std::transform(buffer_view_.begin(), buffer_view_.end(), tmp.begin(), [](const auto &entry) {
-            return *entry;
-        });
-        return *reinterpret_cast<const float*>(tmp.data());
-    } else {
-        return *reinterpret_cast<const float*>(buffer_.data());
-    }
+BinaryBuffer::BinaryBufferView::BinBuffGetResult<float> BinaryBuffer::BinaryBufferView::get() {
+    std::array<ByteType, sizeof(float)> tmp;
+    std::transform(view_.begin(), view_.end(), tmp.begin(), [](const auto &entry) {
+        return *entry;
+    });
+    return {*reinterpret_cast<const float*>(tmp.data()), current_pos_};
 }
 
 template <>
-char BinaryBuffer::get() {
-    if (view_) {
-        std::array<ByteType, sizeof(char )> tmp;
-        std::transform(buffer_view_.begin(), buffer_view_.end(), tmp.begin(), [](const auto &entry) {
-            return *entry;
-        });
-        return *reinterpret_cast<const char *>(tmp.data());
-    } else {
-        return *reinterpret_cast<const char*>(buffer_.data());
-    }
+BinaryBuffer::BinaryBufferView::BinBuffGetResult<char> BinaryBuffer::BinaryBufferView::get() {
+    std::array<ByteType, sizeof(char )> tmp;
+    std::transform(view_.begin(), view_.end(), tmp.begin(), [](const auto &entry) {
+        return *entry;
+    });
+    return {*reinterpret_cast<const char *>(tmp.data()), current_pos_};
 }
 
 template <>
-uint32_t BinaryBuffer::get() {
-    if (view_) {
-        std::array<ByteType, sizeof(uint32_t )> tmp;
-        std::transform(buffer_view_.begin(), buffer_view_.end(), tmp.begin(), [](const auto &entry) {
-            return *entry;
-        });
-        return *reinterpret_cast<const uint32_t *>(tmp.data());
-    } else {
-        return *reinterpret_cast<const uint32_t *>(buffer_.data());
-    }
+BinaryBuffer::BinaryBufferView::BinBuffGetResult<uint32_t>  BinaryBuffer::BinaryBufferView::get() {
+    std::array<ByteType, sizeof(uint32_t )> tmp;
+    std::transform(view_.begin(), view_.end(), tmp.begin(), [](const auto &entry) {
+        return *entry;
+    });
+    return {*reinterpret_cast<const uint32_t *>(tmp.data()), current_pos_};
 }
 
 template <>
-uint16_t BinaryBuffer::get() {
-    if (view_) {
-        std::array<ByteType, sizeof(uint16_t)> tmp;
-        std::transform(buffer_view_.begin(), buffer_view_.end(), tmp.begin(), [](const auto &entry) {
-            return *entry;
-        });
-        return *reinterpret_cast<const uint16_t *>(tmp.data());
-    } else {
-        return *reinterpret_cast<const uint16_t*>(buffer_.data());
-    }
+BinaryBuffer::BinaryBufferView::BinBuffGetResult<uint16_t> BinaryBuffer::BinaryBufferView::get() {
+    std::array<ByteType, sizeof(uint16_t)> tmp;
+    std::transform(view_.begin(), view_.end(), tmp.begin(), [](const auto &entry) {
+        return *entry;
+    });
+    return {*reinterpret_cast<const uint16_t *>(tmp.data()), current_pos_};
 }
 
 template <>
-uint8_t BinaryBuffer::get() {
-    if (view_) {
-        std::array<ByteType, sizeof(uint8_t)> tmp;
-        std::transform(buffer_view_.begin(), buffer_view_.end(), tmp.begin(), [](const auto &entry) {
-            return *entry;
-        });
-        return *reinterpret_cast<const uint8_t *>(tmp.data());
-    } else {
-        return *reinterpret_cast<const uint8_t*>(buffer_.data());
-    }
+BinaryBuffer::BinaryBufferView::BinBuffGetResult<uint8_t> BinaryBuffer::BinaryBufferView::get() {
+    std::array<ByteType, sizeof(uint8_t)> tmp;
+    std::transform(view_.begin(), view_.end(), tmp.begin(), [](const auto &entry) {
+        return *entry;
+    });
+    return {*reinterpret_cast<const uint8_t *>(tmp.data()), current_pos_};
 }
 
 template <>
-std::string BinaryBuffer::get() {
+BinaryBuffer::BinaryBufferView::BinBuffGetResult<std::string> BinaryBuffer::BinaryBufferView::get() {
     static_assert(sizeof(std::string::value_type) == sizeof(uint8_t), "std::string char type is bigger than one byte!");
     std::string ret;
-    ret.reserve(buffer_.size());
-    for (size_t i = 0; i < size(); ++i) {
-        ret.push_back(at(i, sizeof(char)).get<char>());
+    ret.reserve(view_.size());
+    for (auto it = view_.cbegin(); it != view_.cend(); ++it) {
+        const auto [res, iter] = at(it, sizeof(char)).get<char>();
+        ret.push_back(res);
     }
 
-    return ret;
+    return {ret, current_pos_};
 }
 
 }

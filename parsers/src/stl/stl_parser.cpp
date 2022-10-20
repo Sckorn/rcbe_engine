@@ -21,10 +21,12 @@ geometry::Mesh parse_mesh(const std::filesystem::path& file_path) {
     geometry::Mesh::VertexStorage verts {};
     geometry::Mesh::NormalStorage norms {};
 
-    auto offset = header.SIZE;
+    auto offset = bb.constBegin();
+    std::advance(offset, header.SIZE);
     for (size_t i = 0; i < header.number_triangles; ++i) {
         rcbe::geometry::binary_stl_chunk facet;
-        auto bbb = bb.at(offset + facet.SIZE * i, facet.SIZE);
+        std::advance(offset, facet.SIZE * i);
+        auto bbb = bb.at(offset, facet.SIZE);
         rcbe::binary::from_binary(bbb, facet);
 
         math::Vector3d norm(facet.normal);

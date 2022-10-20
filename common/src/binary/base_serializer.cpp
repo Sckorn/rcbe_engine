@@ -9,7 +9,7 @@ void to_binary<BinaryBuffer, int>(BinaryBuffer &b, const int &a) {
 
 template <>
 void from_binary<BinaryBuffer, int>(const BinaryBuffer &b, int &a) {
-    a = b.at(0, sizeof(int)).get<int>();
+    a = b.at(b.constBegin(), sizeof(int)).get<int>().return_value;
 }
 
 template <>
@@ -19,7 +19,7 @@ void to_binary<BinaryBuffer, short>(BinaryBuffer &b, const short &a) {
 
 template <>
 void from_binary<BinaryBuffer, short>(const BinaryBuffer &b, short &a) {
-    a = b.at(0, sizeof(short)).get<short>();
+    a = b.at(b.constBegin(), sizeof(short)).get<short>().return_value;
 }
 
 template <>
@@ -29,7 +29,7 @@ void to_binary<BinaryBuffer, long>(BinaryBuffer &b, const long &a) {
 
 template <>
 void from_binary<BinaryBuffer, long>(const BinaryBuffer &b, long &a) {
-    a = b.at(0, sizeof(long)).get<long>();
+    a = b.at(b.constBegin(), sizeof(long)).get<long>().return_value;
 }
 
 template <>
@@ -39,7 +39,7 @@ void to_binary<BinaryBuffer, float>(BinaryBuffer &b, const float &a) {
 
 template <>
 void from_binary<BinaryBuffer, float>(const BinaryBuffer &b, float &a) {
-    a = b.at(0, sizeof(float)).get<float>();
+    a = b.at(b.constBegin(), sizeof(float)).get<float>().return_value;
 }
 
 template <>
@@ -49,7 +49,7 @@ void to_binary<BinaryBuffer, double>(BinaryBuffer &b, const double &a) {
 
 template <>
 void from_binary<BinaryBuffer, double>(const BinaryBuffer &b, double &a) {
-    a = b.at(0, sizeof(double)).get<double>();
+    a = b.at(b.constBegin(), sizeof(double)).get<double>().return_value;
 }
 
 template <>
@@ -59,7 +59,7 @@ void to_binary<BinaryBuffer, long double>(BinaryBuffer &b, const long double &a)
 
 template <>
 void from_binary<BinaryBuffer, long double>(const BinaryBuffer &b, long double &a) {
-    a = b.at(0, sizeof(long double)).get<long double>();
+    a = b.at(b.constBegin(), sizeof(long double)).get<long double>().return_value;
 }
 
 template <>
@@ -69,7 +69,7 @@ void to_binary<BinaryBuffer, size_t>(BinaryBuffer &b, const size_t &a) {
 
 template <>
 void from_binary<BinaryBuffer, size_t>(const BinaryBuffer &b, size_t &a) {
-    a = b.at(0, sizeof(size_t)).get<size_t>();
+    a = b.at(b.constBegin(), sizeof(size_t)).get<size_t>().return_value;
 }
 
 template <>
@@ -79,7 +79,7 @@ void to_binary<BinaryBuffer, char>(BinaryBuffer &b, const char &a) {
 
 template <>
 void from_binary<BinaryBuffer, char>(const BinaryBuffer &b, char &a) {
-    a = b.at(0, sizeof(char)).get<char>();
+    a = b.at(b.constBegin(), sizeof(char)).get<char>().return_value;
 }
 
 template <>
@@ -89,7 +89,7 @@ void to_binary<BinaryBuffer, uint32_t>(BinaryBuffer &b, const uint32_t &a) {
 
 template <>
 void from_binary<BinaryBuffer, uint32_t>(const BinaryBuffer &b, uint32_t &a) {
-    a = b.at(0, sizeof(uint32_t)).get<uint32_t>();
+    a = b.at(b.constBegin(), sizeof(uint32_t)).get<uint32_t>().return_value;
 }
 
 template <>
@@ -99,6 +99,6 @@ void to_binary<BinaryBuffer, uint16_t>(BinaryBuffer &b, const uint16_t &a) {
 
 template <>
 void from_binary<BinaryBuffer, uint16_t>(const BinaryBuffer &b, uint16_t &a) {
-    a = b.at(0, sizeof(uint16_t)).get<uint16_t>();
+    a = b.at(b.constBegin(), sizeof(uint16_t)).get<uint16_t>().return_value;
 }
 }

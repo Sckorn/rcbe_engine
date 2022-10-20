@@ -23,8 +23,9 @@ void to_binary(BinaryBuffer &b, const dummy_header &dh) {
 }
 
 void from_binary(const BinaryBuffer &b, dummy_header &dh) {
-    dh.version = b.at(0, sizeof(decltype(dh.version))).get<decltype(dh.version)>();
-    dh.num_chunks = b.at(sizeof(decltype(dh.version)), sizeof(decltype(dh.num_chunks))).get<decltype(dh.num_chunks)>();
+    auto it = b.constBegin();
+    std::tie(dh.version, it) = b.at(it, sizeof(decltype(dh.version))).get<decltype(dh.version)>();
+    std::tie(dh.num_chunks, it) = b.at(it, sizeof(decltype(dh.num_chunks))).get<decltype(dh.num_chunks)>();
 }
 }
 
@@ -50,10 +51,11 @@ void to_binary(BinaryBuffer &b, const dummy_chunk &dc) {
 }
 
 void from_binary(const BinaryBuffer &b, dummy_chunk &dc) {
-    dc.some_float = b.at(0, sizeof(float)).get<float>();
-    dc.num_chars = b.at(sizeof(float), sizeof(size_t)).get<size_t>();
+    auto it = b.constBegin();
+    std::tie(dc.some_float, it) = b.at(it, sizeof(float)).get<float>();
+    std::tie(dc.num_chars, it) = b.at(it, sizeof(size_t)).get<size_t>();
     for (size_t i = 0; i < dc.num_chars; ++i) {
-        dc.chars[i] = b.at(sizeof(float) + sizeof(size_t) + sizeof(char) * i, sizeof(char)).get<char>();
+        std::tie(dc.chars[i], it) = b.at(it, sizeof(char)).get<char>();
     }
 }
 }
@@ -95,9 +97,11 @@ TEST_F(BinaryFileTests, InputSimple) {
     ASSERT_EQ(ndh.version, 1);
     ASSERT_EQ(ndh.num_chunks, 2);
 
+    auto it = bb.constBegin();
     for (size_t i = 0; i < ndh.num_chunks; ++i) {
         dummy_chunk ndc {};
-        auto bbb = bb.at(dummy_header::SIZE  + dummy_chunk::SIZE * i, dummy_chunk::SIZE);
+        std::advance(it, dummy_header::SIZE + dummy_header::SIZE  + dummy_chunk::SIZE * i);
+        auto bbb = bb.at(it, dummy_chunk::SIZE);
         rcbe::binary::from_binary(bbb, ndc);
         ASSERT_EQ(ndc.num_chars, 2);
         ASSERT_FLOAT_EQ(static_cast<float>(0.5 * i), ndc.some_float);
