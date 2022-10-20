@@ -55,7 +55,14 @@ BinaryBuffer &BinaryBuffer::append(BinaryBuffer &&bb) {
     return appendImplementation(bb);
 }
 
-BinaryBuffer BinaryBuffer::at(size_t offset, size_t size) const {
+BinaryBuffer BinaryBuffer::at(size_t &&offset, size_t size) const {
+    if (view_)
+        return constructFromChunk(buffer_view_, offset, size);
+    else
+        return constructFromChunk(buffer_, offset, size);
+}
+
+BinaryBuffer BinaryBuffer::at(size_t &offset, size_t size) const {
     if (view_)
         return constructFromChunk(buffer_view_, offset, size);
     else

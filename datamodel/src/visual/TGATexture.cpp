@@ -105,19 +105,14 @@ void TextureImplementation::parseV2(rcbe::binary::BinaryBuffer &&bb) {
 void TextureImplementation::parseV1(rcbe::binary::BinaryBuffer &&bb) {
     size_t offset = 0;
     const auto id_length = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
-    offset += sizeof(uint8_t);
 
     const auto color_map_type = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
-    offset += sizeof(uint8_t);
 
     const auto image_type = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
-    offset += sizeof(uint8_t);
 
     color_map_spec_ = bb.at(offset, ColorMapSpecification::SIZE).get<ColorMapSpecification>();
-    offset += ColorMapSpecification::SIZE;
 
     image_spec_ = bb.at(offset, ImageSpecification::SIZE).get<ImageSpecification>();
-    offset += ImageSpecification::SIZE;
 
     image_body_ = ImageBodyType {image_spec_.height, image_spec_.width};
 
@@ -132,7 +127,6 @@ void TextureImplementation::parseV1(rcbe::binary::BinaryBuffer &&bb) {
 
             for (size_t j = 0; j < pixel_depth_bytes; ++j) {
                 color_comp_bytes[j] = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
-                offset += sizeof(uint8_t);
             }
 
             // TGA is RGB(A) by default, so if we need GBR(A), we need to reverse the order of bytes
