@@ -1,6 +1,25 @@
-# action.yml
-name: 'Hello World'
-description: 'Greet someone and record the time'
-runs:
-  using: 'docker'
-  image: 'radameon/build:latest'
+name: Docker build
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  release:
+    types: [ created ]
+    branches: [ master ]
+
+jobs:
+  container-test-job:
+    runs-on: ubuntu-latest
+    container:
+      image: radameon/build:latest
+      env:
+        NODE_ENV: development
+      ports:
+        - 80
+      volumes:
+        - my_docker_volume:/volume_mount
+      options: --cpus 4
+    steps:
+      - name: Check for dockerenv file
+        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
