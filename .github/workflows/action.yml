@@ -26,3 +26,7 @@ jobs:
         run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
       - name: Print bazel version
         run: bazel --version
+      - name: Which clang
+        run: which clang-14
+      - name: Which gcc
+        run: which gcc-12
