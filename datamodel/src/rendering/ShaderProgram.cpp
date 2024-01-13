@@ -18,7 +18,9 @@ shader_prog_handle_ { glCreateProgram() } {
             shader.compile();
 
         if (shader.isCompiled()) {
+#ifdef RDMN_OPENGL
             glAttachShader(shader_prog_handle_, shader.handle());
+#endif
         } else {
             BOOST_LOG_TRIVIAL(warning) << "Shader " << shader.handle() << " is not compiled! Skipping it!";
         }
@@ -28,12 +30,12 @@ shader_prog_handle_ { glCreateProgram() } {
 
     int success;
     std::string info;
-    info.reserve(SHADER_ERROR_MSG_SIZE);
-    info.resize(SHADER_ERROR_MSG_SIZE);
+    info.reserve(rdmn::render::SHADER_ERROR_MSG_SIZE);
+    info.resize(rdmn::render::SHADER_ERROR_MSG_SIZE);
     glGetProgramiv(shader_prog_handle_, GL_LINK_STATUS, &success);
     if(!success)
     {
-        glGetProgramInfoLog(shader_prog_handle_, SHADER_ERROR_MSG_SIZE, nullptr, info.data());
+        glGetProgramInfoLog(shader_prog_handle_, rdmn::render::SHADER_ERROR_MSG_SIZE, nullptr, info.data());
         glDeleteProgram(shader_prog_handle_);
         throw std::runtime_error("Shader program linking error: " + info);
     }

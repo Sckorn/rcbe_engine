@@ -1,10 +1,12 @@
 # Docker container with clang as a main compiler
 
-FROM radameon/build_base:latest
+ARG BASE=base
+
+FROM radameon/build_${BASE}:latest
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Installing all clang packages
+# Installing all clang 14 packages
 
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt-get -qq update && \

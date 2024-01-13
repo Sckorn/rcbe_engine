@@ -26,16 +26,18 @@ struct dimensions_impl {
     }
 };
 
-using Dimensions = dimensions_impl<EngineIntergral>;
-using ScalarDimensions = dimensions_impl<EngineScalar>;
+using IntegralDimensions = dimensions_impl<core::EngineIntergral>;
+using ScalarDimensions = dimensions_impl<core::EngineScalar>;
+/// TODO: need to figure out what to do if we redefine core::EngineScalar to be float
+using FloatDimensions = dimensions_impl<float>;
 
 }
 
 namespace nlohmann {
 template <>
-struct adl_serializer<rcbe::core::Dimensions> {
-    static void to_json(json& j, const rcbe::core::Dimensions& dim);
-    static void from_json(const json& j, rcbe::core::Dimensions& dim);
+struct adl_serializer<rcbe::core::IntegralDimensions> {
+    static void to_json(json &j, const rcbe::core::IntegralDimensions &dim);
+    static void from_json(const json &j, rcbe::core::IntegralDimensions &dim);
 };
 }
 

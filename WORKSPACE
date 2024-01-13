@@ -3,11 +3,11 @@ workspace(name = "rcbe_engine")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-skylib_version = "1.0.3"
+skylib_version = "1.4.2"
 
 http_archive(
     name = "bazel_skylib",
-    sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
+    sha256 = "66ffd9315665bfaafc96b52278f57c7e2dd09f5ede279ea6d39b2be471e7e3aa",
     urls = [
         "https://github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib-{}.tar.gz".format(skylib_version, skylib_version),
         "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib-{}.tar.gz".format(skylib_version, skylib_version),
@@ -67,7 +67,9 @@ http_file(
     downloaded_file_path = "brick_wall_texture.tga",
     sha256 = "bc1f3b97a10dbe671abd2cce7393e67094273c6fcf1c136c872380dd91ec8646",
     tags = ["local"],
-    urls = ["http://localhost:8080/static/tex.tga"],
+    urls = [
+        "http://localhost:8080/static/tex.tga",
+    ],
 )
 
 http_file(
@@ -75,7 +77,9 @@ http_file(
     downloaded_file_path = "awesomeface_texture.tga",
     sha256 = "66510d10328a164669a8d3690f98c669a72e7cfd72bc8c2cebfbcbcc5f450cd6",
     tags = ["local"],
-    urls = ["http://localhost:8080/static/tex2.tga"],
+    urls = [
+        "http://localhost:8080/static/tex2.tga",
+    ],
 )
 
 http_archive(
@@ -87,11 +91,30 @@ http_archive(
 )
 
 http_archive(
+    name = "gltf_test_data_archive",
+    build_file = "@//thirdparty:gltf_tests_archive.BUILD",
+    sha256 = "8332c78756816faa99a15d85bb44db87937299b782da4a42a9c1f2f7e04e89cc",
+    tags = ["local"],
+    urls = ["http://localhost:8080/static/viking_room.tar.xz"],
+)
+
+RULES_PKG_VERSION = "0.9.1"
+
+http_archive(
     name = "rules_pkg",
-    sha256 = "aeca78988341a2ee1ba097641056d168320ecc51372ef7ff8e64b139516a4937",
+    sha256 = "8f9ee2dc10c1ae514ee599a8b42ed99fa262b757058f65ad3c384289ff70c4b8",
     urls = [
-        "https://github.com/bazelbuild/rules_pkg/releases/download/0.2.6/rules_pkg-0.2.6.tar.gz",
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_pkg/releases/download/0.2.6/rules_pkg-0.2.6.tar.gz",
+        "https://github.com/bazelbuild/rules_pkg/releases/download/{}/rules_pkg-{}.tar.gz".format(RULES_PKG_VERSION, RULES_PKG_VERSION),
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_pkg/releases/download/{}/rules_pkg-{}.tar.gz".format(RULES_PKG_VERSION, RULES_PKG_VERSION),
+    ],
+)
+
+http_archive(
+    name = "stbi",
+    build_file = "@//thirdparty:stbi.BUILD",
+    sha256 = "0675244421bf802e5ffa90da42ab10280ec7c77ef2f2e999b70c9a6255d1a522",
+    urls = [
+        "https://github.com/nothings/stb/archive/refs/heads/master.zip",
     ],
 )
 

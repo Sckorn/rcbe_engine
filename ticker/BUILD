@@ -18,6 +18,12 @@ cc_test(
     name = "rcbe_ticker_tests",
     srcs = glob(["test/*.cpp"]),
     copts = ["-Iexternal/gtest/include"],
+    defines = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
+        "//meta_package:rdmn_gl_rasterizer_backend": [
+            "RDMN_OPENGL",
+        ],
+    }),
     visibility = ["//visibility:public"],
     deps = [
         ":rcbe_ticker",

@@ -17,6 +17,10 @@
 
 #include <nlohmann/json.hpp>
 
+#ifdef RDMN_GLM_INTEGRATION
+#include <glm/mat4x4.hpp>
+#endif
+
 namespace rcbe::math
 {
 template <typename Value, size_t DimRow, size_t DimCol>
@@ -26,6 +30,7 @@ public:
     using ValueType = Value;
     using StorageType = std::array<ValueType, DimRow * DimCol>;
     using ColumnType = rcbe::math::Vector<ValueType, DimRow>;
+    using RowType = rcbe::math::Vector<ValueType, DimCol>;
 
     static constexpr size_t ROWS = DimRow;
     static constexpr size_t COLUMNS = DimCol;
@@ -54,8 +59,8 @@ public:
         }
     }
 
-    template <typename T = void, typename = std::enable_if_t<(DimRow == DimCol) && (DimCol == 3), T> >
-    Matrix(const Quaternion<ValueType> &quat)
+    template <typename T, typename = std::enable_if_t<(DimRow == DimCol) && (DimCol == 3) && std::is_convertible_v<T, ValueType>, void> >
+    explicit Matrix(const Quaternion<T> &quat)
     {
         auto s = quat.norm();
         auto square_x = quat.x() * quat.x();
@@ -121,16 +126,68 @@ public:
         }
     }
 
+#ifdef RDMN_GLM_INTEGRATION
+    template <
+            glm::length_t rows,
+            glm::length_t cols,
+            typename T,
+            glm::qualifier Q,
+            typename = std::enable_if_t<
+                    std::is_convertible_v<T, ValueType>
+                            && ROWS == COLUMNS
+                            && rows == cols
+                            && ROWS == rows
+                            && COLUMNS == cols
+                            && (ROWS == 4 || ROWS == 3),
+                    void >
+    >
+    Matrix(glm::mat<cols, rows, T, Q> &&source) {
+        for (size_t i = 0; i < ROWS; ++i) {
+            const auto source_column = source[i];
+            for (size_t j = 0; j < COLUMNS; ++j) {
+                m_[i * ROWS + j] = source_column[j];
+            }
+        }
+    }
+
+    template <
+            glm::length_t rows,
+            glm::length_t cols,
+            typename T,
+            glm::qualifier Q,
+            typename = std::enable_if_t<
+                    std::is_convertible_v<T, ValueType>
+                            && ROWS == COLUMNS
+                            && rows == cols
+                            && ROWS == rows
+                            && COLUMNS == cols
+                            && (ROWS == 4 || ROWS == 3),
+                    void >
+    >
+    explicit operator glm::mat<cols, rows, T, Q>() const {
+        const auto tansposed_copy = this->transposed();
+        glm::mat<cols, rows, T, Q> ret{1.};
+        for (size_t i = 0; i < cols; ++i) {
+            for (size_t j = 0; j < rows; ++j) {
+                ret[i][j] = tansposed_copy.at(j, i);
+            }
+        }
+
+        return ret;
+    }
+#endif
+
     ~Matrix() = default;
 
     Matrix(const Matrix &other) = default;
     Matrix &operator=(const Matrix &other) = default;
 
-    Matrix(Matrix &&other) = default;
-    Matrix &operator=(Matrix &&other) = default;
+    Matrix(Matrix &&other) noexcept = default;
+    Matrix &operator=(Matrix &&other) noexcept = default;
 
     // required for basis manipulations
-    ColumnType getColumn(size_t index) const
+    /// TODO: redo it so it returns special struct, that holds const references to row elements @sckorn
+    [[nodiscard]] ColumnType getColumn(size_t index) const
     {
         if (index >= COLUMNS)
             throw std::out_of_range("Can't get column of matrix");
@@ -142,6 +199,19 @@ public:
         }
 
         return ColumnType {_tmp};
+    }
+
+    [[nodiscard]] RowType getRow(size_t index) const {
+        if (index >= ROWS)
+            throw std::runtime_error("Can't get row of matrix");
+
+        std::array<ValueType, COLUMNS> _tmp;
+        for (size_t i = 0; i < COLUMNS; ++i)
+        {
+            _tmp[i] = m_[i + ROWS * index];
+        }
+
+        return RowType {_tmp};
     }
 
     // row-major
@@ -211,6 +281,21 @@ public:
         return m_;
     }
 
+    template <typename U, typename = std::enable_if_t<std::is_convertible_v<U, ValueType>, void>>
+    explicit operator Matrix<U, ROWS, COLUMNS>() {
+        return convertUnderlyingValues<U>();
+    }
+
+    template<typename V, typename = std::enable_if_t<std::is_convertible_v<ValueType, V>, void>>
+    Matrix<V, ROWS, COLUMNS> convertUnderlyingValues() const {
+        V storage[ROWS * COLUMNS];
+        for (size_t i = 0; i < m_.size(); ++i) {
+            storage[i] = static_cast<V>(m_[i]);
+        }
+
+        return Matrix<V, ROWS, COLUMNS>{storage};
+    }
+
     static Matrix &identity()
     {
         return Matrix {};
@@ -233,7 +318,7 @@ public:
         for (const auto& mm : m.m_) {
             os << mm << " ";
         }
-        os << std::endl;
+
         return os;
     }
 
@@ -313,11 +398,35 @@ struct adl_serializer<rcbe::math::Matrix3x3>
 };
 }
 
+/// TODO: make all ops template @sckorn
 rcbe::math::Matrix3x3 operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs);
 rcbe::math::Matrix3x3 operator+(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs);
+
 rcbe::math::Vector3d operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Vector3d &rhs);
-rcbe::math::Matrix4x4 operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs);
+
+template <typename V>
+rcbe::math::Matrix<V, 4, 4> operator*(const rcbe::math::Matrix<V, 4, 4> &lhs, const rcbe::math::Matrix<V, 4, 4> &rhs) {
+    std::vector<typename rcbe::math::Matrix<V, 3, 3>::ValueType> interm;
+    interm.reserve(lhs.ROWS * lhs.COLUMNS);
+    for (size_t i = 0; i < lhs.ROWS * lhs.COLUMNS; ++i)
+    {
+        const size_t row_index = i / lhs.ROWS;
+        const size_t sub_index = i % lhs.COLUMNS;
+
+        const auto r_column = rhs.getColumn(sub_index);
+
+        interm.push_back(
+                lhs.at(row_index, 0) * r_column.x() +
+                lhs.at(row_index, 1) * r_column.y() +
+                lhs.at(row_index, 2) * r_column.z() +
+                lhs.at(row_index, 3) * r_column.w()
+                );
+    }
+
+    return rcbe::math::Matrix<V, 4, 4> {interm};
+}
 rcbe::math::Matrix4x4 operator+(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs);
+
 rcbe::math::Vector4d operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Vector4d &rhs);
 
 #endif

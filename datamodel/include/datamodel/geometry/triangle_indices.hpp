@@ -12,24 +12,38 @@
 #include <rcbe-engine/fundamentals/types.hpp>
 #include <nlohmann/json.hpp>
 
-namespace rcbe::geometry
-{
-struct triangle_indices
-{
+namespace rcbe::geometry {
+
+struct triangle_indices {
     using ValueType = size_t;
 
-    triangle_indices()
-    {
+    triangle_indices() {
         indices.fill(0);
+        tex_coords_indices.fill(0);
     }
 
     triangle_indices(const ValueType v1, const ValueType v2, const ValueType v3) noexcept
     :
-    indices( {v1, v2, v3} )
-    {}
+    indices( {v1, v2, v3} ) {
+        tex_coords_indices.fill(0);
+    }
+
+    triangle_indices(
+            const ValueType v1,
+            const ValueType v2,
+            const ValueType v3,
+            const ValueType t1,
+            const ValueType t2,
+            const ValueType t3
+    ) noexcept
+    :
+    indices( { v1, v2, v3 } )
+    , tex_coords_indices( { t1, t2, t3 } ) {
+
+    }
 
     std::array<ValueType, 3> indices;
-    std::array<ValueType, 3> tex_coords_indices = {0, 0, 0};
+    std::array<ValueType, 3> tex_coords_indices;
 };
 }
 

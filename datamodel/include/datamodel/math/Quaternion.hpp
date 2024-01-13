@@ -78,12 +78,12 @@ public:
         return q_.w();
     }
 
-    VectorType getVectorPart() const
+    [[nodiscard]] VectorType getVectorPart() const
     {
         return {q_.x(), q_.y(), q_.z()};
     }
 
-    ValueType getScalarPart() const
+    [[nodiscard]] ValueType getScalarPart() const
     {
         return q_.w();
     }

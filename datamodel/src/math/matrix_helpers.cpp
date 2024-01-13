@@ -3,27 +3,20 @@
 #include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
 
 namespace rcbe::math {
-Matrix4x4 makePerspectiveMatrix(
-        const core::EngineScalar near,
-        const core::EngineScalar far,
-        const math::deg fov,
-        const core::Dimensions viewport) {
 
-    const auto aspect = static_cast<float>(viewport.width) / static_cast<float>(viewport.height);
-    const auto fovy_rad = fov.as_rad();
+Matrix4x4 matrixFromZXY(const roll r, const pitch p, const yaw y) {
+    const auto cr = std::cos(static_cast<double>(r.as_rad()));
+    const auto sr = std::sin(static_cast<double>(r.as_rad()));
+    const auto cp = std::cos(static_cast<double>(p.as_rad()));
+    const auto sp = std::sin(static_cast<double>(p.as_rad()));
+    const auto cy = std::cos(static_cast<double>(y.as_rad()));
+    const auto sy = std::sin(static_cast<double>(y.as_rad()));
 
-    const auto tan = std::tan(static_cast<const double>(fovy_rad) / 2);
-
-    if (tan == 0)
-        throw std::runtime_error("Can't compute cotangent");
-
-    Matrix4x4 ret {
-        1 / (tan * aspect), 0, 0, 0,
-        0, 1 / tan, 0, 0,
-        0, 0, -((far + near)/(far - near)), -(2 * far * near) / (far - near),
-        0, 0, -1, 0
+    return Matrix4x4 {
+        cr * cy - sr * sp * sy, cy * sr + cr * sp * sy, -cp * sy, 0,
+        -cp * sr, cr * cp, sp, 0,
+        cr * sy + cy * sr * sp, sr * sy - cr * cy * sp, cr * cy, 0,
+        0, 0, 0, 1
     };
-
-    return ret;
 }
 }

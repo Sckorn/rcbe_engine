@@ -41,34 +41,36 @@ build --host_cxxopt=-std=c++2a
 build --conlyopt=-std=c99
 build --host_conlyopt=-std=c99
 
+build --host_linkopt=-Wl,--no-undefined,--no-allow-shlib-undefined
+
 # TODO: enable hardball compiler flags
-#build --host_copt=-Werror
-#build --host_copt=-Wall
-#build --host_copt=-Wextra
-#build --host_copt=-Wpedantic
-#build --host_copt=-Wcast-align
-#build --host_copt=-Wcast-qual
-#build --host_copt=-Wconversion
-#build --host_copt=-Wctor-dtor-privacy
-#build --host_copt=-Wenum-compare
-#build --host_copt=-Wfloat-equal
-#build --host_copt=-Wnon-virtual-dtor
-#build --host_copt=-Wold-style-cast
-#build --host_copt=-Woverloaded-virtual
-#build --host_copt=-Wredundant-decls
-#build --host_copt=-Wsign-conversion
-#build --host_copt=-Wsign-promo
-#build --host_copt=-Wno-unused-function
-#build --host_copt=-Wchkp
-#build --host_copt=-Wimplicit-fallthrough
-#build --host_copt=-Wparentheses
-#build --host_copt=-Wunused-parameter
-#build --host_copt=-Wuninitialized
-#build --host_copt=-Wduplicated-branches
-#build --host_copt=-Wshadow
-#build --host_copt=-Wlogical-op
-#build --host_copt=-Wmissing-declarations
+build:hardball --host_copt=-Werror
+build:hardball --host_copt=-Wall
+build:hardball --host_copt=-Wextra
+build:hardball --host_copt=-Wpedantic
+build:hardball --host_copt=-Wcast-align
+build:hardball --host_copt=-Wcast-qual
+build:hardball --host_copt=-Wconversion
+build:hardball --host_copt=-Wctor-dtor-privacy
+build:hardball --host_copt=-Wenum-compare
+build:hardball --host_copt=-Wfloat-equal
+build:hardball --host_copt=-Wnon-virtual-dtor
+build:hardball --host_copt=-Wold-style-cast
+build:hardball --host_copt=-Woverloaded-virtual
+build:hardball --host_copt=-Wredundant-decls
+build:hardball --host_copt=-Wsign-conversion
+build:hardball --host_copt=-Wsign-promo
+build:hardball --host_copt=-Wno-unused-function
+build:hardball --host_copt=-Wchkp
+build:hardball --host_copt=-Wimplicit-fallthrough
+build:hardball --host_copt=-Wparentheses
+build:hardball --host_copt=-Wunused-parameter
+build:hardball --host_copt=-Wuninitialized
+build:hardball --host_copt=-Wduplicated-branches
+build:hardball --host_copt=-Wshadow
+build:hardball --host_copt=-Wlogical-op
+build:hardball --host_copt=-Wmissing-declarations
 
-#build --copt=-fsanitize=thread
+build:thread_sanitizer --copt=-fsanitize=thread
 
-#build --linkopt=-fsanitize=thread
+build:thread_sanitizer --linkopt=-fsanitize=thread

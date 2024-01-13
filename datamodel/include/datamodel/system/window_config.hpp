@@ -30,7 +30,7 @@ struct window_config {
 
     std::string caption;
     math::Vector2d position;
-    core::Dimensions size;
+    core::IntegralDimensions size;
     visual::RGBAColor background_color;
     bool fullscreen = false;
     bool process_input = false;

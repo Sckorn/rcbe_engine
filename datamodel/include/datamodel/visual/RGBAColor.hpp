@@ -16,7 +16,7 @@ public:
 public:
     RGBAColor() = default;
 
-    RGBAColor(uint32_t hex_code);
+    explicit RGBAColor(uint32_t hex_code);
 
     RGBAColor(
         const rcbe::core::EngineScalar r, 
@@ -39,19 +39,19 @@ public:
     RGBAColor(RGBAColor &&other) = default;
     RGBAColor &operator=(RGBAColor &&other) = default;
 
-    const ValueType &r() const noexcept;
+    [[nodiscard]] const ValueType &r() const noexcept;
     ValueType &r();
 
-    const ValueType &g() const noexcept;
+    [[nodiscard]] const ValueType &g() const noexcept;
     ValueType &g();
 
-    const ValueType &b() const noexcept;
+    [[nodiscard]] const ValueType &b() const noexcept;
     ValueType &b();
 
-    const ValueType &a() const noexcept;
+    [[nodiscard]] const ValueType &a() const noexcept;
     ValueType &a();
 
-    std::array<typename StorageType::ValueType, DIMENSION> asArray() const;
+    [[nodiscard]] std::array<typename StorageType::ValueType, DIMENSION> asArray() const;
 
     explicit operator uint32_t() const;
 

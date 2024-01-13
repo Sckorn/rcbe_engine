@@ -62,6 +62,7 @@ bool XWindow::createRasterizerWindow(const WindowContextPtr &window_context) {
         return false;
     }
 
+    rendering_context_->setVisualId(visInfo->visualid);
     rendering_context_->setDisplay(XOpenDisplay(nullptr));
     rendering_context_->setBackgroundColor(config_.background_color);
     rendering_context_->setWindowDimensions(config_.size);
@@ -78,6 +79,7 @@ bool XWindow::createRasterizerWindow(const WindowContextPtr &window_context) {
                                                   config_.size.width, config_.size.height, 0,
                                                   visInfo->depth, InputOutput, visInfo->visual, CWColormap,
                                                   &attributes_));
+    
     rendering_context_->setGlxContext(
             glXCreateContext(rendering_context_->getDisplay(), visInfo, nullptr, true));
     if (rendering_context_->getGlxContext() == nullptr) {
@@ -111,10 +113,12 @@ bool XWindow::createRasterizerWindow(const WindowContextPtr &window_context) {
 
     XSelectInput(root_display_, rendering_context_->getDrawable(), mask);
     auto delete_message = rendering_context_->getDeleteMessage();
+    
     XSetWMProtocols(root_display_, rendering_context_->getDrawable(), &(delete_message), 1);
 
     XFree(visInfo);
     XFree(fbConfigs);
+    XSync(rendering_context_->getDisplay(), false);
 
     return true;
 }
@@ -246,8 +250,10 @@ void XWindow::windowLoop() {
                 if (unmap_handler_)
                     unmap_handler_();
 
+#ifdef RDMN_OPENGL
                 if (rendering_context_)
                     rendering_context_->glContextFromDefault();
+#endif
 
                 if (renderer_ && renderer_->running())
                     renderer_->stop();
@@ -277,10 +283,6 @@ void XWindow::windowLoop() {
     if (worker.joinable()) {
         worker.join();
     }
-
-#ifdef __GNUC__
-    BOOST_LOG_TRIVIAL(debug) << "Leaving " << __func__;
-#endif
 }
 
 void XWindow::kill() {
@@ -292,7 +294,8 @@ void XWindow::kill() {
             XFreeGC(rendering_context_->getDisplay(), gc_);
         XDestroyWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
         XCloseDisplay(rendering_context_->getDisplay());
-        renderer_->stop();
+        if (renderer_)
+            renderer_->stop();
         if (running_)
             stopWindowLoop();
 
@@ -302,6 +305,7 @@ void XWindow::kill() {
 
 void XWindow::mapWindow() {
     XMapWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
+    BOOST_LOG_TRIVIAL(debug) << "Window should be visible";
 }
 
 const std::shared_ptr<AbstractInputManager>& XWindow::getInputManager() const {
@@ -327,27 +331,28 @@ std::optional<GC> XWindow::getGraphicContext() const {
 
 void XWindow::startWindowLoop() {
     {
-        std::lock_guard lg{running_mutex_};
-        running_ = true;
+        bool current_expected = false;
+        running_.compare_exchange_strong(current_expected, true);
+        if (current_expected)
+            BOOST_LOG_TRIVIAL(warning) << "WindowLoop is already running!";
     }
 
     windowLoop();
-#ifdef __GNUC__
-    BOOST_LOG_TRIVIAL(debug) << "Leaving " << __func__ ;
-#endif
 }
 
 void XWindow::stopWindowLoop() {
-    std::lock_guard lg {running_mutex_};
-    running_ = false;
+    bool current_expected = true;
+    running_.compare_exchange_strong(current_expected, false);
+    if (!current_expected)
+        BOOST_LOG_TRIVIAL(warning) << "Window loop already stopped";
 }
 
-[[nodiscard]] const rendering::GLRendererPtr& XWindow::getRenderer() const {
+const rdmn::render::RendererPtr &XWindow::getRenderer() const {
     std::lock_guard lg {renderer_access_mutex_};
     return renderer_;
 }
 
-void XWindow::setRenderer(rendering::GLRendererPtr renderer_ptr) {
+void XWindow::setRenderer(rdmn::render::RendererPtr renderer_ptr) {
     std::lock_guard lg {renderer_access_mutex_};
     if (renderer_ptr == nullptr)
         throw std::runtime_error("Null pointer assigned into renderer ptr");

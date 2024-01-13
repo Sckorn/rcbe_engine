@@ -28,6 +28,64 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "rdmn_tga_parser",
+    srcs = ["src/tga/tga_parser.cpp"],
+    hdrs = ["include/parsers/tga/tga_parser.hpp"],
+    include_prefix = "rcbe-engine",
+    includes = ["include"],
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//datamodel:engine_datamodel_math",
+        "//datamodel:engine_datamodel_visual",
+        "@boost//:log",
+    ],
+)
+
+cc_library(
+    name = "rdmn_gltf_parser",
+    srcs = ["src/gltf/gltf_parser.cpp"],
+    hdrs = ["include/parsers/gltf/gltf_parser.hpp"],
+    copts = ["-Iexternal/nlohmann/include"],
+    data = [
+        "//datamodel:datamodel_rendering_resources",
+    ],
+    defines = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
+    }),
+    include_prefix = "rcbe-engine",
+    includes = ["include"],
+    linkopts = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": ["-lvulkan"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["-lGL"],
+    }),
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rdmn_tga_parser",
+        "//common:engine_fundamentals",
+        "//common:engine_json_utils",
+        "//common:engine_output_utils",
+        "//common:rcbe_binary_tools",
+        "//datamodel:engine_datamodel_core",
+        "//datamodel:engine_datamodel_geometry",
+        "//datamodel:engine_datamodel_math",
+        "//datamodel:engine_datamodel_rendering",
+        "@boost//:log",
+        "@nlohmann",
+    ],
+)
+
+### Remove after debug
+
+cc_binary(
+    name = "gltf_parser_tester",
+    srcs = ["src/gltf/main.cpp"],
+    deps = [":rdmn_gltf_parser"],
+)
+
 filegroup(
     name = "x3d_test_resources",
     srcs = glob([
@@ -72,6 +130,26 @@ cc_test(
     visibility = ["//visibility:public"],
     deps = [
         ":rcbe_stl_parser",
+        "//datamodel:engine_datamodel_math",
+        "@gtest",
+    ],
+)
+
+cc_test(
+    name = "rdmn_tga_parsers_tests",
+    srcs = [
+        "test/parsers_test.cpp",
+        "test/tga_parser_test.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    data = [
+        "//datamodel:datamodel_rendering_resources",
+        "@brick_wall_texture//file",
+    ],
+    tags = ["local"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rdmn_tga_parser",
         "//datamodel:engine_datamodel_math",
         "@gtest",
     ],

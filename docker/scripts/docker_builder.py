@@ -21,13 +21,15 @@ def parse_arguments(argv):
     parser.add_argument('-d', '--docker-context', help='Path to directory containing docker files (i.e. build context)')
     parser.add_argument('-f', '--docker-file', default='', help='Path to specific docker file to build, if left empty, builds all of them')
     parser.add_argument('-r', '--relation-file', default='', help='Path to relations file')
+    parser.add_argument('-v', '--verbose', action="store_true", help='Switch on verbose mode')
 
     parsed_args = parser.parse_args(argv)
 
-    return parsed_args.docker_context, parsed_args.docker_file, parsed_args.relation_file
+    return parsed_args.docker_context, parsed_args.docker_file, parsed_args.relation_file, parsed_args.verbose
 
 
-def tag_image(image_digest, image_name, tag):
+def tag_image(image_digest, image_name, tag, verbose=False):
+    print('tagging image')
     tag_cmd = ["docker", "tag", image_digest, "radameon/{}:{}".format(image_name, tag)]
     ret = subprocess.run(tag_cmd)
     if (ret.returncode == 0):
@@ -35,13 +37,14 @@ def tag_image(image_digest, image_name, tag):
         return True
     else:
         print("Couldn't tag docker image")
-        print(ret.args)
-        print(ret.stdout)
-        print(ret.stderr)
+        if verbose:
+            print(ret.args)
+            print(ret.stdout)
+            print(ret.stderr)
         return False
 
 
-def build_file(context, file, image_config):
+def build_file(context, file, image_config, verbose=False):
     print("Building single docker file")
 
     if not os.path.isfile(file):
@@ -65,7 +68,9 @@ def build_file(context, file, image_config):
 
     if ret.returncode != 0:
         print("Docker build returned non-zero code")
-        print(ret.stderr)
+        if verbose:
+            print(ret.stderr)
+            print(ret.stdout)
         return False
 
     print("Docker build completed with zero retcode, processing the output")
@@ -90,7 +95,7 @@ def build_file(context, file, image_config):
     return True
 
 
-def filter_dockerfile(files, relations_config):
+def filter_dockerfile(files, relations_config, verbose=False):
     to_remove = list()
     for f in files:
         bname = os.path.basename(f)
@@ -113,7 +118,7 @@ def filter_dockerfile(files, relations_config):
     return files
 
 
-def build_context(context, relations_config):
+def build_context(context, relations_config, verbose=False):
     print("Building docker files images from context")
     docker_files = []
     for (dirpath, dirnames, filenames) in os.walk(context):
@@ -132,7 +137,7 @@ def build_context(context, relations_config):
             initial_docker = df
 
     print("Initial docker %s" % initial_docker)
-    if build_file(context, initial_docker, relations_config[os.path.basename(initial_docker)]):
+    if build_file(context, initial_docker, relations_config[os.path.basename(initial_docker)], verbose):
         print("%s build successfully" % initial_docker)
         docker_files.remove(initial_docker)
 
@@ -148,7 +153,7 @@ def build_context(context, relations_config):
 
             if current_dep == os.path.basename(initial_docker):
                 print("Found dependant %s from %s building it" % (df, initial_docker))
-                if build_file(context, df, relations_config[df_basename]):
+                if build_file(context, df, relations_config[df_basename], verbose):
                     print("Built %s successfully" % df)
                     initial_docker = df
                     docker_files.remove(initial_docker)
@@ -159,14 +164,15 @@ def build_context(context, relations_config):
     print("Contextual build completed successfully!")
 
 
-def main(context, file, relations):
+def main(context, file, relations, verbose):
     abs_context = os.path.abspath(context)
     abs_file = os.path.abspath(file)
     abs_relations = os.path.abspath(relations)
 
-    print("Context %s" % abs_context)
-    print("File %s" % abs_file)
-    print("Relations file %s" % abs_relations)
+    if verbose:
+        print("Context %s" % abs_context)
+        print("File %s" % abs_file)
+        print("Relations file %s" % abs_relations)
 
     relations_config = None
     if os.path.exists(abs_relations) and os.path.isfile(abs_relations):
@@ -176,15 +182,18 @@ def main(context, file, relations):
     if file:
         print("Docker file supplied to build %s" % file)
         if relations_config:
-            build_file(abs_context, abs_file, relations_config[os.path.basename(abs_file)])
+            build_file(abs_context, abs_file, relations_config[os.path.basename(abs_file)], verbose)
         else:
-            build_file(abs_context, abs_file, None)
+            build_file(abs_context, abs_file, None, verbose)
     else:
         print("Building from docker context %s" % context)
-        build_context(abs_context, relations_config)
+        build_context(abs_context, relations_config, verbose)
 
 
 if __name__ == "__main__":
-    context, file, relations = parse_arguments(sys.argv[1:])
+    context, file, relations, verbose = parse_arguments(sys.argv[1:])
 
-    main(context, file, relations)
+    if verbose:
+        print('Verbose mode activated')
+
+    main(context, file, relations, verbose)

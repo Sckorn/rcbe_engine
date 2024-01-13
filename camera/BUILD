@@ -2,13 +2,42 @@ cc_library(
     name = "rcbe_engine_camera",
     srcs = glob(["src/**/*.cpp"]),
     hdrs = glob(["include/**/*.hpp"]),
+    defines = select({
+        "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
+        "//common:engine_fundamentals",
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_rendering",
+    ],
+)
+
+### tests
+
+cc_test(
+    name = "rdmn_camera_tests",
+    srcs = glob(
+        ["test/*.cpp"],
+    ),
+    copts = ["-Iexternal/gtest/include"],
+    data = [
+        "//datamodel:datamodel_rendering_resources",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rcbe_engine_camera",
+        "//common:engine_fuzzy_logic",
+        "//common:engine_json_utils",
+        "//datamodel:engine_datamodel_math",
+        "//datamodel:engine_datamodel_rendering",
+        "//datamodel:engine_datamodel_visual",
+        "@gtest",
+        "@nlohmann",
     ],
 )
 

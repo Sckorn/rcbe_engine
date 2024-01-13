@@ -33,11 +33,11 @@ cc_library(
     hdrs = glob([
         "include/common/fundamentals/**/*.hpp",
     ]),
-    data = ["//meta_package:engine_config"],
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
+    deps = ["//meta_package:rdmn_engine_config"],
 )
 
 cc_library(

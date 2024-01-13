@@ -9,6 +9,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN mv /bin/sh /bin/sh-old && \
     ln -s /bin/bash /bin/sh && \
     # install packages
+    add-apt-repository ppa:graphics-drivers/ppa && \
     apt-get -qq update && \
     apt-get install --fix-missing -q -y \
         zip \
@@ -18,7 +19,6 @@ RUN mv /bin/sh /bin/sh-old && \
         gpicview \
         meld \
         # binaries
-        git \
         glade \
         # utlities
         tmux \

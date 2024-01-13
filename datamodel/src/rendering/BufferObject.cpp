@@ -1,4 +1,5 @@
 #include <rcbe-engine/datamodel/rendering/BufferObject.hpp>
+#include <rcbe-engine/datamodel/rendering/buffer_object_helpers.hpp>
 
 #include <boost/log/trivial.hpp>
 
@@ -111,78 +112,22 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
     // right now keeping it simple, it's not a VBO's business to validate meshes
     // they'll be validated by scene graph
 
-    size_t normals_size = 0;
-    source_size_ = std::accumulate(meshes.begin(), meshes.end(), 0, [&normals_size](auto sum, const auto &s) mutable {
-        normals_size += s.normalsSize();
-        return sum + s.verticesSize();
-    });
+    auto bod = rdmn::render::extractBufferObjectData<VertexBufferObject::ValueType, GLuint>(meshes);
 
-    normals_intact_ = source_size_ == normals_size;
+    vertices_ = std::move(bod.vertices);
+    normals_ = std::move(bod.normals);
+    colors_ = std::move(bod.colors);
+    tex_coords_ = std::move(bod.tex_coords);
 
-    vertices_.reserve(source_size_ * 3);
-    colors_.reserve(source_size_ * 3);
-    tex_coords_.reserve(source_size_ * 2);
+    normals_intact_ = bod.normals_intact;
 
-    if (!normals_intact_) {
-        BOOST_LOG_TRIVIAL(warning) << "Normals are of wrong size!";
-    } else {
-        normals_.reserve(source_size_ * 3);
-    }
+    source_size_ = bod.source_size;
+    vertices_byte_size_ = bod.vertices_byte_size;
+    normals_byte_size_ = bod.normals_byte_size;
+    colors_byte_size_ = bod.colors_byte_size;
+    tex_coords_byte_size_ = bod.texcoords_byte_size;
 
-    for (const auto& m : meshes) {
-        // The below transformations are needed, because:
-        // when we don't use shaders, mesh vertices should be
-        // transformed into "world" coordinates right off the bat,
-        // in case of shaders, this transformation is done inside the shader
-        // using mesh model transform.
-        const auto &vertices = (m.verticesTransformed() && use_vao) ? m.verticesOriginal() : m.vertices();
-        const auto &normals = (m.verticesTransformed() && use_vao) ? m.normalsOriginal() : m.normals();
-        const auto &color = m.color();
-        const auto &facets = m.facets();
-        const auto &tex_coord = m.texCoord();
-
-        for (const auto &f : facets) {
-            for (size_t j = 0; j < 3; ++j) {
-                const auto &v = vertices.at(f.indices[j]);
-                const auto &n = normals.at(f.indices[j]);
-
-                vertices_.push_back(v.x());
-                vertices_.push_back(v.y());
-                vertices_.push_back(v.z());
-
-                colors_.push_back(color.r());
-                colors_.push_back(color.g());
-                colors_.push_back(color.b());
-                colors_.push_back(color.a());
-
-                normals_.push_back(n.x());
-                normals_.push_back(n.y());
-                normals_.push_back(n.z());
-
-                if (!tex_coord.empty()) {
-                    const auto &tc = tex_coord.at(f.tex_coords_indices[j]);
-
-                    tex_coords_.push_back(tc.x());
-                    tex_coords_.push_back(tc.y());
-                } else {
-                    tex_coords_.push_back(0);
-                    tex_coords_.push_back(0);
-                }
-            }
-        }
-    }
-
-    BOOST_LOG_TRIVIAL(debug) << "Vertices size " << vertices_.size();
-    BOOST_LOG_TRIVIAL(debug) << "Normals size " << normals_.size();
-    BOOST_LOG_TRIVIAL(debug) << "Colors size " << colors_.size();
-    BOOST_LOG_TRIVIAL(debug) << "Texture coordinates size " << tex_coords_.size();
-
-    vertices_byte_size_ = (sizeof(decltype(vertices_)::value_type) * vertices_.size());
-    normals_byte_size_ = (sizeof(decltype(normals_)::value_type) * normals_.size());
-    colors_byte_size_ = (sizeof(decltype(colors_)::value_type) * colors_.size());
-    tex_coords_byte_size_ = (sizeof(decltype(tex_coords_)::value_type) * tex_coords_.size());
-
-    buffer_size_bytes_ = vertices_byte_size_ + normals_byte_size_ + colors_byte_size_ + tex_coords_byte_size_;
+    buffer_size_bytes_ = bod.buffer_byte_size;
 
     if (use_vao)
         vao_ = VertexArrayObject();

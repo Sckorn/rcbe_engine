@@ -5,6 +5,8 @@
 #include <rcbe-engine/core/EditorInputManager.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
 
+#include <rcbe-engine/parsers/tga/tga_parser.hpp>
+
 #include <boost/log/trivial.hpp>
 
 int main(int argc, char* argv[]) {
@@ -19,7 +21,7 @@ int main(int argc, char* argv[]) {
         window_conf.editor = true;
         window_conf.fullscreen = false;
         window_conf.input_scheme = "";
-        window_conf.size = rcbe::core::Dimensions { 1240, 720 };
+        window_conf.size = rcbe::core::IntegralDimensions {1240, 720 };
         window_conf.process_input = true;
         window_conf.type = decltype(window_conf.type)::drawing_window;
 
@@ -63,8 +65,11 @@ int main(int argc, char* argv[]) {
                             rcbe::visual::texture_config tconf {};
 
                             tconf.component_order = decltype(tconf.component_order)::GBR;
-                            rcbe::visual::Texture tex { "external/awesomeface_texture/file/awesomeface_texture.tga", tconf };
-                            const auto &pixels = tex.getImageBody();
+                            rcbe::visual::Texture tex {
+                                "external/awesomeface_texture/file/awesomeface_texture.tga",
+                                rdmn::parse::tga::parse
+                            };
+                            const auto &pixels = tex.getPixels();
                             auto optional_gc = window->getGraphicContext();
 
                             if (optional_gc) {
@@ -88,7 +93,7 @@ int main(int argc, char* argv[]) {
 
         window->show();
 
-        auto window_handle = window->startWindowLoopAync();
+        auto window_handle = window->startWindowLoopAsync();
 
         window_handle.wait();
     } catch (const std::exception &e) {

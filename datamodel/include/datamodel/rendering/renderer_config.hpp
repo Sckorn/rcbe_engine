@@ -21,14 +21,14 @@ enum class RendererType {
 
 using RendererTypeBimap = boost::bimap<std::string, RendererType>;
 
-static const RendererTypeBimap met_table = boost::assign::list_of<RendererTypeBimap::relation>
+static const RendererTypeBimap rtb_table = boost::assign::list_of<RendererTypeBimap::relation>
         ("hardware", RendererType::hardware)
         ("software", RendererType::software)
         ;
 
 static std::string str_from_renderer_type(RendererType type) {
-    auto it = met_table.right.find(type);
-    if (it != met_table.right.end())
+    auto it = rtb_table.right.find(type);
+    if (it != rtb_table.right.end())
     {
         return it->second;
     }
@@ -36,8 +36,8 @@ static std::string str_from_renderer_type(RendererType type) {
 }
 
 static RendererType renderer_type_from_string(const std::string& type) {
-    auto it = met_table.left.find(type);
-    if (it != met_table.left.end())
+    auto it = rtb_table.left.find(type);
+    if (it != rtb_table.left.end())
     {
         return it->second;
     }
@@ -48,11 +48,12 @@ static RendererType renderer_type_from_string(const std::string& type) {
 struct renderer_config
 {
     std::string window_caption;
-    rcbe::core::Dimensions initial_dimensions;
+    rcbe::core::IntegralDimensions initial_dimensions;
     bool resizable;
     rcbe::math::Vector2d initial_window_position;
     rcbe::visual::RGBAColor clear_color;
     RendererType renderer_type;
+    bool debug = true;
 };
 
 }

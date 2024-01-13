@@ -2,10 +2,10 @@
 #define RCBE_ENGINE_BINARYBUFFER_HPP
 
 #include <algorithm>
-#include <fstream>
-#include <vector>
 #include <array>
+#include <fstream>
 #include <numeric>
+#include <vector>
 
 #include <rcbe-engine/binary/base_serializer.hpp>
 

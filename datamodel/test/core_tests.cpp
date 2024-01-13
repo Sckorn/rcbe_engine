@@ -6,7 +6,7 @@
 class DimensionsTests : public ::testing::Test {
 public:
 
-    [[nodiscard]] rcbe::core::Dimensions getTestDimensions() const {
+    [[nodiscard]] rcbe::core::IntegralDimensions getTestDimensions() const {
         return dim;
     }
 
@@ -21,7 +21,7 @@ public:
 private:
     static constexpr rcbe::core::EngineIntergral IWIDTH = 1024;
     static constexpr rcbe::core::EngineIntergral IHEIGHT = 768;
-    static constexpr rcbe::core::Dimensions dim{IWIDTH, IHEIGHT};
+    static constexpr rcbe::core::IntegralDimensions dim{IWIDTH, IHEIGHT};
 };
 
 using CoreObjectTests = DimensionsTests;
@@ -46,7 +46,7 @@ TEST_F(DimensionsTests, DoubleDimensions) {
 }
 
 TEST_F(CoreObjectTests, Components) {
-    using DimT = rcbe::core::Dimensions;
+    using DimT = rcbe::core::IntegralDimensions;
 
     rcbe::core::CoreObject co{some_empty_struct{}};
 

@@ -6,9 +6,16 @@
 
 namespace rcbe::math
 {
+#ifdef RDMN_VULKAN
+static constexpr Vector3d WORLD_UP(0., 0., 1.);
+#elif defined(RDMN_OPENGL)
 static constexpr Vector3d WORLD_UP(0., 1., 0.);
-static constexpr Vector3d WORLD_FORWARD(0., 0., -1.);
-static constexpr Vector3d WORLD_RIGHT(1.0, 0., 0.);
+#elif defined(RDMN_DIRECTX) && defined(_WIN32)
+#else
+inline constexpr Vector3d WORLD_UP(0., 0., 1.); // consider clarifying whether it should be this or (0., -1., -0.);
+inline constexpr Vector3d WORLD_FORWARD(1., 0., 0.);
+inline constexpr Vector3d WORLD_RIGHT(0.0, -1., 0.);
+#endif
 }
 
 #endif

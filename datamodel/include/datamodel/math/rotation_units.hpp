@@ -47,6 +47,10 @@ struct rotations_base {
         return this->operator-=(base);
     }
 
+    friend rotations_base operator-(rotations_base l, rotations_base r) {
+        return rotations_base(l.rotation_ - r.rotation_);
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const rotations_base& d) {
         os << d.rotation_;
         return os;
