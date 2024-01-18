@@ -1,15 +1,13 @@
 #include <fstream>
 #include <iostream>
 
+#include <rcbe-engine/binary/BinaryBuffer.hpp>
+#include <rcbe-engine/datamodel/geometry/BinaryStlFile.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/parsers/stl/stl_parser.hpp>
 
-#include <rcbe-engine/datamodel/math/Vector.hpp>
-
-#include <rcbe-engine/datamodel/geometry/BinaryStlFile.hpp>
-#include <rcbe-engine/binary/BinaryBuffer.hpp>
-
 namespace rcbe::parsers::stl {
-geometry::Mesh parse_mesh(const std::filesystem::path& file_path) {
+geometry::Mesh parse_mesh(const std::filesystem::path &file_path) {
     std::ifstream ifs {file_path, std::ios::in | std::ios::binary};
     rcbe::binary::BinaryBuffer bb;
     ifs >> bb;
@@ -20,7 +18,7 @@ geometry::Mesh parse_mesh(const std::filesystem::path& file_path) {
     geometry::Mesh::FacetStorage facets {};
     geometry::Mesh::VertexStorage verts {};
     geometry::Mesh::NormalStorage norms {};
-    geometry::Mesh::TexCoordStorage tex_coords{};
+    geometry::Mesh::TexCoordStorage tex_coords {};
 
     auto offset = header.SIZE;
     for (size_t i = 0; i < header.number_triangles; ++i) {
@@ -50,10 +48,10 @@ geometry::Mesh parse_mesh(const std::filesystem::path& file_path) {
     }
 
     return geometry::Mesh(
-    	std::move(verts),
-    	std::move(norms),
-    	std::move(facets),
-    	std::move(tex_coords),
-    	geometry::Mesh::ColorType (0.5, 0.5, 0.5));
+        std::move(verts),
+        std::move(norms),
+        std::move(facets),
+        std::move(tex_coords),
+        geometry::Mesh::ColorType(0.5, 0.5, 0.5));
 }
-}
+}// namespace rcbe::parsers::stl

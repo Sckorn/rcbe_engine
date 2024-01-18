@@ -13,24 +13,22 @@ namespace rdmn::render {
 RasterizerTexture::~RasterizerTexture() = default;
 
 RasterizerTexture::RasterizerTexture(rasterizer_texture_config config, rcbe::visual::TexturePtr texture)
-:
-impl_(std::make_unique<RasterizerTextureImplementation>(config, texture)) {}
+    : impl_(std::make_unique<RasterizerTextureImplementation>(config, texture)) {}
 
 RasterizerTexture::RasterizerTexture(RasterizerTexture &&other) noexcept
-:
-impl_(std::move(other.impl_)) {
+    : impl_(std::move(other.impl_)) {
 }
 
 RasterizerTexture &RasterizerTexture::operator=(RasterizerTexture &&other) noexcept {
-  if (!other.impl_)
+    if (!other.impl_)
+        return *this;
+
+    if (this == std::addressof(other))
+        return *this;
+
+    impl_ = std::move(other.impl_);
+
     return *this;
-
-  if (this == std::addressof(other))
-	  return *this;
-
-  impl_ = std::move(other.impl_);
-
-  return *this;
 }
 
 void RasterizerTexture::bind(const size_t index) const {
@@ -47,21 +45,19 @@ bool RasterizerTexture::deferred() const noexcept {
 
 #ifdef RDMN_VULKAN
 bool RasterizerTexture::init(
-        VkDevice logical_device,
-        VkPhysicalDevice physical_device,
-        VkCommandPool command_pool,
-        VkQueue graphics_queue
-) {
+    VkDevice logical_device,
+    VkPhysicalDevice physical_device,
+    VkCommandPool command_pool,
+    VkQueue graphics_queue) {
     return impl_->init(logical_device, physical_device, command_pool, graphics_queue);
 }
 
 bool RasterizerTexture::init(
-        VkDevice logical_device,
-        VkPhysicalDevice physical_device,
-        VkCommandPool command_pool,
-        VkQueue graphics_queue,
-        VkSampler global_sampler
-) {
+    VkDevice logical_device,
+    VkPhysicalDevice physical_device,
+    VkCommandPool command_pool,
+    VkQueue graphics_queue,
+    VkSampler global_sampler) {
     return impl_->init(logical_device, physical_device, command_pool, graphics_queue, global_sampler);
 }
 
@@ -81,4 +77,4 @@ const rcbe::visual::TexturePtr &RasterizerTexture::getVisualTexturePtr() const {
     return impl_->getVisualTexturePtr();
 }
 #endif
-}
+}// namespace rdmn::render

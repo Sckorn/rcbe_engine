@@ -1,17 +1,16 @@
 #ifndef RCBE_ENGINE_BINARYSTLFILE_HPP
 #define RCBE_ENGINE_BINARYSTLFILE_HPP
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
-#include <array>
-#include <vector>
 #include <istream>
+#include <vector>
 
-#include <rcbe-engine/datamodel/math/Vector.hpp>
-
-#include <rcbe-engine/binary/base_serializer.hpp>
 #include <rcbe-engine/binary/BinaryBuffer.hpp>
+#include <rcbe-engine/binary/base_serializer.hpp>
 #include <rcbe-engine/binary/binary_file_concepts.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
 
 namespace rcbe::geometry {
 /**
@@ -48,10 +47,10 @@ struct binary_stl_chunk {
     rcbe::math::Vector3f v1;
     rcbe::math::Vector3f v2;
     rcbe::math::Vector3f v3;
-    uint16_t extra_bytes_count; // should be zero, throw otherwise
+    uint16_t extra_bytes_count;// should be zero, throw otherwise
 };
 
-}
+}// namespace rcbe::geometry
 
 namespace rcbe::binary {
 void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_header &bsh);
@@ -59,6 +58,6 @@ void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_header &bsh);
 
 void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_chunk &bsc);
 void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_chunk &bsc);
-}
+}// namespace rcbe::binary
 
-#endif //RCBE_ENGINE_BINARYSTLFILE_HPP
+#endif//RCBE_ENGINE_BINARYSTLFILE_HPP

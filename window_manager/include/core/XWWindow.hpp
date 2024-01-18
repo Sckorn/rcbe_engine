@@ -1,21 +1,21 @@
 #ifndef RCBE_ENGINE_XWWINDOW_HPP
 #define RCBE_ENGINE_XWWINDOW_HPP
 
-#include <memory>
 #include <future>
+#include <memory>
 #include <optional>
 
-#include <rcbe-engine/datamodel/system/window_config.hpp>
-#include <rcbe-engine/datamodel/system/WindowContext.hpp>
-#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
-
 #include <X11/Xlib.h>
+
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
+#include <rcbe-engine/datamodel/system/WindowContext.hpp>
+#include <rcbe-engine/datamodel/system/window_config.hpp>
 
 namespace rdmn::render {
 class Renderer;
 
 using RendererPtr = std::unique_ptr<Renderer>;
-}
+}// namespace rdmn::render
 
 namespace rcbe::core {
 class AbstractInputManager;
@@ -26,9 +26,9 @@ class InputManagerImplementation;
 
 #ifdef __linux__
 class XWindow;
-class XWWindow
-{
+class XWWindow {
 public:
+
     XWWindow() = delete;
 
     XWWindow(window_config &&config_, const WindowContextPtr &window_context);
@@ -47,7 +47,7 @@ public:
 
     void kill();
     void show();
-    [[nodiscard]]const std::shared_ptr<core::AbstractInputManager> &getInputManager() const;
+    [[nodiscard]] const std::shared_ptr<core::AbstractInputManager> &getInputManager() const;
     void setInputManager(const std::shared_ptr<AbstractInputManager> &manager);
 
     void onConfigure(window::ConfigureHandlerType &&handler);
@@ -61,13 +61,13 @@ public:
     [[nodiscard]] std::optional<GC> getGraphicContext() const;
 
 private:
+
     std::shared_ptr<XWindow> impl_;
 };
 
-#elif  _WIN32
+#elif _WIN32
 //TODO: implement it for windows
 class XWWindow {
-
 };
 
 
@@ -75,6 +75,6 @@ class XWWindow {
 
 using WindowPtr = std::shared_ptr<XWWindow>;
 using WindowConstPtr = std::shared_ptr<const XWWindow>;
-}
+}// namespace rcbe::core
 
-#endif //RCBE_ENGINE_XWWINDOW_HPP
+#endif//RCBE_ENGINE_XWWINDOW_HPP

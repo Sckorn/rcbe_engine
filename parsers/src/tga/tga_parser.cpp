@@ -1,17 +1,16 @@
-#include <rcbe-engine/parsers/tga/tga_parser.hpp>
-
 #include <boost/log/trivial.hpp>
 
 #include <rcbe-engine/binary/BinaryBuffer.hpp>
 #include <rcbe-engine/exceptions/not_implemented.hpp>
+#include <rcbe-engine/parsers/tga/tga_parser.hpp>
 
 namespace {
 namespace tga = rdmn::parse::tga;
 
-inline constexpr const char * TGA_VERSION_TWO_TOKEN = "TRUEVISION-XFILE";
+inline constexpr const char *TGA_VERSION_TWO_TOKEN = "TRUEVISION-XFILE";
 
 struct image_specification {
-    static  constexpr size_t SIZE = sizeof(uint16_t) * 4 + sizeof(uint8_t) * 2;
+    static constexpr size_t SIZE = sizeof(uint16_t) * 4 + sizeof(uint8_t) * 2;
 
     uint16_t x_origin;
     uint16_t y_origin;
@@ -35,9 +34,9 @@ tga::extended_imagedata parseV1(rcbe::binary::BinaryBuffer &&bb) {
     const auto image_type = bb.at(offset, sizeof(uint8_t)).get<uint8_t>();
 
     const auto color_map_spec = bb.at(
-            offset,
-            tga::extended_imagedata::colormap_specification::SIZE
-            ).get<tga::extended_imagedata::colormap_specification>();
+                                      offset,
+                                      tga::extended_imagedata::colormap_specification::SIZE)
+                                    .get<tga::extended_imagedata::colormap_specification>();
 
     const auto image_spec = bb.at(offset, image_specification::SIZE).get<image_specification>();
 
@@ -73,7 +72,7 @@ tga::extended_imagedata parseV1(rcbe::binary::BinaryBuffer &&bb) {
             if (alpha_ch_missing)
                 color_comp_bytes.push_back(std::numeric_limits<uint8_t>::max());
 
-            ImageBodyType ::ValueType val = *reinterpret_cast<ImageBodyType::ValueType*>(color_comp_bytes.data());
+            ImageBodyType ::ValueType val = *reinterpret_cast<ImageBodyType::ValueType *>(color_comp_bytes.data());
 
             image_body.pushBack(val);
         }
@@ -83,35 +82,33 @@ tga::extended_imagedata parseV1(rcbe::binary::BinaryBuffer &&bb) {
 
         return {
             .colormap_spec {
-                    .first_entry_index = color_map_spec.first_entry_index,
-                    .color_map_length = color_map_spec.color_map_length,
-                    .color_map_entry_size = color_map_spec.color_map_entry_size,
+                .first_entry_index = color_map_spec.first_entry_index,
+                .color_map_length = color_map_spec.color_map_length,
+                .color_map_entry_size = color_map_spec.color_map_entry_size,
             },
             .general_metadata {
                 .metadata = {
-                        .origin = {image_spec.x_origin, image_spec.y_origin},
-                        .dimensions = {.width = image_spec.width, .height = image_spec.height},
-                        .pixel_depth_bytes = static_cast<uint8_t>(pixel_depth_bytes),
-                        .component_order = comp_order,
+                    .origin = {image_spec.x_origin, image_spec.y_origin},
+                    .dimensions = {.width = image_spec.width, .height = image_spec.height},
+                    .pixel_depth_bytes = static_cast<uint8_t>(pixel_depth_bytes),
+                    .component_order = comp_order,
                 },
-                .pixels = rdmn::vis::image_data::wrapPixelsInStorage(std::move(image_body))
-            },
+                .pixels = rdmn::vis::image_data::wrapPixelsInStorage(std::move(image_body))},
         };
     } else {
         throw std::runtime_error("Parsing TGA V1 with colormap is not implemented!");
     }
 }
-}
+}// namespace
 
 
 namespace rcbe::binary {
 template <>
 void to_binary(rcbe::binary::BinaryBuffer &bb, const tga::extended_imagedata::colormap_specification &v) {
     bb = {
-            v.first_entry_index,
-            v.color_map_length,
-            v.color_map_entry_size
-    };
+        v.first_entry_index,
+        v.color_map_length,
+        v.color_map_entry_size};
 }
 
 template <>
@@ -124,13 +121,12 @@ void from_binary(const rcbe::binary::BinaryBuffer &bb, tga::extended_imagedata::
 template <>
 void to_binary(rcbe::binary::BinaryBuffer &bb, const image_specification &v) {
     bb = {
-            v.x_origin,
-            v.y_origin,
-            v.width,
-            v.height,
-            v.pixel_depth,
-            v.image_descriptor
-    };
+        v.x_origin,
+        v.y_origin,
+        v.width,
+        v.height,
+        v.pixel_depth,
+        v.image_descriptor};
 }
 
 template <>
@@ -142,7 +138,7 @@ void from_binary(const rcbe::binary::BinaryBuffer &bb, image_specification &v) {
     v.pixel_depth = bb.at(sizeof(uint16_t) * 4, sizeof(uint8_t)).get<uint8_t>();
     v.image_descriptor = bb.at(sizeof(uint16_t) * 4 + sizeof(uint8_t), sizeof(uint8_t)).get<uint8_t>();
 }
-}
+}// namespace rcbe::binary
 
 namespace rdmn::parse::tga {
 
@@ -169,7 +165,7 @@ extended_imagedata extended_parse(const rcbe::core::EnginePath &file_path) {
     if (file_path.extension().string() != ".tga" && file_path.extension().string() != ".TGA")
         throw std::runtime_error("Only supports TGA format!");
 
-    std::ifstream ifs { file_path };
+    std::ifstream ifs {file_path};
 
     if (!ifs)
         throw std::runtime_error("Can't open " + file_path.string() + " for reading!");
@@ -189,4 +185,4 @@ extended_imagedata extended_parse(const rcbe::core::EnginePath &file_path) {
         return parseV1(std::move(bb));
     }
 }
-}
+}// namespace rdmn::parse::tga

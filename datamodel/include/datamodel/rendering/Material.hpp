@@ -15,15 +15,16 @@
 #ifdef RDMN_OPENGL
 #include <rcbe-engine/datamodel/rendering/ShaderProgram.hpp>
 #endif
+#include <rcbe-engine/datamodel/rendering/RasterizerTexture.hpp>
 #include <rcbe-engine/datamodel/rendering/Shader.hpp>
 #include <rcbe-engine/datamodel/rendering/rasterizer_texture_types.hpp>
-#include <rcbe-engine/datamodel/rendering/RasterizerTexture.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
 
 namespace rcbe::rendering {
 
 class Material {
 public:
+
     struct ShaderArguments {
         core::EnginePath path;
         rdmn::render::ShaderType type;
@@ -37,6 +38,7 @@ public:
 
     class MaterialConfig {
     public:
+
         MaterialConfig() = default;
         explicit MaterialConfig(std::vector<ShaderArguments> &&shaders);
         MaterialConfig(std::vector<ShaderArguments> &&shaders, std::vector<TextureArguments> &&textures);
@@ -46,11 +48,12 @@ public:
         [[nodiscard]] const std::vector<TextureArguments> &getTextureArgs() const noexcept;
 
     private:
+
         std::vector<ShaderArguments> shader_args_;
         std::vector<TextureArguments> texture_args_;
     };
 
-    using MaterialTexMetaData = std::unordered_map<size_t, rcbe::visual::TexturePtr>; // object hash to vtex ptr
+    using MaterialTexMetaData = std::unordered_map<size_t, rcbe::visual::TexturePtr>;// object hash to vtex ptr
 
     using TextureType = rdmn::render::RasterizerTexture;
     using ShaderType = rdmn::render::Shader;
@@ -83,27 +86,27 @@ public:
     void initializeDeferredMaterial() const;
 
 #ifdef RDMN_VULKAN
-  typename TextureStorage::iterator pushTexture(std::shared_ptr<TextureType> t);
+    typename TextureStorage::iterator pushTexture(std::shared_ptr<TextureType> t);
 
-  bool addObjectMetadata(const size_t object_hash, const rcbe::visual::TexturePtr &vtex);
+    bool addObjectMetadata(const size_t object_hash, const rcbe::visual::TexturePtr &vtex);
 
-  const std::unique_ptr<ShaderType> &getVertex() const;
-  const std::unique_ptr<ShaderType> &getFragment() const;
+    const std::unique_ptr<ShaderType> &getVertex() const;
+    const std::unique_ptr<ShaderType> &getFragment() const;
 
-  std::unique_ptr<ShaderType> &getVertex();
-  std::unique_ptr<ShaderType> &getFragment();
+    std::unique_ptr<ShaderType> &getVertex();
+    std::unique_ptr<ShaderType> &getFragment();
 #endif
 
 #ifdef RDMN_OPENGL
-  void apply() const;
-  void useShaderProgram() const;
-  [[nodiscard]] const std::unique_ptr<ShaderProgram> &getShaderProgram() const noexcept;
+    void apply() const;
+    void useShaderProgram() const;
+    [[nodiscard]] const std::unique_ptr<ShaderProgram> &getShaderProgram() const noexcept;
 #endif
 
 private:
 
-  MaterialConfig config_;
-  mutable TextureStorage textures_;
+    MaterialConfig config_;
+    mutable TextureStorage textures_;
 
 #ifdef RDMN_OPENGL
     mutable std::unique_ptr<ShaderProgram> shader_program_ = nullptr;
@@ -119,10 +122,7 @@ private:
 
     bool deferred_ = false;
 };
-}
+}// namespace rcbe::rendering
 
 
-
-#endif //RCBE_ENGINE_MATERIAL_HPP
-
-
+#endif//RCBE_ENGINE_MATERIAL_HPP

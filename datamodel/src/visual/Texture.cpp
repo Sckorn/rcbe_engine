@@ -2,7 +2,6 @@
 #include <string>
 
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
-
 #include <rcbe-engine/fundamentals/convinience.hpp>
 
 inline constexpr size_t BITS_IN_BYTE = 8;
@@ -10,25 +9,20 @@ inline constexpr size_t BITS_IN_BYTE = 8;
 namespace rcbe::visual {
 
 Texture::Texture(rdmn::vis::image_data &&data)
-:
-data_ {
-        rdmn::vis::image_data {
-            .metadata = {
-                .origin = {data.metadata.origin},
-                .dimensions = {data.metadata.dimensions},
-                .pixel_depth_bytes = data.metadata.pixel_depth_bytes,
-                .component_order = data.metadata.component_order,
-            },
-            .pixels = data.pixels->shared_from_this(), // TODO: dubious solution, think of a better one! @sckorn
-        }
-} {}
+    : data_ {
+          rdmn::vis::image_data {
+              .metadata = {
+                  .origin = {data.metadata.origin},
+                  .dimensions = {data.metadata.dimensions},
+                  .pixel_depth_bytes = data.metadata.pixel_depth_bytes,
+                  .component_order = data.metadata.component_order,
+              },
+              .pixels = data.pixels->shared_from_this(),// TODO: dubious solution, think of a better one! @sckorn
+          }} {}
 
 Texture::Texture(const core::EnginePath &path, ParserType &&parser)
-:
-data_ {
-    parser(path)
-}
-{}
+    : data_ {
+          parser(path)} {}
 
 Texture::~Texture() = default;
 
@@ -74,15 +68,11 @@ TextureConstPtr make_tex_const_ptr(const core::EnginePath &path, Texture::Parser
 }
 
 VisualTextureSet::VisualTextureSet(std::initializer_list<TexturePtr> &&tex_data)
-:
-grouped_textures(tex_data) {
-
+    : grouped_textures(tex_data) {
 }
 
 VisualTextureSet::VisualTextureSet(std::unordered_set<TexturePtr> &&tex_data)
-:
-grouped_textures(std::move(tex_data)) {
-
+    : grouped_textures(std::move(tex_data)) {
 }
 
-}
+}// namespace rcbe::visual

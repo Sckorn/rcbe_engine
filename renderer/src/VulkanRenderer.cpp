@@ -1,23 +1,21 @@
 #define VK_USE_PLATFORM_XLIB_KHR
 
+#include "VulkanRenderer.hpp"
+
 #include <algorithm>
 #include <exception>
 #include <limits>
 #include <vector>
 
-#include "VulkanRenderer.hpp"
-
 #include <vulkan/vulkan_xlib.h>
 
-#include <rcbe-engine/engine_config.hpp>
-
-#include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
-#include <rcbe-engine/datamodel/rendering/matrix_helpers.hpp>
+#include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
 #include <rcbe-engine/datamodel/rendering/Material.hpp>
-#include <rcbe-engine/datamodel/rendering/rasterizer_texture_helpers.hpp>
 #include <rcbe-engine/datamodel/rendering/Shader.hpp>
-
+#include <rcbe-engine/datamodel/rendering/matrix_helpers.hpp>
+#include <rcbe-engine/datamodel/rendering/rasterizer_texture_helpers.hpp>
+#include <rcbe-engine/engine_config.hpp>
 #include <rcbe-engine/parsers/tga/tga_parser.hpp>
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
 
@@ -26,7 +24,7 @@ inline constexpr size_t TOTAL_VK_EXTENSIONS = 6;
 inline constexpr size_t TOTAL_SHADER_TEXTURES = 8;
 inline constexpr float NEAR_PLANE_COORDINATE = 0.1;
 inline constexpr float FAR_PLANE_COORDINATE = 10.0;
-inline constexpr const char * APPLICATION_NAME = "RDMN Renderer";
+inline constexpr const char *APPLICATION_NAME = "RDMN Renderer";
 
 namespace {
 struct MeshPushConstants {
@@ -36,11 +34,10 @@ struct MeshPushConstants {
 };
 
 std::pair<std::vector<VkSampler>, std::vector<VkImageView>> repopulateSamplersAndViews(
-        std::unordered_map<rcbe::visual::TexturePtr, size_t> &texture_to_index,
-        const std::unordered_set<std::shared_ptr<rcbe::core::CoreObject>> &material_cache,
-        const bool use_global_sampler
-) {
-    std::pair<std::vector<VkSampler>, std::vector<VkImageView>> ret{};
+    std::unordered_map<rcbe::visual::TexturePtr, size_t> &texture_to_index,
+    const std::unordered_set<std::shared_ptr<rcbe::core::CoreObject>> &material_cache,
+    const bool use_global_sampler) {
+    std::pair<std::vector<VkSampler>, std::vector<VkImageView>> ret {};
     auto &rasterizer_tex_samplers = ret.first;
     auto &rasterizer_tex_image_views = ret.second;
 
@@ -73,50 +70,44 @@ rcbe::core::CoreObject loadCorner() {
     std::vector<rcbe::rendering::Material::ShaderArguments> shader_args;
     shader_args.reserve(2);
     shader_args.push_back(
-            {"datamodel/data/rendering/shaders/default_vulkan.vert.spv",
-             rdmn::render::ShaderType::vertex,
-             rdmn::render::ShaderState::precompiled});
+        {"datamodel/data/rendering/shaders/default_vulkan.vert.spv",
+         rdmn::render::ShaderType::vertex,
+         rdmn::render::ShaderState::precompiled});
     shader_args.push_back(
-            {"datamodel/data/rendering/shaders/wolf_vulkan.frag.spv",
-             rdmn::render::ShaderType::fragment,
-             rdmn::render::ShaderState::precompiled});
+        {"datamodel/data/rendering/shaders/wolf_vulkan.frag.spv",
+         rdmn::render::ShaderType::fragment,
+         rdmn::render::ShaderState::precompiled});
 
     rcbe::rendering::Material::MaterialConfig config {
-            std::move(shader_args),
-            {}
-    };
+        std::move(shader_args),
+        {}};
     rcbe::rendering::Material material(
-            std::move(config)
-    );
+        std::move(config));
 
     auto corner = rcbe::parsers::parse_meshes("parsers/test/resources/simple_edge_quad.x3d")[0];
-    rcbe::math::Transform trn{
-            rcbe::math::Matrix4x4 {
-                    0.0, 0., 1., 0.,
-                    0., 1., 0., 1.5,
-                    -1., 0., 0., 0.,
-                    0., 0., 0., 1.
-            }
-    };
+    rcbe::math::Transform trn {
+        rcbe::math::Matrix4x4 {
+            0.0, 0., 1., 0.,
+            0., 1., 0., 1.5,
+            -1., 0., 0., 0.,
+            0., 0., 0., 1.}};
     corner.transform(trn);
     std::string name = "corner";
-    rcbe::core::CoreObject co{std::move(name)};
+    rcbe::core::CoreObject co {std::move(name)};
     co.addComponent<rcbe::geometry::Mesh>(std::move(corner));
     co.addComponent<rcbe::rendering::Material>(std::move(material));
 
     return co;
 }
-}
+}// namespace
 
 namespace rdmn::render {
 
 VulkanRenderer::VulkanRenderer(
-        rcbe::rendering::renderer_config &&config,
-        const std::shared_ptr<rcbe::rendering::RenderingContext> &context
-)
-:
-config_(std::move(config))
-, context_(context) {
+    rcbe::rendering::renderer_config &&config,
+    const std::shared_ptr<rcbe::rendering::RenderingContext> &context)
+    : config_(std::move(config))
+    , context_(context) {
     {
         auto instance_created = createVulkanInstance(instance_);
         if (!instance_created) {
@@ -132,13 +123,10 @@ config_(std::move(config))
 
     {
         auto listed_extensions = listAndCheckExtensions(
-                {},
-                {
-                    OptionalExtensionRequest{
-                        std::string_view {VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME},
-                        [this]() { return (use_global_sampler_ = true); } }
-                }
-        );
+            {},
+            {OptionalExtensionRequest {
+                std::string_view {VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME},
+                [this]() { return (use_global_sampler_ = true); }}});
         if (!listed_extensions)
             throw std::runtime_error("Unable to list extensions, or extension is missing");
     }
@@ -184,16 +172,16 @@ config_(std::move(config))
     }
 
     {
-      auto descriptor_set_layout_created = createDescriptorSetLayout(logical_device_);
-      if (!descriptor_set_layout_created)
-        throw std::runtime_error("Can't create descriptor set layout!");
+        auto descriptor_set_layout_created = createDescriptorSetLayout(logical_device_);
+        if (!descriptor_set_layout_created)
+            throw std::runtime_error("Can't create descriptor set layout!");
     }
 
-    preexistant_objects_load_result preexistent_objects_data{};
+    preexistant_objects_load_result preexistent_objects_data {};
     {
         preexistent_objects_data = loadPreexistentObjects();
         if (!preexistent_objects_data.success)
-          throw std::runtime_error("Can't load preexistent objects into scene!");
+            throw std::runtime_error("Can't load preexistent objects into scene!");
     }
 
     {
@@ -232,9 +220,9 @@ config_(std::move(config))
 
     /// Replace with textureObject creation when it is done
     {
-      auto res = initPreexistentTextures(preexistent_objects_data);
-      if (!res)
-        throw std::runtime_error("Can't init preexistent textures!");
+        auto res = initPreexistentTextures(preexistent_objects_data);
+        if (!res)
+            throw std::runtime_error("Can't init preexistent textures!");
     }
 
     auto &[meshes, rasterizer_tex_image_views, rasterizer_tex_samplers, _] = preexistent_objects_data;
@@ -242,37 +230,34 @@ config_(std::move(config))
     rasterizer_tex_image_views.clear();
     rasterizer_tex_samplers.clear();
     std::tie(rasterizer_tex_samplers, rasterizer_tex_image_views) =
-            repopulateSamplersAndViews(texture_to_index_, material_cache_, use_global_sampler_);
+        repopulateSamplersAndViews(texture_to_index_, material_cache_, use_global_sampler_);
 
     repopulateTextureIndices();
 
     buffer_object_ = std::make_shared<VulkanVertexBufferObject>(
-            meshes,
+        meshes,
+        logical_device_,
+        device_,
+        presentation_queue_,
+        command_pool_);
+
+    if (use_global_sampler_) {
+        uniform_buffer_object_ = std::make_shared<VulkanUniformBufferObject>(
             logical_device_,
             device_,
-            presentation_queue_,
-            command_pool_
-    );
-
-    if(use_global_sampler_) {
-      uniform_buffer_object_ = std::make_shared<VulkanUniformBufferObject>(
-          logical_device_,
-          device_,
-          descriptor_set_layout_,
-          rasterizer_tex_global_sampler_,
-          std::move(rasterizer_tex_image_views),
-          TOTAL_SHADER_TEXTURES,
-          swap_chain_images_.size()
-      );
+            descriptor_set_layout_,
+            rasterizer_tex_global_sampler_,
+            std::move(rasterizer_tex_image_views),
+            TOTAL_SHADER_TEXTURES,
+            swap_chain_images_.size());
     } else {
-      uniform_buffer_object_ = std::make_shared<VulkanUniformBufferObject>(
-          logical_device_,
-          device_,
-          descriptor_set_layout_,
-          std::move(rasterizer_tex_image_views),
-          std::move(rasterizer_tex_samplers),
-          swap_chain_images_.size()
-        );
+        uniform_buffer_object_ = std::make_shared<VulkanUniformBufferObject>(
+            logical_device_,
+            device_,
+            descriptor_set_layout_,
+            std::move(rasterizer_tex_image_views),
+            std::move(rasterizer_tex_samplers),
+            swap_chain_images_.size());
     }
 
     {
@@ -300,12 +285,12 @@ VulkanRenderer::~VulkanRenderer() {
     if (buffer_object_) {
         buffer_object_->deleteBuffer();
         if (buffer_object_.use_count() == 1) {
-          buffer_object_.reset();
+            buffer_object_.reset();
         }
     }
 
     for (auto &[mat_ptr, obj_col] : objects_) {
-      obj_col.clear();
+        obj_col.clear();
     }
     objects_.clear();
 
@@ -345,23 +330,23 @@ void VulkanRenderer::cleanupSwapchain(bool final_cleanup) {
     command_buffers_.clear();
 
     if (final_cleanup) {
-      for (auto &m : material_cache_) {
-        auto &mat = m->as<rcbe::rendering::Material>();
-        mat.getTextures().clear();
-      }
+        for (auto &m : material_cache_) {
+            auto &mat = m->as<rcbe::rendering::Material>();
+            mat.getTextures().clear();
+        }
 
-      for (auto &m : material_cache_) {
-        auto &material = m->as<rcbe::rendering::Material>();
+        for (auto &m : material_cache_) {
+            auto &material = m->as<rcbe::rendering::Material>();
 
-        material.getVertex().reset();
-        material.getFragment().reset();
-      }
+            material.getVertex().reset();
+            material.getFragment().reset();
+        }
     }
 
     material_cache_.clear();
 
     if (use_global_sampler_) {
-      vkDestroySampler(logical_device_, rasterizer_tex_global_sampler_, nullptr);
+        vkDestroySampler(logical_device_, rasterizer_tex_global_sampler_, nullptr);
     }
 
     pipelines_.clear();
@@ -375,9 +360,9 @@ void VulkanRenderer::cleanupSwapchain(bool final_cleanup) {
     vkDestroySwapchainKHR(logical_device_, swap_chain_, nullptr);
 
     if (uniform_buffer_object_) {
-      uniform_buffer_object_->deleteBuffer();
-      if (uniform_buffer_object_.use_count() == 1)
-        uniform_buffer_object_.reset();
+        uniform_buffer_object_->deleteBuffer();
+        if (uniform_buffer_object_.use_count() == 1)
+            uniform_buffer_object_.reset();
     }
 }
 
@@ -409,32 +394,34 @@ void VulkanRenderer::stop() {
 
 bool VulkanRenderer::addObject(rcbe::core::CoreObject &&renderer_object) {
     if (!renderer_object.hasComponent<rcbe::rendering::Material>()) {
-      BOOST_LOG_TRIVIAL(trace) << "Object doesn't have material, should at least have default!";
-      return false;
+        BOOST_LOG_TRIVIAL(trace) << "Object doesn't have material, should at least have default!";
+        return false;
     }
 
     handleRenderedObject(renderer_object, objects_, material_cache_);
 
     bool object_added_flag = added_object_.load();
-    while(!added_object_.compare_exchange_strong(object_added_flag, true));
+    while (!added_object_.compare_exchange_strong(object_added_flag, true))
+        ;
 
     return true;
 }
 
 bool VulkanRenderer::addObjects(std::vector<rcbe::core::CoreObject> &&renderer_objects) {
-  for (auto &&ro : renderer_objects) {
-    if (!ro.hasComponent<rcbe::rendering::Material>()) {
-      BOOST_LOG_TRIVIAL(trace) << "Object doesn't have material, should at least have default! Skipping " << ro.name();
-      continue;
+    for (auto &&ro : renderer_objects) {
+        if (!ro.hasComponent<rcbe::rendering::Material>()) {
+            BOOST_LOG_TRIVIAL(trace) << "Object doesn't have material, should at least have default! Skipping " << ro.name();
+            continue;
+        }
+
+        handleRenderedObject(ro, objects_, material_cache_);
     }
 
-      handleRenderedObject(ro, objects_, material_cache_);
-  }
+    bool object_added_flag = added_object_.load();
+    while (!added_object_.compare_exchange_strong(object_added_flag, true))
+        ;
 
-  bool object_added_flag = added_object_.load();
-  while(!added_object_.compare_exchange_strong(object_added_flag, true));
-
-  return true;
+    return true;
 }
 
 void VulkanRenderer::reshape() {
@@ -446,7 +433,7 @@ void VulkanRenderer::onStop(rcbe::rendering::RendererStopHandlerType &&handler) 
 }
 
 void VulkanRenderer::waitRendererReady() {
-    std::unique_lock lg{waiting_mutex_};
+    std::unique_lock lg {waiting_mutex_};
     waiting_renderer_cv_.wait(lg, [this]() { return ready_; });
 }
 
@@ -456,12 +443,12 @@ void VulkanRenderer::renderFrame() {
 
     uint32_t image_index;
     auto result = vkAcquireNextImageKHR(
-            logical_device_,
-            swap_chain_,
-            UINT64_MAX,
-            image_available_[current_frame_],
-            VK_NULL_HANDLE,
-            std::addressof(image_index));
+        logical_device_,
+        swap_chain_,
+        UINT64_MAX,
+        image_available_[current_frame_],
+        VK_NULL_HANDLE,
+        std::addressof(image_index));
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         recreateSwapchain(device_, logical_device_);
@@ -476,20 +463,19 @@ void VulkanRenderer::renderFrame() {
     images_inflight_[image_index] = inflight_fences_[current_frame_];
 
     auto persp = rdmn::render::makePerspectiveMatrix(
-            NEAR_PLANE_COORDINATE,
-            FAR_PLANE_COORDINATE,
-            context_->getFov(),
-            {static_cast<int>(swap_chain_extent_.width), static_cast<int>(swap_chain_extent_.height)}
-    );
+        NEAR_PLANE_COORDINATE,
+        FAR_PLANE_COORDINATE,
+        context_->getFov(),
+        {static_cast<int>(swap_chain_extent_.width), static_cast<int>(swap_chain_extent_.height)});
 
     if (uniform_buffer_object_)
         uniform_buffer_object_->update(
-                context_->getSceneTransform(),
-                {},
-                persp.convertUnderlyingValues<float>(),
-                image_index);
+            context_->getSceneTransform(),
+            {},
+            persp.convertUnderlyingValues<float>(),
+            image_index);
 
-    VkSubmitInfo submit_info{};
+    VkSubmitInfo submit_info {};
     submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
     VkSemaphore semaphores[] = {image_available_[current_frame_]};
@@ -510,9 +496,9 @@ void VulkanRenderer::renderFrame() {
     vkResetFences(logical_device_, 1, std::addressof(inflight_fences_[current_frame_]));
     auto res = vkQueueSubmit(graphics_queue_, 1, std::addressof(submit_info), inflight_fences_[current_frame_]);
     if (res != VK_SUCCESS)
-      throw std::runtime_error("Failed to submit draw command buffer!");
+        throw std::runtime_error("Failed to submit draw command buffer!");
 
-    VkPresentInfoKHR present_info{};
+    VkPresentInfoKHR present_info {};
     present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     present_info.waitSemaphoreCount = 1;
     present_info.pWaitSemaphores = signal_semaphores;
@@ -526,12 +512,13 @@ void VulkanRenderer::renderFrame() {
     res = vkQueuePresentKHR(presentation_queue_, std::addressof(present_info));
 
     if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR || resized_ || added_object_) {
-      recreateSwapchain(device_, logical_device_, added_object_.load() || resized_.load());
-      resized_.store(false);
-      bool added_object_value = added_object_.load();
-      while(!added_object_.compare_exchange_strong(added_object_value, false));
+        recreateSwapchain(device_, logical_device_, added_object_.load() || resized_.load());
+        resized_.store(false);
+        bool added_object_value = added_object_.load();
+        while (!added_object_.compare_exchange_strong(added_object_value, false))
+            ;
     } else if (result != VK_SUCCESS) {
-      throw std::runtime_error("Failed to present swapchain images");
+        throw std::runtime_error("Failed to present swapchain images");
     }
 
     current_frame_ = (current_frame_ + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -550,19 +537,17 @@ bool VulkanRenderer::createVulkanInstance(VkInstance &instance) {
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.pApplicationName = APPLICATION_NAME;
     app_info.applicationVersion = VK_MAKE_VERSION(
-            rdmn::core::RDMN_ENGINE_MAJOR_VERSION,
-            rdmn::core::RDMN_ENGINE_MINOR_VERSION,
-            rdmn::core::RDMN_ENGINE_PATCH_VERSION
-    );
+        rdmn::core::RDMN_ENGINE_MAJOR_VERSION,
+        rdmn::core::RDMN_ENGINE_MINOR_VERSION,
+        rdmn::core::RDMN_ENGINE_PATCH_VERSION);
     app_info.pEngineName = "No Engine";
     app_info.engineVersion = VK_MAKE_VERSION(
-            rdmn::core::RDMN_ENGINE_MAJOR_VERSION,
-            rdmn::core::RDMN_ENGINE_MINOR_VERSION,
-            rdmn::core::RDMN_ENGINE_PATCH_VERSION
-    );
+        rdmn::core::RDMN_ENGINE_MAJOR_VERSION,
+        rdmn::core::RDMN_ENGINE_MINOR_VERSION,
+        rdmn::core::RDMN_ENGINE_PATCH_VERSION);
     app_info.apiVersion = VK_API_VERSION_1_3;
 
-    VkInstanceCreateInfo inst_crt_info{};
+    VkInstanceCreateInfo inst_crt_info {};
     inst_crt_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     inst_crt_info.pApplicationInfo = std::addressof(app_info);
     inst_crt_info.enabledExtensionCount = TOTAL_VK_EXTENSIONS;
@@ -599,10 +584,9 @@ bool VulkanRenderer::createVulkanInstance(VkInstance &instance) {
 bool VulkanRenderer::listAndCheckExtensions(std::vector<std::string> required, std::vector<OptionalExtensionRequest> optional) {
     uint32_t extensions = 0;
     auto res = vkEnumerateInstanceExtensionProperties(
-            nullptr,
-            std::addressof(extensions),
-            nullptr
-    );
+        nullptr,
+        std::addressof(extensions),
+        nullptr);
 
     if (res != VK_SUCCESS) {
         BOOST_LOG_TRIVIAL(debug) << "Can't enumerate instance extensions properties";
@@ -656,7 +640,7 @@ bool VulkanRenderer::listAndCheckExtensions(std::vector<std::string> required, s
     return true;
 }
 
-bool VulkanRenderer::listAndCheckLayers(const std::vector<const char*> &to_check) {
+bool VulkanRenderer::listAndCheckLayers(const std::vector<const char *> &to_check) {
     uint32_t layers_count = 0;
     auto res = vkEnumerateInstanceLayerProperties(std::addressof(layers_count), nullptr);
     if (res != VK_SUCCESS) {
@@ -761,11 +745,7 @@ bool VulkanRenderer::deviceSupported(VkPhysicalDevice device) {
     if (!features.shaderSampledImageArrayDynamicIndexing)
         use_global_sampler_ = true;
 
-    return features.geometryShader
-        && queue_index.indexSet()
-        && device_ext_supported
-        && swap_chain_fits
-        && features.samplerAnisotropy;
+    return features.geometryShader && queue_index.indexSet() && device_ext_supported && swap_chain_fits && features.samplerAnisotropy;
 }
 
 VulkanRenderer::queue_family_indices VulkanRenderer::getQueueFamilyIndices(VkPhysicalDevice device) {
@@ -815,13 +795,12 @@ bool VulkanRenderer::createLogicalDevice(VkDevice &logical_device) {
 
     std::vector<VkDeviceQueueCreateInfo> create_infos;
     std::set<uint32_t> unique_queue_families = {
-            index.graphics_family.value(), index.presentation_family.value()
-    };
+        index.graphics_family.value(), index.presentation_family.value()};
 
     auto queue_priority = 1.0f;
 
     for (const auto &qf : unique_queue_families) {
-        VkDeviceQueueCreateInfo device_queue_crinfo{};
+        VkDeviceQueueCreateInfo device_queue_crinfo {};
         device_queue_crinfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         device_queue_crinfo.queueFamilyIndex = qf;
         device_queue_crinfo.queueCount = 1;
@@ -829,11 +808,11 @@ bool VulkanRenderer::createLogicalDevice(VkDevice &logical_device) {
         create_infos.push_back(device_queue_crinfo);
     }
 
-    VkPhysicalDeviceFeatures phys_dev_features{};
+    VkPhysicalDeviceFeatures phys_dev_features {};
     phys_dev_features.samplerAnisotropy = VK_TRUE;
     phys_dev_features.sampleRateShading = VK_TRUE;
 
-    VkDeviceCreateInfo create_info{};
+    VkDeviceCreateInfo create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     create_info.queueCreateInfoCount = static_cast<uint32_t>(create_infos.size());
     create_info.pQueueCreateInfos = create_infos.data();
@@ -861,7 +840,7 @@ bool VulkanRenderer::createLogicalDevice(VkDevice &logical_device) {
 
 bool VulkanRenderer::createSurface() {
     XSync(context_->getDisplay(), false);
-    VkXlibSurfaceCreateInfoKHR surf_create_info{};
+    VkXlibSurfaceCreateInfoKHR surf_create_info {};
     surf_create_info.dpy = context_->getDisplay();
     surf_create_info.window = context_->getDrawable();
     surf_create_info.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
@@ -984,14 +963,12 @@ VkExtent2D VulkanRenderer::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capa
 
         if (resized_) {
             actual = {
-                    static_cast<uint32_t>(context_->getWindowDimensions().width),
-                    static_cast<uint32_t>(context_->getWindowDimensions().height)
-            };
+                static_cast<uint32_t>(context_->getWindowDimensions().width),
+                static_cast<uint32_t>(context_->getWindowDimensions().height)};
         } else {
             actual = {
                 static_cast<uint32_t>(config_.initial_dimensions.width),
-                static_cast<uint32_t>(config_.initial_dimensions.height)
-            };
+                static_cast<uint32_t>(config_.initial_dimensions.height)};
 
             const auto &supp_w = capabilities.currentExtent.width;
             const auto &supp_h = capabilities.currentExtent.height;
@@ -1011,13 +988,13 @@ bool VulkanRenderer::createSwapChain(VkPhysicalDevice device) {
     swap_chain_extent_ = chooseSwapExtent(swp_chn_sup.capabilities);
     swap_chain_format_ = surf_format.format;
 
-    auto images_count = swp_chn_sup.capabilities.minImageCount + 1; // TODO: make increment configurable
+    auto images_count = swp_chn_sup.capabilities.minImageCount + 1;// TODO: make increment configurable
 
     if (swp_chn_sup.capabilities.maxImageCount > 0 && images_count > swp_chn_sup.capabilities.maxImageCount) {
         images_count = swp_chn_sup.capabilities.maxImageCount;
     }
 
-    VkSwapchainCreateInfoKHR create_info{};
+    VkSwapchainCreateInfoKHR create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     create_info.surface = surface_;
     create_info.minImageCount = images_count;
@@ -1082,36 +1059,36 @@ VulkanRenderer::image_view_creation_result VulkanRenderer::createSwapChainViews(
         ++i;
     }
 
-    return { .success = true, .failed_index = 0};
+    return {.success = true, .failed_index = 0};
 }
 
 bool VulkanRenderer::createGraphicsPipeline(VkDevice logical_device) {
-  pipelines_.reserve(material_cache_.size());
-  size_t counter = 0;
-  for (auto &m : material_cache_) {
-    auto &material = m->as<rcbe::rendering::Material>();
-    try {
-        pipelines_.insert(
-            {m,
-            std::make_shared<VulkanGraphicsPipeline>(material,
-            logical_device,
-            swap_chain_extent_,
-            msaa_samples_,
-            descriptor_set_layout_,
-            render_pass_,
-            sizeof(MeshPushConstants))});
-        ++counter;
-    } catch (const std::exception &e) {
-      BOOST_LOG_TRIVIAL(error) << e.what();
-      return false;
+    pipelines_.reserve(material_cache_.size());
+    size_t counter = 0;
+    for (auto &m : material_cache_) {
+        auto &material = m->as<rcbe::rendering::Material>();
+        try {
+            pipelines_.insert(
+                {m,
+                 std::make_shared<VulkanGraphicsPipeline>(material,
+                                                          logical_device,
+                                                          swap_chain_extent_,
+                                                          msaa_samples_,
+                                                          descriptor_set_layout_,
+                                                          render_pass_,
+                                                          sizeof(MeshPushConstants))});
+            ++counter;
+        } catch (const std::exception &e) {
+            BOOST_LOG_TRIVIAL(error) << e.what();
+            return false;
+        }
     }
-  }
 
-  return true;
+    return true;
 }
 
 bool VulkanRenderer::createRenderPass(VkDevice logical_device) {
-    VkAttachmentDescription color_attachment{};
+    VkAttachmentDescription color_attachment {};
     color_attachment.format = swap_chain_format_;
     color_attachment.samples = msaa_samples_;
     color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -1121,13 +1098,12 @@ bool VulkanRenderer::createRenderPass(VkDevice logical_device) {
     color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     color_attachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-    VkAttachmentDescription depth_attachment{};
+    VkAttachmentDescription depth_attachment {};
     auto opt_dep_form = findSupportedFormat(
-            {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-            device_,
-            VK_IMAGE_TILING_OPTIMAL,
-            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-    );
+        {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+        device_,
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     if (!opt_dep_form) {
         BOOST_LOG_TRIVIAL(error) << "Can't find depth format!";
         return false;
@@ -1149,7 +1125,7 @@ bool VulkanRenderer::createRenderPass(VkDevice logical_device) {
     depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    VkAttachmentDescription color_attachment_resolve{};
+    VkAttachmentDescription color_attachment_resolve {};
     color_attachment_resolve.format = swap_chain_format_;
     color_attachment_resolve.samples = VK_SAMPLE_COUNT_1_BIT;
     color_attachment_resolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -1159,19 +1135,19 @@ bool VulkanRenderer::createRenderPass(VkDevice logical_device) {
     color_attachment_resolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     color_attachment_resolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-    VkAttachmentReference color_attach_ref{};
+    VkAttachmentReference color_attach_ref {};
     color_attach_ref.attachment = 0;
     color_attach_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-    VkAttachmentReference depth_attach_ref{};
+    VkAttachmentReference depth_attach_ref {};
     depth_attach_ref.attachment = 1;
     depth_attach_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    VkAttachmentReference color_attachment_resolve_ref{};
+    VkAttachmentReference color_attachment_resolve_ref {};
     color_attachment_resolve_ref.attachment = 2;
     color_attachment_resolve_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-    VkSubpassDescription subpass_description{};
+    VkSubpassDescription subpass_description {};
     subpass_description.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
     subpass_description.colorAttachmentCount = 1;
     subpass_description.pColorAttachments = std::addressof(color_attach_ref);
@@ -1179,10 +1155,9 @@ bool VulkanRenderer::createRenderPass(VkDevice logical_device) {
     subpass_description.pResolveAttachments = std::addressof(color_attachment_resolve_ref);
 
     std::array<VkAttachmentDescription, 3> attachments = {
-            color_attachment, depth_attachment, color_attachment_resolve
-    };
+        color_attachment, depth_attachment, color_attachment_resolve};
 
-    VkSubpassDependency subpass_dep{};
+    VkSubpassDependency subpass_dep {};
     subpass_dep.srcSubpass = VK_SUBPASS_EXTERNAL;
     subpass_dep.dstSubpass = 0;
     subpass_dep.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -1190,7 +1165,7 @@ bool VulkanRenderer::createRenderPass(VkDevice logical_device) {
     subpass_dep.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     subpass_dep.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-    VkRenderPassCreateInfo create_info{};
+    VkRenderPassCreateInfo create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     create_info.attachmentCount = static_cast<uint32_t>(attachments.size());
     create_info.pAttachments = attachments.data();
@@ -1213,10 +1188,9 @@ bool VulkanRenderer::createFramebuffers(VkDevice logcal_device) {
         std::array<VkImageView, 3> attach = {
             color_image_view_,
             depth_image_view_,
-            swap_chain_views_[i]
-        };
+            swap_chain_views_[i]};
 
-        VkFramebufferCreateInfo create_info{};
+        VkFramebufferCreateInfo create_info {};
         create_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         create_info.renderPass = render_pass_;
         create_info.attachmentCount = static_cast<uint32_t>(attach.size());
@@ -1244,7 +1218,7 @@ bool VulkanRenderer::createCommandPool(VkDevice logical_device) {
     if (!queue_family_indices.indexSet())
         return false;
 
-    VkCommandPoolCreateInfo create_info{};
+    VkCommandPoolCreateInfo create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     create_info.queueFamilyIndex = queue_family_indices.graphics_family.value();
     create_info.flags = 0;
@@ -1258,170 +1232,169 @@ bool VulkanRenderer::createCommandPool(VkDevice logical_device) {
 }
 
 bool VulkanRenderer::createCommandBuffers(VkDevice logical_device) {
-  size_t counter = 0;
+    size_t counter = 0;
 
-  command_buffers_.resize(swap_chain_framebuffers_.size());
+    command_buffers_.resize(swap_chain_framebuffers_.size());
 
-  VkCommandBufferAllocateInfo alloc_info {};
-  alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  alloc_info.commandPool = command_pool_;
-  alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  alloc_info.commandBufferCount = static_cast<uint32_t>(swap_chain_framebuffers_.size());
+    VkCommandBufferAllocateInfo alloc_info {};
+    alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    alloc_info.commandPool = command_pool_;
+    alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    alloc_info.commandBufferCount = static_cast<uint32_t>(swap_chain_framebuffers_.size());
 
-  auto res = vkAllocateCommandBuffers(
-      logical_device,
-      std::addressof(alloc_info),
-      command_buffers_.data());
+    auto res = vkAllocateCommandBuffers(
+        logical_device,
+        std::addressof(alloc_info),
+        command_buffers_.data());
 
-  if (res != VK_SUCCESS)
-    return false;
+    if (res != VK_SUCCESS)
+        return false;
 
-  for (size_t i = 0; i < swap_chain_framebuffers_.size(); ++i) {
-    VkCommandBufferBeginInfo binfo {};
-    binfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    binfo.flags = 0;
-    binfo.pInheritanceInfo = nullptr;
+    for (size_t i = 0; i < swap_chain_framebuffers_.size(); ++i) {
+        VkCommandBufferBeginInfo binfo {};
+        binfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        binfo.flags = 0;
+        binfo.pInheritanceInfo = nullptr;
 
-    auto result = vkBeginCommandBuffer(command_buffers_[i], std::addressof(binfo));
-    if (result != VK_SUCCESS) {
-      for (size_t j = i - 1; j >= 0; --j) {
-        vkEndCommandBuffer(command_buffers_[j]);
-      }
+        auto result = vkBeginCommandBuffer(command_buffers_[i], std::addressof(binfo));
+        if (result != VK_SUCCESS) {
+            for (size_t j = i - 1; j >= 0; --j) {
+                vkEndCommandBuffer(command_buffers_[j]);
+            }
 
-      return false;
-    }
+            return false;
+        }
 
-    VkRenderPassBeginInfo rpass_binfo {};
-    rpass_binfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    rpass_binfo.renderPass = render_pass_;
-    rpass_binfo.framebuffer = swap_chain_framebuffers_[i];
-    rpass_binfo.renderArea.offset = { 0, 0 };
-    rpass_binfo.renderArea.extent = swap_chain_extent_;
+        VkRenderPassBeginInfo rpass_binfo {};
+        rpass_binfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        rpass_binfo.renderPass = render_pass_;
+        rpass_binfo.framebuffer = swap_chain_framebuffers_[i];
+        rpass_binfo.renderArea.offset = {0, 0};
+        rpass_binfo.renderArea.extent = swap_chain_extent_;
 
-    std::array<VkClearValue, 2> clear_values {};
+        std::array<VkClearValue, 2> clear_values {};
 
-    clear_values[0].color = {
-        static_cast<float>(config_.clear_color.r()),
-        static_cast<float>(config_.clear_color.g()),
-        static_cast<float>(config_.clear_color.b()),
-        static_cast<float>(config_.clear_color.a())
-    };
-    clear_values[1].depthStencil = { 1.0f, 0 };
-    rpass_binfo.clearValueCount = static_cast<uint32_t>(clear_values.size());
-    rpass_binfo.pClearValues = clear_values.data();
+        clear_values[0].color = {
+            static_cast<float>(config_.clear_color.r()),
+            static_cast<float>(config_.clear_color.g()),
+            static_cast<float>(config_.clear_color.b()),
+            static_cast<float>(config_.clear_color.a())};
+        clear_values[1].depthStencil = {1.0f, 0};
+        rpass_binfo.clearValueCount = static_cast<uint32_t>(clear_values.size());
+        rpass_binfo.pClearValues = clear_values.data();
 
-    vkCmdBeginRenderPass(
-        command_buffers_[i],
-        std::addressof(rpass_binfo),
-        VK_SUBPASS_CONTENTS_INLINE);
-
-    size_t prev_verts_count = 0;
-    size_t prev_last_index = 0;
-
-    for (auto it = pipelines_.begin(); it != pipelines_.end(); ++it) {
-      const auto &[material_object, pipeline] = *it;
-
-      vkCmdBindPipeline(
-          command_buffers_[i],
-          VK_PIPELINE_BIND_POINT_GRAPHICS,
-          pipeline->getPipeline());
-
-      /// !IMPORTANT bind buffer here
-      if (buffer_object_)
-        buffer_object_->bind(
+        vkCmdBeginRenderPass(
             command_buffers_[i],
-            0,
-            0);
-      else
-        BOOST_LOG_TRIVIAL(error) << "No VBO";
+            std::addressof(rpass_binfo),
+            VK_SUBPASS_CONTENTS_INLINE);
 
-      if (uniform_buffer_object_)
-        uniform_buffer_object_->bind(
-            command_buffers_[i],
-            pipeline->getLayout(),
-            i);
-      else
-        BOOST_LOG_TRIVIAL(error) << "No UBO";
+        size_t prev_verts_count = 0;
+        size_t prev_last_index = 0;
+
+        for (auto it = pipelines_.begin(); it != pipelines_.end(); ++it) {
+            const auto &[material_object, pipeline] = *it;
+
+            vkCmdBindPipeline(
+                command_buffers_[i],
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                pipeline->getPipeline());
+
+            /// !IMPORTANT bind buffer here
+            if (buffer_object_)
+                buffer_object_->bind(
+                    command_buffers_[i],
+                    0,
+                    0);
+            else
+                BOOST_LOG_TRIVIAL(error) << "No VBO";
+
+            if (uniform_buffer_object_)
+                uniform_buffer_object_->bind(
+                    command_buffers_[i],
+                    pipeline->getLayout(),
+                    i);
+            else
+                BOOST_LOG_TRIVIAL(error) << "No UBO";
 
 
-      {
-        const auto &o = objects_[material_object][0];
-        const auto &mesh = o.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>();
-        const auto &material = o.getComponent<rcbe::rendering::Material>()->as<rcbe::rendering::Material>();
+            {
+                const auto &o = objects_[material_object][0];
+                const auto &mesh = o.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>();
+                const auto &material = o.getComponent<rcbe::rendering::Material>()->as<rcbe::rendering::Material>();
 
-        MeshPushConstants mpc{};
-        mpc.model_matrix = mesh.getTransform().matrix().transposed().convertUnderlyingValues<float>();
+                MeshPushConstants mpc {};
+                mpc.model_matrix = mesh.getTransform().matrix().transposed().convertUnderlyingValues<float>();
 
-        mpc.sampler_index = object_to_sampler_index_[o.hash()].at(0);
-        if(object_to_sampler_index_[o.hash()].size() > 1) {
-          mpc.sampler_secondary_index = object_to_sampler_index_[o.hash()].at(1);
+                mpc.sampler_index = object_to_sampler_index_[o.hash()].at(0);
+                if (object_to_sampler_index_[o.hash()].size() > 1) {
+                    mpc.sampler_secondary_index = object_to_sampler_index_[o.hash()].at(1);
+                }
+
+                vkCmdPushConstants(command_buffers_[i],
+                                   pipeline->getLayout(),
+                                   VK_SHADER_STAGE_VERTEX_BIT,
+                                   0,
+                                   sizeof(MeshPushConstants),
+                                   std::addressof(mpc));
+
+                vkCmdDrawIndexed(command_buffers_[i],
+                                 mesh.facetsSize() * 3,
+                                 1, prev_last_index,
+                                 prev_verts_count, 0);
+
+                prev_verts_count += mesh.verticesSize();
+                prev_last_index += mesh.facetsSize() * 3;
+
+                if (objects_[material_object].size() == 1) {
+                    const auto transform =
+                        objects_[material_object][0].getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>().getTransform();
+                }
+            }
+
+            for (size_t j = 1; j < objects_[material_object].size(); ++j) {
+                const auto &prev_mesh =
+                    objects_[material_object][j - 1].getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>();
+                const auto &mesh =
+                    objects_[material_object][j].getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>();
+
+                MeshPushConstants mpc {};
+                mpc.model_matrix = mesh.getTransform().matrix().transposed().convertUnderlyingValues<float>();
+                mpc.sampler_index = object_to_sampler_index_[objects_[material_object][j].hash()].at(0);
+                if (object_to_sampler_index_[objects_[material_object][j].hash()].size() > 1) {
+                    mpc.sampler_secondary_index = object_to_sampler_index_[objects_[material_object][j].hash()].at(1);
+                }
+
+                vkCmdPushConstants(command_buffers_[i],
+                                   pipeline->getLayout(),
+                                   VK_SHADER_STAGE_VERTEX_BIT,
+                                   0,
+                                   sizeof(MeshPushConstants),
+                                   std::addressof(mpc));
+
+                vkCmdDrawIndexed(command_buffers_[i],
+                                 mesh.facetsSize() * 3,
+                                 1, prev_last_index,
+                                 prev_verts_count, 0);
+
+                prev_verts_count += mesh.verticesSize();
+                prev_last_index += mesh.facetsSize() * 3;
+            }
         }
-
-        vkCmdPushConstants(command_buffers_[i],
-                           pipeline->getLayout(),
-                           VK_SHADER_STAGE_VERTEX_BIT,
-                           0,
-                           sizeof(MeshPushConstants),
-                           std::addressof(mpc));
-
-        vkCmdDrawIndexed(command_buffers_[i],
-                         mesh.facetsSize() * 3,
-                         1, prev_last_index,
-                         prev_verts_count, 0);
-
-        prev_verts_count += mesh.verticesSize();
-        prev_last_index += mesh.facetsSize() * 3;
-
-        if(objects_[material_object].size() == 1) {
-          const auto transform =
-            objects_[material_object][0].getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>().getTransform();
-        }
-      }
-
-      for (size_t j = 1; j < objects_[material_object].size(); ++j) {
-        const auto &prev_mesh =
-            objects_[material_object][j - 1].getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>();
-        const auto &mesh =
-            objects_[material_object][j].getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>();
-
-        MeshPushConstants mpc{};
-        mpc.model_matrix = mesh.getTransform().matrix().transposed().convertUnderlyingValues<float>();
-        mpc.sampler_index = object_to_sampler_index_[objects_[material_object][j].hash()].at(0);
-        if (object_to_sampler_index_[objects_[material_object][j].hash()].size() > 1) {
-          mpc.sampler_secondary_index = object_to_sampler_index_[objects_[material_object][j].hash()].at(1);
-        }
-
-        vkCmdPushConstants(command_buffers_[i],
-                           pipeline->getLayout(),
-                           VK_SHADER_STAGE_VERTEX_BIT,
-                           0,
-                           sizeof(MeshPushConstants),
-                           std::addressof(mpc));
-
-        vkCmdDrawIndexed(command_buffers_[i],
-                         mesh.facetsSize() * 3,
-                         1, prev_last_index,
-                         prev_verts_count, 0);
-
-        prev_verts_count += mesh.verticesSize();
-        prev_last_index += mesh.facetsSize() * 3;
-      }
     }
-  }
 
-  for (size_t i = 0; i < swap_chain_framebuffers_.size(); ++i) {
-    vkCmdEndRenderPass(command_buffers_[i]);
-    auto result = vkEndCommandBuffer(command_buffers_[i]);
-    if (result != VK_SUCCESS) {
-      for (size_t j = i - 1; j >= 0; --j) {
-        vkEndCommandBuffer(command_buffers_[j]);
-      }
+    for (size_t i = 0; i < swap_chain_framebuffers_.size(); ++i) {
+        vkCmdEndRenderPass(command_buffers_[i]);
+        auto result = vkEndCommandBuffer(command_buffers_[i]);
+        if (result != VK_SUCCESS) {
+            for (size_t j = i - 1; j >= 0; --j) {
+                vkEndCommandBuffer(command_buffers_[j]);
+            }
 
-      return false;
+            return false;
+        }
     }
-  }
 
-  return true;
+    return true;
 }
 
 bool VulkanRenderer::createSyncObjects(VkDevice logical_device) {
@@ -1430,21 +1403,18 @@ bool VulkanRenderer::createSyncObjects(VkDevice logical_device) {
     inflight_fences_.resize(MAX_FRAMES_IN_FLIGHT);
     images_inflight_.resize(swap_chain_images_.size(), VK_NULL_HANDLE);
 
-    VkSemaphoreCreateInfo screate_info{};
+    VkSemaphoreCreateInfo screate_info {};
     screate_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-    VkFenceCreateInfo fence_create{};
+    VkFenceCreateInfo fence_create {};
     fence_create.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fence_create.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
-        if (vkCreateSemaphore(logical_device, std::addressof(screate_info), nullptr, std::addressof(image_available_[i])) != VK_SUCCESS
-        || vkCreateSemaphore(logical_device, std::addressof(screate_info), nullptr, std::addressof(render_finished_[i])) != VK_SUCCESS
-        || vkCreateFence(logical_device, std::addressof(fence_create), nullptr, std::addressof(inflight_fences_[i])) != VK_SUCCESS) {
+        if (vkCreateSemaphore(logical_device, std::addressof(screate_info), nullptr, std::addressof(image_available_[i])) != VK_SUCCESS || vkCreateSemaphore(logical_device, std::addressof(screate_info), nullptr, std::addressof(render_finished_[i])) != VK_SUCCESS || vkCreateFence(logical_device, std::addressof(fence_create), nullptr, std::addressof(inflight_fences_[i])) != VK_SUCCESS) {
             BOOST_LOG_TRIVIAL(error) << "Can't create semaphores!";
             return false;
         }
-
     }
 
     return true;
@@ -1483,11 +1453,11 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
         }
     }
 
-    preexistant_objects_load_result preexistent_objects_data{};
+    preexistant_objects_load_result preexistent_objects_data {};
     {
-      preexistent_objects_data = loadPreexistentObjects(handle_rendering_objects);
-      if (!preexistent_objects_data.success)
-        throw std::runtime_error("Can't load preexistent objects into scene!");
+        preexistent_objects_data = loadPreexistentObjects(handle_rendering_objects);
+        if (!preexistent_objects_data.success)
+            throw std::runtime_error("Can't load preexistent objects into scene!");
     }
 
     {
@@ -1509,7 +1479,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createDepthResources(logical_device);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) <<"Can't recreate depth buffer!";
+            BOOST_LOG_TRIVIAL(error) << "Can't recreate depth buffer!";
             return false;
         }
     }
@@ -1523,12 +1493,12 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     }
 
     if (!handle_rendering_objects) {
-      BOOST_LOG_TRIVIAL(info) << "Here?";
-      auto res = initPreexistentTextures(preexistent_objects_data);
-      if (!res) {
-        BOOST_LOG_TRIVIAL(error) << "Can't init preexistent textures!";
-        return false;
-      }
+        BOOST_LOG_TRIVIAL(info) << "Here?";
+        auto res = initPreexistentTextures(preexistent_objects_data);
+        if (!res) {
+            BOOST_LOG_TRIVIAL(error) << "Can't init preexistent textures!";
+            return false;
+        }
     }
 
     texture_to_index_.clear();
@@ -1537,35 +1507,32 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     repopulateTextureIndices();
 
     if (handle_rendering_objects) {
-      buffer_object_.reset();
-      buffer_object_ = std::make_shared<VulkanVertexBufferObject>(
-          preexistent_objects_data.meshes,
-          logical_device_,
-          device_,
-          presentation_queue_,
-          command_pool_
-      );
+        buffer_object_.reset();
+        buffer_object_ = std::make_shared<VulkanVertexBufferObject>(
+            preexistent_objects_data.meshes,
+            logical_device_,
+            device_,
+            presentation_queue_,
+            command_pool_);
     }
 
     if (use_global_sampler_) {
-      uniform_buffer_object_ = std::make_shared<VulkanUniformBufferObject>(
-          logical_device_,
-          device_,
-          descriptor_set_layout_,
-          rasterizer_tex_global_sampler_,
-          std::move(v),
-          TOTAL_SHADER_TEXTURES,
-          swap_chain_images_.size()
-      );
+        uniform_buffer_object_ = std::make_shared<VulkanUniformBufferObject>(
+            logical_device_,
+            device_,
+            descriptor_set_layout_,
+            rasterizer_tex_global_sampler_,
+            std::move(v),
+            TOTAL_SHADER_TEXTURES,
+            swap_chain_images_.size());
     } else {
-      uniform_buffer_object_ = std::make_shared<VulkanUniformBufferObject>(
-          logical_device_,
-          device_,
-          descriptor_set_layout_,
-          std::move(v),
-          std::move(s),
-          swap_chain_images_.size()
-      );
+        uniform_buffer_object_ = std::make_shared<VulkanUniformBufferObject>(
+            logical_device_,
+            device_,
+            descriptor_set_layout_,
+            std::move(v),
+            std::move(s),
+            swap_chain_images_.size());
     }
 
     {
@@ -1580,7 +1547,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
 }
 
 bool VulkanRenderer::createDescriptorSetLayout(VkDevice logical_device) {
-    VkDescriptorSetLayoutBinding ubo_layout_binding{};
+    VkDescriptorSetLayoutBinding ubo_layout_binding {};
     ubo_layout_binding.binding = 0;
     ubo_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     ubo_layout_binding.descriptorCount = 1;
@@ -1589,21 +1556,21 @@ bool VulkanRenderer::createDescriptorSetLayout(VkDevice logical_device) {
 
     BOOST_LOG_TRIVIAL(trace) << std::boolalpha << " use global sampler " << use_global_sampler_;
 
-    VkDescriptorSetLayoutBinding sampler_layout_binding{};
+    VkDescriptorSetLayoutBinding sampler_layout_binding {};
     sampler_layout_binding.binding = 1;
     sampler_layout_binding.descriptorType = (use_global_sampler_)
-            ? VK_DESCRIPTOR_TYPE_SAMPLER : VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                                                ? VK_DESCRIPTOR_TYPE_SAMPLER
+                                                : VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     sampler_layout_binding.descriptorCount = 1;
     sampler_layout_binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
     sampler_layout_binding.pImmutableSamplers = nullptr;
 
     std::vector<VkDescriptorSetLayoutBinding> bindings = {
-            ubo_layout_binding,
-            sampler_layout_binding
-    };
+        ubo_layout_binding,
+        sampler_layout_binding};
 
     if (use_global_sampler_) {
-        VkDescriptorSetLayoutBinding textures_layout_binding{};
+        VkDescriptorSetLayoutBinding textures_layout_binding {};
         textures_layout_binding.binding = 2;
         textures_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
         textures_layout_binding.descriptorCount = TOTAL_SHADER_TEXTURES * swap_chain_views_.size();
@@ -1622,18 +1589,17 @@ bool VulkanRenderer::createDescriptorSetLayout(VkDevice logical_device) {
     bflags_info.bindingCount = static_cast<uint32_t>(bindings.size());
     bflags_info.pBindingFlags = bind_flags.data();
 
-    VkDescriptorSetLayoutCreateInfo layout_create_info{};
+    VkDescriptorSetLayoutCreateInfo layout_create_info {};
     layout_create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layout_create_info.bindingCount = static_cast<uint32_t>(bindings.size());
     layout_create_info.pBindings = bindings.data();
     layout_create_info.pNext = std::addressof(bflags_info);
 
     auto res = vkCreateDescriptorSetLayout(
-            logical_device,
-            std::addressof(layout_create_info),
-            nullptr,
-            std::addressof(descriptor_set_layout_)
-    );
+        logical_device,
+        std::addressof(layout_create_info),
+        nullptr,
+        std::addressof(descriptor_set_layout_));
     if (res != VK_SUCCESS) {
         BOOST_LOG_TRIVIAL(error) << "Can't create descriptor set layout";
         return false;
@@ -1647,8 +1613,7 @@ bool VulkanRenderer::createDepthResources(VkDevice logical_device) {
         {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
         device_,
         VK_IMAGE_TILING_OPTIMAL,
-        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-    );
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     if (!opt_format) {
         BOOST_LOG_TRIVIAL(error) << "No suitable format found!";
@@ -1657,18 +1622,17 @@ bool VulkanRenderer::createDepthResources(VkDevice logical_device) {
 
     auto format = *opt_format;
     createImage(
-            logical_device,
-            device_,
-            {static_cast<int>(swap_chain_extent_.width), static_cast<int>(swap_chain_extent_.height)},
-            format,
-            VK_IMAGE_TILING_OPTIMAL,
-            VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            1,
-            msaa_samples_,
-            depth_image_,
-            depth_image_memory_
-    );
+        logical_device,
+        device_,
+        {static_cast<int>(swap_chain_extent_.width), static_cast<int>(swap_chain_extent_.height)},
+        format,
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        1,
+        msaa_samples_,
+        depth_image_,
+        depth_image_memory_);
     auto dep_img_view_opt = createImageView(logical_device, depth_image_, format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
     if (!dep_img_view_opt) {
         BOOST_LOG_TRIVIAL(error) << "Can't create depth image view!";
@@ -1681,11 +1645,10 @@ bool VulkanRenderer::createDepthResources(VkDevice logical_device) {
 }
 
 std::optional<VkFormat> VulkanRenderer::findSupportedFormat(
-        const std::vector<VkFormat> &candidates,
-        VkPhysicalDevice physical_device,
-        VkImageTiling tiling,
-        VkFormatFeatureFlags features
-) {
+    const std::vector<VkFormat> &candidates,
+    VkPhysicalDevice physical_device,
+    VkImageTiling tiling,
+    VkFormatFeatureFlags features) {
     for (const auto &format : candidates) {
         VkFormatProperties props;
         vkGetPhysicalDeviceFormatProperties(physical_device, format, std::addressof(props));
@@ -1743,19 +1706,17 @@ bool VulkanRenderer::createColorResources(VkDevice logical_device) {
             1,
             msaa_samples_,
             color_image_,
-            color_image_memory_
-    )) {
+            color_image_memory_)) {
         BOOST_LOG_TRIVIAL(error) << "Can't create color image!";
         return false;
     }
 
     auto opt_img_view = createImageView(
-            logical_device,
-            color_image_,
-            color_format,
-            VK_IMAGE_ASPECT_COLOR_BIT,
-            1
-    );
+        logical_device,
+        color_image_,
+        color_format,
+        VK_IMAGE_ASPECT_COLOR_BIT,
+        1);
 
     if (!opt_img_view) {
         BOOST_LOG_TRIVIAL(error) << "Can't create image view!";
@@ -1768,216 +1729,214 @@ bool VulkanRenderer::createColorResources(VkDevice logical_device) {
 }
 
 VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentObjects(bool secondary_invokation) {
-  preexistant_objects_load_result ret{};
-  auto &meshes = ret.meshes;
-  auto &rasterizer_tex_samplers = ret.rasterizer_tex_samplers;
-  auto &rasterizer_tex_image_views = ret.rasterizer_tex_image_views;
-  try {
-      const auto calculate_mip_levels_wrapper = [this]() -> size_t {
-          if (!material_cache_.empty()) {
-              auto it = material_cache_.begin();
-              const auto &mat = (*it)->getComponent<rcbe::rendering::Material>()->as<rcbe::rendering::Material>();
-              if (!mat.getTextures().empty()) {
-                  const auto &[vt, rt] = *(mat.getTextures().begin());
-                  return calculateMipLevels(vt->getWidth(), vt->getHeight());
-              } else {
-                  return calculateMipLevels(config_.initial_dimensions.width, config_.initial_dimensions.height);
-              }
-          } else {
-              return calculateMipLevels(config_.initial_dimensions.width, config_.initial_dimensions.height);
-          }
-      };
-    if (!secondary_invokation) {
-      auto edge_object = loadCorner();
-      meshes.reserve(1);
-      object_to_sampler_index_.reserve(1);
-
-      meshes.push_back(edge_object.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>());
-
-      if (use_global_sampler_) {
-        size_t mip_levels = calculate_mip_levels_wrapper();
-
-        auto res = createTextureSampler(
-            logical_device_,
-            rasterizer_tex_global_sampler_,
-            mip_levels
-            );
-        if (!res) {
-          throw std::runtime_error("Can't create global image sampler");
-        }
-      }
-
-      std::unordered_set<rcbe::visual::TexturePtr> tex_cache;
-
-      {
-        const auto[it, res] = material_cache_.insert(edge_object.getComponent<rcbe::rendering::Material>());
-        if (objects_[*it].empty())
-          objects_[*it].reserve(1);
-        objects_[*it].push_back(std::move(edge_object));
-      }
-
-      for (auto &[pipeline, objects_collection] : objects_) {
-        for (size_t i = 0; i < objects_collection.size(); ++i) {
-          auto &c = objects_collection[i];
-          const auto &tex_component = c.getComponent<rdmn::render::RasterizerTexture>();
-          if (!tex_component)
-            continue;
-          auto &rt = tex_component->as<rdmn::render::RasterizerTexture>();
-          const auto &vtex_ptr = rt.getVisualTexturePtr();
-
-          const auto it = tex_cache.find(vtex_ptr);
-          if (it == tex_cache.end()) {
-            const auto [vtex_it, res] = tex_cache.insert(vtex_ptr);
-          }
-        }
-      }
-
-      for (const auto &o : material_cache_) {
-        const auto &mat = o->as<rcbe::rendering::Material>();
-        for (const auto &[v, t] : mat.getTextures()) {
-          if (!use_global_sampler_)
-            rasterizer_tex_samplers.push_back(t->getImageSampler());
-          rasterizer_tex_image_views.push_back(t->getImageView());
-        }
-      }
-
-      for (auto &[pipeline_ptr, objects_collections] : objects_) {
-        for (size_t i = 0; i < objects_collections.size(); ++i) {
-          {
-            if (objects_collections[i].hasComponent<RasterizerTexture>()) {
-              const auto &rt_comp = objects_collections[i].getComponent<rdmn::render::RasterizerTexture>();
-              const auto &rt = rt_comp->as<rdmn::render::RasterizerTexture>();
-              const auto &vtex = rt.getVisualTexturePtr();
-              const auto it = tex_cache.find(rt.getVisualTexturePtr());
+    preexistant_objects_load_result ret {};
+    auto &meshes = ret.meshes;
+    auto &rasterizer_tex_samplers = ret.rasterizer_tex_samplers;
+    auto &rasterizer_tex_image_views = ret.rasterizer_tex_image_views;
+    try {
+        const auto calculate_mip_levels_wrapper = [this]() -> size_t {
+            if (!material_cache_.empty()) {
+                auto it = material_cache_.begin();
+                const auto &mat = (*it)->getComponent<rcbe::rendering::Material>()->as<rcbe::rendering::Material>();
+                if (!mat.getTextures().empty()) {
+                    const auto &[vt, rt] = *(mat.getTextures().begin());
+                    return calculateMipLevels(vt->getWidth(), vt->getHeight());
+                } else {
+                    return calculateMipLevels(config_.initial_dimensions.width, config_.initial_dimensions.height);
+                }
+            } else {
+                return calculateMipLevels(config_.initial_dimensions.width, config_.initial_dimensions.height);
             }
-          }
+        };
+        if (!secondary_invokation) {
+            auto edge_object = loadCorner();
+            meshes.reserve(1);
+            object_to_sampler_index_.reserve(1);
+
+            meshes.push_back(edge_object.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>());
+
+            if (use_global_sampler_) {
+                size_t mip_levels = calculate_mip_levels_wrapper();
+
+                auto res = createTextureSampler(
+                    logical_device_,
+                    rasterizer_tex_global_sampler_,
+                    mip_levels);
+                if (!res) {
+                    throw std::runtime_error("Can't create global image sampler");
+                }
+            }
+
+            std::unordered_set<rcbe::visual::TexturePtr> tex_cache;
+
+            {
+                const auto [it, res] = material_cache_.insert(edge_object.getComponent<rcbe::rendering::Material>());
+                if (objects_[*it].empty())
+                    objects_[*it].reserve(1);
+                objects_[*it].push_back(std::move(edge_object));
+            }
+
+            for (auto &[pipeline, objects_collection] : objects_) {
+                for (size_t i = 0; i < objects_collection.size(); ++i) {
+                    auto &c = objects_collection[i];
+                    const auto &tex_component = c.getComponent<rdmn::render::RasterizerTexture>();
+                    if (!tex_component)
+                        continue;
+                    auto &rt = tex_component->as<rdmn::render::RasterizerTexture>();
+                    const auto &vtex_ptr = rt.getVisualTexturePtr();
+
+                    const auto it = tex_cache.find(vtex_ptr);
+                    if (it == tex_cache.end()) {
+                        const auto [vtex_it, res] = tex_cache.insert(vtex_ptr);
+                    }
+                }
+            }
+
+            for (const auto &o : material_cache_) {
+                const auto &mat = o->as<rcbe::rendering::Material>();
+                for (const auto &[v, t] : mat.getTextures()) {
+                    if (!use_global_sampler_)
+                        rasterizer_tex_samplers.push_back(t->getImageSampler());
+                    rasterizer_tex_image_views.push_back(t->getImageView());
+                }
+            }
+
+            for (auto &[pipeline_ptr, objects_collections] : objects_) {
+                for (size_t i = 0; i < objects_collections.size(); ++i) {
+                    {
+                        if (objects_collections[i].hasComponent<RasterizerTexture>()) {
+                            const auto &rt_comp = objects_collections[i].getComponent<rdmn::render::RasterizerTexture>();
+                            const auto &rt = rt_comp->as<rdmn::render::RasterizerTexture>();
+                            const auto &vtex = rt.getVisualTexturePtr();
+                            const auto it = tex_cache.find(rt.getVisualTexturePtr());
+                        }
+                    }
+                }
+            }
+        } else {
+            BOOST_LOG_TRIVIAL(debug) << "Secondary objects invokation";
+            if (use_global_sampler_) {
+                auto res = createTextureSampler(
+                    logical_device_,
+                    rasterizer_tex_global_sampler_,
+                    calculate_mip_levels_wrapper());
+                if (!res) {
+                    throw std::runtime_error("Can't create global image sampler");
+                }
+            }
+
+            std::unordered_set<rcbe::visual::TexturePtr> tex_cache;
+
+            auto reserve_val = std::accumulate(objects_.begin(), objects_.end(), 0, [](auto l, const auto &r) {
+                return l + r.second.size();
+            });
+            meshes.reserve(reserve_val);
+
+            for (const auto &[material_object_ptr, object_collection] : objects_) {
+                const auto &m = material_object_ptr->as<rcbe::rendering::Material>();
+
+                if (!m.getVertex()) {
+                    BOOST_LOG_TRIVIAL(warning) << "Vertex is not present";
+                }
+
+                if (!m.getFragment()) {
+                    BOOST_LOG_TRIVIAL(warning) << "Fragment is not present";
+                }
+
+                material_cache_.insert(material_object_ptr);
+
+                std::transform(object_collection.begin(), object_collection.end(), std::back_inserter(meshes), [](const auto &entry) {
+                    return entry.template getComponent<rcbe::geometry::Mesh>()->template as<rcbe::geometry::Mesh>();
+                });
+            }
+
+            for (const auto &o : material_cache_) {
+                const auto &mat = o->as<rcbe::rendering::Material>();
+                for (const auto &[v, t] : mat.getTextures()) {
+                    if (!use_global_sampler_)
+                        rasterizer_tex_samplers.push_back(t->getImageSampler());
+                    rasterizer_tex_image_views.push_back(t->getImageView());
+                }
+            }
         }
-      }
-    } else {
-      BOOST_LOG_TRIVIAL(debug) << "Secondary objects invokation";
-      if (use_global_sampler_) {
-        auto res = createTextureSampler(
-            logical_device_,
-            rasterizer_tex_global_sampler_,
-            calculate_mip_levels_wrapper());
-        if (!res) {
-          throw std::runtime_error("Can't create global image sampler");
-        }
-      }
-
-      std::unordered_set<rcbe::visual::TexturePtr> tex_cache;
-
-      auto reserve_val = std::accumulate(objects_.begin(), objects_.end(), 0, [](auto l, const auto &r) {
-        return l + r.second.size();
-      });
-      meshes.reserve(reserve_val);
-
-      for (const auto &[material_object_ptr, object_collection] : objects_) {
-        const auto &m = material_object_ptr->as<rcbe::rendering::Material>();
-
-        if (!m.getVertex()) {
-          BOOST_LOG_TRIVIAL(warning) << "Vertex is not present";
-        }
-
-        if (!m.getFragment()) {
-          BOOST_LOG_TRIVIAL(warning) << "Fragment is not present";
-        }
-
-        material_cache_.insert(material_object_ptr);
-
-        std::transform(object_collection.begin(), object_collection.end(), std::back_inserter(meshes), [](const auto &entry) {
-          return entry.template getComponent<rcbe::geometry::Mesh>()->template as<rcbe::geometry::Mesh>();
-        });
-      }
-
-      for (const auto &o : material_cache_) {
-        const auto &mat = o->as<rcbe::rendering::Material>();
-        for (const auto &[v, t] : mat.getTextures()) {
-          if (!use_global_sampler_)
-            rasterizer_tex_samplers.push_back(t->getImageSampler());
-          rasterizer_tex_image_views.push_back(t->getImageView());
-        }
-      }
+    } catch (const std::exception &e) {
+        BOOST_LOG_TRIVIAL(fatal) << "Can't parse scene! " << e.what();
+        throw;
     }
-  } catch (const std::exception &e) {
-    BOOST_LOG_TRIVIAL(fatal) << "Can't parse scene! " << e.what();
-    throw;
-  }
 
-  ret.success = true;
-  return ret;
+    ret.success = true;
+    return ret;
 }
 
 bool VulkanRenderer::initPreexistentTextures(preexistant_objects_load_result &objects) {
-  for (const auto &m : material_cache_) {
-    const auto &mat = m->as<rcbe::rendering::Material>();
-    if (!initMaterialTextures(mat))
-      return false;
-  }
+    for (const auto &m : material_cache_) {
+        const auto &mat = m->as<rcbe::rendering::Material>();
+        if (!initMaterialTextures(mat))
+            return false;
+    }
 
-  return true;
+    return true;
 }
 
 void VulkanRenderer::repopulateTextureIndices() {
     object_to_sampler_index_.clear();
     for (const auto &[material_ptr, object_collection] : objects_) {
-      for (const auto &object : object_collection) {
-        if (!object.hasComponent<rdmn::render::RasterizerTexture>()) {
-          if (!object.hasComponent<rcbe::visual::VisualTextureSet>()) {
-            object_to_sampler_index_[object.hash()].push_back(0);
-            continue;
-          } else {
-            const auto &tex_set = object.getComponent<rcbe::visual::VisualTextureSet>()->as<rcbe::visual::VisualTextureSet>();
-            for (const auto &vtex : tex_set.grouped_textures) {
-              auto it = texture_to_index_.find(vtex);
-              if (it != texture_to_index_.end()) {
-                object_to_sampler_index_[object.hash()].push_back(it->second);
-              } else {
-                object_to_sampler_index_[object.hash()].push_back(0);
-              }
+        for (const auto &object : object_collection) {
+            if (!object.hasComponent<rdmn::render::RasterizerTexture>()) {
+                if (!object.hasComponent<rcbe::visual::VisualTextureSet>()) {
+                    object_to_sampler_index_[object.hash()].push_back(0);
+                    continue;
+                } else {
+                    const auto &tex_set = object.getComponent<rcbe::visual::VisualTextureSet>()->as<rcbe::visual::VisualTextureSet>();
+                    for (const auto &vtex : tex_set.grouped_textures) {
+                        auto it = texture_to_index_.find(vtex);
+                        if (it != texture_to_index_.end()) {
+                            object_to_sampler_index_[object.hash()].push_back(it->second);
+                        } else {
+                            object_to_sampler_index_[object.hash()].push_back(0);
+                        }
+                    }
+                }
+            } else {
+                const auto &vtex =
+                    object.getComponent<rdmn::render::RasterizerTexture>()->as<rdmn::render::RasterizerTexture>().getVisualTexturePtr();
+                auto it = texture_to_index_.find(vtex);
+                if (it != texture_to_index_.end()) {
+                    object_to_sampler_index_[object.hash()].push_back(it->second);
+                } else {
+                    object_to_sampler_index_[object.hash()].push_back(0);
+                }
             }
-          }
-        } else {
-          const auto &vtex =
-              object.getComponent<rdmn::render::RasterizerTexture>()->as<rdmn::render::RasterizerTexture>().getVisualTexturePtr();
-          auto it = texture_to_index_.find(vtex);
-          if (it != texture_to_index_.end()) {
-            object_to_sampler_index_[object.hash()].push_back(it->second);
-          } else {
-            object_to_sampler_index_[object.hash()].push_back(0);
-          }
         }
-      }
     }
 }
 
 bool VulkanRenderer::initMaterialTextures(const rcbe::rendering::Material &mat) {
-  for (const auto &[_, inserted_tex] : mat.getTextures()) {
-    if (use_global_sampler_) {
-      if (!inserted_tex->init(
-          logical_device_, device_, command_pool_, graphics_queue_, rasterizer_tex_global_sampler_)) {
-        BOOST_LOG_TRIVIAL(error) << "Can't init texture!";
-        return false;
-      } else {
-        BOOST_LOG_TRIVIAL(trace) << "Successfully inited texture";
-      }
-    } else {
-      if (!inserted_tex->init(logical_device_, device_, command_pool_, graphics_queue_)) {
-        BOOST_LOG_TRIVIAL(error) << "Can't init texture!";
-        return false;
-      } else {
-        BOOST_LOG_TRIVIAL(trace) << "Successfully inited texture";
-      }
+    for (const auto &[_, inserted_tex] : mat.getTextures()) {
+        if (use_global_sampler_) {
+            if (!inserted_tex->init(
+                    logical_device_, device_, command_pool_, graphics_queue_, rasterizer_tex_global_sampler_)) {
+                BOOST_LOG_TRIVIAL(error) << "Can't init texture!";
+                return false;
+            } else {
+                BOOST_LOG_TRIVIAL(trace) << "Successfully inited texture";
+            }
+        } else {
+            if (!inserted_tex->init(logical_device_, device_, command_pool_, graphics_queue_)) {
+                BOOST_LOG_TRIVIAL(error) << "Can't init texture!";
+                return false;
+            } else {
+                BOOST_LOG_TRIVIAL(trace) << "Successfully inited texture";
+            }
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 void VulkanRenderer::handleRenderedObject(
-        rcbe::core::CoreObject &renderer_object,
-        std::unordered_map<std::shared_ptr<rcbe::core::CoreObject>, std::vector<rcbe::core::CoreObject>> &objects,
-        std::unordered_set<std::shared_ptr<rcbe::core::CoreObject>> &material_cache
-) {
+    rcbe::core::CoreObject &renderer_object,
+    std::unordered_map<std::shared_ptr<rcbe::core::CoreObject>, std::vector<rcbe::core::CoreObject>> &objects,
+    std::unordered_set<std::shared_ptr<rcbe::core::CoreObject>> &material_cache) {
     const auto &mat_ptr = renderer_object.getComponent<rcbe::rendering::Material>();
 
     auto it = material_cache.find(mat_ptr);
@@ -1995,4 +1954,4 @@ void VulkanRenderer::handleRenderedObject(
     objects[*it].push_back(std::move(renderer_object));
 }
 
-}
+}// namespace rdmn::render

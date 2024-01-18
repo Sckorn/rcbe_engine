@@ -6,26 +6,24 @@
 namespace rcbe::exception {
 class NotImplementedException : public std::exception {
 public:
+
     NotImplementedException() noexcept = default;
-    ~NotImplementedException() noexcept override  = default;
-    explicit NotImplementedException(const char * what) noexcept
-    :
-    what_ { what }
-    {}
+    ~NotImplementedException() noexcept override = default;
+    explicit NotImplementedException(const char *what) noexcept
+        : what_ {what} {}
 
     explicit NotImplementedException(std::string what) noexcept
-    :
-    what_ { std::move(what) }
-    {}
+        : what_ {std::move(what)} {}
 
-    [[nodiscard]]const char*
+    [[nodiscard]] const char *
     what() const noexcept override {
         return what_.c_str();
     }
 
 private:
+
     std::string what_;
 };
-}
+}// namespace rcbe::exception
 
-#endif //RCBE_ENGINE_NOT_IMPLEMENTED_HPP
+#endif//RCBE_ENGINE_NOT_IMPLEMENTED_HPP

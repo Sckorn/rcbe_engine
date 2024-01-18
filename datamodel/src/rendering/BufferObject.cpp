@@ -1,7 +1,7 @@
+#include <boost/log/trivial.hpp>
+
 #include <rcbe-engine/datamodel/rendering/BufferObject.hpp>
 #include <rcbe-engine/datamodel/rendering/buffer_object_helpers.hpp>
-
-#include <boost/log/trivial.hpp>
 
 namespace {
 static constexpr size_t VERTEX_ARRAY_OBJECT_ID = 0;
@@ -9,7 +9,7 @@ static constexpr size_t NORMAL_ARRAY_OBJECT_ID = 1;
 static constexpr size_t COLOR_ARRAY_OBJECT_ID = 2;
 static constexpr size_t TEXCOORD_ARRAY_OBJECT_ID = 3;
 
-}
+}// namespace
 
 namespace rcbe::rendering {
 
@@ -62,53 +62,47 @@ void VertexBufferObject::VertexArrayObject::unbind() const {
 
 void VertexBufferObject::VertexArrayObject::setData(const StorageType &vertices) const {
     glVertexAttribPointer(
-            VERTEX_ARRAY_OBJECT_ID, 3, GL_FLOAT, false,
-            sizeof(float) * 3, reinterpret_cast<void*>(0)
-            );
+        VERTEX_ARRAY_OBJECT_ID, 3, GL_FLOAT, false,
+        sizeof(float) * 3, reinterpret_cast<void *>(0));
     glEnableVertexAttribArray(VERTEX_ARRAY_OBJECT_ID);
 }
 
 void VertexBufferObject::VertexArrayObject::setData(const StorageType &vertices, const StorageType &normals) const {
     setData(vertices);
     glVertexAttribPointer(
-            NORMAL_ARRAY_OBJECT_ID, 3, GL_FLOAT, false,
-            sizeof(float) * 3, reinterpret_cast<void*>(vertices.size() * sizeof(GLfloat))
-    );
+        NORMAL_ARRAY_OBJECT_ID, 3, GL_FLOAT, false,
+        sizeof(float) * 3, reinterpret_cast<void *>(vertices.size() * sizeof(GLfloat)));
     glEnableVertexAttribArray(NORMAL_ARRAY_OBJECT_ID);
 }
 
 void VertexBufferObject::VertexArrayObject::setData(
-        const StorageType &vertices,
-        const StorageType &normals,
-        const StorageType &colors
-) const {
+    const StorageType &vertices,
+    const StorageType &normals,
+    const StorageType &colors) const {
     setData(vertices, normals);
     glVertexAttribPointer(
-            COLOR_ARRAY_OBJECT_ID, 4, GL_FLOAT, false,
-            sizeof(float) * 4, reinterpret_cast<void*>(vertices.size() * sizeof(GLfloat) + normals.size() * sizeof(GLfloat))
-    );
+        COLOR_ARRAY_OBJECT_ID, 4, GL_FLOAT, false,
+        sizeof(float) * 4, reinterpret_cast<void *>(vertices.size() * sizeof(GLfloat) + normals.size() * sizeof(GLfloat)));
     glEnableVertexAttribArray(COLOR_ARRAY_OBJECT_ID);
 }
 
 void VertexBufferObject::VertexArrayObject::setData(
-        const StorageType &vertices,
-        const StorageType &normals,
-        const StorageType &colors,
-        const StorageType &tex_coords
-) const {
+    const StorageType &vertices,
+    const StorageType &normals,
+    const StorageType &colors,
+    const StorageType &tex_coords) const {
     setData(vertices, normals, colors);
     glVertexAttribPointer(
-            TEXCOORD_ARRAY_OBJECT_ID, 2, GL_FLOAT, false,
-            sizeof(float) * 2,
-            reinterpret_cast<void*>(
-                    vertices.size() * sizeof(GLfloat) +
-                    normals.size() * sizeof(GLfloat) +
-                    colors.size() * sizeof(GLfloat))
-    );
+        TEXCOORD_ARRAY_OBJECT_ID, 2, GL_FLOAT, false,
+        sizeof(float) * 2,
+        reinterpret_cast<void *>(
+            vertices.size() * sizeof(GLfloat) +
+            normals.size() * sizeof(GLfloat) +
+            colors.size() * sizeof(GLfloat)));
     glEnableVertexAttribArray(TEXCOORD_ARRAY_OBJECT_ID);
 }
 
-VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes, bool use_vao ) {
+VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh> &meshes, bool use_vao) {
     // right now keeping it simple, it's not a VBO's business to validate meshes
     // they'll be validated by scene graph
 
@@ -145,11 +139,10 @@ VertexBufferObject::VertexBufferObject(const std::vector<rcbe::geometry::Mesh>& 
     glBufferSubData(GL_ARRAY_BUFFER, vertices_byte_size_, normals_byte_size_, normals_.data());
     glBufferSubData(GL_ARRAY_BUFFER, vertices_byte_size_ + normals_byte_size_, colors_byte_size_, colors_.data());
     glBufferSubData(
-            GL_ARRAY_BUFFER,
-            vertices_byte_size_ + normals_byte_size_ + colors_byte_size_,
-            tex_coords_byte_size_,
-            tex_coords_.data()
-            );
+        GL_ARRAY_BUFFER,
+        vertices_byte_size_ + normals_byte_size_ + colors_byte_size_,
+        tex_coords_byte_size_,
+        tex_coords_.data());
 
     if (use_vao)
         vao_->setData(vertices_, normals_, colors_, tex_coords_);
@@ -247,7 +240,7 @@ void VertexBufferObject::unbind() const {
 }
 
 void VertexBufferObject::disableState() const {
-    glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
+    glDisableClientState(GL_VERTEX_ARRAY);// disable vertex arrays
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -343,7 +336,7 @@ void IndexBufferObject::ElementBufferObject::setData(const StorageType &indices)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(typename StorageType::value_type), indices.data(), GL_STATIC_DRAW);
 }
 
-IndexBufferObject::IndexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes, const VertexBufferObject& vbo, bool use_ebo) {
+IndexBufferObject::IndexBufferObject(const std::vector<rcbe::geometry::Mesh> &meshes, const VertexBufferObject &vbo, bool use_ebo) {
     auto itotal = std::accumulate(meshes.begin(), meshes.end(), 0, [](auto sum, const auto &entry) {
         return sum + entry.facetsSize();
     });
@@ -351,10 +344,8 @@ IndexBufferObject::IndexBufferObject(const std::vector<rcbe::geometry::Mesh>& me
     indices_.reserve(itotal * 3);
 
     size_t i = 0;
-    for (auto &m : meshes)
-    {
-        for (const auto &f : m.facets())
-        {
+    for (auto &m : meshes) {
+        for (const auto &f : m.facets()) {
             indices_.push_back(f.indices[0]);
             indices_.push_back(f.indices[1]);
             indices_.push_back(f.indices[2]);
@@ -375,7 +366,7 @@ IndexBufferObject::IndexBufferObject(const std::vector<rcbe::geometry::Mesh>& me
         ebo_->setData(indices_);
 
     unbind();
-    if(use_ebo)
+    if (use_ebo)
         ebo_->unbind();
 }
 
@@ -437,4 +428,4 @@ const IndexBufferObject::ElementBufferObject &IndexBufferObject::ebo() const {
         throw std::runtime_error("EBO wasn't set, which most likely means use_ebo flag wasn't supplied to ctor");
 }
 
-}
+}// namespace rcbe::rendering

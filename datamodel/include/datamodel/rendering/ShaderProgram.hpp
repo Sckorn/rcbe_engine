@@ -1,12 +1,12 @@
 #ifndef RCBE_ENGINE_SHADERPROGRAM_HPP
 #define RCBE_ENGINE_SHADERPROGRAM_HPP
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/MatrixColumnMajorAdaptor.hpp>
+#include <rcbe-engine/datamodel/math/Vector.hpp>
 
 /// TODO: fix this nested namespace later
 namespace rdmn::render {
@@ -19,6 +19,7 @@ using ShaderCollection = std::vector<rdmn::render::Shader>;
 
 class ShaderProgram {
 public:
+
     using ShaderProgramHandle = size_t;
 
     ShaderProgram() = delete;
@@ -54,6 +55,7 @@ public:
 #endif
 
 private:
+
     [[nodiscard]] int getUniformLocation(const std::string &name) const;
 
     ShaderProgramHandle shader_prog_handle_ = 0;
@@ -61,6 +63,6 @@ private:
 
 using ShaderProgramPtr = std::unique_ptr<ShaderProgram>;
 using ShaderProgramConstPtr = std::unique_ptr<const ShaderProgram>;
-}
+}// namespace rcbe::rendering
 
-#endif //RCBE_ENGINE_SHADERPROGRAM_HPP
+#endif//RCBE_ENGINE_SHADERPROGRAM_HPP

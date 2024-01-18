@@ -12,10 +12,11 @@
 namespace rcbe::binary {
 class BinaryBuffer {
 public:
+
     using ByteType = unsigned char;
 
     BinaryBuffer() = default;
-    explicit BinaryBuffer(std::istream& is);
+    explicit BinaryBuffer(std::istream &is);
     explicit BinaryBuffer(std::basic_ifstream<char> &is);
 
     explicit BinaryBuffer(std::vector<ByteType> &&buf);
@@ -31,7 +32,7 @@ public:
     }
 
     template <typename V, size_t S>
-    BinaryBuffer(V(&source)[S]) {
+    BinaryBuffer(V (&source)[S]) {
         using rcbe::binary::to_binary;
         for (const auto &v : source) {
             to_binary(*this, v);
@@ -57,8 +58,8 @@ public:
         return is;
     }
 
-    friend std::ostream  &operator<<(std::ostream &os, const BinaryBuffer &bb) {
-        os.write(reinterpret_cast<const char*>(bb.buffer_.data()), bb.buffer_.size());
+    friend std::ostream &operator<<(std::ostream &os, const BinaryBuffer &bb) {
+        os.write(reinterpret_cast<const char *>(bb.buffer_.data()), bb.buffer_.size());
 
         return os;
     }
@@ -79,8 +80,9 @@ public:
     [[nodiscard]] bool isView() const;
 
 private:
+
     using StorageType = std::vector<ByteType>;
-    using ViewType = std::vector<const ByteType*>;
+    using ViewType = std::vector<const ByteType *>;
 
     void read(std::istream &is, StorageType &s);
 
@@ -115,7 +117,7 @@ private:
     void appendImplementation(const ViewType &storage);
 
     std::vector<ByteType> buffer_;
-    std::vector<const ByteType*> buffer_view_;
+    std::vector<const ByteType *> buffer_view_;
     bool view_ = false;
 };
 
@@ -149,6 +151,6 @@ uint8_t BinaryBuffer::get();
 template <>
 std::string BinaryBuffer::get();
 
-}
+}// namespace rcbe::binary
 
-#endif //RCBE_ENGINE_BINARYBUFFER_HPP
+#endif//RCBE_ENGINE_BINARYBUFFER_HPP

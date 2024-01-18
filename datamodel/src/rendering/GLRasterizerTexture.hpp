@@ -7,6 +7,7 @@
 namespace rdmn::render {
 class RasterizerTextureImplementation {
 public:
+
     RasterizerTextureImplementation() = delete;
     RasterizerTextureImplementation(rasterizer_texture_config config, rcbe::visual::TexturePtr texture);
     ~RasterizerTextureImplementation() = default;
@@ -17,10 +18,11 @@ public:
     [[nodiscard]] bool deferred() const noexcept;
 
 private:
+
     const bool deferred_ = true;
     size_t id_ = 0;
     rasterizer_texture_config config_;
 };
-}
+}// namespace rdmn::render
 
-#endif //RCBE_ENGINE_GLRASTERIZERTEXTURE_HPP
+#endif//RCBE_ENGINE_GLRASTERIZERTEXTURE_HPP

@@ -1,12 +1,10 @@
-#include <rcbe-engine/core/GameInputManager.hpp>
-
 #include <nlohmann/json.hpp>
 
+#include <rcbe-engine/core/GameInputManager.hpp>
+
 namespace rcbe::core {
-GameInputManager::GameInputManager(nlohmann::json&& j)
-:
-scheme_(std::move(j))
-{
+GameInputManager::GameInputManager(nlohmann::json &&j)
+    : scheme_(std::move(j)) {
     registerHandler(InputEventType::key_press,
                     [](InputManagerImplementation &im, InputEventReference event, PreviousEventReference previous) {
                         auto *ptr = std::addressof(im);
@@ -44,11 +42,11 @@ scheme_(std::move(j))
 bool GameInputManager::trySet(const int keycode, const int value) const {
     try {
         scheme_.set(keycode, value);
-    } catch (const std::exception& ex) {
+    } catch (const std::exception &ex) {
         BOOST_LOG_TRIVIAL(debug) << "Exception in handler: " << ex.what();
         return false;
     }
 
     return true;
 }
-}
+}// namespace rcbe::core

@@ -1,12 +1,11 @@
 #include <gtest/gtest.h>
 
+#include <rcbe-engine/datamodel/math/Quaternion.hpp>
 #include <rcbe-engine/datamodel/math/Transform.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
-#include <rcbe-engine/datamodel/math/Quaternion.hpp>
 #include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
 
-TEST(TransformTests, TranslateVectorPositive)
-{
+TEST(TransformTests, TranslateVectorPositive) {
     rcbe::math::Vector3d vec {0, 0, 0};
 
     rcbe::math::Transform t {rcbe::math::Matrix3x3 {}, rcbe::math::Vector3d {2, 1, 0}};
@@ -18,8 +17,7 @@ TEST(TransformTests, TranslateVectorPositive)
     ASSERT_EQ(new_vec.z(), 0);
 }
 
-TEST(TransformTests, TranslateVectorNegative)
-{
+TEST(TransformTests, TranslateVectorNegative) {
     rcbe::math::Vector3d vec {5, 5, 5};
 
     rcbe::math::Transform t {rcbe::math::Matrix3x3 {}, rcbe::math::Vector3d {-2, -1, 0}};
@@ -31,30 +29,28 @@ TEST(TransformTests, TranslateVectorNegative)
     ASSERT_EQ(new_vec.z(), 5);
 }
 
-TEST(TransformTests, RotateVectorNinety)
-{
+TEST(TransformTests, RotateVectorNinety) {
     rcbe::math::Vector3d vec {0, 0, 1};
     rcbe::math::yaw y(rcbe::math::deg(0));
     rcbe::math::pitch p(rcbe::math::deg(90));
     rcbe::math::roll r(rcbe::math::deg(0));
     rcbe::math::Quaternion<rcbe::core::EngineScalar> q {y, p, r};
 
-    rcbe::math::Transform t { rcbe::math::Matrix3x3 { q }, { 0, 0, 0 } };
+    rcbe::math::Transform t {rcbe::math::Matrix3x3 {q}, {0, 0, 0}};
 
     auto new_vec = t * vec;
 
     ASSERT_EQ(new_vec.x(), 1);
 }
 
-TEST(TransformTests, RotateVectorFourtyFive)
-{
+TEST(TransformTests, RotateVectorFourtyFive) {
     rcbe::math::Vector3d vec {0, 0, 1};
     rcbe::math::yaw y(rcbe::math::deg(0));
     rcbe::math::pitch p(rcbe::math::deg(45));
     rcbe::math::roll r(rcbe::math::deg(0));
     rcbe::math::Quaternion<rcbe::core::EngineScalar> q {y, p, r};
 
-    rcbe::math::Transform t { rcbe::math::Matrix3x3 { q }, { 0, 0, 0 } };
+    rcbe::math::Transform t {rcbe::math::Matrix3x3 {q}, {0, 0, 0}};
 
     auto new_vec = t * vec;
 

@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
-
 #include <filesystem>
+
+#include <gtest/gtest.h>
 
 #include <rcbe-engine/binary/BinaryBuffer.hpp>
 
@@ -26,7 +26,7 @@ void from_binary(const BinaryBuffer &b, dummy_header &dh) {
     dh.version = b.at(0, sizeof(decltype(dh.version))).get<decltype(dh.version)>();
     dh.num_chunks = b.at(sizeof(decltype(dh.version)), sizeof(decltype(dh.num_chunks))).get<decltype(dh.num_chunks)>();
 }
-}
+}// namespace rcbe::binary
 
 /**
  *
@@ -46,7 +46,7 @@ struct dummy_chunk {
 
 namespace rcbe::binary {
 void to_binary(BinaryBuffer &b, const dummy_chunk &dc) {
-    b = BinaryBuffer({ dc.some_float, dc.num_chars, dc.chars });
+    b = BinaryBuffer({dc.some_float, dc.num_chars, dc.chars});
 }
 
 void from_binary(const BinaryBuffer &b, dummy_chunk &dc) {
@@ -56,15 +56,17 @@ void from_binary(const BinaryBuffer &b, dummy_chunk &dc) {
         dc.chars[i] = b.at(sizeof(float) + sizeof(size_t) + sizeof(char) * i, sizeof(char)).get<char>();
     }
 }
-}
+}// namespace rcbe::binary
 
 class BinaryFileTests : public ::testing::Test {
 public:
+
     [[nodiscard]] std::filesystem::path filePath(size_t invocation) const {
         return file_path_str_ + std::to_string(invocation);
     }
 
 private:
+
     const std::string file_path_str_ = "/tmp/binary_test.dat";
 };
 
@@ -74,7 +76,7 @@ TEST_F(BinaryFileTests, OutputSimple) {
     rcbe::binary::to_binary(bb, dh);
 
     for (size_t i = 0; i < dh.num_chunks; ++i) {
-        dummy_chunk dc { static_cast<float>(0.5 * i), 2, {'a', (i != 0) ? 'b' : 'c'} } ;
+        dummy_chunk dc {static_cast<float>(0.5 * i), 2, {'a', (i != 0) ? 'b' : 'c'}};
         rcbe::binary::to_binary(bb, dc);
     }
 
@@ -97,7 +99,7 @@ TEST_F(BinaryFileTests, InputSimple) {
 
     for (size_t i = 0; i < ndh.num_chunks; ++i) {
         dummy_chunk ndc {};
-        auto bbb = bb.at(dummy_header::SIZE  + dummy_chunk::SIZE * i, dummy_chunk::SIZE);
+        auto bbb = bb.at(dummy_header::SIZE + dummy_chunk::SIZE * i, dummy_chunk::SIZE);
         rcbe::binary::from_binary(bbb, ndc);
         ASSERT_EQ(ndc.num_chars, 2);
         ASSERT_FLOAT_EQ(static_cast<float>(0.5 * i), ndc.some_float);
@@ -110,4 +112,3 @@ TEST_F(BinaryFileTests, InputSimple) {
         }
     }
 }
-

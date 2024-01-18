@@ -2,13 +2,12 @@
 #define RCBE_MATH_UTILS_HPP
 
 #include <cmath>
-#include <type_traits>
 #include <concepts>
+#include <type_traits>
 
 #include <rcbe-engine/fundamentals/types.hpp>
 
-namespace rcbe::math
-{
+namespace rcbe::math {
 inline core::EngineScalar deg_to_rad(const core::EngineScalar angle) {
     return M_PI / 180 * angle;
 }
@@ -26,9 +25,9 @@ inline bool even(const Value v) {
 }
 
 template <IntegralValue Value>
-inline  bool odd(const Value v) {
+inline bool odd(const Value v) {
     return !even(v);
 }
-}
+}// namespace rcbe::math
 
 #endif

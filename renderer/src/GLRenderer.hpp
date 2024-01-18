@@ -1,8 +1,8 @@
 #ifndef RDMN_ENGINE_GLRENDERER_HPP
 #define RDMN_ENGINE_GLRENDERER_HPP
 
-#include <memory>
 #include <future>
+#include <memory>
 
 #include <rcbe-engine/datamodel/core/CoreObject.hpp>
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
@@ -16,19 +16,17 @@ namespace rdmn::render {
 
 class GLRenderer {
 public:
+
     using DrawBuffersHandlerType = std::function<
-            void(
-                    const rcbe::rendering::VertexBufferObject &,
-                    const rcbe::rendering::IndexBufferObject &,
-                    const std::unordered_map<size_t, rcbe::core::CoreObject> &
-            )
-    >;
+        void(
+            const rcbe::rendering::VertexBufferObject &,
+            const rcbe::rendering::IndexBufferObject &,
+            const std::unordered_map<size_t, rcbe::core::CoreObject> &)>;
 
     GLRenderer() = delete;
     GLRenderer(
-            rcbe::rendering::renderer_config &&config,
-            const std::shared_ptr<rcbe::rendering::RenderingContext>& context
-    );
+        rcbe::rendering::renderer_config &&config,
+        const std::shared_ptr<rcbe::rendering::RenderingContext> &context);
     ~GLRenderer();
 
     [[nodiscard]] bool running() const;
@@ -36,7 +34,7 @@ public:
     void start();
     void stop();
 
-    [[nodiscard]] const rcbe::rendering::renderer_config& getConfig() const noexcept;
+    [[nodiscard]] const rcbe::rendering::renderer_config &getConfig() const noexcept;
 
     void addObject(rcbe::core::CoreObject &&object);
 
@@ -47,6 +45,7 @@ public:
     void waitRendererReady();
 
 private:
+
     void renderFrame();
 
     void initGL();
@@ -57,10 +56,9 @@ private:
 
     void drawBuffers(const rcbe::rendering::VertexBufferObject &vbo, const rcbe::rendering::IndexBufferObject &ibo);
     void drawBuffers(
-            const rcbe::rendering::VertexBufferObject &vbo,
-            const rcbe::rendering::IndexBufferObject &ibo,
-            const std::unordered_map<size_t, rcbe::core::CoreObject> &objects
-    );
+        const rcbe::rendering::VertexBufferObject &vbo,
+        const rcbe::rendering::IndexBufferObject &ibo,
+        const std::unordered_map<size_t, rcbe::core::CoreObject> &objects);
 
     rcbe::rendering::renderer_config config_;
     std::shared_ptr<rcbe::rendering::RenderingContext> rendering_context_;
@@ -87,6 +85,6 @@ private:
 
 using GLRendererPtr = std::unique_ptr<GLRenderer>;
 using GLRendererConstPtr = std::unique_ptr<const GLRenderer>;
-}
+}// namespace rdmn::render
 
-#endif //RDMN_ENGINE_GLRENDERER_HPP
+#endif//RDMN_ENGINE_GLRENDERER_HPP

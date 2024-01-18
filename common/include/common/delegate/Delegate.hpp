@@ -1,15 +1,15 @@
 #ifndef RCBE_ENGINE_DELEGATE_HPP
 #define RCBE_ENGINE_DELEGATE_HPP
 
-#include <vector>
 #include <functional>
 #include <type_traits>
+#include <vector>
 
 namespace rcbe::core {
 static constexpr size_t DEFAULT_DELEGATE_SIZE = 100;
 
 
-template <typename Ret, typename ... Signature>
+template <typename Ret, typename... Signature>
 class Delegate;
 
 //TODO: actually handle different return types
@@ -17,23 +17,21 @@ class Delegate;
 // initial declaration to implement
 // template <typename Ret, typename ... Signature>
 // class Delegate;
-template <typename ... Signature>
+template <typename... Signature>
 class Delegate<void, Signature...> {
 public:
-    using InvocationType = std::function<void(Signature&& ...)>;
+
+    using InvocationType = std::function<void(Signature &&...)>;
 
     explicit Delegate(size_t max_delegate_size = DEFAULT_DELEGATE_SIZE)
-    :
-    max_delegate_size_ { max_delegate_size }
-    {
-
+        : max_delegate_size_ {max_delegate_size} {
     }
 
     [[nodiscard]] size_t maxSize() const noexcept {
         return max_delegate_size_;
     }
 
-    Delegate& add(InvocationType&& f) {
+    Delegate &add(InvocationType &&f) {
         if (invocation_list_.size() == max_delegate_size_) {
             throw std::runtime_error("Invocation list is full");
         }
@@ -41,7 +39,7 @@ public:
         return *this;
     }
 
-    Delegate& operator+=(InvocationType&& f) {
+    Delegate &operator+=(InvocationType &&f) {
         return add(std::move(f));
     }
 
@@ -49,20 +47,21 @@ public:
         return invocation_list_.size();
     }
 
-    void invoke(Signature&& ... s) const {
-        for (const auto& f : invocation_list_) {
+    void invoke(Signature &&...s) const {
+        for (const auto &f : invocation_list_) {
             f(std::forward<Signature>(s)...);
         }
     }
 
-    void operator()(Signature&& ... s) const {
+    void operator()(Signature &&...s) const {
         invoke(std::forward<Signature>(s)...);
     }
 
 private:
+
     const size_t max_delegate_size_;
     std::vector<InvocationType> invocation_list_;
 };
-}
+}// namespace rcbe::core
 
-#endif //RCBE_ENGINE_DELEGATE_HPP
+#endif//RCBE_ENGINE_DELEGATE_HPP

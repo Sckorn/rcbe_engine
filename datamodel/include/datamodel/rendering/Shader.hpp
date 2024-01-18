@@ -4,8 +4,8 @@
 #include <filesystem>
 #include <memory>
 
-#include <rcbe-engine/fundamentals/types.hpp>
 #include <rcbe-engine/fundamentals/convinience.hpp>
+#include <rcbe-engine/fundamentals/types.hpp>
 
 
 #if defined(RDMN_VULKAN)
@@ -40,7 +40,7 @@ enum class ShaderType {
     tesselation_control = GL_TESS_CONTROL_SHADER,
     compute = GL_COMPUTE_SHADER,
 #elif defined(RDMN_DIRECTX) && defined(_WIN32)
-    /// TODO: fill when DirectX rendering is implemented
+/// TODO: fill when DirectX rendering is implemented
 #else
     static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 #endif
@@ -51,6 +51,7 @@ class ShaderImpl;
 
 class Shader {
 public:
+
 #ifdef RDMN_VULKAN
     using ShaderHandle = VkShaderModule;
 #elif defined(RDMN_OPENGL)
@@ -88,9 +89,10 @@ public:
 #endif
 
 private:
-    std::shared_ptr<ShaderImpl> impl_; ///TODO: find a way to get rid of the pImpl @sckorn
+
+    std::shared_ptr<ShaderImpl> impl_;///TODO: find a way to get rid of the pImpl @sckorn
 };
 
-}
+}// namespace rdmn::render
 
-#endif // RDMN_ENGINE_SHADER_HPP
+#endif// RDMN_ENGINE_SHADER_HPP

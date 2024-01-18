@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
-
 #include <fstream>
+
+#include <gtest/gtest.h>
 
 #include <rcbe-engine/binary/BinaryBuffer.hpp>
 #include <rcbe-engine/datamodel/geometry/BinaryStlFile.hpp>
@@ -8,7 +8,7 @@
 static constexpr size_t TOTAL_TRIANGLES = 6291;
 
 TEST(GeometryTests, BinaryStlFileTest) {
-    std::ifstream ifs { "external/low_poly_wolf_stl/file/LowPolyWolf.stl", std::ios::in | std::ios::binary };
+    std::ifstream ifs {"external/low_poly_wolf_stl/file/LowPolyWolf.stl", std::ios::in | std::ios::binary};
     rcbe::binary::BinaryBuffer bb;
     ifs >> bb;
 

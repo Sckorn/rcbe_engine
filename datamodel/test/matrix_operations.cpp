@@ -1,37 +1,33 @@
+#include <iostream>
+
 #include <gtest/gtest.h>
 
-#include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/MatrixColumnMajorAdaptor.hpp>
 #include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
 #include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-TEST(MatrixTest, IdentityTest)
-{
-    rcbe::math::Matrix3x3 m{};
+TEST(MatrixTest, IdentityTest) {
+    rcbe::math::Matrix3x3 m {};
 
     ASSERT_EQ(m.at(0, 0), 1);
     ASSERT_EQ(m.at(1, 1), 1);
     ASSERT_EQ(m.at(2, 2), 1);
 }
 
-TEST(MatrixTest, MatrixMultiplication)
-{
+TEST(MatrixTest, MatrixMultiplication) {
     rcbe::math::Matrix3x3 m1(
         4, 16, 2,
         7, 12, 11,
-        3, 1, 0
-    );
+        3, 1, 0);
 
     rcbe::math::Matrix3x3 m2(
         17, 1, 22,
         35, 6, 18,
-        7, 4, 32
-    );
+        7, 4, 32);
 
     auto m3 = m1 * m2;
 
@@ -48,18 +44,16 @@ TEST(MatrixTest, MatrixMultiplication)
 
 TEST(MatrixTest, Matrix4by4Multiplication) {
     rcbe::math::Matrix4x4 m1(
-            4, 16, 2, 8,
-            7, 12, 11, -3,
-            3, 1, 0, 5,
-            0, 2, 0, 1
-    );
+        4, 16, 2, 8,
+        7, 12, 11, -3,
+        3, 1, 0, 5,
+        0, 2, 0, 1);
 
     rcbe::math::Matrix4x4 m2(
-            12, 3, 16, 0,
-            1, 2, 7, -4,
-            5, -10, -2, 1,
-            3, 14, -6, 0
-            );
+        12, 3, 16, 0,
+        1, 2, 7, -4,
+        5, -10, -2, 1,
+        3, 14, -6, 0);
 
     auto m3 = m1 * m2;
 
@@ -81,19 +75,16 @@ TEST(MatrixTest, Matrix4by4Multiplication) {
     ASSERT_EQ(m3.at(3, 3), -8);
 }
 
-TEST(MatrixTest, MatrixAddition)
-{
+TEST(MatrixTest, MatrixAddition) {
     rcbe::math::Matrix3x3 m1(
         4, 16, 2,
         7, 12, 11,
-        3, 1, 0
-    );
+        3, 1, 0);
 
     rcbe::math::Matrix3x3 m2(
         17, 1, 22,
         35, 6, 18,
-        7, 4, 32
-    );
+        7, 4, 32);
 
     auto m3 = m1 + m2;
 
@@ -108,21 +99,18 @@ TEST(MatrixTest, MatrixAddition)
     ASSERT_EQ(m3.at(2, 2), 32);
 }
 
-TEST(MatrixTest, Matrix4by4Addition)
-{
+TEST(MatrixTest, Matrix4by4Addition) {
     rcbe::math::Matrix4x4 m1(
-            4, 16, 2, 1,
-            7, 12, 11, -3,
-            3, 1, 0, 7,
-            15, 20, 6, -3
-    );
+        4, 16, 2, 1,
+        7, 12, 11, -3,
+        3, 1, 0, 7,
+        15, 20, 6, -3);
 
     rcbe::math::Matrix4x4 m2(
-            17, 1, 22, 5,
-            35, 6, 18, 4,
-            7, 4, 32, -10,
-            -10, 5, 4, -2
-    );
+        17, 1, 22, 5,
+        35, 6, 18, 4,
+        7, 4, 32, -10,
+        -10, 5, 4, -2);
 
     auto m3 = m1 + m2;
 
@@ -144,13 +132,11 @@ TEST(MatrixTest, Matrix4by4Addition)
     ASSERT_EQ(m3.at(3, 3), -5);
 }
 
-TEST(MatrixTest, MatrixTransposition)
-{
+TEST(MatrixTest, MatrixTransposition) {
     rcbe::math::Matrix3x3 m1(
         4, 16, 2,
         7, 12, 11,
-        3, 1, 0
-    );
+        3, 1, 0);
 
     auto tm = m1.transposed();
 
@@ -165,14 +151,12 @@ TEST(MatrixTest, MatrixTransposition)
     ASSERT_EQ(tm.at(2, 2), m1.at(2, 2));
 }
 
-TEST(MatrixTest, Matrix4by4Transposition)
-{
+TEST(MatrixTest, Matrix4by4Transposition) {
     rcbe::math::Matrix4x4 m1(
-            4, 16, 2, 3,
-            7, 12, 11, 1,
-            3, 1, 0, 7,
-            5, 4, 3, 2
-    );
+        4, 16, 2, 3,
+        7, 12, 11, 1,
+        3, 1, 0, 7,
+        5, 4, 3, 2);
 
     auto tm = m1.transposed();
 
@@ -196,31 +180,28 @@ TEST(MatrixTest, Matrix4by4Transposition)
 
 TEST(MatrixTest, Determinant3by3) {
     rcbe::math::Matrix3x3 m1(
-            4, 16, 2,
-            7, 12, 11,
-            3, 1, 0
-    );
+        4, 16, 2,
+        7, 12, 11,
+        3, 1, 0);
 
     ASSERT_EQ(m1.determinant(), 426);
 }
 
 TEST(MatrixTest, Determinant4by4) {
     rcbe::math::Matrix4x4 m1(
-            4, 16, 2, 8,
-            7, 12, 11, -3,
-            3, 1, 0, 5,
-            0, 2, 0, 1
-    );
+        4, 16, 2, 8,
+        7, 12, 11, -3,
+        3, 1, 0, 5,
+        0, 2, 0, 1);
 
     ASSERT_EQ(m1.determinant(), 162);
 }
 
 TEST(MatrixTest, Inverse3by3) {
     rcbe::math::Matrix3x3 m(
-            2, 5, 7,
-            6, 3, 4,
-            5, -2, -3
-            );
+        2, 5, 7,
+        6, 3, 4,
+        5, -2, -3);
 
     auto inv = m.inversed();
 
@@ -249,11 +230,10 @@ TEST(MatrixTest, Inverse3by3) {
 
 TEST(MatrixTest, Inverse4by4) {
     rcbe::math::Matrix4x4 m(
-            4, 16, 2, 8,
-            7, 12, 11, -3,
-            3, 1, 0, 5,
-            0, 2, 0, 1
-    );
+        4, 16, 2, 8,
+        7, 12, 11, -3,
+        3, 1, 0, 5,
+        0, 2, 0, 1);
 
     auto inv = m.inversed();
     auto identity = m * inv;
@@ -279,11 +259,10 @@ TEST(MatrixTest, Inverse4by4) {
 TEST(MatrixTest, ConvertUnderlyingType) {
     {
         rcbe::math::Matrix4x4 m(
-                2., 4., 0., 0.,
-                -2.1, 1., 3., 5.,
-                -1., 0.1, 1., 7.5,
-                -2.5, 4., 2.2, 1.
-        );
+            2., 4., 0., 0.,
+            -2.1, 1., 3., 5.,
+            -1., 0.1, 1., 7.5,
+            -2.5, 4., 2.2, 1.);
 
         const auto converted = static_cast<rcbe::math::Matrix<float, 4, 4>>(m);
 
@@ -307,10 +286,9 @@ TEST(MatrixTest, ConvertUnderlyingType) {
 
     {
         rcbe::math::Matrix3x3 m(
-                2., 4., 0.,
-                -2.1, 1., 3.,
-                -1., 0.1, 1.
-        );
+            2., 4., 0.,
+            -2.1, 1., 3.,
+            -1., 0.1, 1.);
 
         const auto converted = static_cast<rcbe::math::Matrix<float, 3, 3>>(m);
 
@@ -330,8 +308,7 @@ TEST(MatrixVectorTest, MatrixVectorMultiplication) {
     rcbe::math::Matrix3x3 m1(
         2, 4, 0,
         -2, 1, 3,
-        -1, 0, 1
-    );
+        -1, 0, 1);
 
     rcbe::math::Vector3d v(1, 2, -1);
 
@@ -344,11 +321,10 @@ TEST(MatrixVectorTest, MatrixVectorMultiplication) {
 
 TEST(MatrixVectorTest, MatrixVectorMultiplication4by4) {
     rcbe::math::Matrix4x4 m(
-            2, 3, -4, 12,
-            11, 8, 7, 3,
-            2, 5, 3, 5,
-            1, 7, -2, 0
-    );
+        2, 3, -4, 12,
+        11, 8, 7, 3,
+        2, 5, 3, 5,
+        1, 7, -2, 0);
 
     rcbe::math::Vector4d v(3, 7, 5, 1);
 
@@ -364,9 +340,9 @@ TEST(MatrixQuaternion, CreateMatrixFromQuat) {
     rcbe::math::yaw y(rcbe::math::deg(0));
     rcbe::math::pitch p(rcbe::math::deg(0));
     rcbe::math::roll r(rcbe::math::deg(90));
-    rcbe::math::Quaternion<rcbe::core::EngineScalar> q { y, p, r };
+    rcbe::math::Quaternion<rcbe::core::EngineScalar> q {y, p, r};
     rcbe::math::Matrix3x3 m(q);
- 
+
     ASSERT_TRUE(rcbe::core::fuzzy_equal(m.at(0, 0), 1.0));
     ASSERT_TRUE(rcbe::core::fuzzy_equal(m.at(0, 1), 0.0));
     ASSERT_TRUE(rcbe::core::fuzzy_equal(m.at(0, 2), 0.0));

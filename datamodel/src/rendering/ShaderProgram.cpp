@@ -1,14 +1,12 @@
-#include <rcbe-engine/datamodel/rendering/ShaderProgram.hpp>
-
-#include <rcbe-engine/datamodel/rendering/Shader.hpp>
-#include <rcbe-engine/core/gl_extensions.hpp>
-
 #include <boost/log/trivial.hpp>
+
+#include <rcbe-engine/core/gl_extensions.hpp>
+#include <rcbe-engine/datamodel/rendering/Shader.hpp>
+#include <rcbe-engine/datamodel/rendering/ShaderProgram.hpp>
 
 namespace rcbe::rendering {
 ShaderProgram::ShaderProgram(ShaderCollection &&shaders)
-:
-shader_prog_handle_ { glCreateProgram() } {
+    : shader_prog_handle_ {glCreateProgram()} {
     std::sort(shaders.begin(), shaders.end(), [](const auto &l, const auto &r) {
         return static_cast<int>(l.type()) > static_cast<int>(r.type());
     });
@@ -33,8 +31,7 @@ shader_prog_handle_ { glCreateProgram() } {
     info.reserve(rdmn::render::SHADER_ERROR_MSG_SIZE);
     info.resize(rdmn::render::SHADER_ERROR_MSG_SIZE);
     glGetProgramiv(shader_prog_handle_, GL_LINK_STATUS, &success);
-    if(!success)
-    {
+    if (!success) {
         glGetProgramInfoLog(shader_prog_handle_, rdmn::render::SHADER_ERROR_MSG_SIZE, nullptr, info.data());
         glDeleteProgram(shader_prog_handle_);
         throw std::runtime_error("Shader program linking error: " + info);
@@ -141,4 +138,4 @@ ShaderProgram::ShaderProgramHandle ShaderProgram::getHandle() const {
 int ShaderProgram::getUniformLocation(const std::string &name) const {
     return glGetUniformLocation(shader_prog_handle_, name.c_str());
 }
-}
+}// namespace rcbe::rendering

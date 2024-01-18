@@ -2,9 +2,9 @@
 
 #include <fstream>
 
-#include <rcbe-engine/core/gl_extensions.hpp>
-
 #include <boost/log/trivial.hpp>
+
+#include <rcbe-engine/core/gl_extensions.hpp>
 
 namespace rdmn::render {
 int GLShader::MAXIMUM_VERTEX_ATTRIBUTES = 0;
@@ -14,10 +14,9 @@ GLShader::~GLShader() {
 }
 
 GLShader::GLShader(const rcbe::core::EnginePath &path, ShaderType type, ShaderState state)
-:
-type_(type)
-, state_(state)
-, file_path_(path) {
+    : type_(type)
+    , state_(state)
+    , file_path_(path) {
     if (!std::filesystem::exists(file_path_)) {
         throw std::runtime_error(file_path_.string() + " doesn't exist!");
     }
@@ -34,9 +33,8 @@ type_(type)
 }
 
 GLShader::GLShader(const GLShader &other)
-:
-type_ { other.type_ }
-, file_path_ { other.file_path_ } {
+    : type_ {other.type_}
+    , file_path_ {other.file_path_} {
     this->shader_handle_ = glCreateShader(static_cast<GLenum>(this->type_));
 }
 
@@ -51,9 +49,8 @@ GLShader &GLShader::operator=(const GLShader &other) {
 }
 
 GLShader::GLShader(GLShader &&other)
-:
-type_ { other.type_ }
-, file_path_ { std::move(other.file_path_) } {
+    : type_ {other.type_}
+    , file_path_ {std::move(other.file_path_)} {
     this->shader_handle_ = glCreateShader(static_cast<GLenum>(this->type_));
     other.deleteShader();
 }
@@ -85,7 +82,7 @@ const GLShader::ShaderHandle &GLShader::compile() {
         if (source_code_.empty())
             throw std::runtime_error("Couldn't read shader source code!");
 
-        const auto * scode = source_code_.c_str();
+        const auto *scode = source_code_.c_str();
 
         //**
         //
@@ -150,4 +147,4 @@ int GLShader::maxVertexAttribs() const noexcept {
 void GLShader::deleteShader() const {
     glDeleteShader(shader_handle_);
 }
-}
+}// namespace rdmn::render

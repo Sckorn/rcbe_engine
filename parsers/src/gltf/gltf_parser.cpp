@@ -9,8 +9,8 @@
 #include <nlohmann/json.hpp>
 
 #include <rcbe-engine/datamodel/core/CoreObject.hpp>
-#include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
+#include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/rendering/Material.hpp>
 #include <rcbe-engine/datamodel/rendering/RasterizerTexture.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
@@ -30,7 +30,7 @@ inline constexpr std::string_view GLTF_SUPPORTED_INDEX_TYPE = "SCALAR";
 inline constexpr std::string_view GLTF_MAIN_EXTENSION_STRING = ".gltf";
 inline constexpr std::string_view GLTF_BIN_EXTENSION_STRING = ".bin";
 inline constexpr size_t UNSET_INDEX = std::numeric_limits<size_t>::max();
-inline constexpr size_t DEFAULT_VISITED_INDICES_AMOUNT = 10; /// randomly picked
+inline constexpr size_t DEFAULT_VISITED_INDICES_AMOUNT = 10;/// randomly picked
 
 struct gltf_buffer {
     std::string uri;
@@ -50,7 +50,7 @@ struct gltf_buffer_view {
 enum class gltf_acc_comp_type : uint16_t {
     byte = 5120,
     ubyte = 5121,
-    short_t = 5122, /// TODO: consider making enum memebers uppercase, this name is to avoid conflict with built-in short type @sckorn
+    short_t = 5122,/// TODO: consider making enum memebers uppercase, this name is to avoid conflict with built-in short type @sckorn
     unsigned_short = 5123,
     unsigned_int = 5125,
     float_t = 5126,
@@ -131,20 +131,20 @@ template <>
 struct adl_serializer<gltf_pbr_met_rough> {
     static void from_json(const json &j, gltf_pbr_met_rough &mr) {
         mr = {
-          .color_tex_idx = j.at("baseColorTexture").at("index").get<size_t>(),
-          .metallic_factor = j.at("metallicFactor").get<float>(),
-          .roughness_factor = j.at("roughnessFactor").get<float>(),
+            .color_tex_idx = j.at("baseColorTexture").at("index").get<size_t>(),
+            .metallic_factor = j.at("metallicFactor").get<float>(),
+            .roughness_factor = j.at("roughnessFactor").get<float>(),
         };
     }
 
     static void to_json(json &j, const gltf_pbr_met_rough &mr) {
         json subj = {
-                {"index", mr.color_tex_idx},
+            {"index", mr.color_tex_idx},
         };
         j = {
-                {"baseColorTexture", subj},
-                {"metallicFactor", mr.metallic_factor},
-                {"roughnessFactor", mr.roughness_factor},
+            {"baseColorTexture", subj},
+            {"metallicFactor", mr.metallic_factor},
+            {"roughnessFactor", mr.roughness_factor},
         };
     }
 };
@@ -153,14 +153,14 @@ template <>
 struct adl_serializer<gltf_material> {
     static void from_json(const json &j, gltf_material &m) {
         m = {
-          .name = j.value<std::string>("name", std::string{}),
-          .metal_rough = j.at("pbrMetallicRoughness").get<gltf_pbr_met_rough>(),
+            .name = j.value<std::string>("name", std::string {}),
+            .metal_rough = j.at("pbrMetallicRoughness").get<gltf_pbr_met_rough>(),
         };
     }
 
     static void to_json(json &j, const gltf_material &m) {
         j = {
-                {"pbrMetallicRoughness", m.metal_rough},
+            {"pbrMetallicRoughness", m.metal_rough},
         };
 
         if (!m.name.empty())
@@ -172,15 +172,15 @@ template <>
 struct adl_serializer<gltf_texture> {
     static void from_json(const json &j, gltf_texture &t) {
         t = {
-                .sampler_idx = j.at("sampler").get<size_t>(),
-                .source_image_idx = j.at("source").get<size_t>(),
+            .sampler_idx = j.at("sampler").get<size_t>(),
+            .source_image_idx = j.at("source").get<size_t>(),
         };
     }
 
     static void to_json(json &j, const gltf_texture &t) {
         j = {
-                {"sampler", t.sampler_idx},
-                {"source", t.source_image_idx},
+            {"sampler", t.sampler_idx},
+            {"source", t.source_image_idx},
         };
     }
 };
@@ -189,13 +189,13 @@ template <>
 struct adl_serializer<gltf_image> {
     static void from_json(const json &j, gltf_image &i) {
         i = {
-          .uri = j.at("uri").get<std::string>(),
+            .uri = j.at("uri").get<std::string>(),
         };
     }
 
     static void to_json(json &j, const gltf_image &i) {
         j = {
-                {"uri", i.uri},
+            {"uri", i.uri},
         };
     }
 };
@@ -204,13 +204,13 @@ template <>
 struct adl_serializer<gltf_buffer> {
     static void from_json(const json &j, gltf_buffer &b) {
         b.byte_length = j.at("byteLength").get<size_t>();
-        b.name = j.value<std::string>("name", std::string{});
-        b.uri = j.value<std::string>("uri", std::string{});
+        b.name = j.value<std::string>("name", std::string {});
+        b.uri = j.value<std::string>("uri", std::string {});
     }
 
     static void to_json(json &j, const gltf_buffer &b) {
         j = {
-                {"byteLength", b.byte_length},
+            {"byteLength", b.byte_length},
         };
 
         if (!b.name.empty())
@@ -224,7 +224,7 @@ struct adl_serializer<gltf_buffer> {
 template <>
 struct adl_serializer<gltf_buffer_view> {
     static void from_json(const json &j, gltf_buffer_view &bv) {
-        bv.name = j.value<std::string>("name", std::string{});
+        bv.name = j.value<std::string>("name", std::string {});
         bv.buffer_idx = j.at("buffer").get<size_t>();
         bv.byte_offset = j.value<size_t>("byteOffset", 0);
         bv.byte_length = j.at("byteLength").get<size_t>();
@@ -234,10 +234,10 @@ struct adl_serializer<gltf_buffer_view> {
 
     static void to_json(json &j, const gltf_buffer_view &bv) {
         j = {
-                {"buffer", bv.buffer_idx},
-                {"byteLength", bv.byte_length},
-                {"byteStride", bv.byte_stride},
-                {"target", bv.target},
+            {"buffer", bv.buffer_idx},
+            {"byteLength", bv.byte_length},
+            {"byteStride", bv.byte_stride},
+            {"target", bv.target},
         };
 
         if (!bv.name.empty())
@@ -256,20 +256,20 @@ struct adl_serializer<gltf_accessor> {
         acc.comp_type = static_cast<gltf_acc_comp_type>(j.at("componentType").get<uint16_t>());
         acc.count = j.at("count").get<size_t>();
         acc.type = j.at("type").get<std::string>();
-        acc.min = j.value<std::vector<float>>("min", std::vector<float>{});
-        acc.max = j.value<std::vector<float>>("max", std::vector<float>{});
-        acc.name = j.value<std::string>("name", std::string{});
+        acc.min = j.value<std::vector<float>>("min", std::vector<float> {});
+        acc.max = j.value<std::vector<float>>("max", std::vector<float> {});
+        acc.name = j.value<std::string>("name", std::string {});
         acc.normalized = j.value<bool>("normalized", false);
     }
 
     static void to_json(json &j, const gltf_accessor &acc) {
         j = {
-                {"componentType", static_cast<uint16_t>(acc.comp_type)},
-                {"count", acc.count},
-                {"type", acc.type},
-                {"normalized", acc.normalized},
-                {"min", acc.min},
-                {"max", acc.max},
+            {"componentType", static_cast<uint16_t>(acc.comp_type)},
+            {"count", acc.count},
+            {"type", acc.type},
+            {"normalized", acc.normalized},
+            {"min", acc.min},
+            {"max", acc.max},
         };
 
         if (acc.buffer_view_idx != UNSET_INDEX)
@@ -293,9 +293,9 @@ struct adl_serializer<gltf_mesh_attr> {
 
     static void to_json(json &j, const gltf_mesh_attr &attr) {
         j = {
-                {"NORMAL", attr.normal_accessor_idx},
-                {"POSITION", attr.position_acccessor_idx},
-                {"TEXCOORD_0", attr.texcoord_accessor_idx},
+            {"NORMAL", attr.normal_accessor_idx},
+            {"POSITION", attr.position_acccessor_idx},
+            {"TEXCOORD_0", attr.texcoord_accessor_idx},
         };
     }
 };
@@ -311,10 +311,10 @@ struct adl_serializer<gltf_mesh_prim> {
 
     static void to_json(json &j, const gltf_mesh_prim &prim) {
         j = {
-                {"attributes", prim.attributes},
-                {"mode", prim.topology_mode},
-                {"indices", prim.indices_index},
-                {"material", prim.material_index},
+            {"attributes", prim.attributes},
+            {"mode", prim.topology_mode},
+            {"indices", prim.indices_index},
+            {"material", prim.material_index},
         };
     }
 };
@@ -328,8 +328,8 @@ struct adl_serializer<gltf_mesh> {
 
     static void to_json(json &j, const gltf_mesh &mesh) {
         j = {
-                {"name", mesh.name},
-                {"primitives", mesh.primitives},
+            {"name", mesh.name},
+            {"primitives", mesh.primitives},
         };
     }
 };
@@ -344,7 +344,7 @@ struct adl_serializer<gltf_node> {
             .skin_indices = j.value<std::vector<size_t>>("skin", std::vector<size_t> {}),
             .matrix = j.value<std::vector<float>>("matrix", std::vector<float> {}),
             .mesh_index = j.value<size_t>("mesh", UNSET_INDEX),
-            .name = j.value<std::string>("name", std::string{}),
+            .name = j.value<std::string>("name", std::string {}),
         };
     }
 
@@ -369,22 +369,21 @@ struct adl_serializer<gltf_node> {
         if (!node.name.empty())
             j.push_back({"name", node.name});
 
-        j.push_back({"matrix", node.matrix}); /// TODO: find the way to handle this properly later
+        j.push_back({"matrix", node.matrix});/// TODO: find the way to handle this properly later
     }
 };
-}
+}// namespace nlohmann
 
 namespace {
 template <typename R, typename F = R>
 std::vector<R> getValuesByAccessor(
-        const size_t accessor_idx,
-        std::string_view accessor_type,
-        gltf_acc_comp_type accessor_component_type,
-        const std::vector<gltf_accessor> &accessors,
-        const std::vector<gltf_buffer_view> &buffer_views,
-        const rcbe::binary::BinaryBuffer &bb,
-        const size_t size_to_fill_if_empty
-) {
+    const size_t accessor_idx,
+    std::string_view accessor_type,
+    gltf_acc_comp_type accessor_component_type,
+    const std::vector<gltf_accessor> &accessors,
+    const std::vector<gltf_buffer_view> &buffer_views,
+    const rcbe::binary::BinaryBuffer &bb,
+    const size_t size_to_fill_if_empty) {
     static_assert(F::DIMENSION == R::DIMENSION, "Can't process different dimensions!");
     const auto accessor = accessors[accessor_idx];
     if (accessor.type != accessor_type)
@@ -404,24 +403,22 @@ std::vector<R> getValuesByAccessor(
 
         ret.reserve(byte_length / stride * 2);
 
-        while(ret.size() < accessor.count) {
+        while (ret.size() < accessor.count) {
             auto v = bb.at(byte_offset, stride).get<F>();
             if constexpr (F::DIMENSION == 2) {
                 ret.push_back({
-                                      static_cast<typename R::ValueType>(v.x()),
-                                      static_cast<typename R::ValueType>(v.y()),
-                              });
+                    static_cast<typename R::ValueType>(v.x()),
+                    static_cast<typename R::ValueType>(v.y()),
+                });
             } else {
-                ret.push_back({
-                                      static_cast<typename R::ValueType>(v.x()),
-                                      static_cast<typename R::ValueType>(v.y()),
-                                      static_cast<typename R::ValueType>(v.z())
-                              });
+                ret.push_back({static_cast<typename R::ValueType>(v.x()),
+                               static_cast<typename R::ValueType>(v.y()),
+                               static_cast<typename R::ValueType>(v.z())});
             }
         }
     } else {
         BOOST_LOG_TRIVIAL(warning) << "No data available";
-        ret = std::vector<R> { size_to_fill_if_empty, R{} };
+        ret = std::vector<R> {size_to_fill_if_empty, R {}};
     }
 
     return ret;
@@ -429,14 +426,13 @@ std::vector<R> getValuesByAccessor(
 
 template <>
 rcbe::geometry::Mesh::FacetStorage getValuesByAccessor(
-        const size_t accessor_idx,
-        std::string_view accessor_type,
-        gltf_acc_comp_type accessor_component_type,
-        const std::vector<gltf_accessor> &accessors,
-        const std::vector<gltf_buffer_view> &buffer_views,
-        const rcbe::binary::BinaryBuffer &bb,
-        const size_t size_to_fill_if_empty
-) {
+    const size_t accessor_idx,
+    std::string_view accessor_type,
+    gltf_acc_comp_type accessor_component_type,
+    const std::vector<gltf_accessor> &accessors,
+    const std::vector<gltf_buffer_view> &buffer_views,
+    const rcbe::binary::BinaryBuffer &bb,
+    const size_t size_to_fill_if_empty) {
     const auto indices_accessor = accessors[accessor_idx];
 
     if (indices_accessor.type != accessor_type)
@@ -452,10 +448,10 @@ rcbe::geometry::Mesh::FacetStorage getValuesByAccessor(
     if (stride != sizeof(uint32_t))
         throw std::runtime_error("Wrong stride!");
 
-    rcbe::geometry::Mesh::FacetStorage ret{};
+    rcbe::geometry::Mesh::FacetStorage ret {};
     ret.reserve(byte_length / stride);
 
-    while(ret.size() * 3 < indices_accessor.count) {
+    while (ret.size() * 3 < indices_accessor.count) {
         auto fv1 = bb.at(byte_offset, stride).get<uint32_t>();
         auto fv2 = bb.at(byte_offset, stride).get<uint32_t>();
         auto fv3 = bb.at(byte_offset, stride).get<uint32_t>();
@@ -465,34 +461,29 @@ rcbe::geometry::Mesh::FacetStorage getValuesByAccessor(
 
     return ret;
 }
-}
+}// namespace
 
 namespace rdmn::parse::gltf {
 
 std::vector<rcbe::core::CoreObject> parse(
-        const rcbe::core::EnginePath &gltf_file_path,
-        const rcbe::core::EnginePath &bin_file_path
-) {
+    const rcbe::core::EnginePath &gltf_file_path,
+    const rcbe::core::EnginePath &bin_file_path) {
     if (!std::filesystem::exists(gltf_file_path) || !std::filesystem::exists(bin_file_path))
         throw std::runtime_error(gltf_file_path.string() + " or " + bin_file_path.string() + " doesn't exist!");
 
-    bool not_files_of_extension = !std::filesystem::is_regular_file(gltf_file_path)
-            || gltf_file_path.extension() != GLTF_MAIN_EXTENSION_STRING
-            || !std::filesystem::is_regular_file(bin_file_path)
-            || bin_file_path.extension() != GLTF_BIN_EXTENSION_STRING;
+    bool not_files_of_extension = !std::filesystem::is_regular_file(gltf_file_path) || gltf_file_path.extension() != GLTF_MAIN_EXTENSION_STRING || !std::filesystem::is_regular_file(bin_file_path) || bin_file_path.extension() != GLTF_BIN_EXTENSION_STRING;
 
     if (not_files_of_extension)
         throw std::runtime_error(
-                gltf_file_path.string() + " or " + bin_file_path.string() + " is not a file or of a wrong extension!"
-        );
+            gltf_file_path.string() + " or " + bin_file_path.string() + " is not a file or of a wrong extension!");
 
-    std::vector<rcbe::core::CoreObject> ret{};
+    std::vector<rcbe::core::CoreObject> ret {};
     /// TODO: below is a texture cash to reduce parsing times, remove it when proper ResourceManager is introduced
     std::unordered_map<rcbe::core::EnginePath, rcbe::visual::TexturePtr> tex_cache;
     {
         rcbe::binary::BinaryBuffer bb;
         std::jthread bin_parser([bin_file_path, &bb]() {
-            std::ifstream ifs{ bin_file_path.string(), std::ios::binary | std::ios::in };
+            std::ifstream ifs {bin_file_path.string(), std::ios::binary | std::ios::in};
             ifs >> bb;
 
             BOOST_LOG_TRIVIAL(trace) << "Read binary part of GLTF successfully!";
@@ -569,12 +560,12 @@ std::vector<rcbe::core::CoreObject> parse(
         }
 
         size_t start_index = 0;
-        rcbe::math::Matrix4x4 root_trn{};
+        rcbe::math::Matrix4x4 root_trn {};
         if (root_node_idx != UNSET_INDEX) {
             start_index = root_node_idx + 1;
             for (size_t i = 0; i < start_index; ++i) {
                 if (!nodes[i].matrix.empty()) {
-                    rcbe::math::Matrix4x4 t{nodes[i].matrix.begin(), nodes[i].matrix.end()};
+                    rcbe::math::Matrix4x4 t {nodes[i].matrix.begin(), nodes[i].matrix.end()};
                     root_trn = root_trn * t.transposed();
                 }
             }
@@ -627,10 +618,10 @@ std::vector<rcbe::core::CoreObject> parse(
                 if (has_mesh)
                     mesh_index = n.mesh_index;
                 if (!n.children_indices.empty()) {
-                    auto t = rcbe::math::Matrix4x4 { n.matrix.begin(), n.matrix.end() };
+                    auto t = rcbe::math::Matrix4x4 {n.matrix.begin(), n.matrix.end()};
                     transform = transform * t.transposed();
                 }
-            } while(!n.children_indices.empty());
+            } while (!n.children_indices.empty());
 
             for (const auto vi : visited_indices) {
                 nodes_processed[vi] = true;
@@ -648,10 +639,10 @@ std::vector<rcbe::core::CoreObject> parse(
             if (mesh_primitives.topology_mode != gltf_primitive_topology::triangles)
                 throw std::runtime_error("Any topology mode except triangles is not supported yet!");
 
-            rcbe::geometry::Mesh::VertexStorage vertices{};
-            rcbe::geometry::Mesh::NormalStorage normals{};
-            rcbe::geometry::Mesh::TexCoordStorage tex_coord{};
-            rcbe::geometry::Mesh::FacetStorage facets{};
+            rcbe::geometry::Mesh::VertexStorage vertices {};
+            rcbe::geometry::Mesh::NormalStorage normals {};
+            rcbe::geometry::Mesh::TexCoordStorage tex_coord {};
+            rcbe::geometry::Mesh::FacetStorage facets {};
 
             if (bin_parser.joinable())
                 bin_parser.join();
@@ -664,12 +655,11 @@ std::vector<rcbe::core::CoreObject> parse(
                     accessors,
                     buffer_views,
                     bb,
-                    0
-                );
+                    0);
                 /// TODO: introduce bound box class, and parse min and max fields of accessor, since they are a BB
             }
 
-            if(vertices.empty()) {
+            if (vertices.empty()) {
                 BOOST_LOG_TRIVIAL(trace) << "No vertices parsed for the mesh, no use parsing anything else";
                 continue;
             }
@@ -682,8 +672,7 @@ std::vector<rcbe::core::CoreObject> parse(
                     accessors,
                     buffer_views,
                     bb,
-                    vertices.size()
-                );
+                    vertices.size());
             }
 
             if (mesh_primitives.attributes.texcoord_accessor_idx != UNSET_INDEX) {
@@ -694,8 +683,7 @@ std::vector<rcbe::core::CoreObject> parse(
                     accessors,
                     buffer_views,
                     bb,
-                    vertices.size()
-                );
+                    vertices.size());
             }
 
             if (mesh_primitives.indices_index != UNSET_INDEX) {
@@ -706,8 +694,7 @@ std::vector<rcbe::core::CoreObject> parse(
                     accessors,
                     buffer_views,
                     bb,
-                    vertices.size() / 3
-                );
+                    vertices.size() / 3);
             }
 
             BOOST_LOG_TRIVIAL(trace) << "Total vertices: " << vertices.size();
@@ -724,10 +711,9 @@ std::vector<rcbe::core::CoreObject> parse(
                 std::move(normals),
                 std::move(facets),
                 std::move(tex_coord),
-                rcbe::visual::RGBAColor(0xAAAAAAFF)
-            );
+                rcbe::visual::RGBAColor(0xAAAAAAFF));
 
-            m.transform(rcbe::math::Transform{transform});
+            m.transform(rcbe::math::Transform {transform});
 
             rcbe::core::CoreObject obj(std::move(name));
             obj.addComponent<rcbe::geometry::Mesh>(std::move(m));
@@ -742,7 +728,7 @@ std::vector<rcbe::core::CoreObject> parse(
                             const auto dir = gltf_file_path.parent_path();
                             const auto rel_path = std::filesystem::path {image.uri};
                             const auto proper_ext_file = rel_path.stem().string() + std::string(".tga");
-                            const auto proper_path = dir / rel_path.parent_path() / std::filesystem::path{proper_ext_file};
+                            const auto proper_path = dir / rel_path.parent_path() / std::filesystem::path {proper_ext_file};
                             if (std::filesystem::exists(proper_path)) {
                                 const auto it = tex_cache.find(proper_path);
                                 rcbe::visual::TexturePtr tex_ptr;
@@ -775,4 +761,4 @@ std::vector<rcbe::core::CoreObject> parse(
     return ret;
 }
 
-}
+}// namespace rdmn::parse::gltf

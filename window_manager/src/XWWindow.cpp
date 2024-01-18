@@ -11,14 +11,10 @@
 
 namespace rcbe::core {
 XWWindow::XWWindow(window_config &&config_, const WindowContextPtr &window_context)
-:
-impl_ { std::make_shared<XWindow>(std::move(config_), window_context) }
-{
-
+    : impl_ {std::make_shared<XWindow>(std::move(config_), window_context)} {
 }
 
 XWWindow::~XWWindow() {
-
 }
 
 void XWWindow::kill() {
@@ -72,4 +68,4 @@ void XWWindow::onConfigure(window::ConfigureHandlerType &&handler) {
 void XWWindow::onUnmap(window::UunmapHandlerType &&handler) {
     impl_->onUnmap(std::move(handler));
 }
-}
+}// namespace rcbe::core

@@ -1,8 +1,8 @@
 #ifndef RCBE_ENGINE_GL_HELPERS_HPP
 #define RCBE_ENGINE_GL_HELPERS_HPP
 
-#include <cstdint>
 #include <array>
+#include <cstdint>
 
 #include <GL/gl.h>
 
@@ -16,6 +16,6 @@ MatrixType gl_matrix_get(GLenum matrix_type) {
 
     return MatrixType(m);
 }
-}
+}// namespace rcbe::core
 
-#endif //RCBE_ENGINE_GL_HELPERS_HPP
+#endif//RCBE_ENGINE_GL_HELPERS_HPP

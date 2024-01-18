@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
-
 #include <rcbe-engine/datamodel/math/Vector.hpp>
+#include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
 
 TEST(VectorTest, VectorAddition) {
     rcbe::math::Vector3d v1(1, 2, 3);
@@ -38,8 +37,8 @@ TEST(VectorTest, VectorScalarMultiplication) {
 }
 
 TEST(VectorTest, CrossProductTest) {
-    rcbe::math::Vector3d v1 { 1, 0, 0 };
-    rcbe::math::Vector3d v2 { 0, 1, 0 };
+    rcbe::math::Vector3d v1 {1, 0, 0};
+    rcbe::math::Vector3d v2 {0, 1, 0};
 
     auto cross = rcbe::math::Vector3d::cross(v1, v2);
 
@@ -48,7 +47,7 @@ TEST(VectorTest, CrossProductTest) {
 }
 
 TEST(VectorTest, CtorsTests) {
-    rcbe::math::Vector3d v3 {1, 2 ,3};
+    rcbe::math::Vector3d v3 {1, 2, 3};
     rcbe::math::Vector4d v4 {4, 5, 6, 7};
 
     ASSERT_EQ(v3.x(), 1);
@@ -57,7 +56,7 @@ TEST(VectorTest, CtorsTests) {
 }
 
 TEST(VectorTest, ConversionTest) {
-    rcbe::math::Vector3d v3 {1, 2 ,3};
+    rcbe::math::Vector3d v3 {1, 2, 3};
 
     const auto converted = static_cast<rcbe::math::Vector<float, 3>>(v3);
 

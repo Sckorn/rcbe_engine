@@ -11,20 +11,19 @@ namespace rcbe::math {
 template <typename Value>
 class DynamicMatrix : public std::enable_shared_from_this<DynamicMatrix<Value>> {
 public:
+
     using ValueType = Value;
     using StorageType = std::vector<ValueType>;
     using RawValueType = const ValueType *;
 
     DynamicMatrix()
-    :
-    rows_ { 0 }
-    , cols_ { 0 } {}
+        : rows_ {0}
+        , cols_ {0} {}
     ~DynamicMatrix() = default;
 
     DynamicMatrix(const size_t rows, const size_t columns)
-    :
-    rows_ { rows }
-    , cols_ { columns } {
+        : rows_ {rows}
+        , cols_ {columns} {
         storage_.reserve(rows * columns);
     }
 
@@ -68,10 +67,9 @@ public:
 private:
 
     DynamicMatrix(const size_t rows, const size_t cols, StorageType storage)
-    :
-    rows_ {rows}
-    , cols_ {cols}
-    , storage_ {storage} {}
+        : rows_ {rows}
+        , cols_ {cols}
+        , storage_ {storage} {}
 
     size_t rows_;
     size_t cols_;
@@ -82,6 +80,6 @@ template <typename V>
 using DynamicMatrixPtr = std::shared_ptr<DynamicMatrix<V>>;
 template <typename V>
 using ConstDynamicMatrixPtr = std::shared_ptr<const DynamicMatrix<V>>;
-}
+}// namespace rcbe::math
 
-#endif //RCBE_ENGINE_DYNAMICMATRIX_HPP
+#endif//RCBE_ENGINE_DYNAMICMATRIX_HPP

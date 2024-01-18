@@ -1,7 +1,7 @@
-#include <gtest/gtest.h>
-
 #include <filesystem>
 #include <string>
+
+#include <gtest/gtest.h>
 
 #include <rcbe-engine/parsers/stl/stl_parser.hpp>
 
@@ -11,7 +11,7 @@ void _impl(const std::string &file_path, const size_t total_triangles) {
     auto mesh = rcbe::parsers::stl::parse_mesh(file_path);
     ASSERT_EQ(mesh.facetsSize(), total_triangles);
 }
-}
+}// namespace
 
 TEST(ParsersTest, TestSTLParse) {
     static constexpr size_t TOTAL_TRIANGLES = 6291;

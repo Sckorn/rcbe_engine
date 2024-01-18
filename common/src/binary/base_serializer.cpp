@@ -1,5 +1,5 @@
-#include <rcbe-engine/binary/base_serializer.hpp>
 #include <rcbe-engine/binary/BinaryBuffer.hpp>
+#include <rcbe-engine/binary/base_serializer.hpp>
 
 namespace rcbe::binary {
 template <>
@@ -101,4 +101,4 @@ template <>
 void from_binary<BinaryBuffer, uint16_t>(const BinaryBuffer &b, uint16_t &a) {
     a = b.at(0, sizeof(uint16_t)).get<uint16_t>();
 }
-}
+}// namespace rcbe::binary

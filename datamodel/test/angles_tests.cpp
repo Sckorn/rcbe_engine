@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <rcbe-engine/datamodel/math/rotation_units.hpp>
 #include <rcbe-engine/datamodel/math/euler_angles.hpp>
+#include <rcbe-engine/datamodel/math/rotation_units.hpp>
 
 TEST(AngleTests, ComparisonsTestDegDeg) {
     rcbe::math::deg d1(90);
@@ -33,7 +33,7 @@ TEST(AngleTests, ComparisonMixedUnitsPitch) {
 
 TEST(AngleTests, AdditionsYaw) {
     rcbe::math::yaw y(rcbe::math::deg(90));
-    y  += rcbe::math::yaw(rcbe::math::rad(M_PI_4));
+    y += rcbe::math::yaw(rcbe::math::rad(M_PI_4));
 
 
     auto double_rep = static_cast<double>(y.as_deg());

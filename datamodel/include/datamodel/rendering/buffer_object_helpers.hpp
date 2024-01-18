@@ -6,8 +6,8 @@
 
 #include <boost/log/trivial.hpp>
 
-#include <rcbe-engine/fundamentals/convinience.hpp>
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
+#include <rcbe-engine/fundamentals/convinience.hpp>
 
 #ifdef RDMN_VULKAN
 #include <vulkan/vulkan.hpp>
@@ -25,16 +25,14 @@ bool endSingleTimeCommands(
     VkDevice logical_device,
     VkCommandBuffer cmd_buff,
     VkQueue graph_queue,
-    VkCommandPool cmd_pool
-);
+    VkCommandPool cmd_pool);
 bool copyBuffer(
     VkDevice logical_device,
     VkBuffer src,
     VkBuffer dst,
     VkDeviceSize size,
     VkCommandPool command_pool,
-    VkQueue target_queue
-);
+    VkQueue target_queue);
 bool createBufferImpl(
     VkDevice &logical_device,
     VkPhysicalDevice &device,
@@ -42,8 +40,7 @@ bool createBufferImpl(
     VkBufferUsageFlags usage,
     VkMemoryPropertyFlags properties,
     VkBuffer &buff,
-    VkDeviceMemory &memory
-);
+    VkDeviceMemory &memory);
 
 template <typename Container>
 bool createGeneralBuffer(size_t buffer_size,
@@ -58,14 +55,14 @@ bool createGeneralBuffer(size_t buffer_size,
     VkBuffer staging_buffer;
     VkDeviceMemory staging_buffer_memory;
     auto res = createBufferImpl(
-            logical_device,
-            device,
-            buffer_size,
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+        logical_device,
+        device,
+        buffer_size,
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            staging_buffer,
-            staging_buffer_memory);
+        staging_buffer,
+        staging_buffer_memory);
 
     if (!res) {
         BOOST_LOG_TRIVIAL(error) << "Can't create buffer!";
@@ -82,7 +79,7 @@ bool createGeneralBuffer(size_t buffer_size,
             device,
             buffer_size,
             VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-            usage,
+                usage,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             buff,
             memory)) {
@@ -144,9 +141,9 @@ struct buffer_object_data_extraction_options {
 
 template <typename ValueType, typename IndexType>
 BufferObjectData<ValueType, IndexType> extractBufferObjectData(
-        const std::vector<rcbe::geometry::Mesh> &meshes,
-        buffer_object_data_extraction_options options = {}) {
-    BufferObjectData<ValueType, IndexType> ret{};
+    const std::vector<rcbe::geometry::Mesh> &meshes,
+    buffer_object_data_extraction_options options = {}) {
+    BufferObjectData<ValueType, IndexType> ret {};
 
     size_t normals_size = 0;
     ret.source_size = std::accumulate(meshes.begin(), meshes.end(), 0, [&normals_size](auto sum, const auto &s) mutable {
@@ -235,6 +232,6 @@ BufferObjectData<ValueType, IndexType> extractBufferObjectData(
     return ret;
 }
 
-}
+}// namespace rdmn::render
 
-#endif //RCBE_ENGINE_BUFFER_OBJECT_HELPERS_HPP
+#endif//RCBE_ENGINE_BUFFER_OBJECT_HELPERS_HPP

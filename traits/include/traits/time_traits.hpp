@@ -1,8 +1,8 @@
 #ifndef RCBE_ENGINE_TIME_TRAITS_HPP
 #define RCBE_ENGINE_TIME_TRAITS_HPP
 
-#include <type_traits>
 #include <chrono>
+#include <type_traits>
 
 namespace rcbe::utility {
 template <typename Duration>
@@ -28,6 +28,6 @@ struct is_duration_type<std::chrono::nanoseconds> : public std::true_type {};
 
 template <typename Duration>
 static constexpr bool duration_type_v = is_duration_type<Duration>::value;
-}
+}// namespace rcbe::utility
 
-#endif //RCBE_ENGINE_TIME_TRAITS_HPP
+#endif//RCBE_ENGINE_TIME_TRAITS_HPP

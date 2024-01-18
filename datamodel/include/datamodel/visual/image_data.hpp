@@ -26,6 +26,6 @@ struct image_data {
         return std::make_shared<PixelsType>(std::move(p));
     }
 };
-}
+}// namespace rdmn::vis
 
-#endif //RCBE_ENGINE_IMAGE_DATA_HPP
+#endif//RCBE_ENGINE_IMAGE_DATA_HPP

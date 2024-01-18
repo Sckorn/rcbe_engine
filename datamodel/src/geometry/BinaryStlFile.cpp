@@ -6,7 +6,7 @@ void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_header &bsh) 
 }
 
 void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_header &bsh) {
-    std::array<unsigned char, 80> tmp{};
+    std::array<unsigned char, 80> tmp {};
     b = {tmp, bsh.number_triangles};
 }
 
@@ -22,4 +22,4 @@ void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_chunk &bsc) {
 void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_chunk &bsc) {
     b = {bsc.normal, bsc.v1, bsc.v2, bsc.v3, bsc.extra_bytes_count};
 }
-}
+}// namespace rcbe::binary
