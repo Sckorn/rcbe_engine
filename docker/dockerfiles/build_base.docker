@@ -56,7 +56,8 @@ RUN apt-get -qq update && \
         libsdl2-dev \
         libsdl2-image-dev \
         libglm-dev \
-        libfreetype6-dev
+        libfreetype6-dev \
+        wget
 
 # Install pip packages
 
