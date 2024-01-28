@@ -63,3 +63,6 @@ bazel-testlogs
 
 # Binary SPIR-V shaders
 *.spv
+
+# Lock files
+*.lock

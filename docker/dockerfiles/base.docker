@@ -37,4 +37,5 @@ RUN apt-get -qq update && \
         sudo \
         dialog \
         apt-utils \
-        unzip
+        unzip \
+        ca-certificates

@@ -6,42 +6,46 @@ FROM radameon/build_${BASE}:latest
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Installing all clang 14 packages
+# Installing all clang 16 packages
 
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test && \
+RUN echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> /etc/apt/sources.list && \
+    echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> /etc/apt/sources.list && \
+    echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main" >> /etc/apt/sources.list && \
+    echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main" >> /etc/apt/sources.list && \
+    wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
     apt-get -qq update && \
     apt-get -y -qq install \
         # LLVM
-        libllvm-14-ocaml-dev \
-        libllvm14 \
-        llvm-14 \
-        llvm-14-dev \
-        llvm-14-doc \
-        llvm-14-examples \
-        llvm-14-runtime \
+        libllvm-16-ocaml-dev \
+        libllvm16 \
+        llvm-16 \
+        llvm-16-dev \
+        llvm-16-doc \
+        llvm-16-examples \
+        llvm-16-runtime \
         # Clang and co
-        clang-14 \
-        clang-tools-14 \
-        clang-14-doc \
-        libclang-common-14-dev \
-        libclang-14-dev \
-        libclang1-14 \
-        clang-format-14 \
-        clangd-14 \
+        clang-16 \
+        clang-tools-16 \
+        clang-16-doc \
+        libclang-common-16-dev \
+        libclang-16-dev \
+        libclang1-16 \
+        clang-format-16 \
+        clangd-16 \
         # libfuzzer
-        libfuzzer-14-dev \
+        libfuzzer-16-dev \
         # lldb
-        lldb-14 \
+        lldb-16 \
         # lld (linker)
-        lld-14 \
+        lld-16 \
         # libc++
-        libc++-14-dev \
-        libc++abi-14-dev \
+        libc++-16-dev \
+        libc++abi-16-dev \
         # OpenMP
-        libomp-14-dev \
+        libomp-16-dev \
         # libclc
-        libclc-14-dev \
+        libclc-16-dev \
         # libunwind
-        libunwind-14-dev && \
+        libunwind-16-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
