@@ -27,4 +27,4 @@ template <>
 void to_binary(BinaryBuffer &b, const rcbe::math::Vector2f &v) {
     b = {v.x(), v.y()};
 }
-}
+}// namespace rcbe::binary

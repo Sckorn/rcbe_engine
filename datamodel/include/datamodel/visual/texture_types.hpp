@@ -18,6 +18,6 @@ struct texture_config {
     TextureComponentOrder component_order = TextureComponentOrder::RGBA;
 };
 
-}
+}// namespace rcbe::visual
 
-#endif //RCBE_ENGINE_TEXTURE_TYPES_HPP
+#endif//RCBE_ENGINE_TEXTURE_TYPES_HPP

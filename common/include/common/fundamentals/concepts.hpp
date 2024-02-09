@@ -5,8 +5,7 @@
 
 namespace rdmn::core {
 template <typename T>
-concept NumberValue = std::integral<std::remove_cvref_t<T>> 
-    || std::floating_point<std::remove_cvref_t<T>>;
+concept NumberValue = std::integral<std::remove_cvref_t<T>> || std::floating_point<std::remove_cvref_t<T>>;
 }
 
-#endif // RDMN_CONCEPTS_HPP
+#endif// RDMN_CONCEPTS_HPP

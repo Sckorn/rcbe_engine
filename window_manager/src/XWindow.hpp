@@ -1,21 +1,19 @@
 #ifndef RCBE_ENGINE_XWINDOW_HPP
 #define RCBE_ENGINE_XWINDOW_HPP
 
+#include <atomic>
+#include <future>
 #include <memory>
 #include <mutex>
-#include <atomic>
-#include <type_traits>
-#include <future>
 #include <optional>
+#include <type_traits>
 
-#include <rcbe-engine/datamodel/system/window_config.hpp>
-#include <rcbe-engine/datamodel/system/WindowContext.hpp>
-#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
-
-#include <rcbe-engine/renderer/Renderer.hpp>
-
-#include <rcbe-engine/core/InputManagerImplementation.hpp>
 #include <rcbe-engine/core/AbstractInputManager.hpp>
+#include <rcbe-engine/core/InputManagerImplementation.hpp>
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
+#include <rcbe-engine/datamodel/system/WindowContext.hpp>
+#include <rcbe-engine/datamodel/system/window_config.hpp>
+#include <rcbe-engine/renderer/Renderer.hpp>
 
 namespace rcbe::core {
 class XWindow {
@@ -50,6 +48,7 @@ public:
     [[nodiscard]] const std::shared_ptr<AbstractInputManager> &getInputManager() const;
 
 private:
+
     using WindowCreateHandler = std::function<bool(const WindowContextPtr &window_context)>;
 
     void windowLoop();
@@ -63,7 +62,7 @@ private:
     mutable std::mutex renderer_access_mutex_;
     mutable std::mutex input_manager_access_mutex_;
     std::atomic_bool running_ = false;
-    Display* root_display_ = nullptr;
+    Display *root_display_ = nullptr;
     XSetWindowAttributes attributes_;
     std::shared_ptr<rendering::RenderingContext> rendering_context_ = nullptr;
     rdmn::render::RendererPtr renderer_ = nullptr;
@@ -77,6 +76,6 @@ private:
     window::UunmapHandlerType unmap_handler_;
     window::ConfigureHandlerType configure_handler_;
 };
-}
+}// namespace rcbe::core
 
-#endif //RCBE_ENGINE_XWINDOW_HPP
+#endif//RCBE_ENGINE_XWINDOW_HPP

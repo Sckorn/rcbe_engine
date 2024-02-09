@@ -3,16 +3,13 @@
 #include <GL/gl.h>
 
 #include <rcbe-engine/core/gl_extensions.hpp>
-
 #include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 
 namespace rdmn::render {
 RasterizerTextureImplementation::RasterizerTextureImplementation(
-        rasterizer_texture_config config,
-        rcbe::visual::TexturePtr texture
-)
-:
-config_(config) {
+    rasterizer_texture_config config,
+    rcbe::visual::TexturePtr texture)
+    : config_(config) {
     glGenTextures(1, reinterpret_cast<unsigned int *>(&id_));
     bind();
 
@@ -35,7 +32,7 @@ config_(config) {
     glTexImage2D(static_cast<GLenum>(config_.texture_type),
                  0, GL_RGBA,
                  texture->getWidth(), texture->getHeight(),
-                 0, GL_RGBA,  GL_UNSIGNED_BYTE, reinterpret_cast<const uint8_t*>(texture->getPixels().rawData()));
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, reinterpret_cast<const uint8_t *>(texture->getPixels().rawData()));
     glGenerateMipmap(static_cast<GLenum>(config_.texture_type));
 
     unbind();
@@ -56,4 +53,4 @@ void RasterizerTextureImplementation::unbind() const {
 bool RasterizerTextureImplementation::deferred() const noexcept {
     return deferred_;
 }
-}
+}// namespace rdmn::render

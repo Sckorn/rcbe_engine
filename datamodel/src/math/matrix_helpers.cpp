@@ -16,7 +16,6 @@ Matrix4x4 matrixFromZXY(const roll r, const pitch p, const yaw y) {
         cr * cy - sr * sp * sy, cy * sr + cr * sp * sy, -cp * sy, 0,
         -cp * sr, cr * cp, sp, 0,
         cr * sy + cy * sr * sp, sr * sy - cr * cy * sp, cr * cy, 0,
-        0, 0, 0, 1
-    };
+        0, 0, 0, 1};
 }
-}
+}// namespace rcbe::math

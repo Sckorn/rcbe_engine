@@ -6,7 +6,7 @@
 
 namespace rcbe::core {
 
-bool InputManagerImplementation::tryProcessEvent(XEvent& event) {
+bool InputManagerImplementation::tryProcessEvent(XEvent &event) {
     auto event_type = static_cast<InputEventType>(event.type);
     auto it = handlers_.find(event_type);
     if (it != handlers_.end()) {
@@ -24,7 +24,7 @@ bool InputManagerImplementation::tryProcessEvent(XEvent& event) {
 
         try {
             it->second.invoke(*this, event, previous_event_);
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             BOOST_LOG_TRIVIAL(error) << "Exception: " << e.what();
             previous_event_ = event;
             return false;
@@ -41,8 +41,7 @@ bool InputManagerImplementation::tryProcessEvent(XEvent& event) {
 
 bool InputManagerImplementation::eventActive(InputEventType event_type) const {
     auto intetype = static_cast<int>(event_type);
-    if (active_events_.find(intetype) != active_events_.end())
-    {
+    if (active_events_.find(intetype) != active_events_.end()) {
         return active_events_.at(intetype);
     }
     return false;
@@ -67,13 +66,13 @@ bool InputManagerImplementation::getValue(KeyboardEventType type) const {
 }
 
 void InputManagerImplementation::disableAllMouse() {
-    for (auto& i : mouse_buttons_states_) {
+    for (auto &i : mouse_buttons_states_) {
         i.second = false;
     }
 }
 
 void InputManagerImplementation::disableAllKeyboard() {
-    for (auto& i : keyboard_buttons_states_) {
+    for (auto &i : keyboard_buttons_states_) {
         i.second = false;
     }
 }
@@ -91,4 +90,4 @@ void InputManagerImplementation::excludeEvent(const InputEventType event_type_ra
         }
     }
 }
-}
+}// namespace rcbe::core

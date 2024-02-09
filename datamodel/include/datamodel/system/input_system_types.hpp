@@ -1,8 +1,8 @@
 #ifndef RCBE_ENGINE_INPUT_SYSTEM_TYPES_HPP
 #define RCBE_ENGINE_INPUT_SYSTEM_TYPES_HPP
 
-#include <boost/bimap.hpp>
 #include <boost/assign.hpp>
+#include <boost/bimap.hpp>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -34,26 +34,19 @@ inline bool is_keyboard_event(InputEventType t) {
 
 using InputEventTypeBimap = boost::bimap<std::string, InputEventType>;
 
-static const InputEventTypeBimap iet_table = boost::assign::list_of<InputEventTypeBimap::relation>
-        ("key_press", InputEventType::key_press)
-        ("key_release", InputEventType::key_release)
-        ("button_press", InputEventType::button_press)
-        ("button_release", InputEventType::button_release)
-        ("mouse_motion", InputEventType::mouse_motion);
+static const InputEventTypeBimap iet_table = boost::assign::list_of<InputEventTypeBimap::relation>("key_press", InputEventType::key_press)("key_release", InputEventType::key_release)("button_press", InputEventType::button_press)("button_release", InputEventType::button_release)("mouse_motion", InputEventType::mouse_motion);
 
 static std::string str_from_input_event_type(InputEventType type) {
     auto it = iet_table.right.find(type);
-    if (it != iet_table.right.end())
-    {
+    if (it != iet_table.right.end()) {
         return it->second;
     }
     return "unknown";
 }
 
-static InputEventType input_event_type_from_string(const std::string& type) {
+static InputEventType input_event_type_from_string(const std::string &type) {
     auto it = iet_table.left.find(type);
-    if (it != iet_table.left.end())
-    {
+    if (it != iet_table.left.end()) {
         return it->second;
     }
 
@@ -71,26 +64,19 @@ enum class MouseEventType {
 
 using MouseEventTypeBimap = boost::bimap<std::string, MouseEventType>;
 
-static const MouseEventTypeBimap met_table = boost::assign::list_of<MouseEventTypeBimap::relation>
-        ("left_button", MouseEventType::left_button)
-        ("right_button", MouseEventType::right_button)
-        ("middle_button", MouseEventType::middle_button)
-        ("wheel_up", MouseEventType::wheel_up)
-        ("wheel_down", MouseEventType::wheel_down);
+static const MouseEventTypeBimap met_table = boost::assign::list_of<MouseEventTypeBimap::relation>("left_button", MouseEventType::left_button)("right_button", MouseEventType::right_button)("middle_button", MouseEventType::middle_button)("wheel_up", MouseEventType::wheel_up)("wheel_down", MouseEventType::wheel_down);
 
 static std::string str_from_mouse_event_type(MouseEventType type) {
     auto it = met_table.right.find(type);
-    if (it != met_table.right.end())
-    {
+    if (it != met_table.right.end()) {
         return it->second;
     }
     return "uknown";
 }
 
-static MouseEventType mouse_event_type_from_string(const std::string& type) {
+static MouseEventType mouse_event_type_from_string(const std::string &type) {
     auto it = met_table.left.find(type);
-    if (it != met_table.left.end())
-    {
+    if (it != met_table.left.end()) {
         return it->second;
     }
 
@@ -99,8 +85,7 @@ static MouseEventType mouse_event_type_from_string(const std::string& type) {
 
 struct input_mouse_button_hash {
     template <typename T>
-    std::size_t operator()(T t) const
-    {
+    std::size_t operator()(T t) const {
         return static_cast<std::size_t>(t);
     }
 };
@@ -113,69 +98,62 @@ enum class InputValueType {
 
 using InputValueTypeBimap = boost::bimap<std::string, InputValueType>;
 
-static const InputValueTypeBimap ivttable = boost::assign::list_of<InputValueTypeBimap::relation>
-        ("switch", InputValueType::boolswitch)
-        ("axis", InputValueType::axis);
+static const InputValueTypeBimap ivttable = boost::assign::list_of<InputValueTypeBimap::relation>("switch", InputValueType::boolswitch)("axis", InputValueType::axis);
 
 static std::string str_from_input_value_type(InputValueType type) {
     auto it = ivttable.right.find(type);
-    if (it != ivttable.right.end())
-    {
+    if (it != ivttable.right.end()) {
         return it->second;
     }
     return "uknown";
 }
 
-static InputValueType input_value_type_from_string(const std::string& type) {
+static InputValueType input_value_type_from_string(const std::string &type) {
     auto it = ivttable.left.find(type);
-    if (it != ivttable.left.end())
-    {
+    if (it != ivttable.left.end()) {
         return it->second;
     }
 
     return InputValueType ::unknown;
 }
 
-struct input_event_type_hash
-{
+struct input_event_type_hash {
     template <typename T>
-    std::size_t operator()(T t) const
-    {
+    std::size_t operator()(T t) const {
         return static_cast<std::size_t>(t);
     }
 };
 
 enum class KeyboardEventType {
-    symbol_w = XK_w,      // XK_w
-    symbol_W = XK_W,      // XK_W
-    symbol_a = XK_a,      // XK_a
-    symbol_A = XK_A,      // XK_A
-    symbol_s = XK_s,      // XK_s
-    symbol_S = XK_S,      // XK_S
-    symbol_d = XK_d,      // XK_d
-    symbol_D = XK_D,      // XK_D
-    symbol_o = XK_o,      // XK_o
-    symbol_O = XK_O,      // XK_O
-    arrow_up = XK_Up,      // XK_uparrow
+    symbol_w = XK_w,         // XK_w
+    symbol_W = XK_W,         // XK_W
+    symbol_a = XK_a,         // XK_a
+    symbol_A = XK_A,         // XK_A
+    symbol_s = XK_s,         // XK_s
+    symbol_S = XK_S,         // XK_S
+    symbol_d = XK_d,         // XK_d
+    symbol_D = XK_D,         // XK_D
+    symbol_o = XK_o,         // XK_o
+    symbol_O = XK_O,         // XK_O
+    arrow_up = XK_Up,        // XK_uparrow
     arrow_left = XK_Left,    // XK_leftarrow
-    arrow_right = XK_Right,   // XK_rightarrow
+    arrow_right = XK_Right,  // XK_rightarrow
     arrow_down = XK_Down,    // XK_downarrow
-    escape = XK_Escape,        // XK_Escape
-    backspace = XK_BackSpace,     // XK_BackSpace
-    tab = XK_Tab,           // XK_Tab
-    enter = XK_Return,         // XK_Return
-    space = XK_space,         // XK_space
-    tilde = XK_asciitilde // XK_asciitilde
+    escape = XK_Escape,      // XK_Escape
+    backspace = XK_BackSpace,// XK_BackSpace
+    tab = XK_Tab,            // XK_Tab
+    enter = XK_Return,       // XK_Return
+    space = XK_space,        // XK_space
+    tilde = XK_asciitilde    // XK_asciitilde
 };
 
 struct input_keyboard_keys_hash {
     template <typename T>
-    std::size_t operator()(T t) const
-    {
+    std::size_t operator()(T t) const {
         return static_cast<std::size_t>(t);
     }
 };
 
-}
+}// namespace rcbe::core
 
-#endif //RCBE_ENGINE_INPUT_SYSTEM_TYPES_HPP
+#endif//RCBE_ENGINE_INPUT_SYSTEM_TYPES_HPP

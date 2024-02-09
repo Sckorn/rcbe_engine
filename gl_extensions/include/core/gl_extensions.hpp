@@ -34,97 +34,100 @@
 #include <GL/glext.h>
 #endif
 
-#include <string>
-#include <vector>
-#include <unordered_map>
 #include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace rcbe::core {
 class GLErrorProcImpl;
 class GLErrorProcessor {
 public:
+
     GLErrorProcessor();
     ~GLErrorProcessor();
     std::string glErrorAsString(GLenum gl_error);
     std::string operator()(GLenum gl_error);
+
 private:
+
     std::unique_ptr<GLErrorProcImpl> impl_;
 };
-}
+}// namespace rcbe::core
 
-class GLExtensions
-{
+class GLExtensions {
 public:
-    ~GLExtensions();
-    static GLExtensions& getInstance();                  // must be called after RC is open
 
-    bool isSupported(const std::string& extStr);        // check if a extension is available
-    const std::vector<std::string>& getExtensions();
+    ~GLExtensions();
+    static GLExtensions &getInstance();// must be called after RC is open
+
+    bool isSupported(const std::string &extStr);// check if a extension is available
+    const std::vector<std::string> &getExtensions();
 
 private:
-    GLExtensions();                                      // prevent calling ctor
-    GLExtensions(const GLExtensions& rhs);                // no implementation
+
+    GLExtensions();                       // prevent calling ctor
+    GLExtensions(const GLExtensions &rhs);// no implementation
     void getExtensionStrings();
     void getFunctionPointers();
-    std::string toLower(const std::string& str);
+    std::string toLower(const std::string &str);
 
     //TODO: replace with std::set
-    std::vector <std::string> extensions;
+    std::vector<std::string> extensions;
 };
 
 
-
-#ifdef _WIN32 //===============================================================
+#ifdef _WIN32//===============================================================
 // GL_ARB_framebuffer_object
-extern PFNGLGENFRAMEBUFFERSPROC                     pglGenFramebuffers;                     // FBO name generation procedure
-extern PFNGLDELETEFRAMEBUFFERSPROC                  pglDeleteFramebuffers;                  // FBO deletion procedure
-extern PFNGLBINDFRAMEBUFFERPROC                     pglBindFramebuffer;                     // FBO bind procedure
-extern PFNGLCHECKFRAMEBUFFERSTATUSPROC              pglCheckFramebufferStatus;              // FBO completeness test procedure
-extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC pglGetFramebufferAttachmentParameteriv; // return various FBO parameters
-extern PFNGLGENERATEMIPMAPPROC                      pglGenerateMipmap;                      // FBO automatic mipmap generation procedure
-extern PFNGLFRAMEBUFFERTEXTURE1DPROC                pglFramebufferTexture1D;                // FBO texture attachement procedure
-extern PFNGLFRAMEBUFFERTEXTURE2DPROC                pglFramebufferTexture2D;                // FBO texture attachement procedure
-extern PFNGLFRAMEBUFFERTEXTURE3DPROC                pglFramebufferTexture3D;                // FBO texture attachement procedure
-extern PFNGLFRAMEBUFFERTEXTURELAYERPROC             pglFramebufferTextureLayer;             // FBO texture layer procedure
-extern PFNGLFRAMEBUFFERRENDERBUFFERPROC             pglFramebufferRenderbuffer;             // FBO renderbuffer attachement procedure
-extern PFNGLISFRAMEBUFFERPROC                       pglIsFramebuffer;                       // FBO state = true/false
-extern PFNGLBLITFRAMEBUFFERPROC                     pglBlitFramebuffer;                     // FBO copy
-extern PFNGLGENRENDERBUFFERSPROC                    pglGenRenderbuffers;                    // renderbuffer generation procedure
-extern PFNGLDELETERENDERBUFFERSPROC                 pglDeleteRenderbuffers;                 // renderbuffer deletion procedure
-extern PFNGLBINDRENDERBUFFERPROC                    pglBindRenderbuffer;                    // renderbuffer bind procedure
-extern PFNGLRENDERBUFFERSTORAGEPROC                 pglRenderbufferStorage;                 // renderbuffer memory allocation procedure
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC      pglRenderbufferStorageMultisample;      // renderbuffer memory allocation with multisample
-extern PFNGLGETRENDERBUFFERPARAMETERIVPROC          pglGetRenderbufferParameteriv;          // return various renderbuffer parameters
-extern PFNGLISRENDERBUFFERPROC                      pglIsRenderbuffer;                      // determine renderbuffer object type
-#define glGenFramebuffers                           pglGenFramebuffers
-#define glDeleteFramebuffers                        pglDeleteFramebuffers
-#define glBindFramebuffer                           pglBindFramebuffer
-#define glCheckFramebufferStatus                    pglCheckFramebufferStatus
-#define glGetFramebufferAttachmentParameteriv       pglGetFramebufferAttachmentParameteriv
-#define glGenerateMipmap                            pglGenerateMipmap
-#define glFramebufferTexture1D                      pglFramebufferTexture1D
-#define glFramebufferTexture2D                      pglFramebufferTexture2D
-#define glFramebufferTexture3D                      pglFramebufferTexture3D
-#define glFramebufferTextureLayer                   pglFramebufferTextureLayer
-#define glFramebufferRenderbuffer                   pglFramebufferRenderbuffer
-#define glIsFramebuffer                             pglIsFramebuffer
-#define glBlitFramebuffer                           pglBlitFramebuffer
-#define glGenRenderbuffers                          pglGenRenderbuffers
-#define glDeleteRenderbuffers                       pglDeleteRenderbuffers
-#define glBindRenderbuffer                          pglBindRenderbuffer
-#define glRenderbufferStorage                       pglRenderbufferStorage
-#define glRenderbufferStorageMultisample            pglRenderbufferStorageMultisample
-#define glGetRenderbufferParameteriv                pglGetRenderbufferParameteriv
-#define glIsRenderbuffer                            pglIsRenderbuffer
+extern PFNGLGENFRAMEBUFFERSPROC pglGenFramebuffers;                                        // FBO name generation procedure
+extern PFNGLDELETEFRAMEBUFFERSPROC pglDeleteFramebuffers;                                  // FBO deletion procedure
+extern PFNGLBINDFRAMEBUFFERPROC pglBindFramebuffer;                                        // FBO bind procedure
+extern PFNGLCHECKFRAMEBUFFERSTATUSPROC pglCheckFramebufferStatus;                          // FBO completeness test procedure
+extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC pglGetFramebufferAttachmentParameteriv;// return various FBO parameters
+extern PFNGLGENERATEMIPMAPPROC pglGenerateMipmap;                                          // FBO automatic mipmap generation procedure
+extern PFNGLFRAMEBUFFERTEXTURE1DPROC pglFramebufferTexture1D;                              // FBO texture attachement procedure
+extern PFNGLFRAMEBUFFERTEXTURE2DPROC pglFramebufferTexture2D;                              // FBO texture attachement procedure
+extern PFNGLFRAMEBUFFERTEXTURE3DPROC pglFramebufferTexture3D;                              // FBO texture attachement procedure
+extern PFNGLFRAMEBUFFERTEXTURELAYERPROC pglFramebufferTextureLayer;                        // FBO texture layer procedure
+extern PFNGLFRAMEBUFFERRENDERBUFFERPROC pglFramebufferRenderbuffer;                        // FBO renderbuffer attachement procedure
+extern PFNGLISFRAMEBUFFERPROC pglIsFramebuffer;                                            // FBO state = true/false
+extern PFNGLBLITFRAMEBUFFERPROC pglBlitFramebuffer;                                        // FBO copy
+extern PFNGLGENRENDERBUFFERSPROC pglGenRenderbuffers;                                      // renderbuffer generation procedure
+extern PFNGLDELETERENDERBUFFERSPROC pglDeleteRenderbuffers;                                // renderbuffer deletion procedure
+extern PFNGLBINDRENDERBUFFERPROC pglBindRenderbuffer;                                      // renderbuffer bind procedure
+extern PFNGLRENDERBUFFERSTORAGEPROC pglRenderbufferStorage;                                // renderbuffer memory allocation procedure
+extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC pglRenderbufferStorageMultisample;          // renderbuffer memory allocation with multisample
+extern PFNGLGETRENDERBUFFERPARAMETERIVPROC pglGetRenderbufferParameteriv;                  // return various renderbuffer parameters
+extern PFNGLISRENDERBUFFERPROC pglIsRenderbuffer;                                          // determine renderbuffer object type
+#define glGenFramebuffers pglGenFramebuffers
+#define glDeleteFramebuffers pglDeleteFramebuffers
+#define glBindFramebuffer pglBindFramebuffer
+#define glCheckFramebufferStatus pglCheckFramebufferStatus
+#define glGetFramebufferAttachmentParameteriv pglGetFramebufferAttachmentParameteriv
+#define glGenerateMipmap pglGenerateMipmap
+#define glFramebufferTexture1D pglFramebufferTexture1D
+#define glFramebufferTexture2D pglFramebufferTexture2D
+#define glFramebufferTexture3D pglFramebufferTexture3D
+#define glFramebufferTextureLayer pglFramebufferTextureLayer
+#define glFramebufferRenderbuffer pglFramebufferRenderbuffer
+#define glIsFramebuffer pglIsFramebuffer
+#define glBlitFramebuffer pglBlitFramebuffer
+#define glGenRenderbuffers pglGenRenderbuffers
+#define glDeleteRenderbuffers pglDeleteRenderbuffers
+#define glBindRenderbuffer pglBindRenderbuffer
+#define glRenderbufferStorage pglRenderbufferStorage
+#define glRenderbufferStorageMultisample pglRenderbufferStorageMultisample
+#define glGetRenderbufferParameteriv pglGetRenderbufferParameteriv
+#define glIsRenderbuffer pglIsRenderbuffer
 
 // GL_ARB_multisample
-extern PFNGLSAMPLECOVERAGEARBPROC   pglSampleCoverageARB;
-#define glSampleCoverageARB         pglSampleCoverageARB
+extern PFNGLSAMPLECOVERAGEARBPROC pglSampleCoverageARB;
+#define glSampleCoverageARB pglSampleCoverageARB
 
 // GL_ARB_multitexture (included v1.2.1)
 //@@ v1.2.1 core version
-extern PFNGLACTIVETEXTUREPROC       pglActiveTexture;
-#define glActiveTexture             pglActiveTexture
+extern PFNGLACTIVETEXTUREPROC pglActiveTexture;
+#define glActiveTexture pglActiveTexture
 /*
 extern PFNGLACTIVETEXTUREARBPROC    pglActiveTextureARB;
 #define glActiveTextureARB          pglActiveTextureARB
@@ -132,22 +135,22 @@ extern PFNGLACTIVETEXTUREARBPROC    pglActiveTextureARB;
 
 // GL_ARB_pixel_buffer_objects & GL_ARB_vertex_buffer_object
 //@@ v2.1 core version
-extern PFNGLGENBUFFERSPROC              pglGenBuffers;              // VBO Name Generation Procedure
-extern PFNGLBINDBUFFERPROC              pglBindBuffer;              // VBO Bind Procedure
-extern PFNGLBUFFERDATAPROC              pglBufferData;              // VBO Data Loading Procedure
-extern PFNGLBUFFERSUBDATAPROC           pglBufferSubData;           // VBO Sub Data Loading Procedure
-extern PFNGLDELETEBUFFERSPROC           pglDeleteBuffers;           // VBO Deletion Procedure
-extern PFNGLGETBUFFERPARAMETERIVPROC    pglGetBufferParameteriv;    // return various parameters of VBO
-extern PFNGLMAPBUFFERPROC               pglMapBuffer;               // map VBO procedure
-extern PFNGLUNMAPBUFFERPROC             pglUnmapBuffer;             // unmap VBO procedure
-#define glGenBuffers                    pglGenBuffers
-#define glBindBuffer                    pglBindBuffer
-#define glBufferData                    pglBufferData
-#define glBufferSubData                 pglBufferSubData
-#define glDeleteBuffers                 pglDeleteBuffers
-#define glGetBufferParameteriv          pglGetBufferParameteriv
-#define glMapBuffer                     pglMapBuffer
-#define glUnmapBuffer                   pglUnmapBuffer
+extern PFNGLGENBUFFERSPROC pglGenBuffers;                    // VBO Name Generation Procedure
+extern PFNGLBINDBUFFERPROC pglBindBuffer;                    // VBO Bind Procedure
+extern PFNGLBUFFERDATAPROC pglBufferData;                    // VBO Data Loading Procedure
+extern PFNGLBUFFERSUBDATAPROC pglBufferSubData;              // VBO Sub Data Loading Procedure
+extern PFNGLDELETEBUFFERSPROC pglDeleteBuffers;              // VBO Deletion Procedure
+extern PFNGLGETBUFFERPARAMETERIVPROC pglGetBufferParameteriv;// return various parameters of VBO
+extern PFNGLMAPBUFFERPROC pglMapBuffer;                      // map VBO procedure
+extern PFNGLUNMAPBUFFERPROC pglUnmapBuffer;                  // unmap VBO procedure
+#define glGenBuffers pglGenBuffers
+#define glBindBuffer pglBindBuffer
+#define glBufferData pglBufferData
+#define glBufferSubData pglBufferSubData
+#define glDeleteBuffers pglDeleteBuffers
+#define glGetBufferParameteriv pglGetBufferParameteriv
+#define glMapBuffer pglMapBuffer
+#define glUnmapBuffer pglUnmapBuffer
 /*
 extern PFNGLGENBUFFERSARBPROC           pglGenBuffersARB;           // VBO Name Generation Procedure
 extern PFNGLBINDBUFFERARBPROC           pglBindBufferARB;           // VBO Bind Procedure
@@ -173,86 +176,86 @@ extern PFNGLUNMAPBUFFERARBPROC          pglUnmapBufferARB;          // unmap VBO
 // ARB suffix was removed and GLhandleARB type was changed to GLuint,
 // for example glCreateShaderObjectARB() is changed to glCreateShader().
 // You can use either ARB or core version, but do not mix both together.
-extern PFNGLATTACHSHADERPROC        pglAttachShader;        // attach a shader to a program
-extern PFNGLCOMPILESHADERPROC       pglCompileShader;       // compile shader source
-extern PFNGLCREATEPROGRAMPROC       pglCreateProgram;       // create a program object
-extern PFNGLCREATESHADERPROC        pglCreateShader;        // create a shader object
-extern PFNGLDELETEPROGRAMPROC       pglDeleteProgram;       // delete shader program
-extern PFNGLDELETESHADERPROC        pglDeleteShader;        // delete shader object
-extern PFNGLDETACHSHADERPROC        pglDetachShader;        // detatch a shader object from a program
-extern PFNGLGETACTIVEUNIFORMPROC    pglGetActiveUniform;    // get info of uniform var
-extern PFNGLGETATTACHEDSHADERSPROC  pglGetAttachedShaders;  // get attached shaders to a program
-extern PFNGLGETPROGRAMIVPROC        pglGetProgramiv;        // return param of program object
-extern PFNGLGETPROGRAMINFOLOGPROC   pglGetProgramInfoLog;   // return info log of program
-extern PFNGLGETSHADERIVPROC         pglGetShaderiv;         // return param of shader object
-extern PFNGLGETSHADERINFOLOGPROC    pglGetShaderInfoLog;    // return info log of shader
-extern PFNGLGETSHADERSOURCEPROC     pglGetShaderSource;     // get shader source codes
-extern PFNGLGETUNIFORMLOCATIONPROC  pglGetUniformLocation;  // get index of uniform var
-extern PFNGLGETUNIFORMFVPROC        pglGetUniformfv;        // get value of uniform var
-extern PFNGLGETUNIFORMIVPROC        pglGetUniformiv;        //
-extern PFNGLLINKPROGRAMPROC         pglLinkProgram;         // link a program
-extern PFNGLSHADERSOURCEPROC        pglShaderSource;        // set a shader source(codes)
-extern PFNGLUSEPROGRAMPROC          pglUseProgram;          // use a program
-extern PFNGLUNIFORM1FPROC           pglUniform1f;           //
-extern PFNGLUNIFORM2FPROC           pglUniform2f;           //
-extern PFNGLUNIFORM3FPROC           pglUniform3f;           //
-extern PFNGLUNIFORM4FPROC           pglUniform4f;           //
-extern PFNGLUNIFORM1IPROC           pglUniform1i;           //
-extern PFNGLUNIFORM2IPROC           pglUniform2i;           //
-extern PFNGLUNIFORM3IPROC           pglUniform3i;           //
-extern PFNGLUNIFORM4IPROC           pglUniform4i;           //
-extern PFNGLUNIFORM1FVPROC          pglUniform1fv;          //
-extern PFNGLUNIFORM2FVPROC          pglUniform2fv;          //
-extern PFNGLUNIFORM3FVPROC          pglUniform3fv;          //
-extern PFNGLUNIFORM4FVPROC          pglUniform4fv;          //
-extern PFNGLUNIFORM1FVPROC          pglUniform1iv;          //
-extern PFNGLUNIFORM2FVPROC          pglUniform2iv;          //
-extern PFNGLUNIFORM3FVPROC          pglUniform3iv;          //
-extern PFNGLUNIFORM4FVPROC          pglUniform4iv;          //
-extern PFNGLUNIFORMMATRIX2FVPROC    pglUniformMatrix2fv;    //
-extern PFNGLUNIFORMMATRIX3FVPROC    pglUniformMatrix3fv;    //
-extern PFNGLUNIFORMMATRIX4FVPROC    pglUniformMatrix4fv;    //
-extern PFNGLVALIDATEPROGRAMPROC     pglValidateProgram;     // validate a program
-#define glAttachShader              pglAttachShader
-#define glCompileShader             pglCompileShader
-#define glCreateProgram             pglCreateProgram
-#define glCreateShader              pglCreateShader
-#define glDeleteProgram             pglDeleteProgram
-#define glDeleteShader              pglDeleteShader
-#define glDetachShader              pglDetachShader
-#define glGetActiveUniform          pglGetActiveUniform
-#define glGetAttachedShaders        pglGetAttachedShaders
-#define glGetProgramiv              pglGetProgramiv
-#define glGetProgramInfoLog         pglGetProgramInfoLog
-#define glGetShaderiv               pglGetShaderiv
-#define glGetShaderInfoLog          pglGetShaderInfoLog
-#define glGetShaderSource           pglGetShaderSource
-#define glGetUniformLocation        pglGetUniformLocation
-#define glGetUniformfv              pglGetUniformfv
-#define glGetUniformiv              pglGetUniformiv
-#define glLinkProgram               pglLinkProgram
-#define glShaderSource              pglShaderSource
-#define glUseProgram                pglUseProgram
-#define glUniform1f                 pglUniform1f
-#define glUniform2f                 pglUniform2f
-#define glUniform3f                 pglUniform3f
-#define glUniform4f                 pglUniform4f
-#define glUniform1i                 pglUniform1i
-#define glUniform2i                 pglUniform2i
-#define glUniform3i                 pglUniform3i
-#define glUniform4i                 pglUniform4i
-#define glUniform1fv                pglUniform1fv
-#define glUniform2fv                pglUniform2fv
-#define glUniform3fv                pglUniform3fv
-#define glUniform4fv                pglUniform4fv
-#define glUniform1iv                pglUniform1iv
-#define glUniform2iv                pglUniform2iv
-#define glUniform3iv                pglUniform3iv
-#define glUniform4iv                pglUniform4iv
-#define glUniformMatrix2fv          pglUniformMatrix2fv
-#define glUniformMatrix3fv          pglUniformMatrix3fv
-#define glUniformMatrix4fv          pglUniformMatrix4fv
-#define glValidateProgram           pglValidateProgram
+extern PFNGLATTACHSHADERPROC pglAttachShader;            // attach a shader to a program
+extern PFNGLCOMPILESHADERPROC pglCompileShader;          // compile shader source
+extern PFNGLCREATEPROGRAMPROC pglCreateProgram;          // create a program object
+extern PFNGLCREATESHADERPROC pglCreateShader;            // create a shader object
+extern PFNGLDELETEPROGRAMPROC pglDeleteProgram;          // delete shader program
+extern PFNGLDELETESHADERPROC pglDeleteShader;            // delete shader object
+extern PFNGLDETACHSHADERPROC pglDetachShader;            // detatch a shader object from a program
+extern PFNGLGETACTIVEUNIFORMPROC pglGetActiveUniform;    // get info of uniform var
+extern PFNGLGETATTACHEDSHADERSPROC pglGetAttachedShaders;// get attached shaders to a program
+extern PFNGLGETPROGRAMIVPROC pglGetProgramiv;            // return param of program object
+extern PFNGLGETPROGRAMINFOLOGPROC pglGetProgramInfoLog;  // return info log of program
+extern PFNGLGETSHADERIVPROC pglGetShaderiv;              // return param of shader object
+extern PFNGLGETSHADERINFOLOGPROC pglGetShaderInfoLog;    // return info log of shader
+extern PFNGLGETSHADERSOURCEPROC pglGetShaderSource;      // get shader source codes
+extern PFNGLGETUNIFORMLOCATIONPROC pglGetUniformLocation;// get index of uniform var
+extern PFNGLGETUNIFORMFVPROC pglGetUniformfv;            // get value of uniform var
+extern PFNGLGETUNIFORMIVPROC pglGetUniformiv;            //
+extern PFNGLLINKPROGRAMPROC pglLinkProgram;              // link a program
+extern PFNGLSHADERSOURCEPROC pglShaderSource;            // set a shader source(codes)
+extern PFNGLUSEPROGRAMPROC pglUseProgram;                // use a program
+extern PFNGLUNIFORM1FPROC pglUniform1f;                  //
+extern PFNGLUNIFORM2FPROC pglUniform2f;                  //
+extern PFNGLUNIFORM3FPROC pglUniform3f;                  //
+extern PFNGLUNIFORM4FPROC pglUniform4f;                  //
+extern PFNGLUNIFORM1IPROC pglUniform1i;                  //
+extern PFNGLUNIFORM2IPROC pglUniform2i;                  //
+extern PFNGLUNIFORM3IPROC pglUniform3i;                  //
+extern PFNGLUNIFORM4IPROC pglUniform4i;                  //
+extern PFNGLUNIFORM1FVPROC pglUniform1fv;                //
+extern PFNGLUNIFORM2FVPROC pglUniform2fv;                //
+extern PFNGLUNIFORM3FVPROC pglUniform3fv;                //
+extern PFNGLUNIFORM4FVPROC pglUniform4fv;                //
+extern PFNGLUNIFORM1FVPROC pglUniform1iv;                //
+extern PFNGLUNIFORM2FVPROC pglUniform2iv;                //
+extern PFNGLUNIFORM3FVPROC pglUniform3iv;                //
+extern PFNGLUNIFORM4FVPROC pglUniform4iv;                //
+extern PFNGLUNIFORMMATRIX2FVPROC pglUniformMatrix2fv;    //
+extern PFNGLUNIFORMMATRIX3FVPROC pglUniformMatrix3fv;    //
+extern PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv;    //
+extern PFNGLVALIDATEPROGRAMPROC pglValidateProgram;      // validate a program
+#define glAttachShader pglAttachShader
+#define glCompileShader pglCompileShader
+#define glCreateProgram pglCreateProgram
+#define glCreateShader pglCreateShader
+#define glDeleteProgram pglDeleteProgram
+#define glDeleteShader pglDeleteShader
+#define glDetachShader pglDetachShader
+#define glGetActiveUniform pglGetActiveUniform
+#define glGetAttachedShaders pglGetAttachedShaders
+#define glGetProgramiv pglGetProgramiv
+#define glGetProgramInfoLog pglGetProgramInfoLog
+#define glGetShaderiv pglGetShaderiv
+#define glGetShaderInfoLog pglGetShaderInfoLog
+#define glGetShaderSource pglGetShaderSource
+#define glGetUniformLocation pglGetUniformLocation
+#define glGetUniformfv pglGetUniformfv
+#define glGetUniformiv pglGetUniformiv
+#define glLinkProgram pglLinkProgram
+#define glShaderSource pglShaderSource
+#define glUseProgram pglUseProgram
+#define glUniform1f pglUniform1f
+#define glUniform2f pglUniform2f
+#define glUniform3f pglUniform3f
+#define glUniform4f pglUniform4f
+#define glUniform1i pglUniform1i
+#define glUniform2i pglUniform2i
+#define glUniform3i pglUniform3i
+#define glUniform4i pglUniform4i
+#define glUniform1fv pglUniform1fv
+#define glUniform2fv pglUniform2fv
+#define glUniform3fv pglUniform3fv
+#define glUniform4fv pglUniform4fv
+#define glUniform1iv pglUniform1iv
+#define glUniform2iv pglUniform2iv
+#define glUniform3iv pglUniform3iv
+#define glUniform4iv pglUniform4iv
+#define glUniformMatrix2fv pglUniformMatrix2fv
+#define glUniformMatrix3fv pglUniformMatrix3fv
+#define glUniformMatrix4fv pglUniformMatrix4fv
+#define glValidateProgram pglValidateProgram
 /*
 extern PFNGLDELETEOBJECTARBPROC         pglDeleteObjectARB;         // delete shader object
 extern PFNGLGETHANDLEARBPROC            pglGetHandleARB;            // return handle of program
@@ -335,39 +338,39 @@ extern PFNGLGETSHADERSOURCEARBPROC      pglGetShaderSourceARB;      // get shade
 */
 
 // GL_ARB_sync extension (v3.2 core)
-extern PFNGLFENCESYNCPROC       pglFenceSync;
-extern PFNGLISSYNCPROC          pglIsSync;
-extern PFNGLDELETESYNCPROC      pglDeleteSync;
-extern PFNGLCLIENTWAITSYNCPROC  pglClientWaitSync;
-extern PFNGLWAITSYNCPROC        pglWaitSync;
-extern PFNGLGETINTEGER64VPROC   pglGetInteger64v;
-extern PFNGLGETSYNCIVPROC       pglGetSynciv;
-#define glFenceSync             pglFenceSync
-#define glIsSync                pglIsSync
-#define glDeleteSync            pglDeleteSync
-#define glClientWaitSync        pglClientWaitSync
-#define glWaitSync              pglWaitSync
-#define glGetInteger64v         pglGetInteger64v
-#define glGetSynciv             pglGetSynciv
+extern PFNGLFENCESYNCPROC pglFenceSync;
+extern PFNGLISSYNCPROC pglIsSync;
+extern PFNGLDELETESYNCPROC pglDeleteSync;
+extern PFNGLCLIENTWAITSYNCPROC pglClientWaitSync;
+extern PFNGLWAITSYNCPROC pglWaitSync;
+extern PFNGLGETINTEGER64VPROC pglGetInteger64v;
+extern PFNGLGETSYNCIVPROC pglGetSynciv;
+#define glFenceSync pglFenceSync
+#define glIsSync pglIsSync
+#define glDeleteSync pglDeleteSync
+#define glClientWaitSync pglClientWaitSync
+#define glWaitSync pglWaitSync
+#define glGetInteger64v pglGetInteger64v
+#define glGetSynciv pglGetSynciv
 
 // GL_ARB_vertex_array_object
-extern PFNGLGENVERTEXARRAYSPROC     pglGenVertexArrays;     // VAO name generation procedure
-extern PFNGLDELETEVERTEXARRAYSPROC  pglDeleteVertexArrays;  // VAO deletion procedure
-extern PFNGLBINDVERTEXARRAYPROC     pglBindVertexArray;     // VAO bind procedure
-extern PFNGLISVERTEXARRAYPROC       pglIsVertexArray;       // VBO query procedure
-#define glGenVertexArrays           pglGenVertexArrays
-#define glDeleteVertexArrays        pglDeleteVertexArrays
-#define glBindVertexArray           pglBindVertexArray
-#define glIsVertexArray             pglIsVertexArray
+extern PFNGLGENVERTEXARRAYSPROC pglGenVertexArrays;      // VAO name generation procedure
+extern PFNGLDELETEVERTEXARRAYSPROC pglDeleteVertexArrays;// VAO deletion procedure
+extern PFNGLBINDVERTEXARRAYPROC pglBindVertexArray;      // VAO bind procedure
+extern PFNGLISVERTEXARRAYPROC pglIsVertexArray;          // VBO query procedure
+#define glGenVertexArrays pglGenVertexArrays
+#define glDeleteVertexArrays pglDeleteVertexArrays
+#define glBindVertexArray pglBindVertexArray
+#define glIsVertexArray pglIsVertexArray
 
 // GL_ARB_vertex_shader and GL_ARB_fragment_shader extensions
 //@@ v2.0 core version
-extern PFNGLBINDATTRIBLOCATIONPROC  pglBindAttribLocation;  // bind vertex attrib var with index
-extern PFNGLGETACTIVEATTRIBPROC     pglGetActiveAttrib;     // get attrib value
-extern PFNGLGETATTRIBLOCATIONPROC   pglGetAttribLocation;   // get lndex of attrib var
-#define glBindAttribLocation        pglBindAttribLocation
-#define glGetActiveAttrib           pglGetActiveAttrib
-#define glGetAttribLocation         pglGetAttribLocation
+extern PFNGLBINDATTRIBLOCATIONPROC pglBindAttribLocation;// bind vertex attrib var with index
+extern PFNGLGETACTIVEATTRIBPROC pglGetActiveAttrib;      // get attrib value
+extern PFNGLGETATTRIBLOCATIONPROC pglGetAttribLocation;  // get lndex of attrib var
+#define glBindAttribLocation pglBindAttribLocation
+#define glGetActiveAttrib pglGetActiveAttrib
+#define glGetAttribLocation pglGetAttribLocation
 /*
 extern PFNGLBINDATTRIBLOCATIONARBPROC   pglBindAttribLocationARB;   // bind vertex attrib var with index
 extern PFNGLGETACTIVEATTRIBARBPROC      pglGetActiveAttribARB;      // get attrib value
@@ -379,96 +382,96 @@ extern PFNGLGETATTRIBLOCATIONARBPROC    pglGetAttribLocationARB;    // get lndex
 
 // GL_ARB_vertex_program and GL_ARB_fragment_program
 //@@ v2.0 core version
-extern PFNGLDISABLEVERTEXATTRIBARRAYPROC    pglDisableVertexAttribArray;
-extern PFNGLENABLEVERTEXATTRIBARRAYPROC     pglEnableVertexAttribArray;
-extern PFNGLGETVERTEXATTRIBDVPROC           pglGetVertexAttribdv;
-extern PFNGLGETVERTEXATTRIBFVPROC           pglGetVertexAttribfv;
-extern PFNGLGETVERTEXATTRIBIVPROC           pglGetVertexAttribiv;
-extern PFNGLGETVERTEXATTRIBPOINTERVPROC     pglGetVertexAttribPointerv;
-extern PFNGLISPROGRAMPROC                   pglIsProgram;
-extern PFNGLISSHADERPROC                    pglIsShader;
-extern PFNGLVERTEXATTRIB1DPROC              pglVertexAttrib1d;
-extern PFNGLVERTEXATTRIB1DVPROC             pglVertexAttrib1dv;
-extern PFNGLVERTEXATTRIB1FPROC              pglVertexAttrib1f;
-extern PFNGLVERTEXATTRIB1FVPROC             pglVertexAttrib1fv;
-extern PFNGLVERTEXATTRIB1SPROC              pglVertexAttrib1s;
-extern PFNGLVERTEXATTRIB1SVPROC             pglVertexAttrib1sv;
-extern PFNGLVERTEXATTRIB2DPROC              pglVertexAttrib2d;
-extern PFNGLVERTEXATTRIB2DVPROC             pglVertexAttrib2dv;
-extern PFNGLVERTEXATTRIB2FPROC              pglVertexAttrib2f;
-extern PFNGLVERTEXATTRIB2FVPROC             pglVertexAttrib2fv;
-extern PFNGLVERTEXATTRIB2SPROC              pglVertexAttrib2s;
-extern PFNGLVERTEXATTRIB2SVPROC             pglVertexAttrib2sv;
-extern PFNGLVERTEXATTRIB3DPROC              pglVertexAttrib3d;
-extern PFNGLVERTEXATTRIB3DVPROC             pglVertexAttrib3dv;
-extern PFNGLVERTEXATTRIB3FPROC              pglVertexAttrib3f;
-extern PFNGLVERTEXATTRIB3FVPROC             pglVertexAttrib3fv;
-extern PFNGLVERTEXATTRIB3SPROC              pglVertexAttrib3s;
-extern PFNGLVERTEXATTRIB3SVPROC             pglVertexAttrib3sv;
-extern PFNGLVERTEXATTRIB4NBVPROC            pglVertexAttrib4Nbv;
-extern PFNGLVERTEXATTRIB4NIVPROC            pglVertexAttrib4Niv;
-extern PFNGLVERTEXATTRIB4NSVPROC            pglVertexAttrib4Nsv;
-extern PFNGLVERTEXATTRIB4NUBPROC            pglVertexAttrib4Nub;
-extern PFNGLVERTEXATTRIB4NUBVPROC           pglVertexAttrib4Nubv;
-extern PFNGLVERTEXATTRIB4NUIVPROC           pglVertexAttrib4Nuiv;
-extern PFNGLVERTEXATTRIB4NUSVPROC           pglVertexAttrib4Nusv;
-extern PFNGLVERTEXATTRIB4BVPROC             pglVertexAttrib4bv;
-extern PFNGLVERTEXATTRIB4DPROC              pglVertexAttrib4d;
-extern PFNGLVERTEXATTRIB4DVPROC             pglVertexAttrib4dv;
-extern PFNGLVERTEXATTRIB4FPROC              pglVertexAttrib4f;
-extern PFNGLVERTEXATTRIB4FVPROC             pglVertexAttrib4fv;
-extern PFNGLVERTEXATTRIB4IVPROC             pglVertexAttrib4iv;
-extern PFNGLVERTEXATTRIB4SPROC              pglVertexAttrib4s;
-extern PFNGLVERTEXATTRIB4SVPROC             pglVertexAttrib4sv;
-extern PFNGLVERTEXATTRIB4UBVPROC            pglVertexAttrib4ubv;
-extern PFNGLVERTEXATTRIB4UIVPROC            pglVertexAttrib4uiv;
-extern PFNGLVERTEXATTRIB4USVPROC            pglVertexAttrib4usv;
-extern PFNGLVERTEXATTRIBPOINTERPROC         pglVertexAttribPointer;
-#define glDisableVertexAttribArray          pglDisableVertexAttribArray
-#define glEnableVertexAttribArray           pglEnableVertexAttribArray
-#define glGetVertexAttribdv                 pglGetVertexAttribdv
-#define glGetVertexAttribfv                 pglGetVertexAttribfv
-#define glGetVertexAttribiv                 pglGetVertexAttribiv
-#define glGetVertexAttribPointerv           pglGetVertexAttribPointerv
-#define glIsProgram                         pglIsProgram
-#define glIsShader                          pglIsShader
-#define glVertexAttrib1d                    pglVertexAttrib1d
-#define glVertexAttrib1dv                   pglVertexAttrib1dv
-#define glVertexAttrib1f                    pglVertexAttrib1f
-#define glVertexAttrib1fv                   pglVertexAttrib1fv
-#define glVertexAttrib1s                    pglVertexAttrib1s
-#define glVertexAttrib1sv                   pglVertexAttrib1sv
-#define glVertexAttrib2d                    pglVertexAttrib2d
-#define glVertexAttrib2dv                   pglVertexAttrib2dv
-#define glVertexAttrib2f                    pglVertexAttrib2f
-#define glVertexAttrib2fv                   pglVertexAttrib2fv
-#define glVertexAttrib2s                    pglVertexAttrib2s
-#define glVertexAttrib2sv                   pglVertexAttrib2sv
-#define glVertexAttrib3d                    pglVertexAttrib3d
-#define glVertexAttrib3dv                   pglVertexAttrib3dv
-#define glVertexAttrib3f                    pglVertexAttrib3f
-#define glVertexAttrib3fv                   pglVertexAttrib3fv
-#define glVertexAttrib3s                    pglVertexAttrib3s
-#define glVertexAttrib3sv                   pglVertexAttrib3sv
-#define glVertexAttrib4Nbv                  pglVertexAttrib4Nbv
-#define glVertexAttrib4Niv                  pglVertexAttrib4Niv
-#define glVertexAttrib4Nsv                  pglVertexAttrib4Nsv
-#define glVertexAttrib4Nub                  pglVertexAttrib4Nub
-#define glVertexAttrib4Nubv                 pglVertexAttrib4Nubv
-#define glVertexAttrib4Nuiv                 pglVertexAttrib4Nuiv
-#define glVertexAttrib4Nusv                 pglVertexAttrib4Nusv
-#define glVertexAttrib4bv                   pglVertexAttrib4bv
-#define glVertexAttrib4d                    pglVertexAttrib4d
-#define glVertexAttrib4dv                   pglVertexAttrib4dv
-#define glVertexAttrib4f                    pglVertexAttrib4f
-#define glVertexAttrib4fv                   pglVertexAttrib4fv
-#define glVertexAttrib4iv                   pglVertexAttrib4iv
-#define glVertexAttrib4s                    pglVertexAttrib4s
-#define glVertexAttrib4sv                   pglVertexAttrib4sv
-#define glVertexAttrib4ubv                  pglVertexAttrib4ubv
-#define glVertexAttrib4uiv                  pglVertexAttrib4uiv
-#define glVertexAttrib4usv                  pglVertexAttrib4usv
-#define glVertexAttribPointer               pglVertexAttribPointer
+extern PFNGLDISABLEVERTEXATTRIBARRAYPROC pglDisableVertexAttribArray;
+extern PFNGLENABLEVERTEXATTRIBARRAYPROC pglEnableVertexAttribArray;
+extern PFNGLGETVERTEXATTRIBDVPROC pglGetVertexAttribdv;
+extern PFNGLGETVERTEXATTRIBFVPROC pglGetVertexAttribfv;
+extern PFNGLGETVERTEXATTRIBIVPROC pglGetVertexAttribiv;
+extern PFNGLGETVERTEXATTRIBPOINTERVPROC pglGetVertexAttribPointerv;
+extern PFNGLISPROGRAMPROC pglIsProgram;
+extern PFNGLISSHADERPROC pglIsShader;
+extern PFNGLVERTEXATTRIB1DPROC pglVertexAttrib1d;
+extern PFNGLVERTEXATTRIB1DVPROC pglVertexAttrib1dv;
+extern PFNGLVERTEXATTRIB1FPROC pglVertexAttrib1f;
+extern PFNGLVERTEXATTRIB1FVPROC pglVertexAttrib1fv;
+extern PFNGLVERTEXATTRIB1SPROC pglVertexAttrib1s;
+extern PFNGLVERTEXATTRIB1SVPROC pglVertexAttrib1sv;
+extern PFNGLVERTEXATTRIB2DPROC pglVertexAttrib2d;
+extern PFNGLVERTEXATTRIB2DVPROC pglVertexAttrib2dv;
+extern PFNGLVERTEXATTRIB2FPROC pglVertexAttrib2f;
+extern PFNGLVERTEXATTRIB2FVPROC pglVertexAttrib2fv;
+extern PFNGLVERTEXATTRIB2SPROC pglVertexAttrib2s;
+extern PFNGLVERTEXATTRIB2SVPROC pglVertexAttrib2sv;
+extern PFNGLVERTEXATTRIB3DPROC pglVertexAttrib3d;
+extern PFNGLVERTEXATTRIB3DVPROC pglVertexAttrib3dv;
+extern PFNGLVERTEXATTRIB3FPROC pglVertexAttrib3f;
+extern PFNGLVERTEXATTRIB3FVPROC pglVertexAttrib3fv;
+extern PFNGLVERTEXATTRIB3SPROC pglVertexAttrib3s;
+extern PFNGLVERTEXATTRIB3SVPROC pglVertexAttrib3sv;
+extern PFNGLVERTEXATTRIB4NBVPROC pglVertexAttrib4Nbv;
+extern PFNGLVERTEXATTRIB4NIVPROC pglVertexAttrib4Niv;
+extern PFNGLVERTEXATTRIB4NSVPROC pglVertexAttrib4Nsv;
+extern PFNGLVERTEXATTRIB4NUBPROC pglVertexAttrib4Nub;
+extern PFNGLVERTEXATTRIB4NUBVPROC pglVertexAttrib4Nubv;
+extern PFNGLVERTEXATTRIB4NUIVPROC pglVertexAttrib4Nuiv;
+extern PFNGLVERTEXATTRIB4NUSVPROC pglVertexAttrib4Nusv;
+extern PFNGLVERTEXATTRIB4BVPROC pglVertexAttrib4bv;
+extern PFNGLVERTEXATTRIB4DPROC pglVertexAttrib4d;
+extern PFNGLVERTEXATTRIB4DVPROC pglVertexAttrib4dv;
+extern PFNGLVERTEXATTRIB4FPROC pglVertexAttrib4f;
+extern PFNGLVERTEXATTRIB4FVPROC pglVertexAttrib4fv;
+extern PFNGLVERTEXATTRIB4IVPROC pglVertexAttrib4iv;
+extern PFNGLVERTEXATTRIB4SPROC pglVertexAttrib4s;
+extern PFNGLVERTEXATTRIB4SVPROC pglVertexAttrib4sv;
+extern PFNGLVERTEXATTRIB4UBVPROC pglVertexAttrib4ubv;
+extern PFNGLVERTEXATTRIB4UIVPROC pglVertexAttrib4uiv;
+extern PFNGLVERTEXATTRIB4USVPROC pglVertexAttrib4usv;
+extern PFNGLVERTEXATTRIBPOINTERPROC pglVertexAttribPointer;
+#define glDisableVertexAttribArray pglDisableVertexAttribArray
+#define glEnableVertexAttribArray pglEnableVertexAttribArray
+#define glGetVertexAttribdv pglGetVertexAttribdv
+#define glGetVertexAttribfv pglGetVertexAttribfv
+#define glGetVertexAttribiv pglGetVertexAttribiv
+#define glGetVertexAttribPointerv pglGetVertexAttribPointerv
+#define glIsProgram pglIsProgram
+#define glIsShader pglIsShader
+#define glVertexAttrib1d pglVertexAttrib1d
+#define glVertexAttrib1dv pglVertexAttrib1dv
+#define glVertexAttrib1f pglVertexAttrib1f
+#define glVertexAttrib1fv pglVertexAttrib1fv
+#define glVertexAttrib1s pglVertexAttrib1s
+#define glVertexAttrib1sv pglVertexAttrib1sv
+#define glVertexAttrib2d pglVertexAttrib2d
+#define glVertexAttrib2dv pglVertexAttrib2dv
+#define glVertexAttrib2f pglVertexAttrib2f
+#define glVertexAttrib2fv pglVertexAttrib2fv
+#define glVertexAttrib2s pglVertexAttrib2s
+#define glVertexAttrib2sv pglVertexAttrib2sv
+#define glVertexAttrib3d pglVertexAttrib3d
+#define glVertexAttrib3dv pglVertexAttrib3dv
+#define glVertexAttrib3f pglVertexAttrib3f
+#define glVertexAttrib3fv pglVertexAttrib3fv
+#define glVertexAttrib3s pglVertexAttrib3s
+#define glVertexAttrib3sv pglVertexAttrib3sv
+#define glVertexAttrib4Nbv pglVertexAttrib4Nbv
+#define glVertexAttrib4Niv pglVertexAttrib4Niv
+#define glVertexAttrib4Nsv pglVertexAttrib4Nsv
+#define glVertexAttrib4Nub pglVertexAttrib4Nub
+#define glVertexAttrib4Nubv pglVertexAttrib4Nubv
+#define glVertexAttrib4Nuiv pglVertexAttrib4Nuiv
+#define glVertexAttrib4Nusv pglVertexAttrib4Nusv
+#define glVertexAttrib4bv pglVertexAttrib4bv
+#define glVertexAttrib4d pglVertexAttrib4d
+#define glVertexAttrib4dv pglVertexAttrib4dv
+#define glVertexAttrib4f pglVertexAttrib4f
+#define glVertexAttrib4fv pglVertexAttrib4fv
+#define glVertexAttrib4iv pglVertexAttrib4iv
+#define glVertexAttrib4s pglVertexAttrib4s
+#define glVertexAttrib4sv pglVertexAttrib4sv
+#define glVertexAttrib4ubv pglVertexAttrib4ubv
+#define glVertexAttrib4uiv pglVertexAttrib4uiv
+#define glVertexAttrib4usv pglVertexAttrib4usv
+#define glVertexAttribPointer pglVertexAttribPointer
 /*
 extern PFNGLVERTEXATTRIB1DARBPROC               pglVertexAttrib1dARB;
 extern PFNGLVERTEXATTRIB1DVARBPROC              pglVertexAttrib1dvARB;
@@ -598,14 +601,14 @@ extern PFNGLISPROGRAMARBPROC                    pglIsProgramARB;
 
 // GL_ARB_debug_output
 //@@ v4.3 core version
-extern PFNGLDEBUGMESSAGECONTROLPROC  pglDebugMessageControl;
-extern PFNGLDEBUGMESSAGEINSERTPROC   pglDebugMessageInsert;
+extern PFNGLDEBUGMESSAGECONTROLPROC pglDebugMessageControl;
+extern PFNGLDEBUGMESSAGEINSERTPROC pglDebugMessageInsert;
 extern PFNGLDEBUGMESSAGECALLBACKPROC pglDebugMessageCallback;
-extern PFNGLGETDEBUGMESSAGELOGPROC   pglGetDebugMessageLog;
-#define glDebugMessageControl        pglDebugMessageControl
-#define glDebugMessageInsert         pglDebugMessageInsert
-#define glDebugMessageCallback       pglDebugMessageCallback
-#define glGetDebugMessageLog         pglGetDebugMessageLog
+extern PFNGLGETDEBUGMESSAGELOGPROC pglGetDebugMessageLog;
+#define glDebugMessageControl pglDebugMessageControl
+#define glDebugMessageInsert pglDebugMessageInsert
+#define glDebugMessageCallback pglDebugMessageCallback
+#define glGetDebugMessageLog pglGetDebugMessageLog
 /*
 extern PFNGLDEBUGMESSAGECONTROLARBPROC  pglDebugMessageControlARB;
 extern PFNGLDEBUGMESSAGEINSERTARBPROC   pglDebugMessageInsertARB;
@@ -618,282 +621,281 @@ extern PFNGLGETDEBUGMESSAGELOGARBPROC   pglGetDebugMessageLogARB;
 */
 
 // GL_ARB_direct_state_access
-extern PFNGLCREATETRANSFORMFEEDBACKSPROC                 pglCreateTransformFeedbacks; // for transform feedback object
-extern PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC              pglTransformFeedbackBufferBase;
-extern PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC             pglTransformFeedbackBufferRange;
-extern PFNGLGETTRANSFORMFEEDBACKIVPROC                   pglGetTransformFeedbackiv;
-extern PFNGLGETTRANSFORMFEEDBACKI_VPROC                  pglGetTransformFeedbacki_v;
-extern PFNGLGETTRANSFORMFEEDBACKI64_VPROC                pglGetTransformFeedbacki64_v;
-extern PFNGLCREATEBUFFERSPROC                            pglCreateBuffers;          // for buffer object
-extern PFNGLNAMEDBUFFERSTORAGEPROC                       pglNamedBufferStorage;
-extern PFNGLNAMEDBUFFERDATAPROC                          pglNamedBufferData;
-extern PFNGLNAMEDBUFFERSUBDATAPROC                       pglNamedBufferSubData;
-extern PFNGLCOPYNAMEDBUFFERSUBDATAPROC                   pglCopyNamedBufferSubData;
-extern PFNGLCLEARNAMEDBUFFERDATAPROC                     pglClearNamedBufferData;
-extern PFNGLCLEARNAMEDBUFFERSUBDATAPROC                  pglClearNamedBufferSubData;
-extern PFNGLMAPNAMEDBUFFERPROC                           pglMapNamedBuffer;
-extern PFNGLMAPNAMEDBUFFERRANGEPROC                      pglMapNamedBufferRange;
-extern PFNGLUNMAPNAMEDBUFFERPROC                         pglUnmapNamedBuffer;
-extern PFNGLFLUSHMAPPEDNAMEDBUFFERRANGEPROC              pglFlushMappedNamedBufferRange;
-extern PFNGLGETNAMEDBUFFERPARAMETERIVPROC                pglGetNamedBufferParameteriv;
-extern PFNGLGETNAMEDBUFFERPARAMETERI64VPROC              pglGetNamedBufferParameteri64v;
-extern PFNGLGETNAMEDBUFFERPOINTERVPROC                   pglGetNamedBufferPointerv;
-extern PFNGLGETNAMEDBUFFERSUBDATAPROC                    pglGetNamedBufferSubData;
-extern PFNGLCREATEFRAMEBUFFERSPROC                       pglCreateFramebuffers;     // for framebuffer object
-extern PFNGLNAMEDFRAMEBUFFERRENDERBUFFERPROC             pglNamedFramebufferRenderbuffer;
-extern PFNGLNAMEDFRAMEBUFFERPARAMETERIPROC               pglNamedFramebufferParameteri;
-extern PFNGLNAMEDFRAMEBUFFERTEXTUREPROC                  pglNamedFramebufferTexture;
-extern PFNGLNAMEDFRAMEBUFFERTEXTURELAYERPROC             pglNamedFramebufferTextureLayer;
-extern PFNGLNAMEDFRAMEBUFFERDRAWBUFFERPROC               pglNamedFramebufferDrawBuffer;
-extern PFNGLNAMEDFRAMEBUFFERDRAWBUFFERSPROC              pglNamedFramebufferDrawBuffers;
-extern PFNGLNAMEDFRAMEBUFFERREADBUFFERPROC               pglNamedFramebufferReadBuffer;
-extern PFNGLINVALIDATENAMEDFRAMEBUFFERDATAPROC           pglInvalidateNamedFramebufferData;
-extern PFNGLINVALIDATENAMEDFRAMEBUFFERSUBDATAPROC        pglInvalidateNamedFramebufferSubData;
-extern PFNGLCLEARNAMEDFRAMEBUFFERIVPROC                  pglClearNamedFramebufferiv;
-extern PFNGLCLEARNAMEDFRAMEBUFFERUIVPROC                 pglClearNamedFramebufferuiv;
-extern PFNGLCLEARNAMEDFRAMEBUFFERFVPROC                  pglClearNamedFramebufferfv;
-extern PFNGLCLEARNAMEDFRAMEBUFFERFIPROC                  pglClearNamedFramebufferfi;
-extern PFNGLBLITNAMEDFRAMEBUFFERPROC                     pglBlitNamedFramebuffer;
-extern PFNGLCHECKNAMEDFRAMEBUFFERSTATUSPROC              pglCheckNamedFramebufferStatus;
-extern PFNGLGETNAMEDFRAMEBUFFERPARAMETERIVPROC           pglGetNamedFramebufferParameteriv;
+extern PFNGLCREATETRANSFORMFEEDBACKSPROC pglCreateTransformFeedbacks;// for transform feedback object
+extern PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC pglTransformFeedbackBufferBase;
+extern PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC pglTransformFeedbackBufferRange;
+extern PFNGLGETTRANSFORMFEEDBACKIVPROC pglGetTransformFeedbackiv;
+extern PFNGLGETTRANSFORMFEEDBACKI_VPROC pglGetTransformFeedbacki_v;
+extern PFNGLGETTRANSFORMFEEDBACKI64_VPROC pglGetTransformFeedbacki64_v;
+extern PFNGLCREATEBUFFERSPROC pglCreateBuffers;// for buffer object
+extern PFNGLNAMEDBUFFERSTORAGEPROC pglNamedBufferStorage;
+extern PFNGLNAMEDBUFFERDATAPROC pglNamedBufferData;
+extern PFNGLNAMEDBUFFERSUBDATAPROC pglNamedBufferSubData;
+extern PFNGLCOPYNAMEDBUFFERSUBDATAPROC pglCopyNamedBufferSubData;
+extern PFNGLCLEARNAMEDBUFFERDATAPROC pglClearNamedBufferData;
+extern PFNGLCLEARNAMEDBUFFERSUBDATAPROC pglClearNamedBufferSubData;
+extern PFNGLMAPNAMEDBUFFERPROC pglMapNamedBuffer;
+extern PFNGLMAPNAMEDBUFFERRANGEPROC pglMapNamedBufferRange;
+extern PFNGLUNMAPNAMEDBUFFERPROC pglUnmapNamedBuffer;
+extern PFNGLFLUSHMAPPEDNAMEDBUFFERRANGEPROC pglFlushMappedNamedBufferRange;
+extern PFNGLGETNAMEDBUFFERPARAMETERIVPROC pglGetNamedBufferParameteriv;
+extern PFNGLGETNAMEDBUFFERPARAMETERI64VPROC pglGetNamedBufferParameteri64v;
+extern PFNGLGETNAMEDBUFFERPOINTERVPROC pglGetNamedBufferPointerv;
+extern PFNGLGETNAMEDBUFFERSUBDATAPROC pglGetNamedBufferSubData;
+extern PFNGLCREATEFRAMEBUFFERSPROC pglCreateFramebuffers;// for framebuffer object
+extern PFNGLNAMEDFRAMEBUFFERRENDERBUFFERPROC pglNamedFramebufferRenderbuffer;
+extern PFNGLNAMEDFRAMEBUFFERPARAMETERIPROC pglNamedFramebufferParameteri;
+extern PFNGLNAMEDFRAMEBUFFERTEXTUREPROC pglNamedFramebufferTexture;
+extern PFNGLNAMEDFRAMEBUFFERTEXTURELAYERPROC pglNamedFramebufferTextureLayer;
+extern PFNGLNAMEDFRAMEBUFFERDRAWBUFFERPROC pglNamedFramebufferDrawBuffer;
+extern PFNGLNAMEDFRAMEBUFFERDRAWBUFFERSPROC pglNamedFramebufferDrawBuffers;
+extern PFNGLNAMEDFRAMEBUFFERREADBUFFERPROC pglNamedFramebufferReadBuffer;
+extern PFNGLINVALIDATENAMEDFRAMEBUFFERDATAPROC pglInvalidateNamedFramebufferData;
+extern PFNGLINVALIDATENAMEDFRAMEBUFFERSUBDATAPROC pglInvalidateNamedFramebufferSubData;
+extern PFNGLCLEARNAMEDFRAMEBUFFERIVPROC pglClearNamedFramebufferiv;
+extern PFNGLCLEARNAMEDFRAMEBUFFERUIVPROC pglClearNamedFramebufferuiv;
+extern PFNGLCLEARNAMEDFRAMEBUFFERFVPROC pglClearNamedFramebufferfv;
+extern PFNGLCLEARNAMEDFRAMEBUFFERFIPROC pglClearNamedFramebufferfi;
+extern PFNGLBLITNAMEDFRAMEBUFFERPROC pglBlitNamedFramebuffer;
+extern PFNGLCHECKNAMEDFRAMEBUFFERSTATUSPROC pglCheckNamedFramebufferStatus;
+extern PFNGLGETNAMEDFRAMEBUFFERPARAMETERIVPROC pglGetNamedFramebufferParameteriv;
 extern PFNGLGETNAMEDFRAMEBUFFERATTACHMENTPARAMETERIVPROC pglGetNamedFramebufferAttachmentParameteriv;
-extern PFNGLCREATERENDERBUFFERSPROC                      pglCreateRenderbuffers;    // for renderbuffer object
-extern PFNGLNAMEDRENDERBUFFERSTORAGEPROC                 pglNamedRenderbufferStorage;
-extern PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEPROC      pglNamedRenderbufferStorageMultisample;
-extern PFNGLGETNAMEDRENDERBUFFERPARAMETERIVPROC          pglGetNamedRenderbufferParameteriv;
-extern PFNGLCREATETEXTURESPROC                           pglCreateTextures;         // for texture object
-extern PFNGLTEXTUREBUFFERPROC                            pglTextureBuffer;
-extern PFNGLTEXTUREBUFFERRANGEPROC                       pglTextureBufferRange;
-extern PFNGLTEXTURESTORAGE1DPROC                         pglTextureStorage1D;
-extern PFNGLTEXTURESTORAGE2DPROC                         pglTextureStorage2D;
-extern PFNGLTEXTURESTORAGE3DPROC                         pglTextureStorage3D;
-extern PFNGLTEXTURESTORAGE2DMULTISAMPLEPROC              pglTextureStorage2DMultisample;
-extern PFNGLTEXTURESTORAGE3DMULTISAMPLEPROC              pglTextureStorage3DMultisample;
-extern PFNGLTEXTURESUBIMAGE1DPROC                        pglTextureSubImage1D;
-extern PFNGLTEXTURESUBIMAGE2DPROC                        pglTextureSubImage2D;
-extern PFNGLTEXTURESUBIMAGE3DPROC                        pglTextureSubImage3D;
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE1DPROC              pglCompressedTextureSubImage1D;
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE2DPROC              pglCompressedTextureSubImage2D;
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE3DPROC              pglCompressedTextureSubImage3D;
-extern PFNGLCOPYTEXTURESUBIMAGE1DPROC                    pglCopyTextureSubImage1D;
-extern PFNGLCOPYTEXTURESUBIMAGE2DPROC                    pglCopyTextureSubImage2D;
-extern PFNGLCOPYTEXTURESUBIMAGE3DPROC                    pglCopyTextureSubImage3D;
-extern PFNGLTEXTUREPARAMETERFPROC                        pglTextureParameterf;
-extern PFNGLTEXTUREPARAMETERFVPROC                       pglTextureParameterfv;
-extern PFNGLTEXTUREPARAMETERIPROC                        pglTextureParameteri;
-extern PFNGLTEXTUREPARAMETERIIVPROC                      pglTextureParameterIiv;
-extern PFNGLTEXTUREPARAMETERIUIVPROC                     pglTextureParameterIuiv;
-extern PFNGLTEXTUREPARAMETERIVPROC                       pglTextureParameteriv;
-extern PFNGLGENERATETEXTUREMIPMAPPROC                    pglGenerateTextureMipmap;
-extern PFNGLBINDTEXTUREUNITPROC                          pglBindTextureUnit;
-extern PFNGLGETTEXTUREIMAGEPROC                          pglGetTextureImage;
-extern PFNGLGETCOMPRESSEDTEXTUREIMAGEPROC                pglGetCompressedTextureImage;
-extern PFNGLGETTEXTURELEVELPARAMETERFVPROC               pglGetTextureLevelParameterfv;
-extern PFNGLGETTEXTURELEVELPARAMETERIVPROC               pglGetTextureLevelParameteriv;
-extern PFNGLGETTEXTUREPARAMETERFVPROC                    pglGetTextureParameterfv;
-extern PFNGLGETTEXTUREPARAMETERIIVPROC                   pglGetTextureParameterIiv;
-extern PFNGLGETTEXTUREPARAMETERIUIVPROC                  pglGetTextureParameterIuiv;
-extern PFNGLGETTEXTUREPARAMETERIVPROC                    pglGetTextureParameteriv;
-extern PFNGLCREATEVERTEXARRAYSPROC                       pglCreateVertexArrays;     // for vertex array object
-extern PFNGLDISABLEVERTEXARRAYATTRIBPROC                 pglDisableVertexArrayAttrib;
-extern PFNGLENABLEVERTEXARRAYATTRIBPROC                  pglEnableVertexArrayAttrib;
-extern PFNGLVERTEXARRAYELEMENTBUFFERPROC                 pglVertexArrayElementBuffer;
-extern PFNGLVERTEXARRAYVERTEXBUFFERPROC                  pglVertexArrayVertexBuffer;
-extern PFNGLVERTEXARRAYVERTEXBUFFERSPROC                 pglVertexArrayVertexBuffers;
-extern PFNGLVERTEXARRAYATTRIBBINDINGPROC                 pglVertexArrayAttribBinding;
-extern PFNGLVERTEXARRAYATTRIBFORMATPROC                  pglVertexArrayAttribFormat;
-extern PFNGLVERTEXARRAYATTRIBIFORMATPROC                 pglVertexArrayAttribIFormat;
-extern PFNGLVERTEXARRAYATTRIBLFORMATPROC                 pglVertexArrayAttribLFormat;
-extern PFNGLVERTEXARRAYBINDINGDIVISORPROC                pglVertexArrayBindingDivisor;
-extern PFNGLGETVERTEXARRAYIVPROC                         pglGetVertexArrayiv;
-extern PFNGLGETVERTEXARRAYINDEXEDIVPROC                  pglGetVertexArrayIndexediv;
-extern PFNGLGETVERTEXARRAYINDEXED64IVPROC                pglGetVertexArrayIndexed64iv;
-extern PFNGLCREATESAMPLERSPROC                           pglCreateSamplers;         // for sampler object
-extern PFNGLCREATEPROGRAMPIPELINESPROC                   pglCreateProgramPipelines; // for program pipeline object
-extern PFNGLCREATEQUERIESPROC                            pglCreateQueries;          // for query object
-extern PFNGLGETQUERYBUFFEROBJECTIVPROC                   pglGetQueryBufferObjectiv;
-extern PFNGLGETQUERYBUFFEROBJECTUIVPROC                  pglGetQueryBufferObjectuiv;
-extern PFNGLGETQUERYBUFFEROBJECTI64VPROC                 pglGetQueryBufferObjecti64v;
-extern PFNGLGETQUERYBUFFEROBJECTUI64VPROC                pglGetQueryBufferObjectui64v;
-#define glCreateTransformFeedbacks                       pglCreateTransformFeedbacks
-#define glTransformFeedbackBufferBase                    pglTransformFeedbackBufferBase
-#define glTransformFeedbackBufferRange                   pglTransformFeedbackBufferRange
-#define glGetTransformFeedbackiv                         pglGetTransformFeedbackiv
-#define glGetTransformFeedbacki_v                        pglGetTransformFeedbacki_v
-#define glGetTransformFeedbacki64_v                      pglGetTransformFeedbacki64_v
-#define glCreateBuffers                                  pglCreateBuffers
-#define glNamedBufferStorage                             pglNamedBufferStorage
-#define glNamedBufferData                                pglNamedBufferData
-#define glNamedBufferSubData                             pglNamedBufferSubData
-#define glCopyNamedBufferSubData                         pglCopyNamedBufferSubData
-#define glClearNamedBufferData                           pglClearNamedBufferData
-#define glClearNamedBufferSubData                        pglClearNamedBufferSubData
-#define glMapNamedBuffer                                 pglMapNamedBuffer
-#define glMapNamedBufferRange                            pglMapNamedBufferRange
-#define glUnmapNamedBuffer                               pglUnmapNamedBuffer
-#define glFlushMappedNamedBufferRange                    pglFlushMappedNamedBufferRange
-#define glGetNamedBufferParameteriv                      pglGetNamedBufferParameteriv
-#define glGetNamedBufferParameteri64v                    pglGetNamedBufferParameteri64v
-#define glGetNamedBufferPointerv                         pglGetNamedBufferPointerv
-#define glGetNamedBufferSubData                          pglGetNamedBufferSubData
-#define glCreateFramebuffers                             pglCreateFramebuffers
-#define glNamedFramebufferRenderbuffer                   pglNamedFramebufferRenderbuffer
-#define glNamedFramebufferParameteri                     pglNamedFramebufferParameteri
-#define glNamedFramebufferTexture                        pglNamedFramebufferTexture
-#define glNamedFramebufferTextureLayer                   pglNamedFramebufferTextureLayer
-#define glNamedFramebufferDrawBuffer                     pglNamedFramebufferDrawBuffer
-#define glNamedFramebufferDrawBuffers                    pglNamedFramebufferDrawBuffers
-#define glNamedFramebufferReadBuffer                     pglNamedFramebufferReadBuffer
-#define glInvalidateNamedFramebufferData                 pglInvalidateNamedFramebufferData
-#define glInvalidateNamedFramebufferSubData              pglInvalidateNamedFramebufferSubData
-#define glClearNamedFramebufferiv                        pglClearNamedFramebufferiv
-#define glClearNamedFramebufferuiv                       pglClearNamedFramebufferuiv
-#define glClearNamedFramebufferfv                        pglClearNamedFramebufferfv
-#define glClearNamedFramebufferfi                        pglClearNamedFramebufferfi
-#define glBlitNamedFramebuffer                           pglBlitNamedFramebuffer
-#define glCheckNamedFramebufferStatus                    pglCheckNamedFramebufferStatus
-#define glGetNamedFramebufferParameteriv                 pglGetNamedFramebufferParameteriv
-#define glGetNamedFramebufferAttachmentParameteriv       pglGetNamedFramebufferAttachmentParameteriv
-#define glCreateRenderbuffers                            pglCreateRenderbuffers
-#define glNamedRenderbufferStorage                       pglNamedRenderbufferStorage
-#define glNamedRenderbufferStorageMultisample            pglNamedRenderbufferStorageMultisample
-#define glGetNamedRenderbufferParameteriv                pglGetNamedRenderbufferParameteriv
-#define glCreateTextures                                 pglCreateTextures
-#define glTextureBuffer                                  pglTextureBuffer
-#define glTextureBufferRange                             pglTextureBufferRange
-#define glTextureStorage1D                               pglTextureStorage1D
-#define glTextureStorage2D                               pglTextureStorage2D
-#define glTextureStorage3D                               pglTextureStorage3D
-#define glTextureStorage2DMultisample                    pglTextureStorage2DMultisample
-#define glTextureStorage3DMultisample                    pglTextureStorage3DMultisample
-#define glTextureSubImage1D                              pglTextureSubImage1D
-#define glTextureSubImage2D                              pglTextureSubImage2D
-#define glTextureSubImage3D                              pglTextureSubImage3D
-#define glCompressedTextureSubImage1D                    pglCompressedTextureSubImage1D
-#define glCompressedTextureSubImage2D                    pglCompressedTextureSubImage2D
-#define glCompressedTextureSubImage3D                    pglCompressedTextureSubImage3D
-#define glCopyTextureSubImage1D                          pglCopyTextureSubImage1D
-#define glCopyTextureSubImage2D                          pglCopyTextureSubImage2D
-#define glCopyTextureSubImage3D                          pglCopyTextureSubImage3D
-#define glTextureParameterf                              pglTextureParameterf
-#define glTextureParameterfv                             pglTextureParameterfv
-#define glTextureParameteri                              pglTextureParameteri
-#define glTextureParameterIiv                            pglTextureParameterIiv
-#define glTextureParameterIuiv                           pglTextureParameterIuiv
-#define glTextureParameteriv                             pglTextureParameteriv
-#define glGenerateTextureMipmap                          pglGenerateTextureMipmap
-#define glBindTextureUnit                                pglBindTextureUnit
-#define glGetTextureImage                                pglGetTextureImage
-#define glGetCompressedTextureImage                      pglGetCompressedTextureImage
-#define glGetTextureLevelParameterfv                     pglGetTextureLevelParameterfv
-#define glGetTextureLevelParameteriv                     pglGetTextureLevelParameteriv
-#define glGetTextureParameterfv                          pglGetTextureParameterfv
-#define glGetTextureParameterIiv                         pglGetTextureParameterIiv
-#define glGetTextureParameterIuiv                        pglGetTextureParameterIuiv
-#define glGetTextureParameteriv                          pglGetTextureParameteriv
-#define glCreateVertexArrays                             pglCreateVertexArrays
-#define glDisableVertexArrayAttrib                       pglDisableVertexArrayAttrib
-#define glEnableVertexArrayAttrib                        pglEnableVertexArrayAttrib
-#define glVertexArrayElementBuffer                       pglVertexArrayElementBuffer
-#define glVertexArrayVertexBuffer                        pglVertexArrayVertexBuffer
-#define glVertexArrayVertexBuffers                       pglVertexArrayVertexBuffers
-#define glVertexArrayAttribBinding                       pglVertexArrayAttribBinding
-#define glVertexArrayAttribFormat                        pglVertexArrayAttribFormat
-#define glVertexArrayAttribIFormat                       pglVertexArrayAttribIFormat
-#define glVertexArrayAttribLFormat                       pglVertexArrayAttribLFormat
-#define glVertexArrayBindingDivisor                      pglVertexArrayBindingDivisor
-#define glGetVertexArrayiv                               pglGetVertexArrayiv
-#define glGetVertexArrayIndexediv                        pglGetVertexArrayIndexediv
-#define glGetVertexArrayIndexed64iv                      pglGetVertexArrayIndexed64iv
-#define glCreateSamplers                                 pglCreateSamplers
-#define glCreateProgramPipelines                         pglCreateProgramPipelines
-#define glCreateQueries                                  pglCreateQueries
-#define glGetQueryBufferObjectiv                         pglGetQueryBufferObjectiv
-#define glGetQueryBufferObjectuiv                        pglGetQueryBufferObjectuiv
-#define glGetQueryBufferObjecti64v                       pglGetQueryBufferObjecti64v
-#define glGetQueryBufferObjectui64v                      pglGetQueryBufferObjectui64v
-
+extern PFNGLCREATERENDERBUFFERSPROC pglCreateRenderbuffers;// for renderbuffer object
+extern PFNGLNAMEDRENDERBUFFERSTORAGEPROC pglNamedRenderbufferStorage;
+extern PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEPROC pglNamedRenderbufferStorageMultisample;
+extern PFNGLGETNAMEDRENDERBUFFERPARAMETERIVPROC pglGetNamedRenderbufferParameteriv;
+extern PFNGLCREATETEXTURESPROC pglCreateTextures;// for texture object
+extern PFNGLTEXTUREBUFFERPROC pglTextureBuffer;
+extern PFNGLTEXTUREBUFFERRANGEPROC pglTextureBufferRange;
+extern PFNGLTEXTURESTORAGE1DPROC pglTextureStorage1D;
+extern PFNGLTEXTURESTORAGE2DPROC pglTextureStorage2D;
+extern PFNGLTEXTURESTORAGE3DPROC pglTextureStorage3D;
+extern PFNGLTEXTURESTORAGE2DMULTISAMPLEPROC pglTextureStorage2DMultisample;
+extern PFNGLTEXTURESTORAGE3DMULTISAMPLEPROC pglTextureStorage3DMultisample;
+extern PFNGLTEXTURESUBIMAGE1DPROC pglTextureSubImage1D;
+extern PFNGLTEXTURESUBIMAGE2DPROC pglTextureSubImage2D;
+extern PFNGLTEXTURESUBIMAGE3DPROC pglTextureSubImage3D;
+extern PFNGLCOMPRESSEDTEXTURESUBIMAGE1DPROC pglCompressedTextureSubImage1D;
+extern PFNGLCOMPRESSEDTEXTURESUBIMAGE2DPROC pglCompressedTextureSubImage2D;
+extern PFNGLCOMPRESSEDTEXTURESUBIMAGE3DPROC pglCompressedTextureSubImage3D;
+extern PFNGLCOPYTEXTURESUBIMAGE1DPROC pglCopyTextureSubImage1D;
+extern PFNGLCOPYTEXTURESUBIMAGE2DPROC pglCopyTextureSubImage2D;
+extern PFNGLCOPYTEXTURESUBIMAGE3DPROC pglCopyTextureSubImage3D;
+extern PFNGLTEXTUREPARAMETERFPROC pglTextureParameterf;
+extern PFNGLTEXTUREPARAMETERFVPROC pglTextureParameterfv;
+extern PFNGLTEXTUREPARAMETERIPROC pglTextureParameteri;
+extern PFNGLTEXTUREPARAMETERIIVPROC pglTextureParameterIiv;
+extern PFNGLTEXTUREPARAMETERIUIVPROC pglTextureParameterIuiv;
+extern PFNGLTEXTUREPARAMETERIVPROC pglTextureParameteriv;
+extern PFNGLGENERATETEXTUREMIPMAPPROC pglGenerateTextureMipmap;
+extern PFNGLBINDTEXTUREUNITPROC pglBindTextureUnit;
+extern PFNGLGETTEXTUREIMAGEPROC pglGetTextureImage;
+extern PFNGLGETCOMPRESSEDTEXTUREIMAGEPROC pglGetCompressedTextureImage;
+extern PFNGLGETTEXTURELEVELPARAMETERFVPROC pglGetTextureLevelParameterfv;
+extern PFNGLGETTEXTURELEVELPARAMETERIVPROC pglGetTextureLevelParameteriv;
+extern PFNGLGETTEXTUREPARAMETERFVPROC pglGetTextureParameterfv;
+extern PFNGLGETTEXTUREPARAMETERIIVPROC pglGetTextureParameterIiv;
+extern PFNGLGETTEXTUREPARAMETERIUIVPROC pglGetTextureParameterIuiv;
+extern PFNGLGETTEXTUREPARAMETERIVPROC pglGetTextureParameteriv;
+extern PFNGLCREATEVERTEXARRAYSPROC pglCreateVertexArrays;// for vertex array object
+extern PFNGLDISABLEVERTEXARRAYATTRIBPROC pglDisableVertexArrayAttrib;
+extern PFNGLENABLEVERTEXARRAYATTRIBPROC pglEnableVertexArrayAttrib;
+extern PFNGLVERTEXARRAYELEMENTBUFFERPROC pglVertexArrayElementBuffer;
+extern PFNGLVERTEXARRAYVERTEXBUFFERPROC pglVertexArrayVertexBuffer;
+extern PFNGLVERTEXARRAYVERTEXBUFFERSPROC pglVertexArrayVertexBuffers;
+extern PFNGLVERTEXARRAYATTRIBBINDINGPROC pglVertexArrayAttribBinding;
+extern PFNGLVERTEXARRAYATTRIBFORMATPROC pglVertexArrayAttribFormat;
+extern PFNGLVERTEXARRAYATTRIBIFORMATPROC pglVertexArrayAttribIFormat;
+extern PFNGLVERTEXARRAYATTRIBLFORMATPROC pglVertexArrayAttribLFormat;
+extern PFNGLVERTEXARRAYBINDINGDIVISORPROC pglVertexArrayBindingDivisor;
+extern PFNGLGETVERTEXARRAYIVPROC pglGetVertexArrayiv;
+extern PFNGLGETVERTEXARRAYINDEXEDIVPROC pglGetVertexArrayIndexediv;
+extern PFNGLGETVERTEXARRAYINDEXED64IVPROC pglGetVertexArrayIndexed64iv;
+extern PFNGLCREATESAMPLERSPROC pglCreateSamplers;                // for sampler object
+extern PFNGLCREATEPROGRAMPIPELINESPROC pglCreateProgramPipelines;// for program pipeline object
+extern PFNGLCREATEQUERIESPROC pglCreateQueries;                  // for query object
+extern PFNGLGETQUERYBUFFEROBJECTIVPROC pglGetQueryBufferObjectiv;
+extern PFNGLGETQUERYBUFFEROBJECTUIVPROC pglGetQueryBufferObjectuiv;
+extern PFNGLGETQUERYBUFFEROBJECTI64VPROC pglGetQueryBufferObjecti64v;
+extern PFNGLGETQUERYBUFFEROBJECTUI64VPROC pglGetQueryBufferObjectui64v;
+#define glCreateTransformFeedbacks pglCreateTransformFeedbacks
+#define glTransformFeedbackBufferBase pglTransformFeedbackBufferBase
+#define glTransformFeedbackBufferRange pglTransformFeedbackBufferRange
+#define glGetTransformFeedbackiv pglGetTransformFeedbackiv
+#define glGetTransformFeedbacki_v pglGetTransformFeedbacki_v
+#define glGetTransformFeedbacki64_v pglGetTransformFeedbacki64_v
+#define glCreateBuffers pglCreateBuffers
+#define glNamedBufferStorage pglNamedBufferStorage
+#define glNamedBufferData pglNamedBufferData
+#define glNamedBufferSubData pglNamedBufferSubData
+#define glCopyNamedBufferSubData pglCopyNamedBufferSubData
+#define glClearNamedBufferData pglClearNamedBufferData
+#define glClearNamedBufferSubData pglClearNamedBufferSubData
+#define glMapNamedBuffer pglMapNamedBuffer
+#define glMapNamedBufferRange pglMapNamedBufferRange
+#define glUnmapNamedBuffer pglUnmapNamedBuffer
+#define glFlushMappedNamedBufferRange pglFlushMappedNamedBufferRange
+#define glGetNamedBufferParameteriv pglGetNamedBufferParameteriv
+#define glGetNamedBufferParameteri64v pglGetNamedBufferParameteri64v
+#define glGetNamedBufferPointerv pglGetNamedBufferPointerv
+#define glGetNamedBufferSubData pglGetNamedBufferSubData
+#define glCreateFramebuffers pglCreateFramebuffers
+#define glNamedFramebufferRenderbuffer pglNamedFramebufferRenderbuffer
+#define glNamedFramebufferParameteri pglNamedFramebufferParameteri
+#define glNamedFramebufferTexture pglNamedFramebufferTexture
+#define glNamedFramebufferTextureLayer pglNamedFramebufferTextureLayer
+#define glNamedFramebufferDrawBuffer pglNamedFramebufferDrawBuffer
+#define glNamedFramebufferDrawBuffers pglNamedFramebufferDrawBuffers
+#define glNamedFramebufferReadBuffer pglNamedFramebufferReadBuffer
+#define glInvalidateNamedFramebufferData pglInvalidateNamedFramebufferData
+#define glInvalidateNamedFramebufferSubData pglInvalidateNamedFramebufferSubData
+#define glClearNamedFramebufferiv pglClearNamedFramebufferiv
+#define glClearNamedFramebufferuiv pglClearNamedFramebufferuiv
+#define glClearNamedFramebufferfv pglClearNamedFramebufferfv
+#define glClearNamedFramebufferfi pglClearNamedFramebufferfi
+#define glBlitNamedFramebuffer pglBlitNamedFramebuffer
+#define glCheckNamedFramebufferStatus pglCheckNamedFramebufferStatus
+#define glGetNamedFramebufferParameteriv pglGetNamedFramebufferParameteriv
+#define glGetNamedFramebufferAttachmentParameteriv pglGetNamedFramebufferAttachmentParameteriv
+#define glCreateRenderbuffers pglCreateRenderbuffers
+#define glNamedRenderbufferStorage pglNamedRenderbufferStorage
+#define glNamedRenderbufferStorageMultisample pglNamedRenderbufferStorageMultisample
+#define glGetNamedRenderbufferParameteriv pglGetNamedRenderbufferParameteriv
+#define glCreateTextures pglCreateTextures
+#define glTextureBuffer pglTextureBuffer
+#define glTextureBufferRange pglTextureBufferRange
+#define glTextureStorage1D pglTextureStorage1D
+#define glTextureStorage2D pglTextureStorage2D
+#define glTextureStorage3D pglTextureStorage3D
+#define glTextureStorage2DMultisample pglTextureStorage2DMultisample
+#define glTextureStorage3DMultisample pglTextureStorage3DMultisample
+#define glTextureSubImage1D pglTextureSubImage1D
+#define glTextureSubImage2D pglTextureSubImage2D
+#define glTextureSubImage3D pglTextureSubImage3D
+#define glCompressedTextureSubImage1D pglCompressedTextureSubImage1D
+#define glCompressedTextureSubImage2D pglCompressedTextureSubImage2D
+#define glCompressedTextureSubImage3D pglCompressedTextureSubImage3D
+#define glCopyTextureSubImage1D pglCopyTextureSubImage1D
+#define glCopyTextureSubImage2D pglCopyTextureSubImage2D
+#define glCopyTextureSubImage3D pglCopyTextureSubImage3D
+#define glTextureParameterf pglTextureParameterf
+#define glTextureParameterfv pglTextureParameterfv
+#define glTextureParameteri pglTextureParameteri
+#define glTextureParameterIiv pglTextureParameterIiv
+#define glTextureParameterIuiv pglTextureParameterIuiv
+#define glTextureParameteriv pglTextureParameteriv
+#define glGenerateTextureMipmap pglGenerateTextureMipmap
+#define glBindTextureUnit pglBindTextureUnit
+#define glGetTextureImage pglGetTextureImage
+#define glGetCompressedTextureImage pglGetCompressedTextureImage
+#define glGetTextureLevelParameterfv pglGetTextureLevelParameterfv
+#define glGetTextureLevelParameteriv pglGetTextureLevelParameteriv
+#define glGetTextureParameterfv pglGetTextureParameterfv
+#define glGetTextureParameterIiv pglGetTextureParameterIiv
+#define glGetTextureParameterIuiv pglGetTextureParameterIuiv
+#define glGetTextureParameteriv pglGetTextureParameteriv
+#define glCreateVertexArrays pglCreateVertexArrays
+#define glDisableVertexArrayAttrib pglDisableVertexArrayAttrib
+#define glEnableVertexArrayAttrib pglEnableVertexArrayAttrib
+#define glVertexArrayElementBuffer pglVertexArrayElementBuffer
+#define glVertexArrayVertexBuffer pglVertexArrayVertexBuffer
+#define glVertexArrayVertexBuffers pglVertexArrayVertexBuffers
+#define glVertexArrayAttribBinding pglVertexArrayAttribBinding
+#define glVertexArrayAttribFormat pglVertexArrayAttribFormat
+#define glVertexArrayAttribIFormat pglVertexArrayAttribIFormat
+#define glVertexArrayAttribLFormat pglVertexArrayAttribLFormat
+#define glVertexArrayBindingDivisor pglVertexArrayBindingDivisor
+#define glGetVertexArrayiv pglGetVertexArrayiv
+#define glGetVertexArrayIndexediv pglGetVertexArrayIndexediv
+#define glGetVertexArrayIndexed64iv pglGetVertexArrayIndexed64iv
+#define glCreateSamplers pglCreateSamplers
+#define glCreateProgramPipelines pglCreateProgramPipelines
+#define glCreateQueries pglCreateQueries
+#define glGetQueryBufferObjectiv pglGetQueryBufferObjectiv
+#define glGetQueryBufferObjectuiv pglGetQueryBufferObjectuiv
+#define glGetQueryBufferObjecti64v pglGetQueryBufferObjecti64v
+#define glGetQueryBufferObjectui64v pglGetQueryBufferObjectui64v
 
 
 // WGL_ARB_extensions_string
-typedef const char* (WINAPI * PFNWGLGETEXTENSIONSSTRINGARBPROC)(HDC hdc);
+typedef const char *(WINAPI *PFNWGLGETEXTENSIONSSTRINGARBPROC)(HDC hdc);
 extern PFNWGLGETEXTENSIONSSTRINGARBPROC pwglGetExtensionsStringARB;
-#define wglGetExtensionsStringARB       pwglGetExtensionsStringARB
+#define wglGetExtensionsStringARB pwglGetExtensionsStringARB
 
 // WGL_ARB_pixel_format
-typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVARBPROC) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, int *piValues);
-typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBFVARBPROC) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, FLOAT *pfValues);
-typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
-extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC  pwglGetPixelFormatAttribivARB;
-extern PFNWGLGETPIXELFORMATATTRIBFVARBPROC  pwglGetPixelFormatAttribfvARB;
-extern PFNWGLCHOOSEPIXELFORMATARBPROC       pwglChoosePixelFormatARB;
-#define wglGetPixelFormatAttribivARB        pwglGetPixelFormatAttribivARB
-#define wglGetPixelFormatAttribfvARB        pwglGetPixelFormatAttribfvARB
-#define wglChoosePixelFormatARB             pwglChoosePixelFormatARB
+typedef BOOL(WINAPI *PFNWGLGETPIXELFORMATATTRIBIVARBPROC)(HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, int *piValues);
+typedef BOOL(WINAPI *PFNWGLGETPIXELFORMATATTRIBFVARBPROC)(HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, FLOAT *pfValues);
+typedef BOOL(WINAPI *PFNWGLCHOOSEPIXELFORMATARBPROC)(HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
+extern PFNWGLGETPIXELFORMATATTRIBIVARBPROC pwglGetPixelFormatAttribivARB;
+extern PFNWGLGETPIXELFORMATATTRIBFVARBPROC pwglGetPixelFormatAttribfvARB;
+extern PFNWGLCHOOSEPIXELFORMATARBPROC pwglChoosePixelFormatARB;
+#define wglGetPixelFormatAttribivARB pwglGetPixelFormatAttribivARB
+#define wglGetPixelFormatAttribfvARB pwglGetPixelFormatAttribfvARB
+#define wglChoosePixelFormatARB pwglChoosePixelFormatARB
 
 // WGL_ARB_create_context
-typedef HGLRC (WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC hDC, HGLRC hShareContext, const int *attribList);
-extern PFNWGLCREATECONTEXTATTRIBSARBPROC    pwglCreateContextAttribsARB;
-#define wglCreateContextAttribsARB          pwglCreateContextAttribsARB
+typedef HGLRC(WINAPI *PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC hDC, HGLRC hShareContext, const int *attribList);
+extern PFNWGLCREATECONTEXTATTRIBSARBPROC pwglCreateContextAttribsARB;
+#define wglCreateContextAttribsARB pwglCreateContextAttribsARB
 
 // WGL_EXT_swap_control
-typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC) (int interval);
-typedef int (WINAPI * PFNWGLGETSWAPINTERVALEXTPROC) (void);
-extern PFNWGLSWAPINTERVALEXTPROC    pwglSwapIntervalEXT;
+typedef BOOL(WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
+typedef int(WINAPI *PFNWGLGETSWAPINTERVALEXTPROC)(void);
+extern PFNWGLSWAPINTERVALEXTPROC pwglSwapIntervalEXT;
 extern PFNWGLGETSWAPINTERVALEXTPROC pwglGetSwapIntervalEXT;
-#define wglSwapIntervalEXT          pwglSwapIntervalEXT
-#define wglGetSwapIntervalEXT       pwglGetSwapIntervalEXT
+#define wglSwapIntervalEXT pwglSwapIntervalEXT
+#define wglGetSwapIntervalEXT pwglGetSwapIntervalEXT
 #elif __linux__
 // GL_ARB_framebuffer_object
-extern PFNGLGENFRAMEBUFFERSPROC                     pglGenFramebuffers;                     // FBO name generation procedure
-extern PFNGLDELETEFRAMEBUFFERSPROC                  pglDeleteFramebuffers;                  // FBO deletion procedure
-extern PFNGLBINDFRAMEBUFFERPROC                     pglBindFramebuffer;                     // FBO bind procedure
-extern PFNGLCHECKFRAMEBUFFERSTATUSPROC              pglCheckFramebufferStatus;              // FBO completeness test procedure
-extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC pglGetFramebufferAttachmentParameteriv; // return various FBO parameters
-extern PFNGLGENERATEMIPMAPPROC                      pglGenerateMipmap;                      // FBO automatic mipmap generation procedure
-extern PFNGLFRAMEBUFFERTEXTURE1DPROC                pglFramebufferTexture1D;                // FBO texture attachement procedure
-extern PFNGLFRAMEBUFFERTEXTURE2DPROC                pglFramebufferTexture2D;                // FBO texture attachement procedure
-extern PFNGLFRAMEBUFFERTEXTURE3DPROC                pglFramebufferTexture3D;                // FBO texture attachement procedure
-extern PFNGLFRAMEBUFFERTEXTURELAYERPROC             pglFramebufferTextureLayer;             // FBO texture layer procedure
-extern PFNGLFRAMEBUFFERRENDERBUFFERPROC             pglFramebufferRenderbuffer;             // FBO renderbuffer attachement procedure
-extern PFNGLISFRAMEBUFFERPROC                       pglIsFramebuffer;                       // FBO state = true/false
-extern PFNGLBLITFRAMEBUFFERPROC                     pglBlitFramebuffer;                     // FBO copy
-extern PFNGLGENRENDERBUFFERSPROC                    pglGenRenderbuffers;                    // renderbuffer generation procedure
-extern PFNGLDELETERENDERBUFFERSPROC                 pglDeleteRenderbuffers;                 // renderbuffer deletion procedure
-extern PFNGLBINDRENDERBUFFERPROC                    pglBindRenderbuffer;                    // renderbuffer bind procedure
-extern PFNGLRENDERBUFFERSTORAGEPROC                 pglRenderbufferStorage;                 // renderbuffer memory allocation procedure
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC      pglRenderbufferStorageMultisample;      // renderbuffer memory allocation with multisample
-extern PFNGLGETRENDERBUFFERPARAMETERIVPROC          pglGetRenderbufferParameteriv;          // return various renderbuffer parameters
-extern PFNGLISRENDERBUFFERPROC                      pglIsRenderbuffer;                      // determine renderbuffer object type
-#define glGenFramebuffers                           pglGenFramebuffers
-#define glDeleteFramebuffers                        pglDeleteFramebuffers
-#define glBindFramebuffer                           pglBindFramebuffer
-#define glCheckFramebufferStatus                    pglCheckFramebufferStatus
-#define glGetFramebufferAttachmentParameteriv       pglGetFramebufferAttachmentParameteriv
-#define glGenerateMipmap                            pglGenerateMipmap
-#define glFramebufferTexture1D                      pglFramebufferTexture1D
-#define glFramebufferTexture2D                      pglFramebufferTexture2D
-#define glFramebufferTexture3D                      pglFramebufferTexture3D
-#define glFramebufferTextureLayer                   pglFramebufferTextureLayer
-#define glFramebufferRenderbuffer                   pglFramebufferRenderbuffer
-#define glIsFramebuffer                             pglIsFramebuffer
-#define glBlitFramebuffer                           pglBlitFramebuffer
-#define glGenRenderbuffers                          pglGenRenderbuffers
-#define glDeleteRenderbuffers                       pglDeleteRenderbuffers
-#define glBindRenderbuffer                          pglBindRenderbuffer
-#define glRenderbufferStorage                       pglRenderbufferStorage
-#define glRenderbufferStorageMultisample            pglRenderbufferStorageMultisample
-#define glGetRenderbufferParameteriv                pglGetRenderbufferParameteriv
-#define glIsRenderbuffer                            pglIsRenderbuffer
+extern PFNGLGENFRAMEBUFFERSPROC pglGenFramebuffers;                                        // FBO name generation procedure
+extern PFNGLDELETEFRAMEBUFFERSPROC pglDeleteFramebuffers;                                  // FBO deletion procedure
+extern PFNGLBINDFRAMEBUFFERPROC pglBindFramebuffer;                                        // FBO bind procedure
+extern PFNGLCHECKFRAMEBUFFERSTATUSPROC pglCheckFramebufferStatus;                          // FBO completeness test procedure
+extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC pglGetFramebufferAttachmentParameteriv;// return various FBO parameters
+extern PFNGLGENERATEMIPMAPPROC pglGenerateMipmap;                                          // FBO automatic mipmap generation procedure
+extern PFNGLFRAMEBUFFERTEXTURE1DPROC pglFramebufferTexture1D;                              // FBO texture attachement procedure
+extern PFNGLFRAMEBUFFERTEXTURE2DPROC pglFramebufferTexture2D;                              // FBO texture attachement procedure
+extern PFNGLFRAMEBUFFERTEXTURE3DPROC pglFramebufferTexture3D;                              // FBO texture attachement procedure
+extern PFNGLFRAMEBUFFERTEXTURELAYERPROC pglFramebufferTextureLayer;                        // FBO texture layer procedure
+extern PFNGLFRAMEBUFFERRENDERBUFFERPROC pglFramebufferRenderbuffer;                        // FBO renderbuffer attachement procedure
+extern PFNGLISFRAMEBUFFERPROC pglIsFramebuffer;                                            // FBO state = true/false
+extern PFNGLBLITFRAMEBUFFERPROC pglBlitFramebuffer;                                        // FBO copy
+extern PFNGLGENRENDERBUFFERSPROC pglGenRenderbuffers;                                      // renderbuffer generation procedure
+extern PFNGLDELETERENDERBUFFERSPROC pglDeleteRenderbuffers;                                // renderbuffer deletion procedure
+extern PFNGLBINDRENDERBUFFERPROC pglBindRenderbuffer;                                      // renderbuffer bind procedure
+extern PFNGLRENDERBUFFERSTORAGEPROC pglRenderbufferStorage;                                // renderbuffer memory allocation procedure
+extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC pglRenderbufferStorageMultisample;          // renderbuffer memory allocation with multisample
+extern PFNGLGETRENDERBUFFERPARAMETERIVPROC pglGetRenderbufferParameteriv;                  // return various renderbuffer parameters
+extern PFNGLISRENDERBUFFERPROC pglIsRenderbuffer;                                          // determine renderbuffer object type
+#define glGenFramebuffers pglGenFramebuffers
+#define glDeleteFramebuffers pglDeleteFramebuffers
+#define glBindFramebuffer pglBindFramebuffer
+#define glCheckFramebufferStatus pglCheckFramebufferStatus
+#define glGetFramebufferAttachmentParameteriv pglGetFramebufferAttachmentParameteriv
+#define glGenerateMipmap pglGenerateMipmap
+#define glFramebufferTexture1D pglFramebufferTexture1D
+#define glFramebufferTexture2D pglFramebufferTexture2D
+#define glFramebufferTexture3D pglFramebufferTexture3D
+#define glFramebufferTextureLayer pglFramebufferTextureLayer
+#define glFramebufferRenderbuffer pglFramebufferRenderbuffer
+#define glIsFramebuffer pglIsFramebuffer
+#define glBlitFramebuffer pglBlitFramebuffer
+#define glGenRenderbuffers pglGenRenderbuffers
+#define glDeleteRenderbuffers pglDeleteRenderbuffers
+#define glBindRenderbuffer pglBindRenderbuffer
+#define glRenderbufferStorage pglRenderbufferStorage
+#define glRenderbufferStorageMultisample pglRenderbufferStorageMultisample
+#define glGetRenderbufferParameteriv pglGetRenderbufferParameteriv
+#define glIsRenderbuffer pglIsRenderbuffer
 
 // GL_ARB_multisample
-extern PFNGLSAMPLECOVERAGEARBPROC   pglSampleCoverageARB;
-#define glSampleCoverageARB         pglSampleCoverageARB
+extern PFNGLSAMPLECOVERAGEARBPROC pglSampleCoverageARB;
+#define glSampleCoverageARB pglSampleCoverageARB
 
 // GL_ARB_multitexture (included v1.2.1)
 //@@ v1.2.1 core version
-extern PFNGLACTIVETEXTUREPROC       pglActiveTexture;
-#define glActiveTexture             pglActiveTexture
+extern PFNGLACTIVETEXTUREPROC pglActiveTexture;
+#define glActiveTexture pglActiveTexture
 /*
 extern PFNGLACTIVETEXTUREARBPROC    pglActiveTextureARB;
 #define glActiveTextureARB          pglActiveTextureARB
@@ -901,22 +903,22 @@ extern PFNGLACTIVETEXTUREARBPROC    pglActiveTextureARB;
 
 // GL_ARB_pixel_buffer_objects & GL_ARB_vertex_buffer_object
 //@@ v2.1 core version
-extern PFNGLGENBUFFERSPROC              pglGenBuffers;              // VBO Name Generation Procedure
-extern PFNGLBINDBUFFERPROC              pglBindBuffer;              // VBO Bind Procedure
-extern PFNGLBUFFERDATAPROC              pglBufferData;              // VBO Data Loading Procedure
-extern PFNGLBUFFERSUBDATAPROC           pglBufferSubData;           // VBO Sub Data Loading Procedure
-extern PFNGLDELETEBUFFERSPROC           pglDeleteBuffers;           // VBO Deletion Procedure
-extern PFNGLGETBUFFERPARAMETERIVPROC    pglGetBufferParameteriv;    // return various parameters of VBO
-extern PFNGLMAPBUFFERPROC               pglMapBuffer;               // map VBO procedure
-extern PFNGLUNMAPBUFFERPROC             pglUnmapBuffer;             // unmap VBO procedure
-#define glGenBuffers                    pglGenBuffers
-#define glBindBuffer                    pglBindBuffer
-#define glBufferData                    pglBufferData
-#define glBufferSubData                 pglBufferSubData
-#define glDeleteBuffers                 pglDeleteBuffers
-#define glGetBufferParameteriv          pglGetBufferParameteriv
-#define glMapBuffer                     pglMapBuffer
-#define glUnmapBuffer                   pglUnmapBuffer
+extern PFNGLGENBUFFERSPROC pglGenBuffers;                    // VBO Name Generation Procedure
+extern PFNGLBINDBUFFERPROC pglBindBuffer;                    // VBO Bind Procedure
+extern PFNGLBUFFERDATAPROC pglBufferData;                    // VBO Data Loading Procedure
+extern PFNGLBUFFERSUBDATAPROC pglBufferSubData;              // VBO Sub Data Loading Procedure
+extern PFNGLDELETEBUFFERSPROC pglDeleteBuffers;              // VBO Deletion Procedure
+extern PFNGLGETBUFFERPARAMETERIVPROC pglGetBufferParameteriv;// return various parameters of VBO
+extern PFNGLMAPBUFFERPROC pglMapBuffer;                      // map VBO procedure
+extern PFNGLUNMAPBUFFERPROC pglUnmapBuffer;                  // unmap VBO procedure
+#define glGenBuffers pglGenBuffers
+#define glBindBuffer pglBindBuffer
+#define glBufferData pglBufferData
+#define glBufferSubData pglBufferSubData
+#define glDeleteBuffers pglDeleteBuffers
+#define glGetBufferParameteriv pglGetBufferParameteriv
+#define glMapBuffer pglMapBuffer
+#define glUnmapBuffer pglUnmapBuffer
 /*
 extern PFNGLGENBUFFERSARBPROC           pglGenBuffersARB;           // VBO Name Generation Procedure
 extern PFNGLBINDBUFFERARBPROC           pglBindBufferARB;           // VBO Bind Procedure
@@ -942,86 +944,86 @@ extern PFNGLUNMAPBUFFERARBPROC          pglUnmapBufferARB;          // unmap VBO
 // ARB suffix was removed and GLhandleARB type was changed to GLuint,
 // for example glCreateShaderObjectARB() is changed to glCreateShader().
 // You can use either ARB or core version, but do not mix both together.
-extern PFNGLATTACHSHADERPROC        pglAttachShader;        // attach a shader to a program
-extern PFNGLCOMPILESHADERPROC       pglCompileShader;       // compile shader source
-extern PFNGLCREATEPROGRAMPROC       pglCreateProgram;       // create a program object
-extern PFNGLCREATESHADERPROC        pglCreateShader;        // create a shader object
-extern PFNGLDELETEPROGRAMPROC       pglDeleteProgram;       // delete shader program
-extern PFNGLDELETESHADERPROC        pglDeleteShader;        // delete shader object
-extern PFNGLDETACHSHADERPROC        pglDetachShader;        // detatch a shader object from a program
-extern PFNGLGETACTIVEUNIFORMPROC    pglGetActiveUniform;    // get info of uniform var
-extern PFNGLGETATTACHEDSHADERSPROC  pglGetAttachedShaders;  // get attached shaders to a program
-extern PFNGLGETPROGRAMIVPROC        pglGetProgramiv;        // return param of program object
-extern PFNGLGETPROGRAMINFOLOGPROC   pglGetProgramInfoLog;   // return info log of program
-extern PFNGLGETSHADERIVPROC         pglGetShaderiv;         // return param of shader object
-extern PFNGLGETSHADERINFOLOGPROC    pglGetShaderInfoLog;    // return info log of shader
-extern PFNGLGETSHADERSOURCEPROC     pglGetShaderSource;     // get shader source codes
-extern PFNGLGETUNIFORMLOCATIONPROC  pglGetUniformLocation;  // get index of uniform var
-extern PFNGLGETUNIFORMFVPROC        pglGetUniformfv;        // get value of uniform var
-extern PFNGLGETUNIFORMIVPROC        pglGetUniformiv;        //
-extern PFNGLLINKPROGRAMPROC         pglLinkProgram;         // link a program
-extern PFNGLSHADERSOURCEPROC        pglShaderSource;        // set a shader source(codes)
-extern PFNGLUSEPROGRAMPROC          pglUseProgram;          // use a program
-extern PFNGLUNIFORM1FPROC           pglUniform1f;           //
-extern PFNGLUNIFORM2FPROC           pglUniform2f;           //
-extern PFNGLUNIFORM3FPROC           pglUniform3f;           //
-extern PFNGLUNIFORM4FPROC           pglUniform4f;           //
-extern PFNGLUNIFORM1IPROC           pglUniform1i;           //
-extern PFNGLUNIFORM2IPROC           pglUniform2i;           //
-extern PFNGLUNIFORM3IPROC           pglUniform3i;           //
-extern PFNGLUNIFORM4IPROC           pglUniform4i;           //
-extern PFNGLUNIFORM1FVPROC          pglUniform1fv;          //
-extern PFNGLUNIFORM2FVPROC          pglUniform2fv;          //
-extern PFNGLUNIFORM3FVPROC          pglUniform3fv;          //
-extern PFNGLUNIFORM4FVPROC          pglUniform4fv;          //
-extern PFNGLUNIFORM1FVPROC          pglUniform1iv;          //
-extern PFNGLUNIFORM2FVPROC          pglUniform2iv;          //
-extern PFNGLUNIFORM3FVPROC          pglUniform3iv;          //
-extern PFNGLUNIFORM4FVPROC          pglUniform4iv;          //
-extern PFNGLUNIFORMMATRIX2FVPROC    pglUniformMatrix2fv;    //
-extern PFNGLUNIFORMMATRIX3FVPROC    pglUniformMatrix3fv;    //
-extern PFNGLUNIFORMMATRIX4FVPROC    pglUniformMatrix4fv;    //
-extern PFNGLVALIDATEPROGRAMPROC     pglValidateProgram;     // validate a program
-#define glAttachShader              pglAttachShader
-#define glCompileShader             pglCompileShader
-#define glCreateProgram             pglCreateProgram
-#define glCreateShader              pglCreateShader
-#define glDeleteProgram             pglDeleteProgram
-#define glDeleteShader              pglDeleteShader
-#define glDetachShader              pglDetachShader
-#define glGetActiveUniform          pglGetActiveUniform
-#define glGetAttachedShaders        pglGetAttachedShaders
-#define glGetProgramiv              pglGetProgramiv
-#define glGetProgramInfoLog         pglGetProgramInfoLog
-#define glGetShaderiv               pglGetShaderiv
-#define glGetShaderInfoLog          pglGetShaderInfoLog
-#define glGetShaderSource           pglGetShaderSource
-#define glGetUniformLocation        pglGetUniformLocation
-#define glGetUniformfv              pglGetUniformfv
-#define glGetUniformiv              pglGetUniformiv
-#define glLinkProgram               pglLinkProgram
-#define glShaderSource              pglShaderSource
-#define glUseProgram                pglUseProgram
-#define glUniform1f                 pglUniform1f
-#define glUniform2f                 pglUniform2f
-#define glUniform3f                 pglUniform3f
-#define glUniform4f                 pglUniform4f
-#define glUniform1i                 pglUniform1i
-#define glUniform2i                 pglUniform2i
-#define glUniform3i                 pglUniform3i
-#define glUniform4i                 pglUniform4i
-#define glUniform1fv                pglUniform1fv
-#define glUniform2fv                pglUniform2fv
-#define glUniform3fv                pglUniform3fv
-#define glUniform4fv                pglUniform4fv
-#define glUniform1iv                pglUniform1iv
-#define glUniform2iv                pglUniform2iv
-#define glUniform3iv                pglUniform3iv
-#define glUniform4iv                pglUniform4iv
-#define glUniformMatrix2fv          pglUniformMatrix2fv
-#define glUniformMatrix3fv          pglUniformMatrix3fv
-#define glUniformMatrix4fv          pglUniformMatrix4fv
-#define glValidateProgram           pglValidateProgram
+extern PFNGLATTACHSHADERPROC pglAttachShader;            // attach a shader to a program
+extern PFNGLCOMPILESHADERPROC pglCompileShader;          // compile shader source
+extern PFNGLCREATEPROGRAMPROC pglCreateProgram;          // create a program object
+extern PFNGLCREATESHADERPROC pglCreateShader;            // create a shader object
+extern PFNGLDELETEPROGRAMPROC pglDeleteProgram;          // delete shader program
+extern PFNGLDELETESHADERPROC pglDeleteShader;            // delete shader object
+extern PFNGLDETACHSHADERPROC pglDetachShader;            // detatch a shader object from a program
+extern PFNGLGETACTIVEUNIFORMPROC pglGetActiveUniform;    // get info of uniform var
+extern PFNGLGETATTACHEDSHADERSPROC pglGetAttachedShaders;// get attached shaders to a program
+extern PFNGLGETPROGRAMIVPROC pglGetProgramiv;            // return param of program object
+extern PFNGLGETPROGRAMINFOLOGPROC pglGetProgramInfoLog;  // return info log of program
+extern PFNGLGETSHADERIVPROC pglGetShaderiv;              // return param of shader object
+extern PFNGLGETSHADERINFOLOGPROC pglGetShaderInfoLog;    // return info log of shader
+extern PFNGLGETSHADERSOURCEPROC pglGetShaderSource;      // get shader source codes
+extern PFNGLGETUNIFORMLOCATIONPROC pglGetUniformLocation;// get index of uniform var
+extern PFNGLGETUNIFORMFVPROC pglGetUniformfv;            // get value of uniform var
+extern PFNGLGETUNIFORMIVPROC pglGetUniformiv;            //
+extern PFNGLLINKPROGRAMPROC pglLinkProgram;              // link a program
+extern PFNGLSHADERSOURCEPROC pglShaderSource;            // set a shader source(codes)
+extern PFNGLUSEPROGRAMPROC pglUseProgram;                // use a program
+extern PFNGLUNIFORM1FPROC pglUniform1f;                  //
+extern PFNGLUNIFORM2FPROC pglUniform2f;                  //
+extern PFNGLUNIFORM3FPROC pglUniform3f;                  //
+extern PFNGLUNIFORM4FPROC pglUniform4f;                  //
+extern PFNGLUNIFORM1IPROC pglUniform1i;                  //
+extern PFNGLUNIFORM2IPROC pglUniform2i;                  //
+extern PFNGLUNIFORM3IPROC pglUniform3i;                  //
+extern PFNGLUNIFORM4IPROC pglUniform4i;                  //
+extern PFNGLUNIFORM1FVPROC pglUniform1fv;                //
+extern PFNGLUNIFORM2FVPROC pglUniform2fv;                //
+extern PFNGLUNIFORM3FVPROC pglUniform3fv;                //
+extern PFNGLUNIFORM4FVPROC pglUniform4fv;                //
+extern PFNGLUNIFORM1FVPROC pglUniform1iv;                //
+extern PFNGLUNIFORM2FVPROC pglUniform2iv;                //
+extern PFNGLUNIFORM3FVPROC pglUniform3iv;                //
+extern PFNGLUNIFORM4FVPROC pglUniform4iv;                //
+extern PFNGLUNIFORMMATRIX2FVPROC pglUniformMatrix2fv;    //
+extern PFNGLUNIFORMMATRIX3FVPROC pglUniformMatrix3fv;    //
+extern PFNGLUNIFORMMATRIX4FVPROC pglUniformMatrix4fv;    //
+extern PFNGLVALIDATEPROGRAMPROC pglValidateProgram;      // validate a program
+#define glAttachShader pglAttachShader
+#define glCompileShader pglCompileShader
+#define glCreateProgram pglCreateProgram
+#define glCreateShader pglCreateShader
+#define glDeleteProgram pglDeleteProgram
+#define glDeleteShader pglDeleteShader
+#define glDetachShader pglDetachShader
+#define glGetActiveUniform pglGetActiveUniform
+#define glGetAttachedShaders pglGetAttachedShaders
+#define glGetProgramiv pglGetProgramiv
+#define glGetProgramInfoLog pglGetProgramInfoLog
+#define glGetShaderiv pglGetShaderiv
+#define glGetShaderInfoLog pglGetShaderInfoLog
+#define glGetShaderSource pglGetShaderSource
+#define glGetUniformLocation pglGetUniformLocation
+#define glGetUniformfv pglGetUniformfv
+#define glGetUniformiv pglGetUniformiv
+#define glLinkProgram pglLinkProgram
+#define glShaderSource pglShaderSource
+#define glUseProgram pglUseProgram
+#define glUniform1f pglUniform1f
+#define glUniform2f pglUniform2f
+#define glUniform3f pglUniform3f
+#define glUniform4f pglUniform4f
+#define glUniform1i pglUniform1i
+#define glUniform2i pglUniform2i
+#define glUniform3i pglUniform3i
+#define glUniform4i pglUniform4i
+#define glUniform1fv pglUniform1fv
+#define glUniform2fv pglUniform2fv
+#define glUniform3fv pglUniform3fv
+#define glUniform4fv pglUniform4fv
+#define glUniform1iv pglUniform1iv
+#define glUniform2iv pglUniform2iv
+#define glUniform3iv pglUniform3iv
+#define glUniform4iv pglUniform4iv
+#define glUniformMatrix2fv pglUniformMatrix2fv
+#define glUniformMatrix3fv pglUniformMatrix3fv
+#define glUniformMatrix4fv pglUniformMatrix4fv
+#define glValidateProgram pglValidateProgram
 /*
 extern PFNGLDELETEOBJECTARBPROC         pglDeleteObjectARB;         // delete shader object
 extern PFNGLGETHANDLEARBPROC            pglGetHandleARB;            // return handle of program
@@ -1104,39 +1106,39 @@ extern PFNGLGETSHADERSOURCEARBPROC      pglGetShaderSourceARB;      // get shade
 */
 
 // GL_ARB_sync extension (v3.2 core)
-extern PFNGLFENCESYNCPROC       pglFenceSync;
-extern PFNGLISSYNCPROC          pglIsSync;
-extern PFNGLDELETESYNCPROC      pglDeleteSync;
-extern PFNGLCLIENTWAITSYNCPROC  pglClientWaitSync;
-extern PFNGLWAITSYNCPROC        pglWaitSync;
-extern PFNGLGETINTEGER64VPROC   pglGetInteger64v;
-extern PFNGLGETSYNCIVPROC       pglGetSynciv;
-#define glFenceSync             pglFenceSync
-#define glIsSync                pglIsSync
-#define glDeleteSync            pglDeleteSync
-#define glClientWaitSync        pglClientWaitSync
-#define glWaitSync              pglWaitSync
-#define glGetInteger64v         pglGetInteger64v
-#define glGetSynciv             pglGetSynciv
+extern PFNGLFENCESYNCPROC pglFenceSync;
+extern PFNGLISSYNCPROC pglIsSync;
+extern PFNGLDELETESYNCPROC pglDeleteSync;
+extern PFNGLCLIENTWAITSYNCPROC pglClientWaitSync;
+extern PFNGLWAITSYNCPROC pglWaitSync;
+extern PFNGLGETINTEGER64VPROC pglGetInteger64v;
+extern PFNGLGETSYNCIVPROC pglGetSynciv;
+#define glFenceSync pglFenceSync
+#define glIsSync pglIsSync
+#define glDeleteSync pglDeleteSync
+#define glClientWaitSync pglClientWaitSync
+#define glWaitSync pglWaitSync
+#define glGetInteger64v pglGetInteger64v
+#define glGetSynciv pglGetSynciv
 
 // GL_ARB_vertex_array_object
-extern PFNGLGENVERTEXARRAYSPROC     pglGenVertexArrays;     // VAO name generation procedure
-extern PFNGLDELETEVERTEXARRAYSPROC  pglDeleteVertexArrays;  // VAO deletion procedure
-extern PFNGLBINDVERTEXARRAYPROC     pglBindVertexArray;     // VAO bind procedure
-extern PFNGLISVERTEXARRAYPROC       pglIsVertexArray;       // VBO query procedure
-#define glGenVertexArrays           pglGenVertexArrays
-#define glDeleteVertexArrays        pglDeleteVertexArrays
-#define glBindVertexArray           pglBindVertexArray
-#define glIsVertexArray             pglIsVertexArray
+extern PFNGLGENVERTEXARRAYSPROC pglGenVertexArrays;      // VAO name generation procedure
+extern PFNGLDELETEVERTEXARRAYSPROC pglDeleteVertexArrays;// VAO deletion procedure
+extern PFNGLBINDVERTEXARRAYPROC pglBindVertexArray;      // VAO bind procedure
+extern PFNGLISVERTEXARRAYPROC pglIsVertexArray;          // VBO query procedure
+#define glGenVertexArrays pglGenVertexArrays
+#define glDeleteVertexArrays pglDeleteVertexArrays
+#define glBindVertexArray pglBindVertexArray
+#define glIsVertexArray pglIsVertexArray
 
 // GL_ARB_vertex_shader and GL_ARB_fragment_shader extensions
 //@@ v2.0 core version
-extern PFNGLBINDATTRIBLOCATIONPROC  pglBindAttribLocation;  // bind vertex attrib var with index
-extern PFNGLGETACTIVEATTRIBPROC     pglGetActiveAttrib;     // get attrib value
-extern PFNGLGETATTRIBLOCATIONPROC   pglGetAttribLocation;   // get lndex of attrib var
-#define glBindAttribLocation        pglBindAttribLocation
-#define glGetActiveAttrib           pglGetActiveAttrib
-#define glGetAttribLocation         pglGetAttribLocation
+extern PFNGLBINDATTRIBLOCATIONPROC pglBindAttribLocation;// bind vertex attrib var with index
+extern PFNGLGETACTIVEATTRIBPROC pglGetActiveAttrib;      // get attrib value
+extern PFNGLGETATTRIBLOCATIONPROC pglGetAttribLocation;  // get lndex of attrib var
+#define glBindAttribLocation pglBindAttribLocation
+#define glGetActiveAttrib pglGetActiveAttrib
+#define glGetAttribLocation pglGetAttribLocation
 /*
 extern PFNGLBINDATTRIBLOCATIONARBPROC   pglBindAttribLocationARB;   // bind vertex attrib var with index
 extern PFNGLGETACTIVEATTRIBARBPROC      pglGetActiveAttribARB;      // get attrib value
@@ -1148,96 +1150,96 @@ extern PFNGLGETATTRIBLOCATIONARBPROC    pglGetAttribLocationARB;    // get lndex
 
 // GL_ARB_vertex_program and GL_ARB_fragment_program
 //@@ v2.0 core version
-extern PFNGLDISABLEVERTEXATTRIBARRAYPROC    pglDisableVertexAttribArray;
-extern PFNGLENABLEVERTEXATTRIBARRAYPROC     pglEnableVertexAttribArray;
-extern PFNGLGETVERTEXATTRIBDVPROC           pglGetVertexAttribdv;
-extern PFNGLGETVERTEXATTRIBFVPROC           pglGetVertexAttribfv;
-extern PFNGLGETVERTEXATTRIBIVPROC           pglGetVertexAttribiv;
-extern PFNGLGETVERTEXATTRIBPOINTERVPROC     pglGetVertexAttribPointerv;
-extern PFNGLISPROGRAMPROC                   pglIsProgram;
-extern PFNGLISSHADERPROC                    pglIsShader;
-extern PFNGLVERTEXATTRIB1DPROC              pglVertexAttrib1d;
-extern PFNGLVERTEXATTRIB1DVPROC             pglVertexAttrib1dv;
-extern PFNGLVERTEXATTRIB1FPROC              pglVertexAttrib1f;
-extern PFNGLVERTEXATTRIB1FVPROC             pglVertexAttrib1fv;
-extern PFNGLVERTEXATTRIB1SPROC              pglVertexAttrib1s;
-extern PFNGLVERTEXATTRIB1SVPROC             pglVertexAttrib1sv;
-extern PFNGLVERTEXATTRIB2DPROC              pglVertexAttrib2d;
-extern PFNGLVERTEXATTRIB2DVPROC             pglVertexAttrib2dv;
-extern PFNGLVERTEXATTRIB2FPROC              pglVertexAttrib2f;
-extern PFNGLVERTEXATTRIB2FVPROC             pglVertexAttrib2fv;
-extern PFNGLVERTEXATTRIB2SPROC              pglVertexAttrib2s;
-extern PFNGLVERTEXATTRIB2SVPROC             pglVertexAttrib2sv;
-extern PFNGLVERTEXATTRIB3DPROC              pglVertexAttrib3d;
-extern PFNGLVERTEXATTRIB3DVPROC             pglVertexAttrib3dv;
-extern PFNGLVERTEXATTRIB3FPROC              pglVertexAttrib3f;
-extern PFNGLVERTEXATTRIB3FVPROC             pglVertexAttrib3fv;
-extern PFNGLVERTEXATTRIB3SPROC              pglVertexAttrib3s;
-extern PFNGLVERTEXATTRIB3SVPROC             pglVertexAttrib3sv;
-extern PFNGLVERTEXATTRIB4NBVPROC            pglVertexAttrib4Nbv;
-extern PFNGLVERTEXATTRIB4NIVPROC            pglVertexAttrib4Niv;
-extern PFNGLVERTEXATTRIB4NSVPROC            pglVertexAttrib4Nsv;
-extern PFNGLVERTEXATTRIB4NUBPROC            pglVertexAttrib4Nub;
-extern PFNGLVERTEXATTRIB4NUBVPROC           pglVertexAttrib4Nubv;
-extern PFNGLVERTEXATTRIB4NUIVPROC           pglVertexAttrib4Nuiv;
-extern PFNGLVERTEXATTRIB4NUSVPROC           pglVertexAttrib4Nusv;
-extern PFNGLVERTEXATTRIB4BVPROC             pglVertexAttrib4bv;
-extern PFNGLVERTEXATTRIB4DPROC              pglVertexAttrib4d;
-extern PFNGLVERTEXATTRIB4DVPROC             pglVertexAttrib4dv;
-extern PFNGLVERTEXATTRIB4FPROC              pglVertexAttrib4f;
-extern PFNGLVERTEXATTRIB4FVPROC             pglVertexAttrib4fv;
-extern PFNGLVERTEXATTRIB4IVPROC             pglVertexAttrib4iv;
-extern PFNGLVERTEXATTRIB4SPROC              pglVertexAttrib4s;
-extern PFNGLVERTEXATTRIB4SVPROC             pglVertexAttrib4sv;
-extern PFNGLVERTEXATTRIB4UBVPROC            pglVertexAttrib4ubv;
-extern PFNGLVERTEXATTRIB4UIVPROC            pglVertexAttrib4uiv;
-extern PFNGLVERTEXATTRIB4USVPROC            pglVertexAttrib4usv;
-extern PFNGLVERTEXATTRIBPOINTERPROC         pglVertexAttribPointer;
-#define glDisableVertexAttribArray          pglDisableVertexAttribArray
-#define glEnableVertexAttribArray           pglEnableVertexAttribArray
-#define glGetVertexAttribdv                 pglGetVertexAttribdv
-#define glGetVertexAttribfv                 pglGetVertexAttribfv
-#define glGetVertexAttribiv                 pglGetVertexAttribiv
-#define glGetVertexAttribPointerv           pglGetVertexAttribPointerv
-#define glIsProgram                         pglIsProgram
-#define glIsShader                          pglIsShader
-#define glVertexAttrib1d                    pglVertexAttrib1d
-#define glVertexAttrib1dv                   pglVertexAttrib1dv
-#define glVertexAttrib1f                    pglVertexAttrib1f
-#define glVertexAttrib1fv                   pglVertexAttrib1fv
-#define glVertexAttrib1s                    pglVertexAttrib1s
-#define glVertexAttrib1sv                   pglVertexAttrib1sv
-#define glVertexAttrib2d                    pglVertexAttrib2d
-#define glVertexAttrib2dv                   pglVertexAttrib2dv
-#define glVertexAttrib2f                    pglVertexAttrib2f
-#define glVertexAttrib2fv                   pglVertexAttrib2fv
-#define glVertexAttrib2s                    pglVertexAttrib2s
-#define glVertexAttrib2sv                   pglVertexAttrib2sv
-#define glVertexAttrib3d                    pglVertexAttrib3d
-#define glVertexAttrib3dv                   pglVertexAttrib3dv
-#define glVertexAttrib3f                    pglVertexAttrib3f
-#define glVertexAttrib3fv                   pglVertexAttrib3fv
-#define glVertexAttrib3s                    pglVertexAttrib3s
-#define glVertexAttrib3sv                   pglVertexAttrib3sv
-#define glVertexAttrib4Nbv                  pglVertexAttrib4Nbv
-#define glVertexAttrib4Niv                  pglVertexAttrib4Niv
-#define glVertexAttrib4Nsv                  pglVertexAttrib4Nsv
-#define glVertexAttrib4Nub                  pglVertexAttrib4Nub
-#define glVertexAttrib4Nubv                 pglVertexAttrib4Nubv
-#define glVertexAttrib4Nuiv                 pglVertexAttrib4Nuiv
-#define glVertexAttrib4Nusv                 pglVertexAttrib4Nusv
-#define glVertexAttrib4bv                   pglVertexAttrib4bv
-#define glVertexAttrib4d                    pglVertexAttrib4d
-#define glVertexAttrib4dv                   pglVertexAttrib4dv
-#define glVertexAttrib4f                    pglVertexAttrib4f
-#define glVertexAttrib4fv                   pglVertexAttrib4fv
-#define glVertexAttrib4iv                   pglVertexAttrib4iv
-#define glVertexAttrib4s                    pglVertexAttrib4s
-#define glVertexAttrib4sv                   pglVertexAttrib4sv
-#define glVertexAttrib4ubv                  pglVertexAttrib4ubv
-#define glVertexAttrib4uiv                  pglVertexAttrib4uiv
-#define glVertexAttrib4usv                  pglVertexAttrib4usv
-#define glVertexAttribPointer               pglVertexAttribPointer
+extern PFNGLDISABLEVERTEXATTRIBARRAYPROC pglDisableVertexAttribArray;
+extern PFNGLENABLEVERTEXATTRIBARRAYPROC pglEnableVertexAttribArray;
+extern PFNGLGETVERTEXATTRIBDVPROC pglGetVertexAttribdv;
+extern PFNGLGETVERTEXATTRIBFVPROC pglGetVertexAttribfv;
+extern PFNGLGETVERTEXATTRIBIVPROC pglGetVertexAttribiv;
+extern PFNGLGETVERTEXATTRIBPOINTERVPROC pglGetVertexAttribPointerv;
+extern PFNGLISPROGRAMPROC pglIsProgram;
+extern PFNGLISSHADERPROC pglIsShader;
+extern PFNGLVERTEXATTRIB1DPROC pglVertexAttrib1d;
+extern PFNGLVERTEXATTRIB1DVPROC pglVertexAttrib1dv;
+extern PFNGLVERTEXATTRIB1FPROC pglVertexAttrib1f;
+extern PFNGLVERTEXATTRIB1FVPROC pglVertexAttrib1fv;
+extern PFNGLVERTEXATTRIB1SPROC pglVertexAttrib1s;
+extern PFNGLVERTEXATTRIB1SVPROC pglVertexAttrib1sv;
+extern PFNGLVERTEXATTRIB2DPROC pglVertexAttrib2d;
+extern PFNGLVERTEXATTRIB2DVPROC pglVertexAttrib2dv;
+extern PFNGLVERTEXATTRIB2FPROC pglVertexAttrib2f;
+extern PFNGLVERTEXATTRIB2FVPROC pglVertexAttrib2fv;
+extern PFNGLVERTEXATTRIB2SPROC pglVertexAttrib2s;
+extern PFNGLVERTEXATTRIB2SVPROC pglVertexAttrib2sv;
+extern PFNGLVERTEXATTRIB3DPROC pglVertexAttrib3d;
+extern PFNGLVERTEXATTRIB3DVPROC pglVertexAttrib3dv;
+extern PFNGLVERTEXATTRIB3FPROC pglVertexAttrib3f;
+extern PFNGLVERTEXATTRIB3FVPROC pglVertexAttrib3fv;
+extern PFNGLVERTEXATTRIB3SPROC pglVertexAttrib3s;
+extern PFNGLVERTEXATTRIB3SVPROC pglVertexAttrib3sv;
+extern PFNGLVERTEXATTRIB4NBVPROC pglVertexAttrib4Nbv;
+extern PFNGLVERTEXATTRIB4NIVPROC pglVertexAttrib4Niv;
+extern PFNGLVERTEXATTRIB4NSVPROC pglVertexAttrib4Nsv;
+extern PFNGLVERTEXATTRIB4NUBPROC pglVertexAttrib4Nub;
+extern PFNGLVERTEXATTRIB4NUBVPROC pglVertexAttrib4Nubv;
+extern PFNGLVERTEXATTRIB4NUIVPROC pglVertexAttrib4Nuiv;
+extern PFNGLVERTEXATTRIB4NUSVPROC pglVertexAttrib4Nusv;
+extern PFNGLVERTEXATTRIB4BVPROC pglVertexAttrib4bv;
+extern PFNGLVERTEXATTRIB4DPROC pglVertexAttrib4d;
+extern PFNGLVERTEXATTRIB4DVPROC pglVertexAttrib4dv;
+extern PFNGLVERTEXATTRIB4FPROC pglVertexAttrib4f;
+extern PFNGLVERTEXATTRIB4FVPROC pglVertexAttrib4fv;
+extern PFNGLVERTEXATTRIB4IVPROC pglVertexAttrib4iv;
+extern PFNGLVERTEXATTRIB4SPROC pglVertexAttrib4s;
+extern PFNGLVERTEXATTRIB4SVPROC pglVertexAttrib4sv;
+extern PFNGLVERTEXATTRIB4UBVPROC pglVertexAttrib4ubv;
+extern PFNGLVERTEXATTRIB4UIVPROC pglVertexAttrib4uiv;
+extern PFNGLVERTEXATTRIB4USVPROC pglVertexAttrib4usv;
+extern PFNGLVERTEXATTRIBPOINTERPROC pglVertexAttribPointer;
+#define glDisableVertexAttribArray pglDisableVertexAttribArray
+#define glEnableVertexAttribArray pglEnableVertexAttribArray
+#define glGetVertexAttribdv pglGetVertexAttribdv
+#define glGetVertexAttribfv pglGetVertexAttribfv
+#define glGetVertexAttribiv pglGetVertexAttribiv
+#define glGetVertexAttribPointerv pglGetVertexAttribPointerv
+#define glIsProgram pglIsProgram
+#define glIsShader pglIsShader
+#define glVertexAttrib1d pglVertexAttrib1d
+#define glVertexAttrib1dv pglVertexAttrib1dv
+#define glVertexAttrib1f pglVertexAttrib1f
+#define glVertexAttrib1fv pglVertexAttrib1fv
+#define glVertexAttrib1s pglVertexAttrib1s
+#define glVertexAttrib1sv pglVertexAttrib1sv
+#define glVertexAttrib2d pglVertexAttrib2d
+#define glVertexAttrib2dv pglVertexAttrib2dv
+#define glVertexAttrib2f pglVertexAttrib2f
+#define glVertexAttrib2fv pglVertexAttrib2fv
+#define glVertexAttrib2s pglVertexAttrib2s
+#define glVertexAttrib2sv pglVertexAttrib2sv
+#define glVertexAttrib3d pglVertexAttrib3d
+#define glVertexAttrib3dv pglVertexAttrib3dv
+#define glVertexAttrib3f pglVertexAttrib3f
+#define glVertexAttrib3fv pglVertexAttrib3fv
+#define glVertexAttrib3s pglVertexAttrib3s
+#define glVertexAttrib3sv pglVertexAttrib3sv
+#define glVertexAttrib4Nbv pglVertexAttrib4Nbv
+#define glVertexAttrib4Niv pglVertexAttrib4Niv
+#define glVertexAttrib4Nsv pglVertexAttrib4Nsv
+#define glVertexAttrib4Nub pglVertexAttrib4Nub
+#define glVertexAttrib4Nubv pglVertexAttrib4Nubv
+#define glVertexAttrib4Nuiv pglVertexAttrib4Nuiv
+#define glVertexAttrib4Nusv pglVertexAttrib4Nusv
+#define glVertexAttrib4bv pglVertexAttrib4bv
+#define glVertexAttrib4d pglVertexAttrib4d
+#define glVertexAttrib4dv pglVertexAttrib4dv
+#define glVertexAttrib4f pglVertexAttrib4f
+#define glVertexAttrib4fv pglVertexAttrib4fv
+#define glVertexAttrib4iv pglVertexAttrib4iv
+#define glVertexAttrib4s pglVertexAttrib4s
+#define glVertexAttrib4sv pglVertexAttrib4sv
+#define glVertexAttrib4ubv pglVertexAttrib4ubv
+#define glVertexAttrib4uiv pglVertexAttrib4uiv
+#define glVertexAttrib4usv pglVertexAttrib4usv
+#define glVertexAttribPointer pglVertexAttribPointer
 /*
 extern PFNGLVERTEXATTRIB1DARBPROC               pglVertexAttrib1dARB;
 extern PFNGLVERTEXATTRIB1DVARBPROC              pglVertexAttrib1dvARB;
@@ -1367,14 +1369,14 @@ extern PFNGLISPROGRAMARBPROC                    pglIsProgramARB;
 
 // GL_ARB_debug_output
 //@@ v4.3 core version
-extern PFNGLDEBUGMESSAGECONTROLPROC  pglDebugMessageControl;
-extern PFNGLDEBUGMESSAGEINSERTPROC   pglDebugMessageInsert;
+extern PFNGLDEBUGMESSAGECONTROLPROC pglDebugMessageControl;
+extern PFNGLDEBUGMESSAGEINSERTPROC pglDebugMessageInsert;
 extern PFNGLDEBUGMESSAGECALLBACKPROC pglDebugMessageCallback;
-extern PFNGLGETDEBUGMESSAGELOGPROC   pglGetDebugMessageLog;
-#define glDebugMessageControl        pglDebugMessageControl
-#define glDebugMessageInsert         pglDebugMessageInsert
-#define glDebugMessageCallback       pglDebugMessageCallback
-#define glGetDebugMessageLog         pglGetDebugMessageLog
+extern PFNGLGETDEBUGMESSAGELOGPROC pglGetDebugMessageLog;
+#define glDebugMessageControl pglDebugMessageControl
+#define glDebugMessageInsert pglDebugMessageInsert
+#define glDebugMessageCallback pglDebugMessageCallback
+#define glGetDebugMessageLog pglGetDebugMessageLog
 /*
 extern PFNGLDEBUGMESSAGECONTROLARBPROC  pglDebugMessageControlARB;
 extern PFNGLDEBUGMESSAGEINSERTARBPROC   pglDebugMessageInsertARB;
@@ -1387,201 +1389,201 @@ extern PFNGLGETDEBUGMESSAGELOGARBPROC   pglGetDebugMessageLogARB;
 */
 
 // GL_ARB_direct_state_access
-extern PFNGLCREATETRANSFORMFEEDBACKSPROC                 pglCreateTransformFeedbacks; // for transform feedback object
-extern PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC              pglTransformFeedbackBufferBase;
-extern PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC             pglTransformFeedbackBufferRange;
-extern PFNGLGETTRANSFORMFEEDBACKIVPROC                   pglGetTransformFeedbackiv;
-extern PFNGLGETTRANSFORMFEEDBACKI_VPROC                  pglGetTransformFeedbacki_v;
-extern PFNGLGETTRANSFORMFEEDBACKI64_VPROC                pglGetTransformFeedbacki64_v;
-extern PFNGLCREATEBUFFERSPROC                            pglCreateBuffers;          // for buffer object
-extern PFNGLNAMEDBUFFERSTORAGEPROC                       pglNamedBufferStorage;
-extern PFNGLNAMEDBUFFERDATAPROC                          pglNamedBufferData;
-extern PFNGLNAMEDBUFFERSUBDATAPROC                       pglNamedBufferSubData;
-extern PFNGLCOPYNAMEDBUFFERSUBDATAPROC                   pglCopyNamedBufferSubData;
-extern PFNGLCLEARNAMEDBUFFERDATAPROC                     pglClearNamedBufferData;
-extern PFNGLCLEARNAMEDBUFFERSUBDATAPROC                  pglClearNamedBufferSubData;
-extern PFNGLMAPNAMEDBUFFERPROC                           pglMapNamedBuffer;
-extern PFNGLMAPNAMEDBUFFERRANGEPROC                      pglMapNamedBufferRange;
-extern PFNGLUNMAPNAMEDBUFFERPROC                         pglUnmapNamedBuffer;
-extern PFNGLFLUSHMAPPEDNAMEDBUFFERRANGEPROC              pglFlushMappedNamedBufferRange;
-extern PFNGLGETNAMEDBUFFERPARAMETERIVPROC                pglGetNamedBufferParameteriv;
-extern PFNGLGETNAMEDBUFFERPARAMETERI64VPROC              pglGetNamedBufferParameteri64v;
-extern PFNGLGETNAMEDBUFFERPOINTERVPROC                   pglGetNamedBufferPointerv;
-extern PFNGLGETNAMEDBUFFERSUBDATAPROC                    pglGetNamedBufferSubData;
-extern PFNGLCREATEFRAMEBUFFERSPROC                       pglCreateFramebuffers;     // for framebuffer object
-extern PFNGLNAMEDFRAMEBUFFERRENDERBUFFERPROC             pglNamedFramebufferRenderbuffer;
-extern PFNGLNAMEDFRAMEBUFFERPARAMETERIPROC               pglNamedFramebufferParameteri;
-extern PFNGLNAMEDFRAMEBUFFERTEXTUREPROC                  pglNamedFramebufferTexture;
-extern PFNGLNAMEDFRAMEBUFFERTEXTURELAYERPROC             pglNamedFramebufferTextureLayer;
-extern PFNGLNAMEDFRAMEBUFFERDRAWBUFFERPROC               pglNamedFramebufferDrawBuffer;
-extern PFNGLNAMEDFRAMEBUFFERDRAWBUFFERSPROC              pglNamedFramebufferDrawBuffers;
-extern PFNGLNAMEDFRAMEBUFFERREADBUFFERPROC               pglNamedFramebufferReadBuffer;
-extern PFNGLINVALIDATENAMEDFRAMEBUFFERDATAPROC           pglInvalidateNamedFramebufferData;
-extern PFNGLINVALIDATENAMEDFRAMEBUFFERSUBDATAPROC        pglInvalidateNamedFramebufferSubData;
-extern PFNGLCLEARNAMEDFRAMEBUFFERIVPROC                  pglClearNamedFramebufferiv;
-extern PFNGLCLEARNAMEDFRAMEBUFFERUIVPROC                 pglClearNamedFramebufferuiv;
-extern PFNGLCLEARNAMEDFRAMEBUFFERFVPROC                  pglClearNamedFramebufferfv;
-extern PFNGLCLEARNAMEDFRAMEBUFFERFIPROC                  pglClearNamedFramebufferfi;
-extern PFNGLBLITNAMEDFRAMEBUFFERPROC                     pglBlitNamedFramebuffer;
-extern PFNGLCHECKNAMEDFRAMEBUFFERSTATUSPROC              pglCheckNamedFramebufferStatus;
-extern PFNGLGETNAMEDFRAMEBUFFERPARAMETERIVPROC           pglGetNamedFramebufferParameteriv;
+extern PFNGLCREATETRANSFORMFEEDBACKSPROC pglCreateTransformFeedbacks;// for transform feedback object
+extern PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC pglTransformFeedbackBufferBase;
+extern PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC pglTransformFeedbackBufferRange;
+extern PFNGLGETTRANSFORMFEEDBACKIVPROC pglGetTransformFeedbackiv;
+extern PFNGLGETTRANSFORMFEEDBACKI_VPROC pglGetTransformFeedbacki_v;
+extern PFNGLGETTRANSFORMFEEDBACKI64_VPROC pglGetTransformFeedbacki64_v;
+extern PFNGLCREATEBUFFERSPROC pglCreateBuffers;// for buffer object
+extern PFNGLNAMEDBUFFERSTORAGEPROC pglNamedBufferStorage;
+extern PFNGLNAMEDBUFFERDATAPROC pglNamedBufferData;
+extern PFNGLNAMEDBUFFERSUBDATAPROC pglNamedBufferSubData;
+extern PFNGLCOPYNAMEDBUFFERSUBDATAPROC pglCopyNamedBufferSubData;
+extern PFNGLCLEARNAMEDBUFFERDATAPROC pglClearNamedBufferData;
+extern PFNGLCLEARNAMEDBUFFERSUBDATAPROC pglClearNamedBufferSubData;
+extern PFNGLMAPNAMEDBUFFERPROC pglMapNamedBuffer;
+extern PFNGLMAPNAMEDBUFFERRANGEPROC pglMapNamedBufferRange;
+extern PFNGLUNMAPNAMEDBUFFERPROC pglUnmapNamedBuffer;
+extern PFNGLFLUSHMAPPEDNAMEDBUFFERRANGEPROC pglFlushMappedNamedBufferRange;
+extern PFNGLGETNAMEDBUFFERPARAMETERIVPROC pglGetNamedBufferParameteriv;
+extern PFNGLGETNAMEDBUFFERPARAMETERI64VPROC pglGetNamedBufferParameteri64v;
+extern PFNGLGETNAMEDBUFFERPOINTERVPROC pglGetNamedBufferPointerv;
+extern PFNGLGETNAMEDBUFFERSUBDATAPROC pglGetNamedBufferSubData;
+extern PFNGLCREATEFRAMEBUFFERSPROC pglCreateFramebuffers;// for framebuffer object
+extern PFNGLNAMEDFRAMEBUFFERRENDERBUFFERPROC pglNamedFramebufferRenderbuffer;
+extern PFNGLNAMEDFRAMEBUFFERPARAMETERIPROC pglNamedFramebufferParameteri;
+extern PFNGLNAMEDFRAMEBUFFERTEXTUREPROC pglNamedFramebufferTexture;
+extern PFNGLNAMEDFRAMEBUFFERTEXTURELAYERPROC pglNamedFramebufferTextureLayer;
+extern PFNGLNAMEDFRAMEBUFFERDRAWBUFFERPROC pglNamedFramebufferDrawBuffer;
+extern PFNGLNAMEDFRAMEBUFFERDRAWBUFFERSPROC pglNamedFramebufferDrawBuffers;
+extern PFNGLNAMEDFRAMEBUFFERREADBUFFERPROC pglNamedFramebufferReadBuffer;
+extern PFNGLINVALIDATENAMEDFRAMEBUFFERDATAPROC pglInvalidateNamedFramebufferData;
+extern PFNGLINVALIDATENAMEDFRAMEBUFFERSUBDATAPROC pglInvalidateNamedFramebufferSubData;
+extern PFNGLCLEARNAMEDFRAMEBUFFERIVPROC pglClearNamedFramebufferiv;
+extern PFNGLCLEARNAMEDFRAMEBUFFERUIVPROC pglClearNamedFramebufferuiv;
+extern PFNGLCLEARNAMEDFRAMEBUFFERFVPROC pglClearNamedFramebufferfv;
+extern PFNGLCLEARNAMEDFRAMEBUFFERFIPROC pglClearNamedFramebufferfi;
+extern PFNGLBLITNAMEDFRAMEBUFFERPROC pglBlitNamedFramebuffer;
+extern PFNGLCHECKNAMEDFRAMEBUFFERSTATUSPROC pglCheckNamedFramebufferStatus;
+extern PFNGLGETNAMEDFRAMEBUFFERPARAMETERIVPROC pglGetNamedFramebufferParameteriv;
 extern PFNGLGETNAMEDFRAMEBUFFERATTACHMENTPARAMETERIVPROC pglGetNamedFramebufferAttachmentParameteriv;
-extern PFNGLCREATERENDERBUFFERSPROC                      pglCreateRenderbuffers;    // for renderbuffer object
-extern PFNGLNAMEDRENDERBUFFERSTORAGEPROC                 pglNamedRenderbufferStorage;
-extern PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEPROC      pglNamedRenderbufferStorageMultisample;
-extern PFNGLGETNAMEDRENDERBUFFERPARAMETERIVPROC          pglGetNamedRenderbufferParameteriv;
-extern PFNGLCREATETEXTURESPROC                           pglCreateTextures;         // for texture object
-extern PFNGLTEXTUREBUFFERPROC                            pglTextureBuffer;
-extern PFNGLTEXTUREBUFFERRANGEPROC                       pglTextureBufferRange;
-extern PFNGLTEXTURESTORAGE1DPROC                         pglTextureStorage1D;
-extern PFNGLTEXTURESTORAGE2DPROC                         pglTextureStorage2D;
-extern PFNGLTEXTURESTORAGE3DPROC                         pglTextureStorage3D;
-extern PFNGLTEXTURESTORAGE2DMULTISAMPLEPROC              pglTextureStorage2DMultisample;
-extern PFNGLTEXTURESTORAGE3DMULTISAMPLEPROC              pglTextureStorage3DMultisample;
-extern PFNGLTEXTURESUBIMAGE1DPROC                        pglTextureSubImage1D;
-extern PFNGLTEXTURESUBIMAGE2DPROC                        pglTextureSubImage2D;
-extern PFNGLTEXTURESUBIMAGE3DPROC                        pglTextureSubImage3D;
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE1DPROC              pglCompressedTextureSubImage1D;
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE2DPROC              pglCompressedTextureSubImage2D;
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE3DPROC              pglCompressedTextureSubImage3D;
-extern PFNGLCOPYTEXTURESUBIMAGE1DPROC                    pglCopyTextureSubImage1D;
-extern PFNGLCOPYTEXTURESUBIMAGE2DPROC                    pglCopyTextureSubImage2D;
-extern PFNGLCOPYTEXTURESUBIMAGE3DPROC                    pglCopyTextureSubImage3D;
-extern PFNGLTEXTUREPARAMETERFPROC                        pglTextureParameterf;
-extern PFNGLTEXTUREPARAMETERFVPROC                       pglTextureParameterfv;
-extern PFNGLTEXTUREPARAMETERIPROC                        pglTextureParameteri;
-extern PFNGLTEXTUREPARAMETERIIVPROC                      pglTextureParameterIiv;
-extern PFNGLTEXTUREPARAMETERIUIVPROC                     pglTextureParameterIuiv;
-extern PFNGLTEXTUREPARAMETERIVPROC                       pglTextureParameteriv;
-extern PFNGLGENERATETEXTUREMIPMAPPROC                    pglGenerateTextureMipmap;
-extern PFNGLBINDTEXTUREUNITPROC                          pglBindTextureUnit;
-extern PFNGLGETTEXTUREIMAGEPROC                          pglGetTextureImage;
-extern PFNGLGETCOMPRESSEDTEXTUREIMAGEPROC                pglGetCompressedTextureImage;
-extern PFNGLGETTEXTURELEVELPARAMETERFVPROC               pglGetTextureLevelParameterfv;
-extern PFNGLGETTEXTURELEVELPARAMETERIVPROC               pglGetTextureLevelParameteriv;
-extern PFNGLGETTEXTUREPARAMETERFVPROC                    pglGetTextureParameterfv;
-extern PFNGLGETTEXTUREPARAMETERIIVPROC                   pglGetTextureParameterIiv;
-extern PFNGLGETTEXTUREPARAMETERIUIVPROC                  pglGetTextureParameterIuiv;
-extern PFNGLGETTEXTUREPARAMETERIVPROC                    pglGetTextureParameteriv;
-extern PFNGLCREATEVERTEXARRAYSPROC                       pglCreateVertexArrays;     // for vertex array object
-extern PFNGLDISABLEVERTEXARRAYATTRIBPROC                 pglDisableVertexArrayAttrib;
-extern PFNGLENABLEVERTEXARRAYATTRIBPROC                  pglEnableVertexArrayAttrib;
-extern PFNGLVERTEXARRAYELEMENTBUFFERPROC                 pglVertexArrayElementBuffer;
-extern PFNGLVERTEXARRAYVERTEXBUFFERPROC                  pglVertexArrayVertexBuffer;
-extern PFNGLVERTEXARRAYVERTEXBUFFERSPROC                 pglVertexArrayVertexBuffers;
-extern PFNGLVERTEXARRAYATTRIBBINDINGPROC                 pglVertexArrayAttribBinding;
-extern PFNGLVERTEXARRAYATTRIBFORMATPROC                  pglVertexArrayAttribFormat;
-extern PFNGLVERTEXARRAYATTRIBIFORMATPROC                 pglVertexArrayAttribIFormat;
-extern PFNGLVERTEXARRAYATTRIBLFORMATPROC                 pglVertexArrayAttribLFormat;
-extern PFNGLVERTEXARRAYBINDINGDIVISORPROC                pglVertexArrayBindingDivisor;
-extern PFNGLGETVERTEXARRAYIVPROC                         pglGetVertexArrayiv;
-extern PFNGLGETVERTEXARRAYINDEXEDIVPROC                  pglGetVertexArrayIndexediv;
-extern PFNGLGETVERTEXARRAYINDEXED64IVPROC                pglGetVertexArrayIndexed64iv;
-extern PFNGLCREATESAMPLERSPROC                           pglCreateSamplers;         // for sampler object
-extern PFNGLCREATEPROGRAMPIPELINESPROC                   pglCreateProgramPipelines; // for program pipeline object
-extern PFNGLCREATEQUERIESPROC                            pglCreateQueries;          // for query object
-extern PFNGLGETQUERYBUFFEROBJECTIVPROC                   pglGetQueryBufferObjectiv;
-extern PFNGLGETQUERYBUFFEROBJECTUIVPROC                  pglGetQueryBufferObjectuiv;
-extern PFNGLGETQUERYBUFFEROBJECTI64VPROC                 pglGetQueryBufferObjecti64v;
-extern PFNGLGETQUERYBUFFEROBJECTUI64VPROC                pglGetQueryBufferObjectui64v;
-#define glCreateTransformFeedbacks                       pglCreateTransformFeedbacks
-#define glTransformFeedbackBufferBase                    pglTransformFeedbackBufferBase
-#define glTransformFeedbackBufferRange                   pglTransformFeedbackBufferRange
-#define glGetTransformFeedbackiv                         pglGetTransformFeedbackiv
-#define glGetTransformFeedbacki_v                        pglGetTransformFeedbacki_v
-#define glGetTransformFeedbacki64_v                      pglGetTransformFeedbacki64_v
-#define glCreateBuffers                                  pglCreateBuffers
-#define glNamedBufferStorage                             pglNamedBufferStorage
-#define glNamedBufferData                                pglNamedBufferData
-#define glNamedBufferSubData                             pglNamedBufferSubData
-#define glCopyNamedBufferSubData                         pglCopyNamedBufferSubData
-#define glClearNamedBufferData                           pglClearNamedBufferData
-#define glClearNamedBufferSubData                        pglClearNamedBufferSubData
-#define glMapNamedBuffer                                 pglMapNamedBuffer
-#define glMapNamedBufferRange                            pglMapNamedBufferRange
-#define glUnmapNamedBuffer                               pglUnmapNamedBuffer
-#define glFlushMappedNamedBufferRange                    pglFlushMappedNamedBufferRange
-#define glGetNamedBufferParameteriv                      pglGetNamedBufferParameteriv
-#define glGetNamedBufferParameteri64v                    pglGetNamedBufferParameteri64v
-#define glGetNamedBufferPointerv                         pglGetNamedBufferPointerv
-#define glGetNamedBufferSubData                          pglGetNamedBufferSubData
-#define glCreateFramebuffers                             pglCreateFramebuffers
-#define glNamedFramebufferRenderbuffer                   pglNamedFramebufferRenderbuffer
-#define glNamedFramebufferParameteri                     pglNamedFramebufferParameteri
-#define glNamedFramebufferTexture                        pglNamedFramebufferTexture
-#define glNamedFramebufferTextureLayer                   pglNamedFramebufferTextureLayer
-#define glNamedFramebufferDrawBuffer                     pglNamedFramebufferDrawBuffer
-#define glNamedFramebufferDrawBuffers                    pglNamedFramebufferDrawBuffers
-#define glNamedFramebufferReadBuffer                     pglNamedFramebufferReadBuffer
-#define glInvalidateNamedFramebufferData                 pglInvalidateNamedFramebufferData
-#define glInvalidateNamedFramebufferSubData              pglInvalidateNamedFramebufferSubData
-#define glClearNamedFramebufferiv                        pglClearNamedFramebufferiv
-#define glClearNamedFramebufferuiv                       pglClearNamedFramebufferuiv
-#define glClearNamedFramebufferfv                        pglClearNamedFramebufferfv
-#define glClearNamedFramebufferfi                        pglClearNamedFramebufferfi
-#define glBlitNamedFramebuffer                           pglBlitNamedFramebuffer
-#define glCheckNamedFramebufferStatus                    pglCheckNamedFramebufferStatus
-#define glGetNamedFramebufferParameteriv                 pglGetNamedFramebufferParameteriv
-#define glGetNamedFramebufferAttachmentParameteriv       pglGetNamedFramebufferAttachmentParameteriv
-#define glCreateRenderbuffers                            pglCreateRenderbuffers
-#define glNamedRenderbufferStorage                       pglNamedRenderbufferStorage
-#define glNamedRenderbufferStorageMultisample            pglNamedRenderbufferStorageMultisample
-#define glGetNamedRenderbufferParameteriv                pglGetNamedRenderbufferParameteriv
-#define glCreateTextures                                 pglCreateTextures
-#define glTextureBuffer                                  pglTextureBuffer
-#define glTextureBufferRange                             pglTextureBufferRange
-#define glTextureStorage1D                               pglTextureStorage1D
-#define glTextureStorage2D                               pglTextureStorage2D
-#define glTextureStorage3D                               pglTextureStorage3D
-#define glTextureStorage2DMultisample                    pglTextureStorage2DMultisample
-#define glTextureStorage3DMultisample                    pglTextureStorage3DMultisample
-#define glTextureSubImage1D                              pglTextureSubImage1D
-#define glTextureSubImage2D                              pglTextureSubImage2D
-#define glTextureSubImage3D                              pglTextureSubImage3D
-#define glCompressedTextureSubImage1D                    pglCompressedTextureSubImage1D
-#define glCompressedTextureSubImage2D                    pglCompressedTextureSubImage2D
-#define glCompressedTextureSubImage3D                    pglCompressedTextureSubImage3D
-#define glCopyTextureSubImage1D                          pglCopyTextureSubImage1D
-#define glCopyTextureSubImage2D                          pglCopyTextureSubImage2D
-#define glCopyTextureSubImage3D                          pglCopyTextureSubImage3D
-#define glTextureParameterf                              pglTextureParameterf
-#define glTextureParameterfv                             pglTextureParameterfv
-#define glTextureParameteri                              pglTextureParameteri
-#define glTextureParameterIiv                            pglTextureParameterIiv
-#define glTextureParameterIuiv                           pglTextureParameterIuiv
-#define glTextureParameteriv                             pglTextureParameteriv
-#define glGenerateTextureMipmap                          pglGenerateTextureMipmap
-#define glBindTextureUnit                                pglBindTextureUnit
-#define glGetTextureImage                                pglGetTextureImage
-#define glGetCompressedTextureImage                      pglGetCompressedTextureImage
-#define glGetTextureLevelParameterfv                     pglGetTextureLevelParameterfv
-#define glGetTextureLevelParameteriv                     pglGetTextureLevelParameteriv
-#define glGetTextureParameterfv                          pglGetTextureParameterfv
-#define glGetTextureParameterIiv                         pglGetTextureParameterIiv
-#define glGetTextureParameterIuiv                        pglGetTextureParameterIuiv
-#define glGetTextureParameteriv                          pglGetTextureParameteriv
-#define glCreateVertexArrays                             pglCreateVertexArrays
-#define glDisableVertexArrayAttrib                       pglDisableVertexArrayAttrib
-#define glEnableVertexArrayAttrib                        pglEnableVertexArrayAttrib
-#define glVertexArrayElementBuffer                       pglVertexArrayElementBuffer
-#define glVertexArrayVertexBuffer                        pglVertexArrayVertexBuffer
-#define glVertexArrayVertexBuffers                       pglVertexArrayVertexBuffers
-#define glVertexArrayAttribBinding                       pglVertexArrayAttribBinding
-#define glVertexArrayAttribFormat                        pglVertexArrayAttribFormat
-#define glVertexArrayAttribIFormat                       pglVertexArrayAttribIFormat
-#define glVertexArrayAttribLFormat                       pglVertexArrayAttribLFormat
-#define glVertexArrayBindingDivisor                      pglVertexArrayBindingDivisor
-#define glGetVertexArrayiv                               pglGetVertexArrayiv
-#define glGetVertexArrayIndexediv                        pglGetVertexArrayIndexediv
-#define glGetVertexArrayIndexed64iv                      pglGetVertexArrayIndexed64iv
-#define glCreateSamplers                                 pglCreateSamplers
-#define glCreateProgramPipelines                         pglCreateProgramPipelines
-#define glCreateQueries                                  pglCreateQueries
-#define glGetQueryBufferObjectiv                         pglGetQueryBufferObjectiv
-#define glGetQueryBufferObjectuiv                        pglGetQueryBufferObjectuiv
-#define glGetQueryBufferObjecti64v                       pglGetQueryBufferObjecti64v
-#define glGetQueryBufferObjectui64v                      pglGetQueryBufferObjectui64v
+extern PFNGLCREATERENDERBUFFERSPROC pglCreateRenderbuffers;// for renderbuffer object
+extern PFNGLNAMEDRENDERBUFFERSTORAGEPROC pglNamedRenderbufferStorage;
+extern PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEPROC pglNamedRenderbufferStorageMultisample;
+extern PFNGLGETNAMEDRENDERBUFFERPARAMETERIVPROC pglGetNamedRenderbufferParameteriv;
+extern PFNGLCREATETEXTURESPROC pglCreateTextures;// for texture object
+extern PFNGLTEXTUREBUFFERPROC pglTextureBuffer;
+extern PFNGLTEXTUREBUFFERRANGEPROC pglTextureBufferRange;
+extern PFNGLTEXTURESTORAGE1DPROC pglTextureStorage1D;
+extern PFNGLTEXTURESTORAGE2DPROC pglTextureStorage2D;
+extern PFNGLTEXTURESTORAGE3DPROC pglTextureStorage3D;
+extern PFNGLTEXTURESTORAGE2DMULTISAMPLEPROC pglTextureStorage2DMultisample;
+extern PFNGLTEXTURESTORAGE3DMULTISAMPLEPROC pglTextureStorage3DMultisample;
+extern PFNGLTEXTURESUBIMAGE1DPROC pglTextureSubImage1D;
+extern PFNGLTEXTURESUBIMAGE2DPROC pglTextureSubImage2D;
+extern PFNGLTEXTURESUBIMAGE3DPROC pglTextureSubImage3D;
+extern PFNGLCOMPRESSEDTEXTURESUBIMAGE1DPROC pglCompressedTextureSubImage1D;
+extern PFNGLCOMPRESSEDTEXTURESUBIMAGE2DPROC pglCompressedTextureSubImage2D;
+extern PFNGLCOMPRESSEDTEXTURESUBIMAGE3DPROC pglCompressedTextureSubImage3D;
+extern PFNGLCOPYTEXTURESUBIMAGE1DPROC pglCopyTextureSubImage1D;
+extern PFNGLCOPYTEXTURESUBIMAGE2DPROC pglCopyTextureSubImage2D;
+extern PFNGLCOPYTEXTURESUBIMAGE3DPROC pglCopyTextureSubImage3D;
+extern PFNGLTEXTUREPARAMETERFPROC pglTextureParameterf;
+extern PFNGLTEXTUREPARAMETERFVPROC pglTextureParameterfv;
+extern PFNGLTEXTUREPARAMETERIPROC pglTextureParameteri;
+extern PFNGLTEXTUREPARAMETERIIVPROC pglTextureParameterIiv;
+extern PFNGLTEXTUREPARAMETERIUIVPROC pglTextureParameterIuiv;
+extern PFNGLTEXTUREPARAMETERIVPROC pglTextureParameteriv;
+extern PFNGLGENERATETEXTUREMIPMAPPROC pglGenerateTextureMipmap;
+extern PFNGLBINDTEXTUREUNITPROC pglBindTextureUnit;
+extern PFNGLGETTEXTUREIMAGEPROC pglGetTextureImage;
+extern PFNGLGETCOMPRESSEDTEXTUREIMAGEPROC pglGetCompressedTextureImage;
+extern PFNGLGETTEXTURELEVELPARAMETERFVPROC pglGetTextureLevelParameterfv;
+extern PFNGLGETTEXTURELEVELPARAMETERIVPROC pglGetTextureLevelParameteriv;
+extern PFNGLGETTEXTUREPARAMETERFVPROC pglGetTextureParameterfv;
+extern PFNGLGETTEXTUREPARAMETERIIVPROC pglGetTextureParameterIiv;
+extern PFNGLGETTEXTUREPARAMETERIUIVPROC pglGetTextureParameterIuiv;
+extern PFNGLGETTEXTUREPARAMETERIVPROC pglGetTextureParameteriv;
+extern PFNGLCREATEVERTEXARRAYSPROC pglCreateVertexArrays;// for vertex array object
+extern PFNGLDISABLEVERTEXARRAYATTRIBPROC pglDisableVertexArrayAttrib;
+extern PFNGLENABLEVERTEXARRAYATTRIBPROC pglEnableVertexArrayAttrib;
+extern PFNGLVERTEXARRAYELEMENTBUFFERPROC pglVertexArrayElementBuffer;
+extern PFNGLVERTEXARRAYVERTEXBUFFERPROC pglVertexArrayVertexBuffer;
+extern PFNGLVERTEXARRAYVERTEXBUFFERSPROC pglVertexArrayVertexBuffers;
+extern PFNGLVERTEXARRAYATTRIBBINDINGPROC pglVertexArrayAttribBinding;
+extern PFNGLVERTEXARRAYATTRIBFORMATPROC pglVertexArrayAttribFormat;
+extern PFNGLVERTEXARRAYATTRIBIFORMATPROC pglVertexArrayAttribIFormat;
+extern PFNGLVERTEXARRAYATTRIBLFORMATPROC pglVertexArrayAttribLFormat;
+extern PFNGLVERTEXARRAYBINDINGDIVISORPROC pglVertexArrayBindingDivisor;
+extern PFNGLGETVERTEXARRAYIVPROC pglGetVertexArrayiv;
+extern PFNGLGETVERTEXARRAYINDEXEDIVPROC pglGetVertexArrayIndexediv;
+extern PFNGLGETVERTEXARRAYINDEXED64IVPROC pglGetVertexArrayIndexed64iv;
+extern PFNGLCREATESAMPLERSPROC pglCreateSamplers;                // for sampler object
+extern PFNGLCREATEPROGRAMPIPELINESPROC pglCreateProgramPipelines;// for program pipeline object
+extern PFNGLCREATEQUERIESPROC pglCreateQueries;                  // for query object
+extern PFNGLGETQUERYBUFFEROBJECTIVPROC pglGetQueryBufferObjectiv;
+extern PFNGLGETQUERYBUFFEROBJECTUIVPROC pglGetQueryBufferObjectuiv;
+extern PFNGLGETQUERYBUFFEROBJECTI64VPROC pglGetQueryBufferObjecti64v;
+extern PFNGLGETQUERYBUFFEROBJECTUI64VPROC pglGetQueryBufferObjectui64v;
+#define glCreateTransformFeedbacks pglCreateTransformFeedbacks
+#define glTransformFeedbackBufferBase pglTransformFeedbackBufferBase
+#define glTransformFeedbackBufferRange pglTransformFeedbackBufferRange
+#define glGetTransformFeedbackiv pglGetTransformFeedbackiv
+#define glGetTransformFeedbacki_v pglGetTransformFeedbacki_v
+#define glGetTransformFeedbacki64_v pglGetTransformFeedbacki64_v
+#define glCreateBuffers pglCreateBuffers
+#define glNamedBufferStorage pglNamedBufferStorage
+#define glNamedBufferData pglNamedBufferData
+#define glNamedBufferSubData pglNamedBufferSubData
+#define glCopyNamedBufferSubData pglCopyNamedBufferSubData
+#define glClearNamedBufferData pglClearNamedBufferData
+#define glClearNamedBufferSubData pglClearNamedBufferSubData
+#define glMapNamedBuffer pglMapNamedBuffer
+#define glMapNamedBufferRange pglMapNamedBufferRange
+#define glUnmapNamedBuffer pglUnmapNamedBuffer
+#define glFlushMappedNamedBufferRange pglFlushMappedNamedBufferRange
+#define glGetNamedBufferParameteriv pglGetNamedBufferParameteriv
+#define glGetNamedBufferParameteri64v pglGetNamedBufferParameteri64v
+#define glGetNamedBufferPointerv pglGetNamedBufferPointerv
+#define glGetNamedBufferSubData pglGetNamedBufferSubData
+#define glCreateFramebuffers pglCreateFramebuffers
+#define glNamedFramebufferRenderbuffer pglNamedFramebufferRenderbuffer
+#define glNamedFramebufferParameteri pglNamedFramebufferParameteri
+#define glNamedFramebufferTexture pglNamedFramebufferTexture
+#define glNamedFramebufferTextureLayer pglNamedFramebufferTextureLayer
+#define glNamedFramebufferDrawBuffer pglNamedFramebufferDrawBuffer
+#define glNamedFramebufferDrawBuffers pglNamedFramebufferDrawBuffers
+#define glNamedFramebufferReadBuffer pglNamedFramebufferReadBuffer
+#define glInvalidateNamedFramebufferData pglInvalidateNamedFramebufferData
+#define glInvalidateNamedFramebufferSubData pglInvalidateNamedFramebufferSubData
+#define glClearNamedFramebufferiv pglClearNamedFramebufferiv
+#define glClearNamedFramebufferuiv pglClearNamedFramebufferuiv
+#define glClearNamedFramebufferfv pglClearNamedFramebufferfv
+#define glClearNamedFramebufferfi pglClearNamedFramebufferfi
+#define glBlitNamedFramebuffer pglBlitNamedFramebuffer
+#define glCheckNamedFramebufferStatus pglCheckNamedFramebufferStatus
+#define glGetNamedFramebufferParameteriv pglGetNamedFramebufferParameteriv
+#define glGetNamedFramebufferAttachmentParameteriv pglGetNamedFramebufferAttachmentParameteriv
+#define glCreateRenderbuffers pglCreateRenderbuffers
+#define glNamedRenderbufferStorage pglNamedRenderbufferStorage
+#define glNamedRenderbufferStorageMultisample pglNamedRenderbufferStorageMultisample
+#define glGetNamedRenderbufferParameteriv pglGetNamedRenderbufferParameteriv
+#define glCreateTextures pglCreateTextures
+#define glTextureBuffer pglTextureBuffer
+#define glTextureBufferRange pglTextureBufferRange
+#define glTextureStorage1D pglTextureStorage1D
+#define glTextureStorage2D pglTextureStorage2D
+#define glTextureStorage3D pglTextureStorage3D
+#define glTextureStorage2DMultisample pglTextureStorage2DMultisample
+#define glTextureStorage3DMultisample pglTextureStorage3DMultisample
+#define glTextureSubImage1D pglTextureSubImage1D
+#define glTextureSubImage2D pglTextureSubImage2D
+#define glTextureSubImage3D pglTextureSubImage3D
+#define glCompressedTextureSubImage1D pglCompressedTextureSubImage1D
+#define glCompressedTextureSubImage2D pglCompressedTextureSubImage2D
+#define glCompressedTextureSubImage3D pglCompressedTextureSubImage3D
+#define glCopyTextureSubImage1D pglCopyTextureSubImage1D
+#define glCopyTextureSubImage2D pglCopyTextureSubImage2D
+#define glCopyTextureSubImage3D pglCopyTextureSubImage3D
+#define glTextureParameterf pglTextureParameterf
+#define glTextureParameterfv pglTextureParameterfv
+#define glTextureParameteri pglTextureParameteri
+#define glTextureParameterIiv pglTextureParameterIiv
+#define glTextureParameterIuiv pglTextureParameterIuiv
+#define glTextureParameteriv pglTextureParameteriv
+#define glGenerateTextureMipmap pglGenerateTextureMipmap
+#define glBindTextureUnit pglBindTextureUnit
+#define glGetTextureImage pglGetTextureImage
+#define glGetCompressedTextureImage pglGetCompressedTextureImage
+#define glGetTextureLevelParameterfv pglGetTextureLevelParameterfv
+#define glGetTextureLevelParameteriv pglGetTextureLevelParameteriv
+#define glGetTextureParameterfv pglGetTextureParameterfv
+#define glGetTextureParameterIiv pglGetTextureParameterIiv
+#define glGetTextureParameterIuiv pglGetTextureParameterIuiv
+#define glGetTextureParameteriv pglGetTextureParameteriv
+#define glCreateVertexArrays pglCreateVertexArrays
+#define glDisableVertexArrayAttrib pglDisableVertexArrayAttrib
+#define glEnableVertexArrayAttrib pglEnableVertexArrayAttrib
+#define glVertexArrayElementBuffer pglVertexArrayElementBuffer
+#define glVertexArrayVertexBuffer pglVertexArrayVertexBuffer
+#define glVertexArrayVertexBuffers pglVertexArrayVertexBuffers
+#define glVertexArrayAttribBinding pglVertexArrayAttribBinding
+#define glVertexArrayAttribFormat pglVertexArrayAttribFormat
+#define glVertexArrayAttribIFormat pglVertexArrayAttribIFormat
+#define glVertexArrayAttribLFormat pglVertexArrayAttribLFormat
+#define glVertexArrayBindingDivisor pglVertexArrayBindingDivisor
+#define glGetVertexArrayiv pglGetVertexArrayiv
+#define glGetVertexArrayIndexediv pglGetVertexArrayIndexediv
+#define glGetVertexArrayIndexed64iv pglGetVertexArrayIndexed64iv
+#define glCreateSamplers pglCreateSamplers
+#define glCreateProgramPipelines pglCreateProgramPipelines
+#define glCreateQueries pglCreateQueries
+#define glGetQueryBufferObjectiv pglGetQueryBufferObjectiv
+#define glGetQueryBufferObjectuiv pglGetQueryBufferObjectuiv
+#define glGetQueryBufferObjecti64v pglGetQueryBufferObjecti64v
+#define glGetQueryBufferObjectui64v pglGetQueryBufferObjectui64v
 
-#endif //======================================================================
+#endif//======================================================================
 
-#endif // end of #ifndef
+#endif// end of #ifndef

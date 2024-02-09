@@ -5,6 +5,7 @@
 
 #ifdef RDMN_VULKAN
 #include <vulkan/vulkan.hpp>
+
 #include <rcbe-engine/datamodel/rendering/vk_texture_types.hpp>
 #endif
 
@@ -16,6 +17,7 @@ class RasterizerTextureImplementation;
 
 class RasterizerTexture : public std::enable_shared_from_this<RasterizerTexture> {
 public:
+
     RasterizerTexture() = delete;
     RasterizerTexture(rasterizer_texture_config config, rcbe::visual::TexturePtr texture);
     ~RasterizerTexture();
@@ -35,14 +37,14 @@ public:
     /// TODO: remove when a proper way to supply to UBO is found @sckorn
     /// probably supply these objects to UBO, and init there
     [[nodiscard]] bool init(VkDevice logical_device,
-              VkPhysicalDevice physical_device,
-              VkCommandPool command_pool,
-              VkQueue graphics_queue);
+                            VkPhysicalDevice physical_device,
+                            VkCommandPool command_pool,
+                            VkQueue graphics_queue);
     [[nodiscard]] bool init(VkDevice logical_device,
-              VkPhysicalDevice physical_device,
-              VkCommandPool command_pool,
-              VkQueue graphics_queue,
-              VkSampler global_sampler);
+                            VkPhysicalDevice physical_device,
+                            VkCommandPool command_pool,
+                            VkQueue graphics_queue,
+                            VkSampler global_sampler);
     [[nodiscard]] VkImageView getImageView() const;
     [[nodiscard]] VkSampler getImageSampler() const;
     [[nodiscard]] const rasterizer_texture_config &getConfig() const;
@@ -50,11 +52,12 @@ public:
 #endif
 
 private:
-    std::unique_ptr<RasterizerTextureImplementation> impl_; ///TODO: find a way to get rid of this pImpl @sckorn
+
+    std::unique_ptr<RasterizerTextureImplementation> impl_;///TODO: find a way to get rid of this pImpl @sckorn
 };
 
 using RasterizerTexturePtr = std::shared_ptr<RasterizerTexture>;
 using RasterizerTextureConstPtr = std::shared_ptr<const RasterizerTexture>;
-}
+}// namespace rdmn::render
 
-#endif //RCBE_ENGINE_RASTERIZERTEXTURE_HPP
+#endif//RCBE_ENGINE_RASTERIZERTEXTURE_HPP

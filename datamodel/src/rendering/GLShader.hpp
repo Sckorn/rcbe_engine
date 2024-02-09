@@ -6,6 +6,7 @@
 namespace rdmn::render {
 class GLShader {
 public:
+
     using ShaderHandle = size_t;
 
     GLShader() = delete;
@@ -28,6 +29,7 @@ public:
     [[nodiscard]] int maxVertexAttribs() const noexcept;
 
 private:
+
     void deleteShader() const;
 
     static int MAXIMUM_VERTEX_ATTRIBUTES;
@@ -40,6 +42,6 @@ private:
 
     std::string source_code_;
 };
-}
+}// namespace rdmn::render
 
-#endif //RDMN_ENGINE_GLSHADER_HPP
+#endif//RDMN_ENGINE_GLSHADER_HPP

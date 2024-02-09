@@ -3,20 +3,21 @@
 
 #include <vector>
 
-#include <rcbe-engine/datamodel/math/math_constants.hpp>
-#include <rcbe-engine/datamodel/math/Transform.hpp>
 #include <rcbe-engine/datamodel/geometry/triangle_indices.hpp>
-#include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
+#include <rcbe-engine/datamodel/math/Transform.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
+#include <rcbe-engine/datamodel/math/math_constants.hpp>
+#include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 
 namespace rcbe::geometry {
 
 class Mesh {
 public:
+
     using VertexType = math::Vector3d;
     using NormalType = math::Vector3d;
     using TriangleType = triangle_indices;
-    using TexCoordType = math::Vector2f; /// TODO: consider making Vertices and Normals on float as well @sckorn
+    using TexCoordType = math::Vector2f;/// TODO: consider making Vertices and Normals on float as well @sckorn
 
     using VertexStorage = std::vector<VertexType>;
     using NormalStorage = std::vector<NormalType>;
@@ -38,6 +39,7 @@ public:
     using TransformType = math::Transform;
 
 public:
+
     Mesh() = default;
 
     template <typename VertsInIter, typename NormsInIter, typename FacesInIter>
@@ -45,47 +47,37 @@ public:
         VertsInIter vbegin, VertsInIter vend,
         NormsInIter nbegin, NormsInIter nend,
         FacesInIter fbegin, FacesInIter fend,
-        const ColorType &color = {0.25, 0.5, 0.5}
-    )
-    :
-    vertices_(vbegin, vend)
-    , normals_(nbegin, nend)
-    , facets_(fbegin, fend)
-    , color_(color)
-    {}
+        const ColorType &color = {0.25, 0.5, 0.5})
+        : vertices_(vbegin, vend)
+        , normals_(nbegin, nend)
+        , facets_(fbegin, fend)
+        , color_(color) {}
 
     template <typename VertsInIter, typename NormsInIter, typename FacesInIter, typename TexCoordInIter>
     Mesh(
-            VertsInIter vbegin, VertsInIter vend,
-            NormsInIter nbegin, NormsInIter nend,
-            FacesInIter fbegin, FacesInIter fend,
-            TexCoordInIter tcbegin, TexCoordInIter tcend,
-            const ColorType &color = {0.25, 0.5, 0.5}
-    )
-    :
-    vertices_(vbegin, vend)
-    , normals_(nbegin, nend)
-    , facets_(fbegin, fend)
-    , tex_coord_(tcbegin, tcend)
-    , color_(color)
-    {}
+        VertsInIter vbegin, VertsInIter vend,
+        NormsInIter nbegin, NormsInIter nend,
+        FacesInIter fbegin, FacesInIter fend,
+        TexCoordInIter tcbegin, TexCoordInIter tcend,
+        const ColorType &color = {0.25, 0.5, 0.5})
+        : vertices_(vbegin, vend)
+        , normals_(nbegin, nend)
+        , facets_(fbegin, fend)
+        , tex_coord_(tcbegin, tcend)
+        , color_(color) {}
 
     Mesh(VertexStorage &&v, NormalStorage &&n, FacetStorage &&f, ColorType &&c)
-    :
-    vertices_(std::move(v))
-    , normals_(std::move(n))
-    , facets_(std::move(f))
-    , color_(std::move(c))
-    {}
+        : vertices_(std::move(v))
+        , normals_(std::move(n))
+        , facets_(std::move(f))
+        , color_(std::move(c)) {}
 
     Mesh(VertexStorage &&v, NormalStorage &&n, FacetStorage &&f, TexCoordStorage &&tc, ColorType &&c)
-    :
-    vertices_(std::move(v))
-    , normals_(std::move(n))
-    , facets_(std::move(f))
-    , tex_coord_(std::move(tc))
-    , color_(std::move(c))
-    {}
+        : vertices_(std::move(v))
+        , normals_(std::move(n))
+        , facets_(std::move(f))
+        , tex_coord_(std::move(tc))
+        , color_(std::move(c)) {}
 
     // TODO: find a way to make this obsolete
     Mesh(const Mesh &other) = default;
@@ -139,7 +131,9 @@ public:
     [[nodiscard]] bool verticesTransformed() const noexcept;
 
     friend Mesh operator*(const TransformType &t, Mesh m);
+
 private:
+
     template <typename Storage>
     Storage revertTransform(const Storage &s, const TransformType &t) const {
         Storage storage {};
@@ -161,17 +155,15 @@ private:
 
     bool vertices_trnasformed_ = false;
 };
-} // namespace rcbe::geometry
+}// namespace rcbe::geometry
 
-namespace nlohmann
-{
+namespace nlohmann {
 template <>
-struct adl_serializer<rcbe::geometry::Mesh>
-{
+struct adl_serializer<rcbe::geometry::Mesh> {
     static void to_json(nlohmann::json &j, const rcbe::geometry::Mesh &m);
     static void from_json(const nlohmann::json &j, rcbe::geometry::Mesh &m);
 };
-}
+}// namespace nlohmann
 
 
 #endif

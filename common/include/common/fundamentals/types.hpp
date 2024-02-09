@@ -8,6 +8,6 @@ using EngineScalar = double;
 using EngineIntergral = int;
 // TODO: rename to EngineFsPath, consider moving to a separate header.
 using EnginePath = std::filesystem::path;
-}
+}// namespace rcbe::core
 
 #endif

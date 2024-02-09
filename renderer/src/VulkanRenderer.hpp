@@ -4,33 +4,31 @@
 #define VK_USE_PLATFORM_XLIB_KHR
 
 #include <condition_variable>
-#include <memory>
 #include <future>
+#include <memory>
 #include <optional>
 
 #include <vulkan/vulkan.hpp>
 
-#include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
-#include <rcbe-engine/datamodel/rendering/Material.hpp>
-#include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 #include <rcbe-engine/datamodel/core/CoreObject.hpp>
+#include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
-
+#include <rcbe-engine/datamodel/rendering/Material.hpp>
 #include <rcbe-engine/datamodel/rendering/RasterizerTexture.hpp>
 #include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 #include <rcbe-engine/datamodel/rendering/VulkanBufferObject.hpp>
 #include <rcbe-engine/datamodel/rendering/VulkanGraphicsPipeline.hpp>
+#include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
 
 namespace rdmn::render {
 
-class VulkanRenderer
-{
+class VulkanRenderer {
 public:
+
     VulkanRenderer() = delete;
     VulkanRenderer(
-            rcbe::rendering::renderer_config &&config,
-            const std::shared_ptr<rcbe::rendering::RenderingContext>& context
-    );
+        rcbe::rendering::renderer_config &&config,
+        const std::shared_ptr<rcbe::rendering::RenderingContext> &context);
 
     ~VulkanRenderer();
 
@@ -46,12 +44,13 @@ public:
     void start();
     void stop();
     bool addObject(rcbe::core::CoreObject &&renderer_object);
-    bool addObjects( std::vector<rcbe::core::CoreObject> &&renderer_objects);
+    bool addObjects(std::vector<rcbe::core::CoreObject> &&renderer_objects);
 
     void reshape();
 
     void onStop(rcbe::rendering::RendererStopHandlerType &&handler);
     void waitRendererReady();
+
 private:
 
     struct queue_family_indices {
@@ -82,10 +81,10 @@ private:
     };
 
     struct preexistant_objects_load_result {
-      std::vector<rcbe::geometry::Mesh> meshes;
-      std::vector<VkImageView> rasterizer_tex_image_views;
-      std::vector<VkSampler> rasterizer_tex_samplers;
-      bool success = false;
+        std::vector<rcbe::geometry::Mesh> meshes;
+        std::vector<VkImageView> rasterizer_tex_image_views;
+        std::vector<VkSampler> rasterizer_tex_samplers;
+        bool success = false;
     };
 
     using MaterialPtr = std::shared_ptr<rcbe::core::CoreObject>;
@@ -95,7 +94,7 @@ private:
     void renderFrame();
     bool createVulkanInstance(VkInstance &instance);
     bool listAndCheckExtensions(std::vector<std::string> required = {}, std::vector<OptionalExtensionRequest> optional = {});
-    bool listAndCheckLayers(const std::vector<const char*> &to_check = {});
+    bool listAndCheckLayers(const std::vector<const char *> &to_check = {});
     bool selectPhysicalDevice(VkPhysicalDevice &device);
     bool deviceSupported(VkPhysicalDevice device);
     queue_family_indices getQueueFamilyIndices(VkPhysicalDevice device);
@@ -125,17 +124,15 @@ private:
     bool initMaterialTextures(const rcbe::rendering::Material &mat);
     bool createDepthResources(VkDevice logical_device);
     std::optional<VkFormat> findSupportedFormat(
-            const std::vector<VkFormat> &candidates,
-            VkPhysicalDevice physical_device,
-            VkImageTiling tiling,
-            VkFormatFeatureFlags features
-    );
+        const std::vector<VkFormat> &candidates,
+        VkPhysicalDevice physical_device,
+        VkImageTiling tiling,
+        VkFormatFeatureFlags features);
     bool hasStencilComponent(VkFormat format);
     void handleRenderedObject(
-            rcbe::core::CoreObject &renderer_object,
-            std::unordered_map<MaterialPtr, GameObjects> &objects,
-            std::unordered_set<MaterialPtr> &material_cache
-    );
+        rcbe::core::CoreObject &renderer_object,
+        std::unordered_map<MaterialPtr, GameObjects> &objects,
+        std::unordered_set<MaterialPtr> &material_cache);
 
     /// Depth buffer
     VkImage depth_image_;
@@ -199,8 +196,8 @@ private:
 
     std::unordered_map<MaterialPtr, GameObjects> objects_;
 
-    std::unordered_map<rcbe::visual::TexturePtr, size_t> texture_to_index_; /// rasterizer texture to index in desc set
-    std::unordered_map<size_t, std::vector<size_t>> object_to_sampler_index_; /// Id to sampler index
+    std::unordered_map<rcbe::visual::TexturePtr, size_t> texture_to_index_;  /// rasterizer texture to index in desc set
+    std::unordered_map<size_t, std::vector<size_t>> object_to_sampler_index_;/// Id to sampler index
 
     std::unordered_set<MaterialPtr> material_cache_;
 
@@ -212,16 +209,14 @@ private:
     [[maybe_unused]] rcbe::rendering::RendererStopHandlerType stop_handler_;
 
     const std::vector<const char *> validation_layers_ = {
-            "VK_LAYER_KHRONOS_validation"
-    };
+        "VK_LAYER_KHRONOS_validation"};
 
-    const std::vector<const char*> device_extensions_ = {
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    };
+    const std::vector<const char *> device_extensions_ = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };
 
 using VulkanRendererPtr = std::unique_ptr<VulkanRenderer>;
 using VulkanRendererConstPtr = std::unique_ptr<const VulkanRenderer>;
-}
+}// namespace rdmn::render
 
-#endif //RDMN_ENGINE_VULKANRENDERER_HPP
+#endif//RDMN_ENGINE_VULKANRENDERER_HPP

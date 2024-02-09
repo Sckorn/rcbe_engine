@@ -2,8 +2,9 @@
 #define RCBE_ENGINE_CAMERA_CONFIG_HPP
 
 #include <nlohmann/json_fwd.hpp>
-#include <rcbe-engine/datamodel/math/math_constants.hpp>
+
 #include <rcbe-engine/datamodel/math/Vector.hpp>
+#include <rcbe-engine/datamodel/math/math_constants.hpp>
 
 namespace rcbe::rendering {
 struct camera_config {
@@ -14,7 +15,7 @@ struct camera_config {
     core::EngineScalar min_fov;
     core::EngineScalar def_fov;
 };
-}
+}// namespace rcbe::rendering
 
 namespace nlohmann {
 template <>
@@ -22,6 +23,6 @@ struct adl_serializer<rcbe::rendering::camera_config> {
     static void to_json(nlohmann::json &j, const rcbe::rendering::camera_config &c);
     static void from_json(const nlohmann::json &j, rcbe::rendering::camera_config &c);
 };
-}
+}// namespace nlohmann
 
-#endif //RCBE_ENGINE_CAMERA_CONFIG_HPP
+#endif//RCBE_ENGINE_CAMERA_CONFIG_HPP

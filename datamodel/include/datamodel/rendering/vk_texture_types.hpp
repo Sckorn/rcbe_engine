@@ -32,6 +32,6 @@ struct rasterizer_texture_config {
     TextureFilteringType filtering_type = TextureFilteringType::linear;
     rcbe::visual::texture_config image_config;
 };
-}
+}// namespace rdmn::render
 
-#endif //RCBE_ENGINE_VK_TEXTURE_TYPES_HPP
+#endif//RCBE_ENGINE_VK_TEXTURE_TYPES_HPP

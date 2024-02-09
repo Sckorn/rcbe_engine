@@ -1,39 +1,38 @@
 #ifndef RCBE_RENDERINGCONTEXT_HPP
 #define RCBE_RENDERINGCONTEXT_HPP
 
-#include <memory>
 #include <atomic>
+#include <memory>
 #include <mutex>
 #include <optional>
 
+#include <boost/log/trivial.hpp>
+
+#include <GL/glx.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-#include <GL/glx.h>
-
-#include <boost/log/trivial.hpp>
-
-#include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
-#include <rcbe-engine/datamodel/math/Transform.hpp>
 #include <rcbe-engine/datamodel/math/MatrixColumnMajorAdaptor.hpp>
+#include <rcbe-engine/datamodel/math/Transform.hpp>
 #include <rcbe-engine/datamodel/math/rotation_units.hpp>
+#include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 
-namespace rcbe::rendering
-{
+namespace rcbe::rendering {
 class RenderingContext {
 public:
+
     using TimePointType = std::chrono::steady_clock::time_point;
 
     RenderingContext() = default;
     ~RenderingContext() = default;
 
-    RenderingContext(const RenderingContext& other) = delete;
-    RenderingContext &operator=(const RenderingContext& other) = delete;
+    RenderingContext(const RenderingContext &other) = delete;
+    RenderingContext &operator=(const RenderingContext &other) = delete;
 
-    RenderingContext(RenderingContext&& other) = delete;
-    RenderingContext &operator=(RenderingContext&& other) = delete;
+    RenderingContext(RenderingContext &&other) = delete;
+    RenderingContext &operator=(RenderingContext &&other) = delete;
 
 #ifdef RDMN_OPENGL
     void glContextFromThis() const {
@@ -51,7 +50,7 @@ public:
     }
 #endif
 
-    void setDisplay(Display* d);
+    void setDisplay(Display *d);
     [[nodiscard]] Display *getDisplay() const noexcept;
 
     void setDeleteMessage(Atom a);
@@ -69,7 +68,7 @@ public:
     void setWindowDimensions(const rcbe::core::IntegralDimensions &d);
     [[nodiscard]] const rcbe::core::IntegralDimensions &getWindowDimensions() const;
 
-    void updateTransform(const rcbe::math::Transform& trn);
+    void updateTransform(const rcbe::math::Transform &trn);
     [[nodiscard]] const math::MatrixColumnMajorAdaptor<core::EngineScalar> &getSceneTransformColumnMajor() const;
     [[nodiscard]] const math::Transform &getSceneTransform() const;
 
@@ -85,7 +84,9 @@ public:
 
     void startTime(TimePointType &&t);
     [[nodiscard]] float computeDeltaTime();
+
 private:
+
     mutable std::mutex transform_mutex_;
     mutable std::mutex dimensions_mutex_;
     mutable std::mutex mouse_mutex_;
@@ -94,7 +95,7 @@ private:
     mutable std::mutex visualid_mutex_;
 
     // I presume pointer to X Display, should not be deleted, research
-    Display* x_display_ = nullptr;
+    Display *x_display_ = nullptr;
     Atom x_delete_message_;
     GLXContext gl_x_context_;
     GLXDrawable gl_x_window_;
@@ -122,7 +123,7 @@ private:
 using RenderingContextPtr = std::shared_ptr<RenderingContext>;
 using RenderingContextConstPtr = std::shared_ptr<const RenderingContext>;
 
-using RendererStopHandlerType = std::function<void(RenderingContextPtr)>; // context ptr reserved for future use
-}
+using RendererStopHandlerType = std::function<void(RenderingContextPtr)>;// context ptr reserved for future use
+}// namespace rcbe::rendering
 
-#endif // RCBE_RENDERINGCONTEXT_HPP
+#endif// RCBE_RENDERINGCONTEXT_HPP

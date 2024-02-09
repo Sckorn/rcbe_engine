@@ -4,8 +4,7 @@
 
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
 
-TEST(ParsersTest, TestX3dParse)
-{
+TEST(ParsersTest, TestX3dParse) {
     using namespace rcbe::parsers;
     const auto meshes = parse_meshes("parsers/test/resources/corner.x3d");
     ASSERT_EQ(meshes.size(), 1);

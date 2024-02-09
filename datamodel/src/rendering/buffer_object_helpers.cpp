@@ -19,7 +19,7 @@ uint32_t findMemoryType(VkPhysicalDevice device, uint32_t type_filter, VkMemoryP
 }
 
 std::optional<VkCommandBuffer> beginSingleTimeCommands(VkDevice logical_device, VkCommandPool cmd_pool) {
-    VkCommandBufferAllocateInfo alloc_info{};
+    VkCommandBufferAllocateInfo alloc_info {};
     alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     alloc_info.commandPool = cmd_pool;
     alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -30,7 +30,7 @@ std::optional<VkCommandBuffer> beginSingleTimeCommands(VkDevice logical_device, 
         return std::nullopt;
     }
 
-    VkCommandBufferBeginInfo begin_info{};
+    VkCommandBufferBeginInfo begin_info {};
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
@@ -42,16 +42,15 @@ std::optional<VkCommandBuffer> beginSingleTimeCommands(VkDevice logical_device, 
 }
 
 bool endSingleTimeCommands(
-        VkDevice logical_device,
-        VkCommandBuffer cmd_buff,
-        VkQueue graph_queue,
-        VkCommandPool cmd_pool
-) {
+    VkDevice logical_device,
+    VkCommandBuffer cmd_buff,
+    VkQueue graph_queue,
+    VkCommandPool cmd_pool) {
     if (vkEndCommandBuffer(cmd_buff) != VK_SUCCESS) {
         return false;
     }
 
-    VkSubmitInfo sub_info{};
+    VkSubmitInfo sub_info {};
     sub_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     sub_info.commandBufferCount = 1;
     sub_info.pCommandBuffers = std::addressof(cmd_buff);
@@ -68,13 +67,12 @@ bool endSingleTimeCommands(
 }
 
 bool copyBuffer(
-        VkDevice logical_device,
-        VkBuffer src,
-        VkBuffer dst,
-        VkDeviceSize size,
-        VkCommandPool command_pool,
-        VkQueue target_queue
-) {
+    VkDevice logical_device,
+    VkBuffer src,
+    VkBuffer dst,
+    VkDeviceSize size,
+    VkCommandPool command_pool,
+    VkQueue target_queue) {
     auto cmd_buff = beginSingleTimeCommands(logical_device, command_pool);
     if (!cmd_buff) {
         BOOST_LOG_TRIVIAL(error) << "Can't begin command buffer!";
@@ -83,7 +81,7 @@ bool copyBuffer(
 
     auto cb = *cmd_buff;
 
-    VkBufferCopy copy_region{};
+    VkBufferCopy copy_region {};
     copy_region.dstOffset = 0;
     copy_region.srcOffset = 0;
     copy_region.size = size;
@@ -105,7 +103,7 @@ bool createBufferImpl(VkDevice &logical_device,
                       VkMemoryPropertyFlags properties,
                       VkBuffer &buff,
                       VkDeviceMemory &memory) {
-    VkBufferCreateInfo buffer_info{};
+    VkBufferCreateInfo buffer_info {};
     buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     buffer_info.size = size;
     buffer_info.usage = usage;
@@ -120,13 +118,13 @@ bool createBufferImpl(VkDevice &logical_device,
     VkMemoryRequirements memory_reqs;
     vkGetBufferMemoryRequirements(logical_device, buff, std::addressof(memory_reqs));
 
-    VkMemoryAllocateInfo alloc_info{};
+    VkMemoryAllocateInfo alloc_info {};
     alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     alloc_info.allocationSize = memory_reqs.size;
     alloc_info.memoryTypeIndex = findMemoryType(
-            device,
-            memory_reqs.memoryTypeBits,
-            properties);
+        device,
+        memory_reqs.memoryTypeBits,
+        properties);
 
     res = vkAllocateMemory(logical_device, std::addressof(alloc_info), nullptr, std::addressof(memory));
     if (res != VK_SUCCESS) {
@@ -145,4 +143,4 @@ bool createBufferImpl(VkDevice &logical_device,
 static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 
 #endif
-}
+}// namespace rdmn::render

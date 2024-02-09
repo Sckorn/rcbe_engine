@@ -12,8 +12,8 @@ void to_binary(Buffer &c, const ActualType &a) {
 }
 
 template <typename Buffer, typename ActualType>
-void from_binary(const Buffer &c, ActualType& a) {
-    throw std::runtime_error("Please provide from_binary implementation for the type " + std::string(typeid(ActualType).name()) +  " !");
+void from_binary(const Buffer &c, ActualType &a) {
+    throw std::runtime_error("Please provide from_binary implementation for the type " + std::string(typeid(ActualType).name()) + " !");
 }
 
 class BinaryBuffer;
@@ -78,6 +78,6 @@ void to_binary<BinaryBuffer, uint16_t>(BinaryBuffer &b, const uint16_t &a);
 template <>
 void from_binary<BinaryBuffer, uint16_t>(const BinaryBuffer &b, uint16_t &a);
 
-}
+}// namespace rcbe::binary
 
-#endif //RCBE_ENGINE_BASE_SERIALIZER_HPP
+#endif//RCBE_ENGINE_BASE_SERIALIZER_HPP

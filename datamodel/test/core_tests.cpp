@@ -19,16 +19,17 @@ public:
     }
 
 private:
+
     static constexpr rcbe::core::EngineIntergral IWIDTH = 1024;
     static constexpr rcbe::core::EngineIntergral IHEIGHT = 768;
-    static constexpr rcbe::core::IntegralDimensions dim{IWIDTH, IHEIGHT};
+    static constexpr rcbe::core::IntegralDimensions dim {IWIDTH, IHEIGHT};
 };
 
 using CoreObjectTests = DimensionsTests;
 
 namespace {
 struct some_empty_struct {};
-}
+}// namespace
 
 TEST_F(DimensionsTests, IntegerDimensions) {
     const auto dim = getTestDimensions();
@@ -48,7 +49,7 @@ TEST_F(DimensionsTests, DoubleDimensions) {
 TEST_F(CoreObjectTests, Components) {
     using DimT = rcbe::core::IntegralDimensions;
 
-    rcbe::core::CoreObject co{some_empty_struct{}};
+    rcbe::core::CoreObject co {some_empty_struct {}};
 
     auto dim = getTestDimensions();
     co.addComponent(std::move(dim));
@@ -56,15 +57,15 @@ TEST_F(CoreObjectTests, Components) {
     ASSERT_TRUE(co.hasComponent<DimT>());
     const auto dim_comp_ptr = co.getComponent<DimT>();
     ASSERT_NE(dim_comp_ptr, nullptr);
-    
+
     const auto &dim_comp = dim_comp_ptr->as<DimT>();
     ASSERT_EQ(dim_comp.width, initialWidth());
     ASSERT_EQ(dim_comp.height, initialHeight());
 }
 
 TEST_F(CoreObjectTests, Tags) {
-    static constexpr const char * TAG = "systag";
-    rcbe::core::CoreObject co{some_empty_struct{}};
+    static constexpr const char *TAG = "systag";
+    rcbe::core::CoreObject co {some_empty_struct {}};
 
     ASSERT_TRUE(co.addSystemTag(std::string(TAG)));
     ASSERT_TRUE(co.hasSystemTag(std::string(TAG)));

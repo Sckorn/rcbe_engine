@@ -16,6 +16,7 @@ class TextureImplementation;
 
 class Texture : std::enable_shared_from_this<Texture> {
 public:
+
     using ParserType = std::function<rdmn::vis::image_data(const core::EnginePath &)>;
 
     Texture() = delete;
@@ -34,6 +35,7 @@ public:
     [[nodiscard]] size_t getImageSizeBytes() const;
     [[nodiscard]] const texture_config::ImageBodyType &getPixels() const;
     [[nodiscard]] rdmn::vis::image_data cloneImageData() const;
+
 private:
 
     rdmn::vis::image_data data_;
@@ -46,14 +48,14 @@ TexturePtr make_tex_ptr(const core::EnginePath &path, Texture::ParserType &&pars
 TextureConstPtr make_tex_const_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
 
 struct VisualTextureSet {
-  	VisualTextureSet(std::initializer_list<TexturePtr> &&tex_data);
-  	explicit VisualTextureSet(std::unordered_set<TexturePtr> &&tex_data);
+    VisualTextureSet(std::initializer_list<TexturePtr> &&tex_data);
+    explicit VisualTextureSet(std::unordered_set<TexturePtr> &&tex_data);
 
-  	~VisualTextureSet() = default;
+    ~VisualTextureSet() = default;
 
-	const std::unordered_set<TexturePtr> grouped_textures;
+    const std::unordered_set<TexturePtr> grouped_textures;
 };
 
-}
+}// namespace rcbe::visual
 
-#endif //RCBE_ENGINE_TEXTURE_HPP
+#endif//RCBE_ENGINE_TEXTURE_HPP

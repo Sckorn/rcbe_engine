@@ -1,7 +1,7 @@
-#include <rcbe-engine/fundamentals/convinience.hpp>
-#include <rcbe-engine/datamodel/rendering/Shader.hpp>
-
 #include <boost/log/trivial.hpp>
+
+#include <rcbe-engine/datamodel/rendering/Shader.hpp>
+#include <rcbe-engine/fundamentals/convinience.hpp>
 
 #ifdef RDMN_VULKAN
 #include "VulkanShader.hpp"
@@ -17,6 +17,7 @@ namespace rdmn::render {
 
 class ShaderImpl {
 public:
+
     ShaderImpl() = delete;
     ~ShaderImpl() = default;
 
@@ -46,6 +47,7 @@ public:
     static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 #endif
 private:
+
 #ifdef RDMN_VULKAN
     VulkanShader shader_;
 #elif defined(RDMN_OPENGL)
@@ -61,7 +63,7 @@ ShaderImpl::ShaderImpl(ShaderImpl &&other) = default;
 ShaderImpl &ShaderImpl::operator=(ShaderImpl &&other) = default;
 
 ShaderImpl::ShaderImpl(const rcbe::core::EnginePath &path, ShaderType type, ShaderState state)
-: shader_(path, type, state) {
+    : shader_(path, type, state) {
 }
 
 #ifdef RDMN_VULKAN
@@ -74,7 +76,7 @@ bool ShaderImpl::createVkShaderModule(VkDevice device) {
 }
 
 bool ShaderImpl::moduleCreated() const noexcept {
-  return shader_.moduleCreated();
+    return shader_.moduleCreated();
 }
 #elif defined(RDMN_OPENGL)
 const Shader::ShaderHandle &ShaderImpl::handle() const noexcept {
@@ -112,8 +114,7 @@ Shader::Shader(Shader &&other) noexcept = default;
 Shader &Shader::operator=(Shader &&other) noexcept = default;
 
 Shader::Shader(const rcbe::core::EnginePath &path, ShaderType type, ShaderState state)
-: impl_(std::make_unique<ShaderImpl>(path, type, state)) {
-
+    : impl_(std::make_unique<ShaderImpl>(path, type, state)) {
 }
 
 const Shader::ShaderHandle &Shader::compile() {
@@ -142,7 +143,7 @@ bool Shader::createVkShaderModule(VkDevice device) {
 }
 
 bool Shader::moduleCreated() const noexcept {
-  return impl_->moduleCreated();
+    return impl_->moduleCreated();
 }
 #elif defined(RDMN_OPENGL)
 int Shader::maxVertexAttribs() const noexcept {
@@ -158,4 +159,4 @@ const Shader::ShaderHandle &Shader::handle() const noexcept {
 static_assert(false, "Rasterizer backend not selected, build configuration malformed!");
 #endif
 
-}
+}// namespace rdmn::render

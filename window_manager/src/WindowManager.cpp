@@ -1,18 +1,16 @@
-#include <rcbe-engine/core/WindowManager.hpp>
-#include <rcbe-engine/core/XWWindow.hpp>
+#include <boost/log/trivial.hpp>
 
 #include <nlohmann/json.hpp>
 
-#include <boost/log/trivial.hpp>
+#include <rcbe-engine/core/WindowManager.hpp>
+#include <rcbe-engine/core/XWWindow.hpp>
 
-static constexpr const char * x_del_window_msg = "WM_DELETE_WINDOW";
+static constexpr const char *x_del_window_msg = "WM_DELETE_WINDOW";
 
 namespace rcbe::core {
 WindowManager::WindowManager(bool multi_thread, size_t max_wins)
-:
-maximum_windows_ { max_wins }
-, window_context_ { std::make_shared<WindowContext>() }
-{
+    : maximum_windows_ {max_wins}
+    , window_context_ {std::make_shared<WindowContext>()} {
     if (multi_thread) {
         auto status = XInitThreads();
         if (!status)
@@ -44,12 +42,12 @@ WindowPtr WindowManager::createWindow(const nlohmann::json &json_config) {
 }
 
 WindowManager::~WindowManager() {
-    while(!windows_created_.empty()) {
-        auto& w = windows_created_.top();
+    while (!windows_created_.empty()) {
+        auto &w = windows_created_.top();
         w->kill();
         windows_created_.pop();
     }
 
     XCloseDisplay(window_context_->getRootDisplay());
 }
-}
+}// namespace rcbe::core

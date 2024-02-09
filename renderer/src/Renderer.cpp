@@ -1,8 +1,8 @@
 #include <variant>
 
+#include <rcbe-engine/exceptions/not_implemented.hpp>
 #include <rcbe-engine/fundamentals/convinience.hpp>
 #include <rcbe-engine/renderer/Renderer.hpp>
-#include <rcbe-engine/exceptions/not_implemented.hpp>
 
 #ifdef RDMN_VULKAN
 #include "VulkanRenderer.hpp"
@@ -17,8 +17,9 @@ static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 namespace rdmn::render {
 class RendererImpl {
 public:
+
     RendererImpl() = delete;
-    RendererImpl(rcbe::rendering::renderer_config &&config, const std::shared_ptr<rcbe::rendering::RenderingContext>& context);
+    RendererImpl(rcbe::rendering::renderer_config &&config, const std::shared_ptr<rcbe::rendering::RenderingContext> &context);
     ~RendererImpl() = default;
 
     [[nodiscard]] bool running() const;
@@ -26,7 +27,7 @@ public:
     void start();
     void stop();
 
-    [[nodiscard]] const rcbe::rendering::renderer_config& getConfig() const noexcept;
+    [[nodiscard]] const rcbe::rendering::renderer_config &getConfig() const noexcept;
 
     void reshape();
 
@@ -36,6 +37,7 @@ public:
     void waitRendererReady();
 
 private:
+
 #ifdef RDMN_VULKAN
     VulkanRendererPtr impl_;
 #elif defined(RDMN_OPENGL)
@@ -59,7 +61,7 @@ void RendererImpl::stop() {
     impl_->stop();
 }
 
-const rcbe::rendering::renderer_config& RendererImpl::getConfig() const noexcept {
+const rcbe::rendering::renderer_config &RendererImpl::getConfig() const noexcept {
     return impl_->getConfig();
 }
 
@@ -85,31 +87,29 @@ void RendererImpl::waitRendererReady() {
 }
 
 RendererImpl::RendererImpl(
-        rcbe::rendering::renderer_config &&config,
-        const std::shared_ptr<rcbe::rendering::RenderingContext>& context
+    rcbe::rendering::renderer_config &&config,
+    const std::shared_ptr<rcbe::rendering::RenderingContext> &context
 #ifdef RDMN_VULKAN
-) : impl_{std::make_unique<VulkanRenderer>(std::move(config), context)} {
+    )
+    : impl_ {std::make_unique<VulkanRenderer>(std::move(config), context)} {
 #elif defined(RDMN_OPENGL)
-) : impl_{std::make_unique<GLRenderer>(std::move(config), context)} {
+    )
+    : impl_ {std::make_unique<GLRenderer>(std::move(config), context)} {
 #elif defined(RDMN_DIRECTX) && defined(_WIN32)
-/// TODO: fill when DirectX rendering is implemented
-){
+    /// TODO: fill when DirectX rendering is implemented
+) {
 #else
-){
-static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
+) {
+    static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 #endif
-
 }
 
 Renderer::~Renderer() = default;
 
 Renderer::Renderer(
-        rcbe::rendering::renderer_config &&config,
-        const std::shared_ptr<rcbe::rendering::RenderingContext> &context
-        )
-:
-impl_( std::make_unique<RendererImpl>(std::move(config), context)) {
-
+    rcbe::rendering::renderer_config &&config,
+    const std::shared_ptr<rcbe::rendering::RenderingContext> &context)
+    : impl_(std::make_unique<RendererImpl>(std::move(config), context)) {
 }
 
 bool Renderer::running() const {
@@ -128,7 +128,7 @@ void Renderer::stop() {
     impl_->stop();
 }
 
-const rcbe::rendering::renderer_config& Renderer::getConfig() const noexcept {
+const rcbe::rendering::renderer_config &Renderer::getConfig() const noexcept {
     return impl_->getConfig();
 }
 
@@ -150,16 +150,14 @@ void Renderer::reshape() {
 }
 
 RendererPtr make_renderer_ptr(
-        rcbe::rendering::renderer_config &&config,
-        const std::shared_ptr<rcbe::rendering::RenderingContext> &context
-) {
+    rcbe::rendering::renderer_config &&config,
+    const std::shared_ptr<rcbe::rendering::RenderingContext> &context) {
     return std::make_unique<Renderer>(std::move(config), context);
 }
 
 RendererConstPtr make_renderer_const_ptr(
-        rcbe::rendering::renderer_config &&config,
-        const std::shared_ptr<rcbe::rendering::RenderingContext> &context
-) {
+    rcbe::rendering::renderer_config &&config,
+    const std::shared_ptr<rcbe::rendering::RenderingContext> &context) {
     return std::make_unique<const Renderer>(std::move(config), context);
 }
-}
+}// namespace rdmn::render

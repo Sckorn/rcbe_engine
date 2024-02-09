@@ -10,6 +10,7 @@
 namespace rdmn::render {
 class VulkanShader {
 public:
+
     VulkanShader(const rcbe::core::EnginePath &path, ShaderType type, ShaderState state = ShaderState::source);
     ~VulkanShader();
 
@@ -29,6 +30,7 @@ public:
     [[nodiscard]] bool createVkShaderModule(VkDevice device);
 
 public:
+
     ShaderType type_ = ShaderType::unknown;
     ShaderState state_ = ShaderState::unknown;
     rcbe::core::EnginePath shader_path_;
@@ -38,6 +40,6 @@ public:
     VkShaderModule shader_module_;
     bool shader_module_created_ = false;
 };
-}
+}// namespace rdmn::render
 
-#endif //RDMN_ENGINE_VULKANSHADER_HPP
+#endif//RDMN_ENGINE_VULKANSHADER_HPP

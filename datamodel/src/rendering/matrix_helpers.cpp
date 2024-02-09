@@ -1,5 +1,4 @@
 #include <rcbe-engine/datamodel/rendering/matrix_helpers.hpp>
-
 #include <rcbe-engine/fundamentals/convinience.hpp>
 
 namespace {
@@ -17,11 +16,10 @@ rcbe::math::Matrix4x4 makePerspectiveGL(const rcbe::core::EngineScalar near,
         throw std::runtime_error("Can't compute cotangent");
 
     rcbe::math::Matrix4x4 ret {
-            1 / (tan * aspect), 0, 0, 0,
-            0, 1 / tan, 0, 0,
-            0, 0, -((far + near)/(far - near)), -(2 * far * near) / (far - near),
-            0, 0, -1, 0
-    };
+        1 / (tan * aspect), 0, 0, 0,
+        0, 1 / tan, 0, 0,
+        0, 0, -((far + near) / (far - near)), -(2 * far * near) / (far - near),
+        0, 0, -1, 0};
 
     return ret;
 }
@@ -41,16 +39,15 @@ rcbe::math::Matrix4x4 makePerspectiveVulkan(const rcbe::core::EngineScalar near,
     const auto half_tan_fov = std::tan(fovy_rad / static_cast<float>(2));
 
     rcbe::math::Matrix4x4 ret {
-            1 / (aspect * half_tan_fov), 0.0, 0.0, 0.0,
-            0.0, -(1 / half_tan_fov), 0.0, 0.0,
-            0.0, 0.0, far / (near - far),  -(far * near) / (far - near),
-            0.0, 0.0, -1.0, 0.0
-    };
+        1 / (aspect * half_tan_fov), 0.0, 0.0, 0.0,
+        0.0, -(1 / half_tan_fov), 0.0, 0.0,
+        0.0, 0.0, far / (near - far), -(far * near) / (far - near),
+        0.0, 0.0, -1.0, 0.0};
 
     return ret;
 }
 
-}
+}// namespace
 
 namespace rdmn::render {
 rcbe::math::Matrix4x4 makePerspectiveMatrix(
@@ -67,4 +64,4 @@ rcbe::math::Matrix4x4 makePerspectiveMatrix(
     static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 #endif
 }
-}
+}// namespace rdmn::render

@@ -2,14 +2,12 @@
 
 namespace rcbe::math {
 deg::deg(double rot)
-:
-detail::rotations_base<deg>(rot) {
+    : detail::rotations_base<deg>(rot) {
     clamp(deg::ABS_MAX_VALUE);
 }
 
 rad::rad(double rot)
-:
-detail::rotations_base<rad>(rot) {
+    : detail::rotations_base<rad>(rot) {
     clamp(rad::ABS_MAX_VALUE);
 }
 
@@ -20,4 +18,4 @@ rad deg::as_rad() const {
 deg rad::as_deg() const {
     return deg(rad_to_deg(static_cast<const core::EngineScalar>(rotation_)));
 }
-}
+}// namespace rcbe::math

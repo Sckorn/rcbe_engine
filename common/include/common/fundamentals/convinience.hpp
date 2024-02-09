@@ -27,6 +27,6 @@ namespace rdmn::core {
 /// TODO: static_assert doesn't take constexpr constants, so we have to use macro here
 #define RASTERIZER_NOT_SET_ERROR_MSG "Rasterizer is not set! Build is malformed!"
 
-}
+}// namespace rdmn::core
 
-#endif //RDMN_ENGINE_CONVINIENCE_HPP
+#endif//RDMN_ENGINE_CONVINIENCE_HPP

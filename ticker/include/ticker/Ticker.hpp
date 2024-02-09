@@ -2,47 +2,46 @@
 #define RCBE_ENGINE_TICKER_HPP
 
 #include <chrono>
-#include <thread>
-#include <mutex>
 #include <functional>
-
-#include <rcbe-engine/traits/time_traits.hpp>
+#include <mutex>
+#include <thread>
 
 #include <boost/log/trivial.hpp>
+
+#include <rcbe-engine/traits/time_traits.hpp>
 
 namespace rcbe::core {
 class Ticker {
 public:
+
     using PeriodType = std::chrono::nanoseconds;
     using HandlerType = std::function<void(void)>;
     using ClockType = std::chrono::steady_clock;
 
     Ticker() = delete;
-    template <typename Duration, typename = std::enable_if_t <rcbe::utility::duration_type_v<Duration>, void>>
-    explicit Ticker(Duration&& period, HandlerType&& handler)
-    :
-    period_ { std::chrono::duration_cast<PeriodType>(period) }
-    , handler_ { std::move(handler) }
-    , start_time_ { Ticker::ClockType ::now() }
-    , running_ (true)
-    , ticker_thread_([this]() {
-        while (running_) {
-            BOOST_LOG_TRIVIAL(debug) << std::boolalpha << running_ << " thread id " << std::this_thread::get_id();
-            if (handler_ && running_)
-                handler_();
-            std::this_thread::sleep_for(period_);
-        }
-    })
-    {}
+    template <typename Duration, typename = std::enable_if_t<rcbe::utility::duration_type_v<Duration>, void>>
+    explicit Ticker(Duration &&period, HandlerType &&handler)
+        : period_ {std::chrono::duration_cast<PeriodType>(period)}
+        , handler_ {std::move(handler)}
+        , start_time_ {Ticker::ClockType ::now()}
+        , running_(true)
+        , ticker_thread_([this]() {
+            while (running_) {
+                BOOST_LOG_TRIVIAL(debug) << std::boolalpha << running_ << " thread id " << std::this_thread::get_id();
+                if (handler_ && running_)
+                    handler_();
+                std::this_thread::sleep_for(period_);
+            }
+        }) {}
     ~Ticker();
 
-    Ticker(const Ticker& other) = delete;
-    Ticker &operator=(const Ticker& other) = delete;
+    Ticker(const Ticker &other) = delete;
+    Ticker &operator=(const Ticker &other) = delete;
 
-    Ticker(Ticker&& other) = default;
-    Ticker &operator=(Ticker&& other) = default;
+    Ticker(Ticker &&other) = default;
+    Ticker &operator=(Ticker &&other) = default;
 
-    void setHandler(HandlerType&& handler);
+    void setHandler(HandlerType &&handler);
     void stop();
 
     [[nodiscard]] PeriodType deltaTime() const;
@@ -61,6 +60,6 @@ private:
     HandlerType handler_;
     ClockType::time_point start_time_;
 };
-}
+}// namespace rcbe::core
 
-#endif //RCBE_ENGINE_TICKER_HPP
+#endif//RCBE_ENGINE_TICKER_HPP

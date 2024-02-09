@@ -1,14 +1,13 @@
 #ifndef RCBE_ENGINE_BUFFEROBJECT_HPP
 #define RCBE_ENGINE_BUFFEROBJECT_HPP
 
-#include <vector>
-#include <variant>
 #include <optional>
+#include <variant>
+#include <vector>
 
 #include <GL/gl.h>
 
 #include <rcbe-engine/core/gl_extensions.hpp>
-
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 
 namespace rcbe::rendering {
@@ -22,6 +21,7 @@ public:
 
     class VertexArrayObject {
     public:
+
         VertexArrayObject();
         ~VertexArrayObject();
 
@@ -37,11 +37,11 @@ public:
         void setData(const StorageType &vertices, const StorageType &normals) const;
         void setData(const StorageType &vertices, const StorageType &normals, const StorageType &colors) const;
         void setData(
-                const StorageType &vertices,
-                const StorageType &normals,
-                const StorageType &colors,
-                const StorageType &tex_coords
-                ) const;
+            const StorageType &vertices,
+            const StorageType &normals,
+            const StorageType &colors,
+            const StorageType &tex_coords) const;
+
     private:
 
         unsigned int id_ = 0;
@@ -87,7 +87,7 @@ private:
 
     GLuint id_ = 0;
 
-    ssize_t source_size_; // since size of all filled containers (i.e. vertices, normals, colors) should be the same we keep only one size
+    ssize_t source_size_;// since size of all filled containers (i.e. vertices, normals, colors) should be the same we keep only one size
     ssize_t buffer_size_bytes_;
 
     ssize_t vertices_byte_size_;
@@ -105,12 +105,14 @@ private:
 
 class IndexBufferObject {
 public:
+
     using ValueType = GLuint;
     using StorageType = std::vector<ValueType>;
     using RawDataType = const ValueType *;
 
     class ElementBufferObject {
     public:
+
         ElementBufferObject();
         ~ElementBufferObject();
 
@@ -125,6 +127,7 @@ public:
         void setData(const StorageType &indices) const;
 
     private:
+
         unsigned int id_ = 0;
         mutable bool binded_ = false;
     };
@@ -132,7 +135,7 @@ public:
     IndexBufferObject() = delete;
     ~IndexBufferObject();
 
-    IndexBufferObject(const std::vector<rcbe::geometry::Mesh>& meshes, const VertexBufferObject& vbo, bool use_ebo = false);
+    IndexBufferObject(const std::vector<rcbe::geometry::Mesh> &meshes, const VertexBufferObject &vbo, bool use_ebo = false);
 
     IndexBufferObject(const IndexBufferObject &other) = delete;
     IndexBufferObject &operator=(const IndexBufferObject &other) = delete;
@@ -150,6 +153,7 @@ public:
     [[nodiscard]] const ElementBufferObject &ebo() const;
 
 private:
+
     GLuint id_;
     StorageType indices_;
     mutable bool binded_ = false;
@@ -157,6 +161,6 @@ private:
     std::optional<ElementBufferObject> ebo_ = {};
 };
 
-}
+}// namespace rcbe::rendering
 
-#endif //RCBE_ENGINE_BUFFEROBJECT_HPP
+#endif//RCBE_ENGINE_BUFFEROBJECT_HPP

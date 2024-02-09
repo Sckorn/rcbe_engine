@@ -2,7 +2,7 @@
 
 
 namespace rcbe::rendering {
-void RenderingContext::setDisplay(Display* d) {
+void RenderingContext::setDisplay(Display *d) {
     x_display_ = d;
 }
 
@@ -34,7 +34,7 @@ GLXDrawable RenderingContext::getDrawable() const noexcept {
     return gl_x_window_;
 }
 
-void RenderingContext::setBackgroundColor(const rcbe::visual::RGBAColor& color) {
+void RenderingContext::setBackgroundColor(const rcbe::visual::RGBAColor &color) {
     background_color_ = color;
 }
 
@@ -42,7 +42,7 @@ const rcbe::visual::RGBAColor &RenderingContext::getBackgroundColor() const noex
     return background_color_;
 }
 
-void RenderingContext::setWindowDimensions(const rcbe::core::IntegralDimensions& d) {
+void RenderingContext::setWindowDimensions(const rcbe::core::IntegralDimensions &d) {
     std::lock_guard lg {dimensions_mutex_};
 
     window_dimensions_ = d;
@@ -54,7 +54,7 @@ const rcbe::core::IntegralDimensions &RenderingContext::getWindowDimensions() co
     return window_dimensions_;
 }
 
-void RenderingContext::updateTransform(const rcbe::math::Transform& trn) {
+void RenderingContext::updateTransform(const rcbe::math::Transform &trn) {
     std::lock_guard lg {transform_mutex_};
 
     scene_transform_ = rcbe::math::MatrixColumnMajorAdaptor(trn.matrix());
@@ -73,7 +73,7 @@ const math::Transform &RenderingContext::getSceneTransform() const {
     return rowmajor_scene_transform_;
 }
 
-void RenderingContext::setMouseCoordinates(const rcbe::math::Vector2d& v) {
+void RenderingContext::setMouseCoordinates(const rcbe::math::Vector2d &v) {
     std::lock_guard lg {mouse_mutex_};
 
     mouse_coordinates_ = v;
@@ -98,12 +98,12 @@ void RenderingContext::updateFov(const rcbe::math::deg zoom) {
 }
 
 VisualID RenderingContext::visualId() const {
-    std::lock_guard lg{visualid_mutex_};
+    std::lock_guard lg {visualid_mutex_};
     return visual_id_;
 }
 
 void RenderingContext::setVisualId(VisualID id) {
-    std::lock_guard lg{visualid_mutex_};
+    std::lock_guard lg {visualid_mutex_};
     visual_id_ = id;
 }
 
@@ -120,4 +120,4 @@ float RenderingContext::computeDeltaTime() {
     return delta_time_;
 }
 
-}
+}// namespace rcbe::rendering

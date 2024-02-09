@@ -1,30 +1,27 @@
-#include <rcbe-engine/datamodel/math/Matrix.hpp>
-
 #include <rcbe-engine/camera/Camera.hpp>
-
-#include <rcbe-engine/fundamentals/convinience.hpp>
+#include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/math_constants.hpp>
 #include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
 #include <rcbe-engine/exceptions/not_implemented.hpp>
+#include <rcbe-engine/fundamentals/convinience.hpp>
 
 /// Vulkan Euler Are ZXY
 
 
 namespace rcbe::rendering {
 Camera::Camera(const rendering::RenderingContextPtr &context, const rendering::camera_config &config)
-:
-initial_position_ { config.camera_position }
-, initial_lookat_ { config.camera_lookat }
-, initial_up_ { config.camera_up }
-, max_fov_ { config.max_fov }
-, min_fov_ { config.min_fov }
-, def_fov_ { config.def_fov }
-, context_ { context }
-, transform_ {lookAt(initial_position_, initial_lookat_, initial_up_) }
+    : initial_position_ {config.camera_position}
+    , initial_lookat_ {config.camera_lookat}
+    , initial_up_ {config.camera_up}
+    , max_fov_ {config.max_fov}
+    , min_fov_ {config.min_fov}
+    , def_fov_ {config.def_fov}
+    , context_ {context}
+    , transform_ {lookAt(initial_position_, initial_lookat_, initial_up_)}
 #ifdef RDMN_VULKAN
-, initial_euler_ { math::yprFromMatrix(transform_.matrix()) }
-, yaw_ { std::get<0>(initial_euler_) }
-, pitch_ { std::get<1>(initial_euler_) }
+    , initial_euler_ {math::yprFromMatrix(transform_.matrix())}
+    , yaw_ {std::get<0>(initial_euler_)}
+    , pitch_ {std::get<1>(initial_euler_)}
 #endif
 {
     if (!context_)
@@ -32,7 +29,8 @@ initial_position_ { config.camera_position }
 
     context_->updateFov(fov_);
 
-    BOOST_LOG_TRIVIAL(debug) << "Initial Camera view rotation matrix \n" << transform_.matrix();
+    BOOST_LOG_TRIVIAL(debug) << "Initial Camera view rotation matrix \n"
+                             << transform_.matrix();
 
     updateContext(transform_);
 
@@ -44,7 +42,7 @@ void Camera::updateContext(const TransformType &t) {
     context_->updateTransform(t);
 }
 
-math::Matrix4x4 Camera::lookAt(const math::Vector3d& camera_position, const math::Vector3d& lookat, const math::Vector3d& up) {
+math::Matrix4x4 Camera::lookAt(const math::Vector3d &camera_position, const math::Vector3d &lookat, const math::Vector3d &up) {
 #ifdef RDMN_VULKAN
     return lookAtVulkan(camera_position, lookat, up);
 #elif defined(RDMN_OPENGL)
@@ -57,9 +55,9 @@ math::Matrix4x4 Camera::lookAt(const math::Vector3d& camera_position, const math
 
 #ifdef RDMN_OPENGL
 math::Matrix4x4 Camera::lookAtGL(
-        const math::Vector3d& camera_position,
-        const math::Vector3d& lookat,
-        const math::Vector3d& up) {
+    const math::Vector3d &camera_position,
+    const math::Vector3d &lookat,
+    const math::Vector3d &up) {
     position_ = camera_position;
     // direction is negated due to OpenGL's positive Z pointing towards camera,
     // and as such a vector pointing forward out of the camera is negative Z
@@ -68,18 +66,16 @@ math::Matrix4x4 Camera::lookAtGL(
     up_ = math::Vector3d ::cross(direction_, right_).normalized();
 
     auto left_part = math::Matrix4x4 {
-            right_.x(), right_.y(), right_.z(), 0,
-            up_.x(), up_.y(), up_.z(), 0,
-            direction_.x(), direction_.y(), direction_.z(), 0,
-            0, 0, 0, 1
-    };
+        right_.x(), right_.y(), right_.z(), 0,
+        up_.x(), up_.y(), up_.z(), 0,
+        direction_.x(), direction_.y(), direction_.z(), 0,
+        0, 0, 0, 1};
 
     auto right_part = math::Matrix4x4 {
-            1, 0, 0, -position_.x(),
-            0, 1, 0, -position_.y(),
-            0, 0, 1, -position_.z(),
-            0, 0, 0, 1
-    };
+        1, 0, 0, -position_.x(),
+        0, 1, 0, -position_.y(),
+        0, 0, 1, -position_.z(),
+        0, 0, 0, 1};
 
     return left_part * right_part;
 }
@@ -87,25 +83,24 @@ math::Matrix4x4 Camera::lookAtGL(
 
 #ifdef RDMN_VULKAN
 math::Matrix4x4 Camera::lookAtVulkan(
-        const math::Vector3d& camera_position,
-        const math::Vector3d& lookat,
-        const math::Vector3d& up) {
+    const math::Vector3d &camera_position,
+    const math::Vector3d &lookat,
+    const math::Vector3d &up) {
     position_ = camera_position;
     direction_ = (lookat - position_).normalized();
     right_ = math::Vector3d::cross(direction_, up).normalized(); // u
-    up_ = math::Vector3d::cross(right_, direction_).normalized(); // v
+    up_ = math::Vector3d::cross(right_, direction_).normalized();// v
 
     return math::Matrix4x4 {
-            right_.x(), right_.y(), right_.z(), -(right_ * position_),
-            up_.x(), up_.y(), up_.z(), -(up_ * position_),
-            -direction_.x(), -direction_.y(), -direction_.z(), (direction_ * position_),
-            0, 0, 0, 1
-    };
+        right_.x(), right_.y(), right_.z(), -(right_ * position_),
+        up_.x(), up_.y(), up_.z(), -(up_ * position_),
+        -direction_.x(), -direction_.y(), -direction_.z(), (direction_ * position_),
+        0, 0, 0, 1};
 }
 #endif
 
-const Camera::TransformType& Camera::getTransform() const {
-    std::lock_guard lg{translate_mutex_};
+const Camera::TransformType &Camera::getTransform() const {
+    std::lock_guard lg {translate_mutex_};
     return transform_;
 }
 
@@ -119,8 +114,8 @@ void Camera::resetView() {
     pitch_ = std::get<1>(initial_euler_);
 #endif
 #ifdef RDMN_OPENGL
-    yaw_ = math::yaw { math::deg(-90.)};
-    pitch_ = math::pitch { math::deg(0.)};
+    yaw_ = math::yaw {math::deg(-90.)};
+    pitch_ = math::pitch {math::deg(0.)};
 #endif
 }
 
@@ -143,8 +138,8 @@ math::Vector3d Camera::cameraRight() const {
     return math::Vector3d::cross(cameraDirection(), cameraUp()).normalized();
 }
 
-void Camera::translate(const rcbe::math::Vector3d& direction, const rcbe::math::Vector3d& look_direction) {
-    std::lock_guard lg{translate_mutex_};
+void Camera::translate(const rcbe::math::Vector3d &direction, const rcbe::math::Vector3d &look_direction) {
+    std::lock_guard lg {translate_mutex_};
     const auto curr_pos = position_;
     const auto new_pos = direction + curr_pos;
 
@@ -187,7 +182,7 @@ math::Matrix4x4 Camera::directionVectorVulkan() {
 #endif
 
 math::Matrix4x4 Camera::matrixFromYPR(const math::yaw &ystep, const math::pitch &pstep) {
-    const auto rm = math::matrixFromZXY(math::roll{}, pstep, -ystep);
+    const auto rm = math::matrixFromZXY(math::roll {}, pstep, -ystep);
     const auto res = rm * transform_.matrix();
 
     direction_ = -res.getRow(2).lowerDimension().normalized();
@@ -223,29 +218,29 @@ math::Matrix4x4 Camera::rotationImpl(const math::yaw &ystep, const math::pitch &
 }
 
 const math::pitch &Camera::getPitch() const noexcept {
-    std::lock_guard lg{rotate_mutex_};
+    std::lock_guard lg {rotate_mutex_};
 
     return pitch_;
 }
 
 const math::yaw &Camera::getYaw() const noexcept {
-    std::lock_guard lg{rotate_mutex_};
+    std::lock_guard lg {rotate_mutex_};
 
     return yaw_;
 }
 
 math::pitch Camera::clampPitch(math::pitch pitch) const {
-    if (auto degpihalfpos = math::pitch { math::deg { 90. } }; pitch > degpihalfpos) {
+    if (auto degpihalfpos = math::pitch {math::deg {90.}}; pitch > degpihalfpos) {
         return degpihalfpos;
-    } else if(auto degpihalfneg = math::pitch { math::deg { -90. } }; pitch < degpihalfneg ) {
+    } else if (auto degpihalfneg = math::pitch {math::deg {-90.}}; pitch < degpihalfneg) {
         return degpihalfneg;
     }
 
     return pitch;
 }
 
-void Camera::rotate(math::pitch&& pstep, math::yaw&& ystep) {
-    std::lock_guard lg{rotate_mutex_};
+void Camera::rotate(math::pitch &&pstep, math::yaw &&ystep) {
+    std::lock_guard lg {rotate_mutex_};
 
 #if RDMN_VULKAN
     updateContext(math::Transform(rotationImpl(ystep, pstep)));
@@ -265,17 +260,17 @@ void Camera::rotate(math::pitch&& pstep, math::yaw&& ystep) {
 #endif
 }
 
-void Camera::rotate(math::pitch&& step) {
-    std::lock_guard lg{rotate_mutex_};
+void Camera::rotate(math::pitch &&step) {
+    std::lock_guard lg {rotate_mutex_};
 
 #if RDMN_VULKAN
-    updateContext(math::Transform(rotationImpl(math::yaw { math::deg { 0.0 } }, step )));
+    updateContext(math::Transform(rotationImpl(math::yaw {math::deg {0.0}}, step)));
     pitch_ += step;
     pitch_ = clampPitch(pitch_);
 #elif RDMN_OPENGL
     pitch_ += step;
     pitch_ = clampPitch(pitch_);
-    updateContext(math::Transform(rotationImpl( )));
+    updateContext(math::Transform(rotationImpl()));
 #elif defined(RDMN_OPENGL) && defined(_WIN32)
     throw exception::not_implmented(std::string(R_READABLE_FUNC_NAME) + " not implemented for Windows");
 #else
@@ -283,11 +278,11 @@ void Camera::rotate(math::pitch&& step) {
 #endif
 }
 
-void Camera::rotate(math::yaw&& step) {
-    std::lock_guard lg{rotate_mutex_};
+void Camera::rotate(math::yaw &&step) {
+    std::lock_guard lg {rotate_mutex_};
 
 #if RDMN_VULKAN
-    updateContext(math::Transform(rotationImpl(step, math::pitch { math::deg { 0.0 } } )));
+    updateContext(math::Transform(rotationImpl(step, math::pitch {math::deg {0.0}})));
     yaw_ += step;
 #elif RDMN_OPENGL
     yaw_ += step;
@@ -299,23 +294,23 @@ void Camera::rotate(math::yaw&& step) {
 #endif
 }
 
-void Camera::setAngles(math::pitch&& p, math::yaw&& y) {
-    std::lock_guard lg{rotate_mutex_};
+void Camera::setAngles(math::pitch &&p, math::yaw &&y) {
+    std::lock_guard lg {rotate_mutex_};
 
     pitch_ = p;
     yaw_ = y;
     updateContext(math::Transform(rotationImpl()));
 }
 
-void Camera::setPitch(math::pitch&& p) {
-    std::lock_guard lg{rotate_mutex_};
+void Camera::setPitch(math::pitch &&p) {
+    std::lock_guard lg {rotate_mutex_};
     pitch_ = p;
     pitch_ = clampPitch(std::move(pitch_));
     updateContext(math::Transform(rotationImpl()));
 }
 
-void Camera::setYaw(math::yaw&& y) {
-    std::lock_guard lg{rotate_mutex_};
+void Camera::setYaw(math::yaw &&y) {
+    std::lock_guard lg {rotate_mutex_};
     yaw_ = y;
     updateContext(math::Transform(rotationImpl()));
 }
@@ -341,4 +336,4 @@ void Camera::zoomOut(rcbe::core::EngineScalar step) {
 CameraPtr make_camera(rendering::RenderingContextPtr ctx, const rendering::camera_config &config) {
     return std::make_shared<Camera>(ctx, config);
 }
-}
+}// namespace rcbe::rendering

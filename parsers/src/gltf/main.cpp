@@ -3,10 +3,9 @@
 #include <boost/log/trivial.hpp>
 
 #include <rcbe-engine/parsers/gltf/gltf_parser.hpp>
-
 #include <rcbe-engine/utils/output_utils.hpp>
 
-auto main(int argc, char * argv[]) -> int {
+auto main(int argc, char *argv[]) -> int {
     rcbe::utils::setup_logging(boost::log::trivial::trace);
     const auto gltf_path = argv[1];
     const auto bin_path = argv[2];

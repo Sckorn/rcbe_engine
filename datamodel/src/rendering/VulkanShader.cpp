@@ -1,15 +1,14 @@
-#include <fstream>
-
 #include "VulkanShader.hpp"
+
+#include <fstream>
 
 #include <boost/log/trivial.hpp>
 
 namespace rdmn::render {
 VulkanShader::VulkanShader(const rcbe::core::EnginePath &path, ShaderType type, ShaderState state)
-:
-type_(type)
-, state_(state)
-, shader_path_(path) {
+    : type_(type)
+    , state_(state)
+    , shader_path_(path) {
     if (!std::filesystem::exists(shader_path_) || !std::filesystem::is_regular_file(path))
         throw std::runtime_error("Shader file doesn't exist or not a file!");
 
@@ -46,7 +45,7 @@ const rcbe::core::EnginePath &VulkanShader::path() const noexcept {
 }
 
 bool VulkanShader::isCompiled() const noexcept {
-    return true; /// TODO: fix this once on the fly compilation is implemented @sckorn, @radameon
+    return true;/// TODO: fix this once on the fly compilation is implemented @sckorn, @radameon
 }
 
 ShaderType VulkanShader::type() const noexcept {
@@ -54,14 +53,14 @@ ShaderType VulkanShader::type() const noexcept {
 }
 
 [[nodiscard]] bool VulkanShader::moduleCreated() const noexcept {
-  return shader_module_created_;
+    return shader_module_created_;
 }
 
 bool VulkanShader::createVkShaderModule(VkDevice device) {
     VkShaderModuleCreateInfo create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     create_info.codeSize = shader_bytes_.size();
-    create_info.pCode = reinterpret_cast<const uint32_t*>(shader_bytes_.data());
+    create_info.pCode = reinterpret_cast<const uint32_t *>(shader_bytes_.data());
 
     auto res = vkCreateShaderModule(device, std::addressof(create_info), nullptr, std::addressof(shader_module_));
 
@@ -75,4 +74,4 @@ bool VulkanShader::createVkShaderModule(VkDevice device) {
     return true;
 }
 
-}
+}// namespace rdmn::render

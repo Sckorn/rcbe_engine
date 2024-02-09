@@ -1,12 +1,12 @@
-#include <gtest/gtest.h>
-
 #include <memory>
 
-#include <rcbe-engine/utils/json_utils.hpp>
-#include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
+#include <gtest/gtest.h>
+
 #include <rcbe-engine/camera/Camera.hpp>
-#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 #include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
+#include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
+#include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
+#include <rcbe-engine/utils/json_utils.hpp>
 
 /// TODO: implement for OpenGL as well @sckorn @radameon
 #ifdef RDMN_VULKAN
@@ -14,9 +14,9 @@
 /// but we need to find a way to make it better @sckorn @radameon
 TEST(VulkanCamera, GetEulerFromMatrix) {
     auto camera_conf = rcbe::utils::read_from_file<rcbe::rendering::camera_config>(
-            "datamodel/data/rendering/vulkan_camera_config.json");
+        "datamodel/data/rendering/vulkan_camera_config.json");
     const auto rend_ctx = std::make_shared<rcbe::rendering::RenderingContext>();
-    rcbe::rendering::Camera cam { rend_ctx, camera_conf };
+    rcbe::rendering::Camera cam {rend_ctx, camera_conf};
 
     {
         auto ydeg = cam.getYaw().as_deg();
@@ -27,9 +27,9 @@ TEST(VulkanCamera, GetEulerFromMatrix) {
     }
 
     {
-        cam.rotate(rcbe::math::yaw { rcbe::math::deg {5.} });
+        cam.rotate(rcbe::math::yaw {rcbe::math::deg {5.}});
 
-        const auto [y, p, r] = rcbe::math::yprFromMatrix(cam.getTransform().matrix()); // roll is not used
+        const auto [y, p, r] = rcbe::math::yprFromMatrix(cam.getTransform().matrix());// roll is not used
         const auto ydeg = y.as_deg();
         const auto pdeg = p.as_deg();
 
@@ -41,11 +41,11 @@ TEST(VulkanCamera, GetEulerFromMatrix) {
     }
 
     {
-        cam.rotate(rcbe::math::pitch { rcbe::math::deg {5.} });
+        cam.rotate(rcbe::math::pitch {rcbe::math::deg {5.}});
 
         /// Different call [getRotation], due to need to test for 3x3 matrix as well,
         /// Above calls invoke 4x4 overload
-        const auto [y, p, r] = rcbe::math::yprFromMatrix(cam.getTransform().getRotation()); // roll is not used
+        const auto [y, p, r] = rcbe::math::yprFromMatrix(cam.getTransform().getRotation());// roll is not used
         const auto ydeg = y.as_deg();
         const auto pdeg = p.as_deg();
 
@@ -53,6 +53,5 @@ TEST(VulkanCamera, GetEulerFromMatrix) {
         ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<double>(ydeg), -5.72633, 0.1));
         ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<double>(pdeg), 59.7139));
     }
-
 }
 #endif
