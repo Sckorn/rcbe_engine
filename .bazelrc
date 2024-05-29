@@ -1,7 +1,6 @@
 ########## general ###########
 
 build --dynamic_mode=fully
-build --force_pic
 
 # there are 3 possible compilation_modes in bazel: fast-build (default, optimized for build time), dbg (debug), opt (-O2, -DNDEBUG)
 build -c opt
@@ -34,20 +33,78 @@ test --test_tag_filters=-integration_tests
 ####### compiler and linker options ######
 
 # enable c++20
-build --cxxopt=-std=c++2a
-build --host_cxxopt=-std=c++2a
+build:linux --cxxopt=-std=c++2a
+build:linux --host_cxxopt=-std=c++2a
 
-build --conlyopt=-std=c99
-build --host_conlyopt=-std=c99
+build:linux --conlyopt=-std=c99
+build:linux --host_conlyopt=-std=c99
 
-build --host_linkopt=-Wl,--no-undefined,--no-allow-shlib-undefined
+build:linux --host_linkopt=-Wl,--no-undefined,--no-allow-shlib-undefined
+
+build:windows --copt=/std:c++20
+build:windows --host_copt=/std:c++20
+build:windows --copt=/W0
+build:windows --host_copt=/W0
+
+# On Windows, `__cplusplus` is wrongly defined without this switch
+# See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+build:windows --copt=/Zc:__cplusplus
+build:windows --host_copt=/Zc:__cplusplus
+
+# For math constants that only get defined by MSVC headers if
+# _USE_MATH_DEFINES is defined.
+build:windows --copt=/D_USE_MATH_DEFINES
+build:windows --host_copt=/D_USE_MATH_DEFINES
+
+# Windows has a relatively short command line limit
+# See https://docs.bazel.build/versions/main/windows.html
+build:windows --features=compiler_param_file
+build:windows --features=archive_param_file
+
+# Speed Windows compile times. Available in VS 16.4 (we are on 17.0.1). See
+# https://groups.google.com/a/tensorflow.org/d/topic/build/SsW98Eo7l3o/discussion
+build:windows --copt=/d2ReducedOptimizeHugeFunctions
+build:windows --host_copt=/d2ReducedOptimizeHugeFunctions
+
+# Enable the runfiles symlink tree on Windows. 
+startup --windows_enable_symlinks
+build:windows --enable_runfiles
+
+# Make sure to include as little of windows.h as possible
+build:windows --copt=-DWIN32_LEAN_AND_MEAN
+build:windows --host_copt=-DWIN32_LEAN_AND_MEAN
+build:windows --copt=-DNOGDI
+build:windows --host_copt=-DNOGDI
+
+
 # Due to bazel needing bzip2 and us needing to build with clang 16
 # we need this flags, since bzip build fails miserably
 # thanks a lot bazel
-build --host_copt=-Wno-error=implicit-function-declaration
-build --copt=-Wno-error=implicit-function-declaration
-build --host_copt=-Wno-error=int-conversion
-build --copt=-Wno-error=int-conversion
+build:linux_clang16 --host_copt=-Wno-error=implicit-function-declaration
+build:linux_clang16 --copt=-Wno-error=implicit-function-declaration
+build:linux_clang16 --host_copt=-Wno-error=int-conversion
+build:linux_clang16 --copt=-Wno-error=int-conversion
+build:linux_clang16 --config=linux
+
+# MSVC (Windows): Standards-conformant preprocessor mode
+# See https://docs.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview
+build:windows --copt=/Zc:preprocessor
+build:windows --host_copt=/Zc:preprocessor
+
+# Misc build options we need for windows.
+build:windows --linkopt=/DEBUG
+build:windows --host_linkopt=/DEBUG
+build:windows --linkopt=/OPT:REF
+build:windows --host_linkopt=/OPT:REF
+build:windows --linkopt=/OPT:ICF
+build:windows --host_linkopt=/OPT:ICF
+
+# Verbose failure logs when something goes wrong
+build:windows --verbose_failures
+
+# Work around potential issues with large command lines on windows.
+# See: https://github.com/bazelbuild/bazel/issues/5163
+build:windows --features=compiler_param_file
 
 # TODO: enable hardball compiler flags
 build:hardball --host_copt=-Werror

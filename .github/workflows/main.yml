@@ -32,13 +32,13 @@ jobs:
         env:
           CC: /usr/bin/clang-16
           CXX: /usr/bin/clang++-16
-        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl //...
+        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl --config=linux_clang16 //...
 
       - name: bazel-test
         env:
           CC: /usr/bin/clang-16
           CXX: /usr/bin/clang++-16
-        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl --test_output=all //...
+        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl --config=linux_clang16 --test_output=all //...
 
   gcc-13-vulkan-build-test:
     runs-on: ubuntu-latest
@@ -62,13 +62,13 @@ jobs:
         env:
           CC: /usr/bin/gcc-13
           CXX: /usr/bin/g++-13
-        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan //...
+        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --config=linux //...
 
       - name: bazel-test
         env:
           CC: /usr/bin/gcc-13
           CXX: /usr/bin/g++-13
-        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all //...
+        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all --config=linux //...
 
   clang-16-vulkan-build-test:
     runs-on: ubuntu-latest
@@ -92,13 +92,13 @@ jobs:
         env:
           CC: /usr/bin/clang-16
           CXX: /usr/bin/clang++-16
-        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan //...
+        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --config=linux_clang16 //...
 
       - name: bazel-test
         env:
           CC: /usr/bin/clang-16
           CXX: /usr/bin/clang++-16
-        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all //...
+        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all --config=linux_clang16 //...
 
       - name: deploy-packages
         if: ${{ github.event_name == 'release' }}
