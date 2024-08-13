@@ -31,17 +31,6 @@ RUN VSC_DOWNLOAD_URL=https://go.microsoft.com/fwlink/?LinkID=760868 && \
 	dpkg -i /tmp/vscode.deb && \
     rm /tmp/vscode.deb
 
-ENV CLION_VERSION=2023.3.3
-
-RUN CLION_DOWNLOAD_URL="https://download.jetbrains.com/cpp/CLion-${CLION_VERSION}.tar.gz"; \
-    wget --output-document=/tmp/clion.tar.gz --tries=3 --continue --no-verbose "${CLION_DOWNLOAD_URL}" && \
-    mkdir -p /opt/clion && \
-    tar --gzip -xf /tmp/clion.tar.gz --strip-components=1 -C /opt/clion && \
-    rm /tmp/clion.tar.gz && \
-    sed -i 's/^-Xmx.*$/-Xmx4000m/' /opt/clion/bin/clion64.vmoptions && \
-    echo 'idea.system.path=${user.home}/clion' >> /opt/clion/bin/idea.properties && \
-    echo 'idea.config.path=${user.home}/.CLion/config' >> /opt/clion/bin/idea.properties
-
 RUN groupdel dialout
 
 COPY resources/entrypoint.sh /entrypoint.sh
