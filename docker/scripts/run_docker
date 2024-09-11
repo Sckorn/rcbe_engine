@@ -71,5 +71,6 @@ while getopts "t:v:i:c:s:f:h" opts; do
 done
 
 # Run container
+xhost +SI:localuser:$(id -un)
 echo "Running $service"
-docker-compose -f $yaml_file run --service-ports --rm $service
+docker compose -f $yaml_file run --service-ports --rm $service

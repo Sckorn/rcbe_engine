@@ -32,9 +32,9 @@ test --test_tag_filters=-integration_tests
 
 ####### compiler and linker options ######
 
-# enable c++20
-build:linux --cxxopt=-std=c++2a
-build:linux --host_cxxopt=-std=c++2a
+# enable c++23
+build:linux --cxxopt=-std=c++23
+build:linux --host_cxxopt=-std=c++23
 
 build:linux --conlyopt=-std=c99
 build:linux --host_conlyopt=-std=c99
@@ -80,11 +80,10 @@ build:windows --host_copt=-DNOGDI
 # Due to bazel needing bzip2 and us needing to build with clang 16
 # we need this flags, since bzip build fails miserably
 # thanks a lot bazel
-build:linux_clang16 --host_copt=-Wno-error=implicit-function-declaration
-build:linux_clang16 --copt=-Wno-error=implicit-function-declaration
-build:linux_clang16 --host_copt=-Wno-error=int-conversion
-build:linux_clang16 --copt=-Wno-error=int-conversion
-build:linux_clang16 --config=linux
+build:linux --host_copt=-Wno-error=implicit-function-declaration
+build:linux --copt=-Wno-error=implicit-function-declaration
+build:linux --host_copt=-Wno-error=int-conversion
+build:linux --copt=-Wno-error=int-conversion
 
 # MSVC (Windows): Standards-conformant preprocessor mode
 # See https://docs.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview

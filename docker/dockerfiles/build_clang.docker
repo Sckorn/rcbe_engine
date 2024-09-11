@@ -6,46 +6,46 @@ FROM radameon/build_${BASE}:latest
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Installing all clang 16 packages
+# Installing all clang 18 packages
 
-RUN echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> /etc/apt/sources.list && \
-    echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> /etc/apt/sources.list && \
-    echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main" >> /etc/apt/sources.list && \
-    echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main" >> /etc/apt/sources.list && \
+RUN echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble main" >> /etc/apt/sources.list && \
+    echo "deb-src http://apt.llvm.org/noble/ llvm-toolchain-noble main" >> /etc/apt/sources.list && \
+    echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" >> /etc/apt/sources.list && \
+    echo "deb-src http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" >> /etc/apt/sources.list && \
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
     apt-get -qq update && \
     apt-get -y -qq install \
         # LLVM
-        libllvm-16-ocaml-dev \
-        libllvm16 \
-        llvm-16 \
-        llvm-16-dev \
-        llvm-16-doc \
-        llvm-16-examples \
-        llvm-16-runtime \
+        libllvm-18-ocaml-dev \
+        libllvm18 \
+        llvm-18 \
+        llvm-18-dev \
+        llvm-18-doc \
+        llvm-18-examples \
+        llvm-18-runtime \
         # Clang and co
-        clang-16 \
-        clang-tools-16 \
-        clang-16-doc \
-        libclang-common-16-dev \
-        libclang-16-dev \
-        libclang1-16 \
-        clang-format-16 \
-        clangd-16 \
+        clang-18 \
+        clang-tools-18 \
+        clang-18-doc \
+        libclang-common-18-dev \
+        libclang-18-dev \
+        libclang1-18 \
+        clang-format-18 \
+        clangd-18 \
         # libfuzzer
-        libfuzzer-16-dev \
+        libfuzzer-18-dev \
         # lldb
-        lldb-16 \
+        lldb-18 \
         # lld (linker)
-        lld-16 \
+        lld-18 \
         # libc++
-        libc++-16-dev \
-        libc++abi-16-dev \
+        libc++-18-dev \
+        libc++abi-18-dev \
         # OpenMP
-        libomp-16-dev \
+        libomp-18-dev \
         # libclc
-        libclc-16-dev \
+        libclc-18-dev \
         # libunwind
-        libunwind-16-dev && \
+        libunwind-18-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

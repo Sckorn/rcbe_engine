@@ -74,12 +74,24 @@ def build_file(context, file, image_config, verbose=False):
         return False
 
     print("Docker build completed with zero retcode, processing the output")
-
-    success_marker = "Successfully built "
-    suc_string = ret.stdout.split('\n')[-2]
+    
+    if len(ret.stdout) > 0:
+        success_marker = "Successfully built "
+        suc_string = ret.stdout.split('\n')[-2]
+    else:
+        success_marker = "writing image sha256 "
+        suc_string = ret.stderr.split('\n')[-3]
+    
     substr_ind = suc_string.find(success_marker)
 
-    resulting_digest = suc_string[substr_ind + len(success_marker):-1]
+    if len(ret.stdout) > 0:
+        resulting_digest = suc_string[substr_ind + len(success_marker):-1].strip()
+    else:
+        resulting_digest = suc_string[substr_ind + len(success_marker):-5].split(':')[1].strip()
+
+    if ' ' in resulting_digest:
+        resulting_digest = resulting_digest.split(' ')[0]
+
     print("Resulting digest %s" % resulting_digest)
 
     if image_config:

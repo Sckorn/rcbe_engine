@@ -1,9 +1,9 @@
 # Base docker build from latest available ubuntu version
 
-FROM ubuntu:jammy
+FROM ubuntu:noble
 
 # Set some essential enviromental variables
-
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 

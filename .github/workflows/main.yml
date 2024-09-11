@@ -10,10 +10,10 @@ on:
     branches: [ master ]
 
 jobs:
-  clang-16-opengl-build-test:
+  clang-18-opengl-build-test:
     runs-on: ubuntu-latest
     container:
-      image: radameon/build:latest
+      image: radameon/build:clang-18
       #ports: # left here for quick reference, do no t remove
       #  - 80
       #volumes:
@@ -30,20 +30,20 @@ jobs:
 
       - name: bazel-build
         env:
-          CC: /usr/bin/clang-16
-          CXX: /usr/bin/clang++-16
-        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl --config=linux_clang16 //...
+          CC: /usr/bin/clang-18
+          CXX: /usr/bin/clang++-18
+        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl --config=linux //...
 
       - name: bazel-test
         env:
-          CC: /usr/bin/clang-16
-          CXX: /usr/bin/clang++-16
-        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl --config=linux_clang16 --test_output=all //...
+          CC: /usr/bin/clang-18
+          CXX: /usr/bin/clang++-18
+        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=opengl --config=linux --test_output=all //...
 
-  gcc-13-vulkan-build-test:
+  gcc-14-vulkan-build-test:
     runs-on: ubuntu-latest
     container:
-      image: radameon/build:latest
+      image: radameon/build:gcc-14
       #ports: # left here for quick reference, do no t remove
       #  - 80
       #volumes:
@@ -60,20 +60,20 @@ jobs:
 
       - name: bazel-build
         env:
-          CC: /usr/bin/gcc-13
-          CXX: /usr/bin/g++-13
+          CC: /usr/bin/gcc-14
+          CXX: /usr/bin/g++-14
         run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --config=linux //...
 
       - name: bazel-test
         env:
-          CC: /usr/bin/gcc-13
-          CXX: /usr/bin/g++-13
+          CC: /usr/bin/gcc-14
+          CXX: /usr/bin/g++-14
         run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all --config=linux //...
 
-  clang-16-vulkan-build-test:
+  clang-18-vulkan-build-test:
     runs-on: ubuntu-latest
     container:
-      image: radameon/build:latest
+      image: radameon/build:clang-18
       #ports: # left here for quick reference, do no t remove
       #  - 80
       #volumes:
@@ -90,21 +90,21 @@ jobs:
 
       - name: bazel-build
         env:
-          CC: /usr/bin/clang-16
-          CXX: /usr/bin/clang++-16
-        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --config=linux_clang16 //...
+          CC: /usr/bin/clang-18
+          CXX: /usr/bin/clang++-18
+        run: bazel build --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --config=linux //...
 
       - name: bazel-test
         env:
-          CC: /usr/bin/clang-16
-          CXX: /usr/bin/clang++-16
-        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all --config=linux_clang16 //...
+          CC: /usr/bin/clang-18
+          CXX: /usr/bin/clang++-18
+        run: bazel test --test_tag_filters=-local --build_tag_filters=-local --//meta_package:rdmn_rasterizer_back=vulkan --test_output=all --config=linux //...
 
       - name: deploy-packages
         if: ${{ github.event_name == 'release' }}
         env:
-          CC: /usr/bin/clang-16
-          CXX: /usr/bin/clang++-16
+          CC: /usr/bin/clang-18
+          CXX: /usr/bin/clang++-18
         run: python3 deploy_packages.py # replace with corresponding gen rule
 
       - uses: actions/upload-artifact@v4

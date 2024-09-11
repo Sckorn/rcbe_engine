@@ -11,7 +11,7 @@ services:
       # tools
       - type: bind
         source: $HOME/.gitconfig
-        target: /home/oper/.gitconfig
+        target: /home/radameon/.gitconfig
 
       - /var/run/docker.sock:/var/run/docker.sock
 

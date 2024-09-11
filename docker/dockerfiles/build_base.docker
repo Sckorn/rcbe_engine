@@ -27,11 +27,9 @@ RUN apt-get -qq update && \
         python3 \
         python3-jinja2 \
         python3.6 \
-        python3-distutils \
         python3-tk \
         python3-lib2to3 \
         python3-pip \
-        python-tk \
         python3.6 \
         # libraries
         zlib1g-dev \
@@ -41,7 +39,6 @@ RUN apt-get -qq update && \
         libgtk-3-0 \
         libxss1 \
         libgtkmm-3.0-dev \
-        libvtk7-dev \
         libboost-all-dev \
         libbullet-dev \
         libgmp-dev \
@@ -57,8 +54,5 @@ RUN apt-get -qq update && \
         libsdl2-image-dev \
         libglm-dev \
         libfreetype6-dev \
+        python3-tornado \
         wget
-
-# Install pip packages
-
-RUN pip install --no-cache-dir scipy numpy scikit-learn matplotlib pwlf plyfile protobuf tornado
