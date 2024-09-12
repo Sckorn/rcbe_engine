@@ -1,5 +1,3 @@
-#include <boost/log/trivial.hpp>
-
 #include <rcbe-engine/datamodel/rendering/BufferObject.hpp>
 #include <rcbe-engine/datamodel/rendering/buffer_object_helpers.hpp>
 

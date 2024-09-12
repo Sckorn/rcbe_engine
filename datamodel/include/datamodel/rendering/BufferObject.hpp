@@ -7,12 +7,14 @@
 
 #include <GL/gl.h>
 
+#include <rdmn-engine/public_api.hpp>
+
 #include <rcbe-engine/core/gl_extensions.hpp>
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 
 namespace rcbe::rendering {
 
-class VertexBufferObject {
+class R_PUBLIC_API VertexBufferObject {
 public:
 
     using ValueType = GLfloat;
@@ -103,7 +105,7 @@ private:
     std::optional<VertexArrayObject> vao_ {};
 };
 
-class IndexBufferObject {
+class R_PUBLIC_API IndexBufferObject {
 public:
 
     using ValueType = GLuint;

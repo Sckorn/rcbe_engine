@@ -1,6 +1,7 @@
 #include <rcbe-engine/datamodel/system/WindowContext.hpp>
 
 namespace rcbe::core {
+#ifdef __linux__
 void WindowContext::setRootDisplay(Display *d) {
     std::lock_guard lg {display_mutex_};
     root_display_ = d;
@@ -40,4 +41,5 @@ Atom WindowContext::getDeleteMsg() const {
     std::lock_guard lg {delete_msg_mutex_};
     return delete_msg_;
 }
+#endif
 }// namespace rcbe::core

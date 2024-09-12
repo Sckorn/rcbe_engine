@@ -2,8 +2,11 @@
 
 #include <gtest/gtest.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#ifdef RCBE_GLM_INTEGRATION
+/// See line 358
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+#endif
 
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/MatrixColumnMajorAdaptor.hpp>
@@ -354,6 +357,7 @@ TEST(MatrixQuaternion, CreateMatrixFromQuat) {
     ASSERT_TRUE(rcbe::core::fuzzy_equal(m.at(2, 2), 0.0));
 }
 
+#ifdef RCBE_GLM_INTEGRATION
 /// TODO: enable the script when B:862kfq9h7 is fixed @sckorn @radameon
 /*TEST(MatrixHelpers, Perspective) {
     rcbe::math::deg fov(45.0);
@@ -375,6 +379,7 @@ TEST(MatrixQuaternion, CreateMatrixFromQuat) {
     ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(2, 3)), glm_persp[3][2]));
     ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(3, 2)), glm_persp[2][3]));
 }*/
+#endif
 
 TEST(MatrixBinaryCompatibility, CheckSizeof) {
     ASSERT_EQ(sizeof(rcbe::math::Matrix3x3), sizeof(double) * 3 * 3);

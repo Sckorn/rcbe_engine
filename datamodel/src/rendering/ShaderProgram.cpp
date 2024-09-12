@@ -1,4 +1,4 @@
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/core/gl_extensions.hpp>
 #include <rcbe-engine/datamodel/rendering/Shader.hpp>
@@ -20,7 +20,7 @@ ShaderProgram::ShaderProgram(ShaderCollection &&shaders)
             glAttachShader(shader_prog_handle_, shader.handle());
 #endif
         } else {
-            BOOST_LOG_TRIVIAL(warning) << "Shader " << shader.handle() << " is not compiled! Skipping it!";
+            RDMN_LOG(RDMN_LOG_WARN) << "Shader " << shader.handle() << " is not compiled! Skipping it!";
         }
     }
 

@@ -14,6 +14,7 @@ cc_library(
         "//common:engine_fundamentals",
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_rendering",
+        "//common:rdmn_trivial_logger",
     ],
 )
 

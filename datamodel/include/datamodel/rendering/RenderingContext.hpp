@@ -6,11 +6,11 @@
 #include <mutex>
 #include <optional>
 
-#include <boost/log/trivial.hpp>
-
-#include <GL/glx.h>
+#ifdef __linux__
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <GL/glx.h>
+#endif
 
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
@@ -50,6 +50,7 @@ public:
     }
 #endif
 
+#ifdef __linux__
     void setDisplay(Display *d);
     [[nodiscard]] Display *getDisplay() const noexcept;
 
@@ -61,6 +62,10 @@ public:
 
     void setDrawable(GLXDrawable d);
     [[nodiscard]] GLXDrawable getDrawable() const noexcept;
+
+    [[nodiscard]] VisualID visualId() const;
+    void setVisualId(VisualID id);
+#endif
 
     void setBackgroundColor(const rcbe::visual::RGBAColor &color);
     [[nodiscard]] const rcbe::visual::RGBAColor &getBackgroundColor() const noexcept;
@@ -79,9 +84,6 @@ public:
 
     void updateFov(rcbe::math::deg zoom);
 
-    [[nodiscard]] VisualID visualId() const;
-    void setVisualId(VisualID id);
-
     void startTime(TimePointType &&t);
     [[nodiscard]] float computeDeltaTime();
 
@@ -95,13 +97,16 @@ private:
     mutable std::mutex visualid_mutex_;
 
     // I presume pointer to X Display, should not be deleted, research
+#ifdef __linux__
     Display *x_display_ = nullptr;
     Atom x_delete_message_;
     GLXContext gl_x_context_;
     GLXDrawable gl_x_window_;
+    VisualID visual_id_;
+#endif
+
     rcbe::visual::RGBAColor background_color_;
     rcbe::core::IntegralDimensions window_dimensions_;
-    VisualID visual_id_;
 
     math::MatrixColumnMajorAdaptor<core::EngineScalar> scene_transform_;
     math::Transform rowmajor_scene_transform_;

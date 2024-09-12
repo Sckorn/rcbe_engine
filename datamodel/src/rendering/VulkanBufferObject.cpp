@@ -1,6 +1,6 @@
 #include <mutex>
 
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/datamodel/rendering/VulkanBufferObject.hpp>
 #include <rcbe-engine/datamodel/rendering/buffer_object_helpers.hpp>
@@ -47,7 +47,7 @@ bool createVertexBuffer(VkDevice &logical_device,
         source);
 
     if (!res) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create buffer!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create buffer!";
         return false;
     }
 
@@ -75,7 +75,7 @@ bool createIndexBuffer(VkDevice &logical_device,
         source);
 
     if (!res) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create buffer!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create buffer!";
         return false;
     }
 
@@ -96,7 +96,7 @@ VulkanVertexBufferObject::VulkanVertexBufferObject(
     // they'll be validated by scene graph
     auto bod = extractBufferObjectData<ValueType, IndexType>(meshes, {true, true});
 
-    BOOST_LOG_TRIVIAL(debug) << "UBO sizes";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "UBO sizes";
     bod.printSizes();
 
     vertices_size_ = bod.vertices.size();
@@ -132,7 +132,7 @@ VulkanVertexBufferObject::VulkanVertexBufferObject(
 
     indices_ = bod.facets;
 
-    BOOST_LOG_TRIVIAL(debug) << buffer_data_.size();
+    RDMN_LOG(RDMN_LOG_DEBUG) << buffer_data_.size();
 
     source_size_ = bod.source_size;
     vertices_byte_size_ = bod.vertices_byte_size;
@@ -295,7 +295,7 @@ VulkanUniformBufferObject::VulkanUniformBufferObject(
     if (image_view_.size() != sampler_.size())
         throw std::runtime_error("ImageView and samplers are of different sizes!");
     const auto buffer_size = sizeof(uniform_buffer_object);
-    BOOST_LOG_TRIVIAL(trace) << "UBO size " << buffer_size;
+    RDMN_LOG(RDMN_LOG_TRACE) << "UBO size " << buffer_size;
 
     uniform_buffers_.resize(image_amount);
     uniform_buffers_memory_.resize(image_amount);
@@ -329,7 +329,7 @@ VulkanUniformBufferObject::VulkanUniformBufferObject(
             throw std::runtime_error("Can't create descriptor pool!");
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "UBO descriptor pool created!";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "UBO descriptor pool created!";
 
     {
         auto descriptor_sets_created = createDescriptorSets(logical_device_, desc_set_layout, image_amount);
@@ -339,7 +339,7 @@ VulkanUniformBufferObject::VulkanUniformBufferObject(
 
     buffer_created_ = true;
 
-    BOOST_LOG_TRIVIAL(debug) << "UBO created";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "UBO created";
 }
 
 VulkanUniformBufferObject::VulkanUniformBufferObject(
@@ -354,8 +354,8 @@ VulkanUniformBufferObject::VulkanUniformBufferObject(
     , image_view_ {image_view}
     , global_sampler_ {global_sampler} {
     const auto buffer_size = sizeof(uniform_buffer_object);
-    BOOST_LOG_TRIVIAL(trace) << "UBO size " << buffer_size;
-    BOOST_LOG_TRIVIAL(trace) << "Image views " << image_view_.size();
+    RDMN_LOG(RDMN_LOG_TRACE) << "UBO size " << buffer_size;
+    RDMN_LOG(RDMN_LOG_TRACE) << "Image views " << image_view_.size();
 
     uniform_buffers_.resize(image_amount);
     uniform_buffers_memory_.resize(image_amount);
@@ -389,7 +389,7 @@ VulkanUniformBufferObject::VulkanUniformBufferObject(
             throw std::runtime_error("Can't create descriptor pool!");
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "UBO descriptor pool created!";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "UBO descriptor pool created!";
 
     {
         auto descriptor_sets_created = createDescriptorSets(
@@ -404,7 +404,7 @@ VulkanUniformBufferObject::VulkanUniformBufferObject(
 
     buffer_created_ = true;
 
-    BOOST_LOG_TRIVIAL(debug) << "UBO created";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "UBO created";
 }
 
 void VulkanUniformBufferObject::deleteBuffer() {
@@ -469,7 +469,7 @@ bool VulkanUniformBufferObject::createDescriptorPool(
         nullptr,
         std::addressof(descriptor_pool_));
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create descriptor pool!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create descriptor pool!";
         return false;
     }
 
@@ -489,7 +489,7 @@ bool VulkanUniformBufferObject::createDescriptorSets(
 
     descriptor_sets_.resize(image_amount);
     if (vkAllocateDescriptorSets(logical_device, std::addressof(alloc_info), descriptor_sets_.data()) != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(error) << "Can't allocate descriptor sets";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't allocate descriptor sets";
         return false;
     }
 
@@ -552,7 +552,7 @@ bool VulkanUniformBufferObject::createDescriptorSets(
     const auto total_images_for_textures = std::min(total_textures, image_view_.size());
 
     if (image_view_.size() != total_images_for_textures) {
-        BOOST_LOG_TRIVIAL(warning) << "Too many textures supplied, right now our engine supports only up to "
+        RDMN_LOG(RDMN_LOG_WARN) << "Too many textures supplied, right now our engine supports only up to "
                                    << total_textures << " textures in fragment shaders!";
     }
 
@@ -565,7 +565,7 @@ bool VulkanUniformBufferObject::createDescriptorSets(
 
     descriptor_sets_.resize(image_amount);
     if (vkAllocateDescriptorSets(logical_device, std::addressof(alloc_info), descriptor_sets_.data()) != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(error) << "Can't allocate descriptor sets";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't allocate descriptor sets";
         return false;
     }
 

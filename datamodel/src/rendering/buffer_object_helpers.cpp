@@ -75,7 +75,7 @@ bool copyBuffer(
     VkQueue target_queue) {
     auto cmd_buff = beginSingleTimeCommands(logical_device, command_pool);
     if (!cmd_buff) {
-        BOOST_LOG_TRIVIAL(error) << "Can't begin command buffer!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't begin command buffer!";
         return false;
     }
 
@@ -89,7 +89,7 @@ bool copyBuffer(
 
     const auto res = endSingleTimeCommands(logical_device, cb, target_queue, command_pool);
     if (!res) {
-        BOOST_LOG_TRIVIAL(error) << "Can't end command buffer!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't end command buffer!";
         return false;
     }
 
@@ -111,7 +111,7 @@ bool createBufferImpl(VkDevice &logical_device,
 
     auto res = vkCreateBuffer(logical_device, std::addressof(buffer_info), nullptr, std::addressof(buff));
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create vertex buffer";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create vertex buffer";
         return false;
     }
 
@@ -128,7 +128,7 @@ bool createBufferImpl(VkDevice &logical_device,
 
     res = vkAllocateMemory(logical_device, std::addressof(alloc_info), nullptr, std::addressof(memory));
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(error) << "Can't allocate memory for vertex buffer!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't allocate memory for vertex buffer!";
         return false;
     }
 

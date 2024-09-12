@@ -9,9 +9,11 @@
 #include <rcbe-engine/datamodel/math/math_constants.hpp>
 #include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 namespace rcbe::geometry {
 
-class Mesh {
+class R_PUBLIC_API Mesh {
 public:
 
     using VertexType = math::Vector3d;

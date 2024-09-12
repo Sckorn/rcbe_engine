@@ -10,11 +10,12 @@
 #include <rcbe-engine/datamodel/visual/texture_types.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
+#include <rdmn-engine/public_api.hpp>
 namespace rcbe::visual {
 
 class TextureImplementation;
 
-class Texture : std::enable_shared_from_this<Texture> {
+class R_PUBLIC_API Texture : std::enable_shared_from_this<Texture> {
 public:
 
     using ParserType = std::function<rdmn::vis::image_data(const core::EnginePath &)>;
@@ -44,10 +45,10 @@ private:
 using TexturePtr = std::shared_ptr<Texture>;
 using TextureConstPtr = std::shared_ptr<const Texture>;
 
-TexturePtr make_tex_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
-TextureConstPtr make_tex_const_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
+R_PUBLIC_API TexturePtr make_tex_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
+R_PUBLIC_API TextureConstPtr make_tex_const_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
 
-struct VisualTextureSet {
+struct R_PUBLIC_API VisualTextureSet {
     VisualTextureSet(std::initializer_list<TexturePtr> &&tex_data);
     explicit VisualTextureSet(std::unordered_set<TexturePtr> &&tex_data);
 

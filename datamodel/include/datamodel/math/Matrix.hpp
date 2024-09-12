@@ -14,6 +14,7 @@
 #include <rcbe-engine/fundamentals/types.hpp>
 #include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
 #include <rcbe-engine/utils/math_utils.hpp>
+#include <rdmn-engine/public_api.hpp>
 
 #ifdef RDMN_GLM_INTEGRATION
 #include <glm/mat4x4.hpp>
@@ -21,7 +22,7 @@
 
 namespace rcbe::math {
 template <typename Value, size_t DimRow, size_t DimCol>
-class Matrix {
+class R_PUBLIC_API Matrix {
 public:
 
     using ValueType = Value;
@@ -354,19 +355,19 @@ using Matrix4x4f = Matrix<float, 4, 4>;
 namespace nlohmann {
 template <>
 struct adl_serializer<rcbe::math::Matrix3x3> {
-    static void to_json(nlohmann::json &j, const rcbe::math::Matrix3x3 &value);
-    static void from_json(const nlohmann::json &j, rcbe::math::Matrix3x3 &value);
+    R_PUBLIC_API static void to_json(nlohmann::json &j, const rcbe::math::Matrix3x3 &value);
+    R_PUBLIC_API static void from_json(const nlohmann::json &j, rcbe::math::Matrix3x3 &value);
 };
 }// namespace nlohmann
 
 /// TODO: make all ops template @sckorn
-rcbe::math::Matrix3x3 operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs);
-rcbe::math::Matrix3x3 operator+(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs);
+R_PUBLIC_API rcbe::math::Matrix3x3 operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs);
+R_PUBLIC_API rcbe::math::Matrix3x3 operator+(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs);
 
-rcbe::math::Vector3d operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Vector3d &rhs);
+R_PUBLIC_API rcbe::math::Vector3d operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Vector3d &rhs);
 
 template <typename V>
-rcbe::math::Matrix<V, 4, 4> operator*(const rcbe::math::Matrix<V, 4, 4> &lhs, const rcbe::math::Matrix<V, 4, 4> &rhs) {
+R_PUBLIC_API rcbe::math::Matrix<V, 4, 4> operator*(const rcbe::math::Matrix<V, 4, 4> &lhs, const rcbe::math::Matrix<V, 4, 4> &rhs) {
     std::vector<typename rcbe::math::Matrix<V, 3, 3>::ValueType> interm;
     interm.reserve(lhs.ROWS * lhs.COLUMNS);
     for (size_t i = 0; i < lhs.ROWS * lhs.COLUMNS; ++i) {
@@ -384,8 +385,8 @@ rcbe::math::Matrix<V, 4, 4> operator*(const rcbe::math::Matrix<V, 4, 4> &lhs, co
 
     return rcbe::math::Matrix<V, 4, 4> {interm};
 }
-rcbe::math::Matrix4x4 operator+(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs);
+R_PUBLIC_API rcbe::math::Matrix4x4 operator+(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs);
 
-rcbe::math::Vector4d operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Vector4d &rhs);
+R_PUBLIC_API rcbe::math::Vector4d operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Vector4d &rhs);
 
 #endif

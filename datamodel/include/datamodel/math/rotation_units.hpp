@@ -7,6 +7,7 @@
 
 #include <rcbe-engine/fundamentals/types.hpp>
 #include <rcbe-engine/utils/math_utils.hpp>
+#include <rdmn-engine/public_api.hpp>
 
 namespace rcbe::math {
 
@@ -75,15 +76,15 @@ protected:
 struct deg;// need forward declaration only for rad but leaving two for consistency (?)
 struct rad;
 
-struct deg : public detail::rotations_base<deg> {
+struct R_PUBLIC_API deg : public detail::rotations_base<deg> {
     static constexpr double ABS_MAX_VALUE = 360.;
 
-    explicit deg(double rot);
+     explicit deg(double rot);
 
     [[nodiscard]] rad as_rad() const;
 };
 
-struct rad : public detail::rotations_base<rad> {
+struct R_PUBLIC_API rad : public detail::rotations_base<rad> {
     static constexpr double ABS_MAX_VALUE = 2 * M_PI;
 
     explicit rad(double rot);

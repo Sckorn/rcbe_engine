@@ -1,7 +1,7 @@
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 
 namespace nlohmann {
-void adl_serializer<rcbe::math::Matrix3x3>::to_json(
+R_PUBLIC_API void adl_serializer<rcbe::math::Matrix3x3>::to_json(
     nlohmann::json &j,
     const rcbe::math::Matrix3x3 &value) {
     j = {
@@ -10,7 +10,7 @@ void adl_serializer<rcbe::math::Matrix3x3>::to_json(
         {"matrix", value.data()}};
 }
 
-void adl_serializer<rcbe::math::Matrix3x3>::from_json(const nlohmann::json &j, rcbe::math::Matrix3x3 &value) {
+R_PUBLIC_API void adl_serializer<rcbe::math::Matrix3x3>::from_json(const nlohmann::json &j, rcbe::math::Matrix3x3 &value) {
     auto data = j.at("matrix").get<rcbe::math::Matrix3x3::StorageType>();
     auto rows = j.at("rows").get<rcbe::core::EngineIntergral>();
     auto cols = j.at("columns").get<rcbe::core::EngineIntergral>();
@@ -21,7 +21,7 @@ void adl_serializer<rcbe::math::Matrix3x3>::from_json(const nlohmann::json &j, r
 }
 }// namespace nlohmann
 
-rcbe::math::Matrix3x3 operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs) {
+R_PUBLIC_API rcbe::math::Matrix3x3 operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs) {
     std::vector<rcbe::math::Matrix3x3::ValueType> interm;
     interm.reserve(lhs.ROWS * lhs.COLUMNS);
     for (size_t i = 0; i < lhs.ROWS * lhs.COLUMNS; ++i) {
@@ -39,7 +39,7 @@ rcbe::math::Matrix3x3 operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::ma
     return rcbe::math::Matrix3x3 {interm};
 }
 
-rcbe::math::Matrix3x3 operator+(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs) {
+R_PUBLIC_API rcbe::math::Matrix3x3 operator+(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Matrix3x3 &rhs) {
     rcbe::math::Matrix3x3::StorageType intermideate_storage {};
 
     for (size_t i = 0; i < lhs.ROWS; ++i) {
@@ -51,7 +51,7 @@ rcbe::math::Matrix3x3 operator+(const rcbe::math::Matrix3x3 &lhs, const rcbe::ma
     return rcbe::math::Matrix3x3(std::make_move_iterator(intermideate_storage.begin()), std::make_move_iterator(intermideate_storage.end()));
 }
 
-rcbe::math::Vector3d operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Vector3d &rhs) {
+R_PUBLIC_API rcbe::math::Vector3d operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::math::Vector3d &rhs) {
     rcbe::math::Vector3d::StorageType intermediate_storage {};
     for (size_t i = 0; i < lhs.ROWS; ++i) {
         intermediate_storage[i] = lhs.at(i, 0) * rhs.x() + lhs.at(i, 1) * rhs.y() + lhs.at(i, 2) * rhs.z();
@@ -60,7 +60,7 @@ rcbe::math::Vector3d operator*(const rcbe::math::Matrix3x3 &lhs, const rcbe::mat
     return rcbe::math::Vector3d(intermediate_storage);
 }
 
-rcbe::math::Matrix4x4 operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs) {
+R_PUBLIC_API rcbe::math::Matrix4x4 operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs) {
     std::vector<rcbe::math::Matrix3x3::ValueType> interm;
     interm.reserve(lhs.ROWS * lhs.COLUMNS);
     for (size_t i = 0; i < lhs.ROWS * lhs.COLUMNS; ++i) {
@@ -79,7 +79,7 @@ rcbe::math::Matrix4x4 operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::ma
     return rcbe::math::Matrix4x4 {interm};
 }
 
-rcbe::math::Matrix4x4 operator+(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs) {
+R_PUBLIC_API rcbe::math::Matrix4x4 operator+(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Matrix4x4 &rhs) {
     rcbe::math::Matrix4x4::StorageType intermideate_storage {};
 
     for (size_t i = 0; i < lhs.ROWS; ++i) {
@@ -91,7 +91,7 @@ rcbe::math::Matrix4x4 operator+(const rcbe::math::Matrix4x4 &lhs, const rcbe::ma
     return rcbe::math::Matrix4x4(std::make_move_iterator(intermideate_storage.begin()), std::make_move_iterator(intermideate_storage.end()));
 }
 
-rcbe::math::Vector4d operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Vector4d &rhs) {
+R_PUBLIC_API rcbe::math::Vector4d operator*(const rcbe::math::Matrix4x4 &lhs, const rcbe::math::Vector4d &rhs) {
     rcbe::math::Vector4d::StorageType intermediate_storage {};
     for (size_t i = 0; i < lhs.ROWS; ++i) {
         intermediate_storage[i] = lhs.at(i, 0) * rhs.x() + lhs.at(i, 1) * rhs.y() + lhs.at(i, 2) * rhs.z() + lhs.at(i, 3) * rhs.w();

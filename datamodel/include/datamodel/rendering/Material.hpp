@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include <rdmn-engine/public_api.hpp>
+
 #include <rcbe-engine/fundamentals/types.hpp>
 
 #ifdef RDMN_VULKAN
@@ -22,7 +24,7 @@
 
 namespace rcbe::rendering {
 
-class Material {
+class R_PUBLIC_API Material {
 public:
 
     struct ShaderArguments {
@@ -36,7 +38,7 @@ public:
         rdmn::render::rasterizer_texture_config config;
     };
 
-    class MaterialConfig {
+    class R_PUBLIC_API MaterialConfig {
     public:
 
         MaterialConfig() = default;

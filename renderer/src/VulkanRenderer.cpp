@@ -2,10 +2,13 @@
 
 #include "VulkanRenderer.hpp"
 
+#include <boost/log/trivial.hpp>
+
 #include <algorithm>
 #include <exception>
 #include <limits>
 #include <vector>
+#include <set>
 
 #include <vulkan/vulkan_xlib.h>
 

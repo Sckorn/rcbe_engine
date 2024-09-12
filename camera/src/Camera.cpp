@@ -5,6 +5,8 @@
 #include <rcbe-engine/exceptions/not_implemented.hpp>
 #include <rcbe-engine/fundamentals/convinience.hpp>
 
+#include <rdmn-engine/logger/trivial_logger.hpp>
+
 /// Vulkan Euler Are ZXY
 
 
@@ -29,12 +31,12 @@ Camera::Camera(const rendering::RenderingContextPtr &context, const rendering::c
 
     context_->updateFov(fov_);
 
-    BOOST_LOG_TRIVIAL(debug) << "Initial Camera view rotation matrix \n"
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Initial Camera view rotation matrix \n"
                              << transform_.matrix();
 
     updateContext(transform_);
 
-    BOOST_LOG_TRIVIAL(debug) << "Initial Yaw " << yaw_.as_deg() << " Pitch " << pitch_.as_deg();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Initial Yaw " << yaw_.as_deg() << " Pitch " << pitch_.as_deg();
 }
 
 void Camera::updateContext(const TransformType &t) {

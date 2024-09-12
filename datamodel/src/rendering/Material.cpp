@@ -1,7 +1,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/datamodel/rendering/Material.hpp>
 #include <rcbe-engine/datamodel/rendering/Shader.hpp>
@@ -69,7 +69,7 @@ void Material::apply() const {
 #endif
 
 void Material::initializeDeferredMaterial() const {
-    BOOST_LOG_TRIVIAL(debug) << R_READABLE_FUNC_NAME;
+    RDMN_LOG(RDMN_LOG_DEBUG) << R_READABLE_FUNC_NAME;
 
     const auto &shader_args = config_.getShaderArgs();
 
@@ -86,13 +86,13 @@ void Material::initializeDeferredMaterial() const {
         shader_program_ = std::make_unique<ShaderProgram>(std::move(shaders_tmp));
 #elif defined(RDMN_VULKAN)
         if (shader_args.size() > 2)
-            BOOST_LOG_TRIVIAL(warning) << "Too many shaders supplied, material expects one vertex and one fragment shader!";
+            RDMN_LOG(RDMN_LOG_WARN) << "Too many shaders supplied, material expects one vertex and one fragment shader!";
 
         using HandlerType = std::function<void(const ShaderArguments &)>;
         const auto handlers = std::unordered_map<rdmn::render::ShaderType, HandlerType> {
             {rdmn::render::ShaderType::unknown,
              [](const ShaderArguments &) {
-                 BOOST_LOG_TRIVIAL(warning) << "Unknown shader type, skipping!";
+                 RDMN_LOG(RDMN_LOG_WARN) << "Unknown shader type, skipping!";
              }},
             {rdmn::render::ShaderType::vertex,
              [this](const ShaderArguments &a) {
@@ -148,7 +148,7 @@ Material::TextureStorage &Material::getTextures() noexcept {
 typename Material::TextureStorage::iterator Material::pushTexture(std::shared_ptr<TextureType> t) {
     auto [it, res] = textures_.insert_or_assign(t->getVisualTexturePtr(), std::move(t));
     if (!res)
-        BOOST_LOG_TRIVIAL(warning) << "Texture is already present";
+        RDMN_LOG(RDMN_LOG_WARN) << "Texture is already present";
     return it;
 }
 

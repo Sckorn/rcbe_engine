@@ -1,6 +1,8 @@
 #ifndef RCBE_ENGINE_TGA_PARSER_HPP
 #define RCBE_ENGINE_TGA_PARSER_HPP
 
+#include <rdmn-engine/public_api.hpp>
+
 #include <rcbe-engine/datamodel/visual/image_data.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
@@ -16,8 +18,8 @@ struct extended_imagedata {
     vis::image_data general_metadata;
 };
 
-vis::image_data parse(const rcbe::core::EnginePath &file_path);
-extended_imagedata extended_parse(const rcbe::core::EnginePath &file_path);
+R_PUBLIC_API vis::image_data parse(const rcbe::core::EnginePath &file_path);
+R_PUBLIC_API extended_imagedata extended_parse(const rcbe::core::EnginePath &file_path);
 }// namespace rdmn::parse::tga
 
 #endif//RCBE_ENGINE_TGA_PARSER_HPP

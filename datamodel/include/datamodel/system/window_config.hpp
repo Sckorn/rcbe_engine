@@ -5,9 +5,6 @@
 #include <string>
 #include <unordered_map>
 
-#include <boost/assign.hpp>
-#include <boost/bimap.hpp>
-
 #include <nlohmann/json_fwd.hpp>
 
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
@@ -39,23 +36,24 @@ struct window_config {
     std::string input_scheme;
 };
 
-using WindowTypeBimap = boost::bimap<std::string, window_config::WindowType>;
-
-static const WindowTypeBimap str_to_wnd_t_ = boost::assign::list_of<WindowTypeBimap::relation>("gl_renderer_window", window_config::WindowType ::gl_rendering_window)("drawing_window", window_config::WindowType::drawing_window)("unknown", window_config::WindowType ::unknown);
-
 static std::string str_from_window_type(window_config::WindowType type) {
-    auto it = str_to_wnd_t_.right.find(type);
-    if (it != str_to_wnd_t_.right.end()) {
-        return it->second;
+    switch (type)
+    {
+    case window_config::WindowType ::gl_rendering_window:
+        return "gl_renderer_window";
+    case window_config::WindowType::drawing_window:
+        return "drawing_window";
+    case window_config::WindowType ::unknown:
+    default:
+        return "uknown";
     }
-    return "uknown";
 }
 
 static window_config::WindowType wnd_type_from_string(const std::string &type) {
-    auto it = str_to_wnd_t_.left.find(type);
-    if (it != str_to_wnd_t_.left.end()) {
-        return it->second;
-    }
+    if (type == "gl_renderer_window")
+        return window_config::WindowType ::gl_rendering_window;
+    if (type == "drawing_window")
+        return window_config::WindowType::drawing_window;
 
     return window_config::WindowType ::unknown;
 }

@@ -13,8 +13,6 @@
 
 // TODO: replace the two below by corresponding fwd header (introduce one for binary)
 
-#include <boost/log/trivial.hpp>
-
 #include <nlohmann/json.hpp>
 
 #include <rcbe-engine/binary/BinaryBuffer.hpp>
@@ -291,15 +289,15 @@ struct adl_serializer<rcbe::math::Vector<T, 2>> {
 
 namespace rcbe::binary {
 template <>
-void from_binary(const BinaryBuffer &b, rcbe::math::Vector3f &v);
+R_PUBLIC_API void from_binary(const BinaryBuffer &b, rcbe::math::Vector3f &v);
 template <>
-void to_binary(BinaryBuffer &b, const rcbe::math::Vector3f &v);
+R_PUBLIC_API void to_binary(BinaryBuffer &b, const rcbe::math::Vector3f &v);
 
 template <>
-void from_binary(const BinaryBuffer &b, rcbe::math::Vector2f &v);
+R_PUBLIC_API void from_binary(const BinaryBuffer &b, rcbe::math::Vector2f &v);
 
 template <>
-void to_binary(BinaryBuffer &b, const rcbe::math::Vector2f &v);
+R_PUBLIC_API void to_binary(BinaryBuffer &b, const rcbe::math::Vector2f &v);
 }// namespace rcbe::binary
 
 template <typename V, size_t D>

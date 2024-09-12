@@ -5,6 +5,8 @@
 
 #include <vulkan/vulkan.h>
 
+#include <rdmn-engine/logger/trivial_logger.hpp>
+
 #include <rcbe-engine/datamodel/rendering/rasterizer_texture_helpers.hpp>
 #include <rcbe-engine/datamodel/rendering/rasterizer_texture_types.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
@@ -37,9 +39,9 @@ public:
             /// Should never be invoked under normal circumstances, e.g. if init was called and there is anything to
             /// deinit
             if (initialised_)
-                BOOST_LOG_TRIVIAL(fatal) << "~RasterizerTextureImplementation no deleter available!!!";
+                RDMN_LOG(RDMN_LOG_FATAL) << "~RasterizerTextureImplementation no deleter available!!!";
             else
-                BOOST_LOG_TRIVIAL(trace) << "Deleting non initialized Raster texture";
+                RDMN_LOG(RDMN_LOG_TRACE) << "Deleting non initialized Raster texture";
         }
     };
 
@@ -52,7 +54,7 @@ public:
               VkQueue graphics_queue) {
         auto sampler_created = createTextureSampler(logical_device, texture_sampler_, mip_levels_);
         if (!sampler_created) {
-            BOOST_LOG_TRIVIAL(error) << "Can't create texture sampler";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't create texture sampler";
             return false;
         }
 
@@ -141,7 +143,7 @@ private:
                 texture_image_,
                 texture_image_memory_);
             if (!texture_image_created) {
-                BOOST_LOG_TRIVIAL(error) << "Can't create texture image!";
+                RDMN_LOG(RDMN_LOG_ERROR) << "Can't create texture image!";
                 return false;
             }
         }
@@ -155,7 +157,7 @@ private:
                 mip_levels_);
 
             if (!opt_img_view) {
-                BOOST_LOG_TRIVIAL(error) << "Can't create image view!";
+                RDMN_LOG(RDMN_LOG_ERROR) << "Can't create image view!";
                 return false;
             }
 

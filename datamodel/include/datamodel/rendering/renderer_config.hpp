@@ -3,14 +3,13 @@
 
 #include <string>
 
-#include <boost/assign.hpp>
-#include <boost/bimap.hpp>
-
 #include <nlohmann/json_fwd.hpp>
 
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
+
+#include <rdmn-engine/public_api.hpp>
 
 namespace rcbe::rendering {
 enum class RendererType {
@@ -19,23 +18,25 @@ enum class RendererType {
     unknown
 };
 
-using RendererTypeBimap = boost::bimap<std::string, RendererType>;
-
-static const RendererTypeBimap rtb_table = boost::assign::list_of<RendererTypeBimap::relation>("hardware", RendererType::hardware)("software", RendererType::software);
-
 static std::string str_from_renderer_type(RendererType type) {
-    auto it = rtb_table.right.find(type);
-    if (it != rtb_table.right.end()) {
-        return it->second;
+    switch (type)
+    {
+    case RendererType::hardware:
+        return "hardware";
+    case RendererType::software:
+        return "software";
+    case RendererType::unknown:
+    default:
+        return "uknown";
     }
-    return "uknown";
 }
 
 static RendererType renderer_type_from_string(const std::string &type) {
-    auto it = rtb_table.left.find(type);
-    if (it != rtb_table.left.end()) {
-        return it->second;
-    }
+    if (type == "hardware")
+        return RendererType::hardware;
+
+    if (type == "software")
+        return RendererType::software;
 
     return RendererType ::unknown;
 }
@@ -55,8 +56,8 @@ struct renderer_config {
 namespace nlohmann {
 template <>
 struct adl_serializer<rcbe::rendering::renderer_config> {
-    static void to_json(json &j, const rcbe::rendering::renderer_config &conf);
-    static void from_json(const json &j, rcbe::rendering::renderer_config &conf);
+    R_PUBLIC_API static void to_json(json &j, const rcbe::rendering::renderer_config &conf);
+    R_PUBLIC_API static void from_json(const json &j, rcbe::rendering::renderer_config &conf);
 };
 }// namespace nlohmann
 
