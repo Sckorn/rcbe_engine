@@ -2,7 +2,7 @@ version: '2.3'
 services:
   radameon:
     environment:
-      - OPER_HOME=/home/oper
+      - OPER_HOME=/home/radameon
       - HUID
       - HGID
       - DISPLAY
@@ -22,13 +22,12 @@ services:
 
       # caches 
       - ~/.cache/bazel:/bazel
-      - ~/.cache/clion:/clion
 
       # file exchange
       - ~/exchange:/exchange
 
       # clion and .ssh
-      - ./additional:/home/oper/additional
+      - ./additional:/home/radameon/additional
 
       # x11
       - /tmp/.X11-unix:/tmp/.X11-unix

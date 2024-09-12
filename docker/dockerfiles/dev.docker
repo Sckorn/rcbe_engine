@@ -1,6 +1,9 @@
 # main docker file used for basic enviroment setup for bazel build
 
 ARG COMPILER=gcc
+ARG HUID=1000
+ARG HGID=1000
+ARG RAD_HOME=/home/radameon/
 
 FROM radameon/build:latest
 
@@ -42,3 +45,13 @@ COPY resources/start_storage.sh /start_storage.sh
 RUN ln -nfs /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo "$TZ" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata
+
+ARG HUID
+ARG HGID
+ARG RAD_HOME
+RUN groupdel -f ubuntu
+RUN groupadd -f -g $HGID radameon
+RUN deluser --remove-home ubuntu
+
+RUN adduser --system --uid $HUID --gid $HGID --shell /bin/bash --home $RAD_HOME radameon
+RUN usermod -a -G users radameon
