@@ -3,6 +3,7 @@
 
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
+#include <rdmn-engine/public_api.hpp>
 
 namespace rcbe::math {
 class Transform {
@@ -12,23 +13,23 @@ public:
     using TranslationType = Vector3d;
     using UnderlyingType = Matrix4x4;
 
-    Transform() = default;
-    Transform(const RotationType &r, const TranslationType &t);
-    explicit Transform(const UnderlyingType &matrix);
+    R_PUBLIC_API Transform() = default;
+    R_PUBLIC_API Transform(const RotationType &r, const TranslationType &t);
+    R_PUBLIC_API explicit Transform(const UnderlyingType &matrix);
 
-    [[nodiscard]] RotationType getRotation() const;
-    [[nodiscard]] TranslationType getTranslation() const;
+    [[nodiscard]] R_PUBLIC_API RotationType getRotation() const;
+    [[nodiscard]] R_PUBLIC_API TranslationType getTranslation() const;
 
-    [[nodiscard]] Vector3d transform(const Vector3d &v) const;
-    Vector3d operator()(const Vector3d &v) const;
-    friend Vector3d operator*(const Transform &t, const Vector3d &v);
-    friend Transform operator*(const Transform &lhs, const Transform &rhs);
-    friend Matrix3x3 operator*(const Transform &lhs, const Matrix3x3 &rhs);
+    [[nodiscard]] R_PUBLIC_API Vector3d transform(const Vector3d &v) const;
+    R_PUBLIC_API Vector3d operator()(const Vector3d &v) const;
+    friend R_PUBLIC_API Vector3d operator*(const Transform &t, const Vector3d &v);
+    friend R_PUBLIC_API Transform operator*(const Transform &lhs, const Transform &rhs);
+    friend R_PUBLIC_API Matrix3x3 operator*(const Transform &lhs, const Matrix3x3 &rhs);
 
-    void inverse();
-    [[nodiscard]] Transform inversed() const;
+    R_PUBLIC_API void inverse();
+    [[nodiscard]] R_PUBLIC_API Transform inversed() const;
 
-    [[nodiscard]] const UnderlyingType &matrix() const;
+    [[nodiscard]] const R_PUBLIC_API UnderlyingType &matrix() const;
 
 private:
 

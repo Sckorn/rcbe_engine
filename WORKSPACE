@@ -30,6 +30,25 @@ load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 
 boost_deps()
 
+git_repository(
+    name = "rules_vulkan",
+    remote = "https://github.com/jadarve/rules_vulkan.git",
+    tag = "v0.0.11"
+)
+
+load("@rules_vulkan//vulkan:repositories.bzl", "vulkan_repositories")
+vulkan_repositories(
+    android_use_host_vulkan_sdk = True, # For android, whether or not use the Vulkan headers provided by the NDK.
+)
+
+http_archive(
+    name = "com_github_google_glog",
+    sha256 = "c17d85c03ad9630006ef32c7be7c65656aba2e7e2fbfc82226b7e680c771fc88",
+    strip_prefix = "glog-0.7.1",
+    build_file = "@//thirdparty:glog.BUILD",
+    urls = ["https://github.com/google/glog/archive/v0.7.1.zip"],
+)
+
 http_archive(
   name = "com_google_googletest",
   urls = ["https://github.com/google/googletest/archive/5ab508a01f9eb089207ee87fd547d290da39d015.zip"],

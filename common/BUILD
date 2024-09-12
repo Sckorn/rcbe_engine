@@ -1,3 +1,6 @@
+load("//meta_package:global_variables.bzl", "LOGGING_LIB")
+load("//meta_package:global_variables.bzl", "LOGGING_LIB_DEFINE")
+
 _COMMON_LINKOPTS = select({
     "@bazel_tools//src/conditions:windows": [""],
     "//conditions:default": ["-lpthread"],
@@ -61,13 +64,14 @@ cc_library(
     name = "engine_output_utils",
     srcs = ["src/utils/output_utils.cpp"],
     hdrs = ["include/common/utils/output_utils.hpp"],
+    defines = LOGGING_LIB_DEFINE,
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
     deps = [
         ":engine_fundamentals",
-        "@boost//:log",
+        ":rdmn_trivial_logger",
     ],
 )
 
@@ -118,6 +122,20 @@ cc_library(
     deps = ["//meta_package/public_api:rdmn_public_api"],
 )
 
+cc_library(
+    name = "rdmn_trivial_logger",
+    srcs = glob(["src/logger/**/*.cpp"]),
+    hdrs = glob(["include/common/logger/**/*.hpp"]),
+    defines = LOGGING_LIB_DEFINE,
+    include_prefix = "rdmn-engine",
+    includes = ["include/common"],
+    strip_include_prefix = "include/common",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//meta_package/public_api:rdmn_public_api"
+    ] + LOGGING_LIB,
+)
+
 ### tests
 
 cc_test(
@@ -129,6 +147,7 @@ cc_test(
         ":rcbe_binary_tools",
         ":rcbe_delegate",
         ":engine_fundamentals",
+        ":rdmn_trivial_logger",
         "@com_google_googletest//:gtest_main",
     ],
 )

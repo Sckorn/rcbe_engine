@@ -3,7 +3,7 @@
 #include <rcbe-engine/datamodel/system/InputScheme.hpp>
 
 namespace rcbe::core {
-InputDeviceScheme::InputDeviceScheme(nlohmann::json &&j) {
+R_PUBLIC_API InputDeviceScheme::InputDeviceScheme(nlohmann::json &&j) {
     const auto highlevel = j.at("highlevel");
 
     for (auto it = highlevel.begin(); it != highlevel.end(); ++it) {
@@ -19,25 +19,25 @@ InputDeviceScheme::InputDeviceScheme(nlohmann::json &&j) {
     }
 }
 
-const InputDeviceScheme::HighLevelEvents &InputDeviceScheme::highlevel() const noexcept {
+R_PUBLIC_API const InputDeviceScheme::HighLevelEvents &InputDeviceScheme::highlevel() const noexcept {
     return highlevel_;
 }
 
-InputDeviceScheme::HighLevelEvents &InputDeviceScheme::highlevel() {
+R_PUBLIC_API InputDeviceScheme::HighLevelEvents &InputDeviceScheme::highlevel() {
     return highlevel_;
 }
 
-const InputDeviceScheme::LowLevelEvents &InputDeviceScheme::lowlevel() const noexcept {
+R_PUBLIC_API const InputDeviceScheme::LowLevelEvents &InputDeviceScheme::lowlevel() const noexcept {
     return lowlevel_;
 }
 
-InputScheme::InputScheme(nlohmann::json &&j) {
+R_PUBLIC_API InputScheme::InputScheme(nlohmann::json &&j) {
     for (auto it = j.begin(); it != j.end(); ++it) {
         device_inputs_.insert({it.key(), InputDeviceScheme(std::move(it.value()))});
     }
 }
 
-void InputScheme::set(const int key, int value) {
+R_PUBLIC_API void InputScheme::set(const int key, int value) {
     value = std::clamp(value, 0, 1);
     for (auto &[key_, dev] : device_inputs_) {
         const auto &low = dev.lowlevel();

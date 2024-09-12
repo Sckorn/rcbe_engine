@@ -4,8 +4,10 @@
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 namespace rcbe::visual {
-class RGBAColor {
+R_PUBLIC_API class RGBAColor {
 public:
 
     static constexpr size_t DIMENSION = 4;
@@ -15,44 +17,44 @@ public:
 
 public:
 
-    RGBAColor() = default;
+    R_PUBLIC_API RGBAColor() = default;
 
-    explicit RGBAColor(uint32_t hex_code);
+    R_PUBLIC_API explicit RGBAColor(uint32_t hex_code);
 
-    RGBAColor(
+    R_PUBLIC_API RGBAColor(
         const rcbe::core::EngineScalar r,
         const rcbe::core::EngineScalar g,
         const rcbe::core::EngineScalar b,
         const rcbe::core::EngineScalar a = 1.0);
-    RGBAColor(
+    R_PUBLIC_API RGBAColor(
         const rcbe::core::EngineIntergral r,
         const rcbe::core::EngineIntergral g,
         const rcbe::core::EngineIntergral b,
         const rcbe::core::EngineIntergral a = 255);
 
-    ~RGBAColor() = default;
+    R_PUBLIC_API ~RGBAColor() = default;
 
-    RGBAColor(const RGBAColor &other) = default;
-    RGBAColor &operator=(const RGBAColor &other) = default;
+    R_PUBLIC_API RGBAColor(const RGBAColor &other) = default;
+    R_PUBLIC_API RGBAColor &operator=(const RGBAColor &other) = default;
 
-    RGBAColor(RGBAColor &&other) = default;
-    RGBAColor &operator=(RGBAColor &&other) = default;
+    R_PUBLIC_API RGBAColor(RGBAColor &&other) = default;
+    R_PUBLIC_API RGBAColor &operator=(RGBAColor &&other) = default;
 
-    [[nodiscard]] const ValueType &r() const noexcept;
-    ValueType &r();
+    [[nodiscard]] R_PUBLIC_API const ValueType &r() const noexcept;
+    R_PUBLIC_API ValueType &r();
 
-    [[nodiscard]] const ValueType &g() const noexcept;
-    ValueType &g();
+    [[nodiscard]] R_PUBLIC_API const ValueType &g() const noexcept;
+    R_PUBLIC_API ValueType &g();
 
-    [[nodiscard]] const ValueType &b() const noexcept;
-    ValueType &b();
+    [[nodiscard]] R_PUBLIC_API const ValueType &b() const noexcept;
+    R_PUBLIC_API ValueType &b();
 
-    [[nodiscard]] const ValueType &a() const noexcept;
-    ValueType &a();
+    [[nodiscard]] R_PUBLIC_API const ValueType &a() const noexcept;
+    R_PUBLIC_API ValueType &a();
 
-    [[nodiscard]] std::array<typename StorageType::ValueType, DIMENSION> asArray() const;
+    [[nodiscard]] R_PUBLIC_API std::array<typename StorageType::ValueType, DIMENSION> asArray() const;
 
-    explicit operator uint32_t() const;
+    R_PUBLIC_API explicit operator uint32_t() const;
 
 private:
 

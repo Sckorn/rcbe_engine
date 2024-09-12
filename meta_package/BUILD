@@ -121,3 +121,11 @@ config_setting(
         "compilation_mode": "dbg",
     },
 )
+
+config_setting(
+    name = "rdmn_windows_vulkan",
+    values = {
+        ":rdmn_rasterizer_back": "vulkan",
+        "@bazel_tools//src/conditions:windows": "True",
+    }
+)

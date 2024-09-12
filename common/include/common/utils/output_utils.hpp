@@ -1,6 +1,7 @@
 #ifndef RCBE_ENGINE_OUTPUT_UTILS_HPP
 #define RCBE_ENGINE_OUTPUT_UTILS_HPP
 
+#ifdef R_USE_BOOST_LOG
 #include <boost/core/null_deleter.hpp>
 #include <boost/log/attributes/attribute.hpp>
 #include <boost/log/attributes/attribute_cast.hpp>
@@ -31,9 +32,17 @@ BOOST_LOG_ATTRIBUTE_KEYWORD(thread_id, "ThreadID", boost::log::attributes::curre
 BOOST_LOG_ATTRIBUTE_KEYWORD(process_id, "ProcessID", boost::log::attributes::current_process_id::value_type)
 BOOST_LOG_ATTRIBUTE_KEYWORD(scope, "Scope", boost::log::attributes::named_scope::value_type)
 BOOST_LOG_ATTRIBUTE_KEYWORD(severity, "Severity", boost::log::trivial::severity_level)
+#endif
+
+#ifdef R_USE_GLOG
+#include <glog/logging.h>
+#endif
 
 namespace rcbe::utils {
+#ifdef R_USE_BOOST_LOG
 void setup_logging(boost::log::trivial::severity_level minimal_visible_level = boost::log::trivial::info);
+#endif
+void setup_logging(const char * logger_sender);
 }
 
 #endif//RCBE_ENGINE_OUTPUT_UTILS_HPP

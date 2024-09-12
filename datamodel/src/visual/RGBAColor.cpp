@@ -21,7 +21,7 @@ uint8_t extract_color_byte(const uint32_t hex, uint8_t position) {
 }// namespace
 
 namespace rcbe::visual {
-RGBAColor::RGBAColor(uint32_t hex_code)
+R_PUBLIC_API RGBAColor::RGBAColor(uint32_t hex_code)
     : storage_(
           static_cast<ValueType>(extract_color_byte(hex_code, 3)) / COLOR_COMPONENT_DIVIDER,
           static_cast<ValueType>(extract_color_byte(hex_code, 2)) / COLOR_COMPONENT_DIVIDER,
@@ -30,7 +30,7 @@ RGBAColor::RGBAColor(uint32_t hex_code)
     checkStorageInRange(storage_);
 }
 
-RGBAColor::RGBAColor(
+R_PUBLIC_API RGBAColor::RGBAColor(
     const rcbe::core::EngineScalar r,
     const rcbe::core::EngineScalar g,
     const rcbe::core::EngineScalar b,
@@ -39,7 +39,7 @@ RGBAColor::RGBAColor(
     checkStorageInRange(storage_);
 }
 
-RGBAColor::RGBAColor(
+R_PUBLIC_API RGBAColor::RGBAColor(
     const rcbe::core::EngineIntergral r,
     const rcbe::core::EngineIntergral g,
     const rcbe::core::EngineIntergral b,
@@ -52,39 +52,39 @@ RGBAColor::RGBAColor(
     checkStorageInRange(storage_);
 }
 
-const RGBAColor::ValueType &RGBAColor::r() const noexcept {
+R_PUBLIC_API const RGBAColor::ValueType &RGBAColor::r() const noexcept {
     return storage_.x();
 }
 
-RGBAColor::ValueType &RGBAColor::r() {
+R_PUBLIC_API RGBAColor::ValueType &RGBAColor::r() {
     return storage_.x();
 }
 
-const RGBAColor::ValueType &RGBAColor::g() const noexcept {
+R_PUBLIC_API const RGBAColor::ValueType &RGBAColor::g() const noexcept {
     return storage_.y();
 }
 
-RGBAColor::ValueType &RGBAColor::g() {
+R_PUBLIC_API RGBAColor::ValueType &RGBAColor::g() {
     return storage_.y();
 }
 
-const RGBAColor::ValueType &RGBAColor::b() const noexcept {
+R_PUBLIC_API const RGBAColor::ValueType &RGBAColor::b() const noexcept {
     return storage_.z();
 }
 
-RGBAColor::ValueType &RGBAColor::b() {
+R_PUBLIC_API RGBAColor::ValueType &RGBAColor::b() {
     return storage_.z();
 }
 
-const RGBAColor::ValueType &RGBAColor::a() const noexcept {
+R_PUBLIC_API const RGBAColor::ValueType &RGBAColor::a() const noexcept {
     return storage_.w();
 }
 
-RGBAColor::ValueType &RGBAColor::a() {
+R_PUBLIC_API RGBAColor::ValueType &RGBAColor::a() {
     return storage_.w();
 }
 
-std::array<typename RGBAColor::StorageType::ValueType, RGBAColor::DIMENSION> RGBAColor::asArray() const {
+R_PUBLIC_API std::array<typename RGBAColor::StorageType::ValueType, RGBAColor::DIMENSION> RGBAColor::asArray() const {
     std::array<ValueType, DIMENSION> ret;
 
     size_t counter = 0;
@@ -95,7 +95,7 @@ std::array<typename RGBAColor::StorageType::ValueType, RGBAColor::DIMENSION> RGB
     return ret;
 }
 
-RGBAColor::operator uint32_t() const {
+R_PUBLIC_API RGBAColor::operator uint32_t() const {
 
     std::array<uint8_t, DIMENSION> tmp;
 

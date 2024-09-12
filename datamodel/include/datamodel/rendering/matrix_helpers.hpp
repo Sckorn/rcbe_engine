@@ -7,7 +7,7 @@
 #include <rcbe-engine/fundamentals/types.hpp>
 
 namespace rdmn::render {
-rcbe::math::Matrix4x4 makePerspectiveMatrix(
+R_PUBLIC_API rcbe::math::Matrix4x4 makePerspectiveMatrix(
     const rcbe::core::EngineScalar near,
     const rcbe::core::EngineScalar far,
     const rcbe::math::deg fov,

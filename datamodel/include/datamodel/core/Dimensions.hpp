@@ -5,6 +5,7 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+#include <rdmn-engine/public_api.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
 namespace rcbe::core {
@@ -36,8 +37,8 @@ using FloatDimensions = dimensions_impl<float>;
 namespace nlohmann {
 template <>
 struct adl_serializer<rcbe::core::IntegralDimensions> {
-    static void to_json(json &j, const rcbe::core::IntegralDimensions &dim);
-    static void from_json(const json &j, rcbe::core::IntegralDimensions &dim);
+    R_PUBLIC_API static void to_json(json &j, const rcbe::core::IntegralDimensions &dim);
+    R_PUBLIC_API static void from_json(const json &j, rcbe::core::IntegralDimensions &dim);
 };
 }// namespace nlohmann
 

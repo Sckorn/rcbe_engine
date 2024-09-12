@@ -1,3 +1,8 @@
+_LOGGING_LIB = select({
+    "@bazel_tools//src/conditions:windows": ["@com_github_google_glog//:glog"],
+    "//conditions:default": ["@boost//:log"],
+})
+
 cc_library(
     name = "engine_datamodel_core",
     srcs = glob([
@@ -6,7 +11,7 @@ cc_library(
     hdrs = glob([
         "include/datamodel/core/**/*.hpp",
     ]),
-    copts = ["-Iexternal/nlohmann/include"],
+    #copts = ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
     includes = ["include"],
     strip_include_prefix = "include",
@@ -14,6 +19,7 @@ cc_library(
     deps = [
         "//common:engine_fundamentals",
         "@nlohmann//:nlohmann_json",
+        "//meta_package/public_api:rdmn_public_api",
     ],
 )
 
@@ -25,9 +31,9 @@ cc_library(
     hdrs = glob([
         "include/datamodel/math/**/*.hpp",
     ]),
-    copts = [
-        "-Iexternal/nlohmann/include",
-    ],
+    #copts = [
+    #    "-Iexternal/nlohmann/include",
+    #],
     defines = [
         "RCBE_SCALAR_LINALG",
     ],
@@ -40,9 +46,9 @@ cc_library(
         "//common:engine_fuzzy_logic",
         "//common:engine_math_utils",
         "//common:rcbe_binary_tools",
-        "@boost//:log",
         "@nlohmann//:nlohmann_json",
-    ],
+        "//meta_package/public_api:rdmn_public_api",
+    ] + _LOGGING_LIB,
 )
 
 cc_library(
@@ -71,9 +77,9 @@ cc_library(
     }) + [
         ":engine_datamodel_math",
         "//exceptions:rcbe_exception",
-        "@boost//:log",
         "@nlohmann//:nlohmann_json",
-    ],
+        "//meta_package/public_api:rdmn_public_api",
+    ] + _LOGGING_LIB,
 )
 
 cc_library(
@@ -93,6 +99,7 @@ cc_library(
         ":engine_datamodel_visual",
         "//common:rcbe_binary_tools",
         "@nlohmann//:nlohmann_json",
+        "//meta_package/public_api:rdmn_public_api",
     ],
 )
 
@@ -114,7 +121,9 @@ cc_library(
         ":engine_datamodel_math",
         ":engine_datamodel_visual",
         "@boost//:bimap",
+        "@boost//:assign",
         "@nlohmann//:nlohmann_json",
+        "//meta_package/public_api:rdmn_public_api",
     ],
 )
 
@@ -184,7 +193,7 @@ cc_library(
     includes = ["include"],
     linkopts = select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["-lvulkan"],
-        "//meta_package:rdmn_gl_rasterizer_backend": ["-lGL"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["-lGL"], # need config settings ti handle multiple options
     }) + [
         "-lpthread",
     ],
@@ -199,9 +208,12 @@ cc_library(
         ":engine_datamodel_math",
         ":engine_datamodel_visual",
         "//common:engine_fundamentals",
-        "@boost//:log",
+        "//meta_package/public_api:rdmn_public_api",
+        "@boost//:assign",
+        "@boost//:bimap",
         "@nlohmann//:nlohmann_json",
-    ],
+        "@vulkan_windows//:vulkan_cc_library",
+    ] + _LOGGING_LIB,
 )
 
 ### File groups

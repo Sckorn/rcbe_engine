@@ -8,6 +8,7 @@
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
+#include <rcbe-engine/fundamentals/types.hpp>
 #ifdef RDMN_GLM_INTEGRATION
 #include <glm/ext/matrix_float4x4.hpp>
 #endif

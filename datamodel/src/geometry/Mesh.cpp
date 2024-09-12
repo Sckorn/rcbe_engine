@@ -1,111 +1,111 @@
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 
 namespace rcbe::geometry {
-const Mesh::VertexStorage &Mesh::vertices() const noexcept {
+R_PUBLIC_API const Mesh::VertexStorage &Mesh::vertices() const noexcept {
     return vertices_;
 }
 
-const Mesh::NormalStorage &Mesh::normals() const noexcept {
+R_PUBLIC_API const Mesh::NormalStorage &Mesh::normals() const noexcept {
     return normals_;
 }
 
-const Mesh::FacetStorage &Mesh::facets() const noexcept {
+R_PUBLIC_API const Mesh::FacetStorage &Mesh::facets() const noexcept {
     return facets_;
 }
 
-const Mesh::TexCoordStorage &Mesh::texCoord() const noexcept {
+R_PUBLIC_API const Mesh::TexCoordStorage &Mesh::texCoord() const noexcept {
     return tex_coord_;
 }
 
-size_t Mesh::verticesSize() const noexcept {
+R_PUBLIC_API size_t Mesh::verticesSize() const noexcept {
     return vertices_.size();
 }
 
-size_t Mesh::normalsSize() const noexcept {
+R_PUBLIC_API size_t Mesh::normalsSize() const noexcept {
     return normals_.size();
 }
 
-size_t Mesh::facetsSize() const noexcept {
+R_PUBLIC_API size_t Mesh::facetsSize() const noexcept {
     return facets_.size();
 }
 
-size_t Mesh::texCoordSize() const noexcept {
+R_PUBLIC_API size_t Mesh::texCoordSize() const noexcept {
     return tex_coord_.size();
 }
 
-Mesh::VerticesIterator Mesh::verticesBegin() noexcept {
+R_PUBLIC_API Mesh::VerticesIterator Mesh::verticesBegin() noexcept {
     return vertices_.begin();
 }
 
-Mesh::VerticesConstIterator Mesh::verticesCbegin() const noexcept {
+R_PUBLIC_API Mesh::VerticesConstIterator Mesh::verticesCbegin() const noexcept {
     return vertices_.cbegin();
 }
 
-Mesh::VerticesIterator Mesh::verticesEnd() noexcept {
+R_PUBLIC_API Mesh::VerticesIterator Mesh::verticesEnd() noexcept {
     return vertices_.end();
 }
 
-Mesh::VerticesConstIterator Mesh::verticesCend() const noexcept {
+R_PUBLIC_API Mesh::VerticesConstIterator Mesh::verticesCend() const noexcept {
     return vertices_.cend();
 }
 
-Mesh::NormalsIterator Mesh::normalsBegin() noexcept {
+R_PUBLIC_API Mesh::NormalsIterator Mesh::normalsBegin() noexcept {
     return normals_.begin();
 }
 
-Mesh::NormalsConstIterator Mesh::normalsCbegin() const noexcept {
+R_PUBLIC_API Mesh::NormalsConstIterator Mesh::normalsCbegin() const noexcept {
     return normals_.cbegin();
 }
 
-Mesh::NormalsIterator Mesh::normalsEnd() noexcept {
+R_PUBLIC_API Mesh::NormalsIterator Mesh::normalsEnd() noexcept {
     return normals_.end();
 }
 
-Mesh::NormalsConstIterator Mesh::normalsCend() const noexcept {
+R_PUBLIC_API Mesh::NormalsConstIterator Mesh::normalsCend() const noexcept {
     return normals_.cend();
 }
 
-Mesh::FacetsIterator Mesh::facetsBegin() noexcept {
+R_PUBLIC_API Mesh::FacetsIterator Mesh::facetsBegin() noexcept {
     return facets_.begin();
 }
 
-Mesh::FacetsConstIterator Mesh::facetsCbegin() const noexcept {
+R_PUBLIC_API Mesh::FacetsConstIterator Mesh::facetsCbegin() const noexcept {
     return facets_.cbegin();
 }
 
-Mesh::FacetsIterator Mesh::facetsEnd() noexcept {
+R_PUBLIC_API Mesh::FacetsIterator Mesh::facetsEnd() noexcept {
     return facets_.end();
 }
 
-Mesh::FacetsConstIterator Mesh::facetsCend() const noexcept {
+R_PUBLIC_API Mesh::FacetsConstIterator Mesh::facetsCend() const noexcept {
     return facets_.cend();
 }
 
-Mesh::TexCoordIterator Mesh::texCoordBegin() noexcept {
+R_PUBLIC_API Mesh::TexCoordIterator Mesh::texCoordBegin() noexcept {
     return tex_coord_.begin();
 }
 
-Mesh::TexCoordConstIterator Mesh::texCoordCbegin() const noexcept {
+R_PUBLIC_API Mesh::TexCoordConstIterator Mesh::texCoordCbegin() const noexcept {
     return tex_coord_.cbegin();
 }
 
-Mesh::TexCoordIterator Mesh::texCoordEnd() noexcept {
+R_PUBLIC_API Mesh::TexCoordIterator Mesh::texCoordEnd() noexcept {
     return tex_coord_.end();
 }
 
-Mesh::TexCoordConstIterator Mesh::texCoordCend() const noexcept {
+R_PUBLIC_API Mesh::TexCoordConstIterator Mesh::texCoordCend() const noexcept {
     return tex_coord_.cend();
 }
 
-const Mesh::ColorType &Mesh::color() const noexcept {
+R_PUBLIC_API const Mesh::ColorType &Mesh::color() const noexcept {
     return color_;
 }
 
-const Mesh::TransformType &Mesh::getTransform() const noexcept {
+R_PUBLIC_API const Mesh::TransformType &Mesh::getTransform() const noexcept {
     return transform_;
 }
 
-void Mesh::transform(const TransformType &t) {
+R_PUBLIC_API void Mesh::transform(const TransformType &t) {
     transform_ = t * transform_;
 
     if (!vertices_.empty()) {
@@ -118,7 +118,7 @@ void Mesh::transform(const TransformType &t) {
     vertices_trnasformed_ = true;
 }
 
-Mesh::NormalStorage Mesh::normalsOriginal() const {
+R_PUBLIC_API Mesh::NormalStorage Mesh::normalsOriginal() const {
     if (vertices_trnasformed_) {
         return revertTransform(normals_, transform_);
     } else {
@@ -126,7 +126,7 @@ Mesh::NormalStorage Mesh::normalsOriginal() const {
     }
 }
 
-Mesh::VertexStorage Mesh::verticesOriginal() const {
+R_PUBLIC_API Mesh::VertexStorage Mesh::verticesOriginal() const {
     if (vertices_trnasformed_) {
         return revertTransform(vertices_, transform_);
     } else {
@@ -134,11 +134,11 @@ Mesh::VertexStorage Mesh::verticesOriginal() const {
     }
 }
 
-bool Mesh::verticesTransformed() const noexcept {
+R_PUBLIC_API bool Mesh::verticesTransformed() const noexcept {
     return vertices_trnasformed_;
 }
 
-Mesh operator*(const Mesh::TransformType &t, Mesh m) {
+R_PUBLIC_API Mesh operator*(const Mesh::TransformType &t, Mesh m) {
     m.transform(t);
     return m;
 }

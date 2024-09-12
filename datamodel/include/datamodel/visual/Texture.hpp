@@ -10,31 +10,32 @@
 #include <rcbe-engine/datamodel/visual/texture_types.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
+#include <rdmn-engine/public_api.hpp>
 namespace rcbe::visual {
 
 class TextureImplementation;
 
-class Texture : std::enable_shared_from_this<Texture> {
+R_PUBLIC_API class Texture : std::enable_shared_from_this<Texture> {
 public:
 
     using ParserType = std::function<rdmn::vis::image_data(const core::EnginePath &)>;
 
-    Texture() = delete;
+    R_PUBLIC_API Texture() = delete;
     /// TODO: should it store the parser? @sckorn
-    explicit Texture(rdmn::vis::image_data &&data);
-    Texture(const core::EnginePath &path, ParserType &&parser);
-    ~Texture();
+    R_PUBLIC_API explicit Texture(rdmn::vis::image_data &&data);
+    R_PUBLIC_API Texture(const core::EnginePath &path, ParserType &&parser);
+    R_PUBLIC_API ~Texture();
 
-    Texture(Texture &&other) noexcept = default;
-    Texture &operator=(Texture &&other) noexcept = default;
+    R_PUBLIC_API Texture(Texture &&other) noexcept = default;
+    R_PUBLIC_API Texture &operator=(Texture &&other) noexcept = default;
 
-    [[nodiscard]] size_t getWidth() const;
-    [[nodiscard]] size_t getHeight() const;
-    [[nodiscard]] size_t getBitsPerPixel() const;
-    [[nodiscard]] size_t getBytesPerPixel() const;
-    [[nodiscard]] size_t getImageSizeBytes() const;
-    [[nodiscard]] const texture_config::ImageBodyType &getPixels() const;
-    [[nodiscard]] rdmn::vis::image_data cloneImageData() const;
+    [[nodiscard]] R_PUBLIC_API size_t getWidth() const;
+    [[nodiscard]] R_PUBLIC_API size_t getHeight() const;
+    [[nodiscard]] R_PUBLIC_API size_t getBitsPerPixel() const;
+    [[nodiscard]] R_PUBLIC_API size_t getBytesPerPixel() const;
+    [[nodiscard]] R_PUBLIC_API size_t getImageSizeBytes() const;
+    [[nodiscard]] R_PUBLIC_API const texture_config::ImageBodyType &getPixels() const;
+    [[nodiscard]] R_PUBLIC_API rdmn::vis::image_data cloneImageData() const;
 
 private:
 
@@ -44,14 +45,14 @@ private:
 using TexturePtr = std::shared_ptr<Texture>;
 using TextureConstPtr = std::shared_ptr<const Texture>;
 
-TexturePtr make_tex_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
-TextureConstPtr make_tex_const_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
+R_PUBLIC_API TexturePtr make_tex_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
+R_PUBLIC_API TextureConstPtr make_tex_const_ptr(const core::EnginePath &path, Texture::ParserType &&parser);
 
-struct VisualTextureSet {
-    VisualTextureSet(std::initializer_list<TexturePtr> &&tex_data);
-    explicit VisualTextureSet(std::unordered_set<TexturePtr> &&tex_data);
+R_PUBLIC_API struct VisualTextureSet {
+    R_PUBLIC_API VisualTextureSet(std::initializer_list<TexturePtr> &&tex_data);
+    R_PUBLIC_API explicit VisualTextureSet(std::unordered_set<TexturePtr> &&tex_data);
 
-    ~VisualTextureSet() = default;
+    R_PUBLIC_API ~VisualTextureSet() = default;
 
     const std::unordered_set<TexturePtr> grouped_textures;
 };

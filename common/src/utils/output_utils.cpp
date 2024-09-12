@@ -38,6 +38,7 @@
  * */
 
 namespace {
+#ifdef R_USE_BOOST_LOG
 void coloring_formatter(boost::log::record_view const &rec, boost::log::formatting_ostream &strm) {
     namespace logging_expr = boost::log::expressions;
 
@@ -74,10 +75,11 @@ void coloring_formatter(boost::log::record_view const &rec, boost::log::formatti
         strm << "\033[0m";
     }
 }
+#endif
 }// namespace
 
 namespace rcbe::utils {
-
+#ifdef R_USE_BOOST_LOG
 void setup_logging(boost::log::trivial::severity_level minimal_visible_level) {
     BOOST_LOG_FUNCTION();
 
@@ -109,4 +111,12 @@ void setup_logging(boost::log::trivial::severity_level minimal_visible_level) {
     // "register" sink
     boost::log::core::get()->add_sink(stdout_sink);
 }
+#endif
+
+#ifdef R_USE_GLOG
+void setup_logging(const char * logger_sender) {
+    google::InitGoogleLogging(argv[0]);
+    LOG(INFO) << "Logging enabled successfully!";
+}
+#endif
 }// namespace rcbe::utils

@@ -41,7 +41,10 @@ struct window_config {
 
 using WindowTypeBimap = boost::bimap<std::string, window_config::WindowType>;
 
-static const WindowTypeBimap str_to_wnd_t_ = boost::assign::list_of<WindowTypeBimap::relation>("gl_renderer_window", window_config::WindowType ::gl_rendering_window)("drawing_window", window_config::WindowType::drawing_window)("unknown", window_config::WindowType ::unknown);
+static const WindowTypeBimap str_to_wnd_t_ = boost::assign::list_of<WindowTypeBimap::relation>
+    ("gl_renderer_window", window_config::WindowType ::gl_rendering_window)
+    ("drawing_window", window_config::WindowType::drawing_window)
+    ("unknown", window_config::WindowType ::unknown);
 
 static std::string str_from_window_type(window_config::WindowType type) {
     auto it = str_to_wnd_t_.right.find(type);

@@ -9,9 +9,11 @@
 #include <rcbe-engine/datamodel/math/math_constants.hpp>
 #include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 namespace rcbe::geometry {
 
-class Mesh {
+R_PUBLIC_API class Mesh {
 public:
 
     using VertexType = math::Vector3d;
@@ -40,7 +42,7 @@ public:
 
 public:
 
-    Mesh() = default;
+    R_PUBLIC_API Mesh() = default;
 
     template <typename VertsInIter, typename NormsInIter, typename FacesInIter>
     Mesh(
@@ -66,13 +68,13 @@ public:
         , tex_coord_(tcbegin, tcend)
         , color_(color) {}
 
-    Mesh(VertexStorage &&v, NormalStorage &&n, FacetStorage &&f, ColorType &&c)
+    R_PUBLIC_API Mesh(VertexStorage &&v, NormalStorage &&n, FacetStorage &&f, ColorType &&c)
         : vertices_(std::move(v))
         , normals_(std::move(n))
         , facets_(std::move(f))
         , color_(std::move(c)) {}
 
-    Mesh(VertexStorage &&v, NormalStorage &&n, FacetStorage &&f, TexCoordStorage &&tc, ColorType &&c)
+    R_PUBLIC_API Mesh(VertexStorage &&v, NormalStorage &&n, FacetStorage &&f, TexCoordStorage &&tc, ColorType &&c)
         : vertices_(std::move(v))
         , normals_(std::move(n))
         , facets_(std::move(f))
@@ -80,57 +82,57 @@ public:
         , color_(std::move(c)) {}
 
     // TODO: find a way to make this obsolete
-    Mesh(const Mesh &other) = default;
-    Mesh &operator=(const Mesh &other) = default;
+    R_PUBLIC_API Mesh(const Mesh &other) = default;
+    R_PUBLIC_API Mesh &operator=(const Mesh &other) = default;
 
-    Mesh(Mesh &&other) = default;
-    Mesh &operator=(Mesh &&other) = default;
+    R_PUBLIC_API Mesh(Mesh &&other) = default;
+    R_PUBLIC_API Mesh &operator=(Mesh &&other) = default;
 
-    [[nodiscard]] const VertexStorage &vertices() const noexcept;
-    [[nodiscard]] VertexStorage verticesOriginal() const;
-    [[nodiscard]] const NormalStorage &normals() const noexcept;
-    [[nodiscard]] NormalStorage normalsOriginal() const;
-    [[nodiscard]] const FacetStorage &facets() const noexcept;
-    [[nodiscard]] const TexCoordStorage &texCoord() const noexcept;
+    [[nodiscard]] R_PUBLIC_API const VertexStorage &vertices() const noexcept;
+    [[nodiscard]] R_PUBLIC_API VertexStorage verticesOriginal() const;
+    [[nodiscard]] R_PUBLIC_API const NormalStorage &normals() const noexcept;
+    [[nodiscard]] R_PUBLIC_API NormalStorage normalsOriginal() const;
+    [[nodiscard]] R_PUBLIC_API const FacetStorage &facets() const noexcept;
+    [[nodiscard]] R_PUBLIC_API const TexCoordStorage &texCoord() const noexcept;
 
-    [[nodiscard]] size_t verticesSize() const noexcept;
-    [[nodiscard]] size_t normalsSize() const noexcept;
-    [[nodiscard]] size_t facetsSize() const noexcept;
-    [[nodiscard]] size_t texCoordSize() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t verticesSize() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t normalsSize() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t facetsSize() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t texCoordSize() const noexcept;
 
-    VerticesIterator verticesBegin() noexcept;
-    VerticesConstIterator verticesCbegin() const noexcept;
+    R_PUBLIC_API VerticesIterator verticesBegin() noexcept;
+    R_PUBLIC_API VerticesConstIterator verticesCbegin() const noexcept;
 
-    VerticesIterator verticesEnd() noexcept;
-    VerticesConstIterator verticesCend() const noexcept;
+    R_PUBLIC_API VerticesIterator verticesEnd() noexcept;
+    R_PUBLIC_API VerticesConstIterator verticesCend() const noexcept;
 
-    NormalsIterator normalsBegin() noexcept;
-    NormalsConstIterator normalsCbegin() const noexcept;
+    R_PUBLIC_API NormalsIterator normalsBegin() noexcept;
+    R_PUBLIC_API NormalsConstIterator normalsCbegin() const noexcept;
 
-    NormalsIterator normalsEnd() noexcept;
-    NormalsConstIterator normalsCend() const noexcept;
+    R_PUBLIC_API NormalsIterator normalsEnd() noexcept;
+    R_PUBLIC_API NormalsConstIterator normalsCend() const noexcept;
 
-    FacetsIterator facetsBegin() noexcept;
-    FacetsConstIterator facetsCbegin() const noexcept;
+    R_PUBLIC_API FacetsIterator facetsBegin() noexcept;
+    R_PUBLIC_API FacetsConstIterator facetsCbegin() const noexcept;
 
-    FacetsIterator facetsEnd() noexcept;
-    FacetsConstIterator facetsCend() const noexcept;
+    R_PUBLIC_API FacetsIterator facetsEnd() noexcept;
+    R_PUBLIC_API FacetsConstIterator facetsCend() const noexcept;
 
-    TexCoordIterator texCoordBegin() noexcept;
-    TexCoordConstIterator texCoordCbegin() const noexcept;
+    R_PUBLIC_API TexCoordIterator texCoordBegin() noexcept;
+    R_PUBLIC_API TexCoordConstIterator texCoordCbegin() const noexcept;
 
-    TexCoordIterator texCoordEnd() noexcept;
-    TexCoordConstIterator texCoordCend() const noexcept;
+    R_PUBLIC_API TexCoordIterator texCoordEnd() noexcept;
+    R_PUBLIC_API TexCoordConstIterator texCoordCend() const noexcept;
 
-    [[nodiscard]] const ColorType &color() const noexcept;
+    [[nodiscard]] R_PUBLIC_API const ColorType &color() const noexcept;
 
-    [[nodiscard]] const TransformType &getTransform() const noexcept;
+    [[nodiscard]] R_PUBLIC_API const TransformType &getTransform() const noexcept;
 
-    void transform(const TransformType &t);
+    R_PUBLIC_API void transform(const TransformType &t);
 
-    [[nodiscard]] bool verticesTransformed() const noexcept;
+    [[nodiscard]] R_PUBLIC_API bool verticesTransformed() const noexcept;
 
-    friend Mesh operator*(const TransformType &t, Mesh m);
+    friend R_PUBLIC_API Mesh operator*(const TransformType &t, Mesh m);
 
 private:
 

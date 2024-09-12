@@ -7,6 +7,8 @@
 
 #include <GL/gl.h>
 
+#include <rdmn-engine/public_api.hpp>
+
 #include <rcbe-engine/core/gl_extensions.hpp>
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 
@@ -22,21 +24,21 @@ public:
     class VertexArrayObject {
     public:
 
-        VertexArrayObject();
-        ~VertexArrayObject();
+        R_PUBLIC_API VertexArrayObject();
+        R_PUBLIC_API ~VertexArrayObject();
 
-        VertexArrayObject(const VertexArrayObject &other) = delete;
-        VertexArrayObject &operator=(const VertexArrayObject &other) = delete;
+        R_PUBLIC_API VertexArrayObject(const VertexArrayObject &other) = delete;
+        R_PUBLIC_API VertexArrayObject &operator=(const VertexArrayObject &other) = delete;
 
-        VertexArrayObject(VertexArrayObject &&other);
-        VertexArrayObject &operator=(VertexArrayObject &&other);
+        R_PUBLIC_API VertexArrayObject(VertexArrayObject &&other);
+        R_PUBLIC_API VertexArrayObject &operator=(VertexArrayObject &&other);
 
-        void bind() const;
-        void unbind() const;
-        void setData(const StorageType &vertices) const;
-        void setData(const StorageType &vertices, const StorageType &normals) const;
-        void setData(const StorageType &vertices, const StorageType &normals, const StorageType &colors) const;
-        void setData(
+        R_PUBLIC_API void bind() const;
+        R_PUBLIC_API void unbind() const;
+        R_PUBLIC_API void setData(const StorageType &vertices) const;
+        R_PUBLIC_API void setData(const StorageType &vertices, const StorageType &normals) const;
+        R_PUBLIC_API void setData(const StorageType &vertices, const StorageType &normals, const StorageType &colors) const;
+        R_PUBLIC_API void setData(
             const StorageType &vertices,
             const StorageType &normals,
             const StorageType &colors,
@@ -48,37 +50,37 @@ public:
         mutable bool binded_ = false;
     };
 
-    explicit VertexBufferObject(const std::vector<rcbe::geometry::Mesh> &meshes, bool use_vao = false);
+    R_PUBLIC_API explicit VertexBufferObject(const std::vector<rcbe::geometry::Mesh> &meshes, bool use_vao = false);
 
-    VertexBufferObject(const VertexBufferObject &other) = delete;
-    VertexBufferObject &operator=(const VertexBufferObject &other) = delete;
+    R_PUBLIC_API VertexBufferObject(const VertexBufferObject &other) = delete;
+    R_PUBLIC_API VertexBufferObject &operator=(const VertexBufferObject &other) = delete;
 
-    VertexBufferObject(VertexBufferObject &&other);
-    VertexBufferObject &operator=(VertexBufferObject &&other);
+    R_PUBLIC_API VertexBufferObject(VertexBufferObject &&other);
+    R_PUBLIC_API VertexBufferObject &operator=(VertexBufferObject &&other);
 
-    ~VertexBufferObject();
+    R_PUBLIC_API ~VertexBufferObject();
 
-    void deleteBuffer();
+    R_PUBLIC_API void deleteBuffer();
 
-    void enableState() const;
-    void disableState() const;
+    R_PUBLIC_API void enableState() const;
+    R_PUBLIC_API void disableState() const;
 
-    void bind() const;
-    void unbind() const;
+    R_PUBLIC_API void bind() const;
+    R_PUBLIC_API void unbind() const;
 
-    [[nodiscard]] size_t size() const noexcept;
-    [[nodiscard]] size_t sourceSize() const noexcept;
-    [[nodiscard]] size_t sizeBytes() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t size() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t sourceSize() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t sizeBytes() const noexcept;
 
-    [[nodiscard]] size_t vertsByteSize() const noexcept;
-    [[nodiscard]] size_t normsByteSize() const noexcept;
-    [[nodiscard]] size_t colorsByteSize() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t vertsByteSize() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t normsByteSize() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t colorsByteSize() const noexcept;
 
-    [[nodiscard]] RawDataType verticesData() const noexcept;
-    [[nodiscard]] RawDataType normalsData() const noexcept;
-    [[nodiscard]] RawDataType colorsData() const noexcept;
+    [[nodiscard]] R_PUBLIC_API RawDataType verticesData() const noexcept;
+    [[nodiscard]] R_PUBLIC_API RawDataType normalsData() const noexcept;
+    [[nodiscard]] R_PUBLIC_API RawDataType colorsData() const noexcept;
 
-    [[nodiscard]] const VertexArrayObject &vao() const;
+    [[nodiscard]] R_PUBLIC_API const VertexArrayObject &vao() const;
 
 private:
 
@@ -113,18 +115,18 @@ public:
     class ElementBufferObject {
     public:
 
-        ElementBufferObject();
-        ~ElementBufferObject();
+        R_PUBLIC_API ElementBufferObject();
+        R_PUBLIC_API ~ElementBufferObject();
 
-        ElementBufferObject(const ElementBufferObject &other) = delete;
-        ElementBufferObject &operator=(const ElementBufferObject &other) = delete;
+        R_PUBLIC_API ElementBufferObject(const ElementBufferObject &other) = delete;
+        R_PUBLIC_API ElementBufferObject &operator=(const ElementBufferObject &other) = delete;
 
-        ElementBufferObject(ElementBufferObject &&other);
-        ElementBufferObject &operator=(ElementBufferObject &&other);
+        R_PUBLIC_API ElementBufferObject(ElementBufferObject &&other);
+        R_PUBLIC_API ElementBufferObject &operator=(ElementBufferObject &&other);
 
-        void bind() const;
-        void unbind() const;
-        void setData(const StorageType &indices) const;
+        R_PUBLIC_API void bind() const;
+        R_PUBLIC_API void unbind() const;
+        R_PUBLIC_API void setData(const StorageType &indices) const;
 
     private:
 
@@ -132,25 +134,25 @@ public:
         mutable bool binded_ = false;
     };
 
-    IndexBufferObject() = delete;
-    ~IndexBufferObject();
+    R_PUBLIC_API IndexBufferObject() = delete;
+    R_PUBLIC_API ~IndexBufferObject();
 
-    IndexBufferObject(const std::vector<rcbe::geometry::Mesh> &meshes, const VertexBufferObject &vbo, bool use_ebo = false);
+    R_PUBLIC_API IndexBufferObject(const std::vector<rcbe::geometry::Mesh> &meshes, const VertexBufferObject &vbo, bool use_ebo = false);
 
-    IndexBufferObject(const IndexBufferObject &other) = delete;
-    IndexBufferObject &operator=(const IndexBufferObject &other) = delete;
+    R_PUBLIC_API IndexBufferObject(const IndexBufferObject &other) = delete;
+    R_PUBLIC_API IndexBufferObject &operator=(const IndexBufferObject &other) = delete;
 
-    IndexBufferObject(IndexBufferObject &&other);
-    IndexBufferObject &operator=(IndexBufferObject &&other);
+    R_PUBLIC_API IndexBufferObject(IndexBufferObject &&other);
+    R_PUBLIC_API IndexBufferObject &operator=(IndexBufferObject &&other);
 
-    void bind() const;
-    void unbind() const;
+    R_PUBLIC_API void bind() const;
+    R_PUBLIC_API void unbind() const;
 
-    [[nodiscard]] size_t size() const noexcept;
+    [[nodiscard]] R_PUBLIC_API size_t size() const noexcept;
 
-    [[nodiscard]] RawDataType data() const noexcept;
+    [[nodiscard]] R_PUBLIC_API RawDataType data() const noexcept;
 
-    [[nodiscard]] const ElementBufferObject &ebo() const;
+    [[nodiscard]] R_PUBLIC_API const ElementBufferObject &ebo() const;
 
 private:
 

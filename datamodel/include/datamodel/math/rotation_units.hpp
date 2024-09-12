@@ -7,6 +7,7 @@
 
 #include <rcbe-engine/fundamentals/types.hpp>
 #include <rcbe-engine/utils/math_utils.hpp>
+#include <rdmn-engine/public_api.hpp>
 
 namespace rcbe::math {
 
@@ -78,17 +79,17 @@ struct rad;
 struct deg : public detail::rotations_base<deg> {
     static constexpr double ABS_MAX_VALUE = 360.;
 
-    explicit deg(double rot);
+    R_PUBLIC_API explicit deg(double rot);
 
-    [[nodiscard]] rad as_rad() const;
+    [[nodiscard]] R_PUBLIC_API rad as_rad() const;
 };
 
 struct rad : public detail::rotations_base<rad> {
     static constexpr double ABS_MAX_VALUE = 2 * M_PI;
 
-    explicit rad(double rot);
+    R_PUBLIC_API explicit rad(double rot);
 
-    [[nodiscard]] deg as_deg() const;
+    [[nodiscard]] R_PUBLIC_API deg as_deg() const;
 };
 
 }// namespace rcbe::math

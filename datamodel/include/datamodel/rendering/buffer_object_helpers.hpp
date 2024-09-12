@@ -6,8 +6,11 @@
 
 #include <boost/log/trivial.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 #include <rcbe-engine/fundamentals/convinience.hpp>
+#include <rcbe-engine/fundamentals/types.hpp>
 
 #ifdef RDMN_VULKAN
 #include <vulkan/vulkan.hpp>
@@ -19,21 +22,21 @@ static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 
 namespace rdmn::render {
 #ifdef RDMN_VULKAN
-uint32_t findMemoryType(VkPhysicalDevice device, uint32_t type_filter, VkMemoryPropertyFlags properties);
-std::optional<VkCommandBuffer> beginSingleTimeCommands(VkDevice logical_device, VkCommandPool cmd_pool);
-bool endSingleTimeCommands(
+R_PUBLIC_API uint32_t findMemoryType(VkPhysicalDevice device, uint32_t type_filter, VkMemoryPropertyFlags properties);
+R_PUBLIC_API std::optional<VkCommandBuffer> beginSingleTimeCommands(VkDevice logical_device, VkCommandPool cmd_pool);
+R_PUBLIC_API bool endSingleTimeCommands(
     VkDevice logical_device,
     VkCommandBuffer cmd_buff,
     VkQueue graph_queue,
     VkCommandPool cmd_pool);
-bool copyBuffer(
+R_PUBLIC_API bool copyBuffer(
     VkDevice logical_device,
     VkBuffer src,
     VkBuffer dst,
     VkDeviceSize size,
     VkCommandPool command_pool,
     VkQueue target_queue);
-bool createBufferImpl(
+R_PUBLIC_API bool createBufferImpl(
     VkDevice &logical_device,
     VkPhysicalDevice &device,
     VkDeviceSize size,
@@ -126,7 +129,7 @@ struct BufferObjectData {
 
     size_t buffer_byte_size;
 
-    void printSizes() const {
+    R_PUBLIC_API void printSizes() const {
         BOOST_LOG_TRIVIAL(debug) << "Vertices size " << vertices.size();
         BOOST_LOG_TRIVIAL(debug) << "Normals size " << normals.size();
         BOOST_LOG_TRIVIAL(debug) << "Colors size " << colors.size();

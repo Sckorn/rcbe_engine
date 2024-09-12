@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include <rdmn-engine/public_api.hpp>
+
 #include <rcbe-engine/fundamentals/types.hpp>
 
 #ifdef RDMN_VULKAN
@@ -39,13 +41,13 @@ public:
     class MaterialConfig {
     public:
 
-        MaterialConfig() = default;
-        explicit MaterialConfig(std::vector<ShaderArguments> &&shaders);
-        MaterialConfig(std::vector<ShaderArguments> &&shaders, std::vector<TextureArguments> &&textures);
-        ~MaterialConfig() = default;
+        R_PUBLIC_API MaterialConfig() = default;
+        R_PUBLIC_API explicit MaterialConfig(std::vector<ShaderArguments> &&shaders);
+        R_PUBLIC_API MaterialConfig(std::vector<ShaderArguments> &&shaders, std::vector<TextureArguments> &&textures);
+        R_PUBLIC_API ~MaterialConfig() = default;
 
-        [[nodiscard]] const std::vector<ShaderArguments> &getShaderArgs() const noexcept;
-        [[nodiscard]] const std::vector<TextureArguments> &getTextureArgs() const noexcept;
+        [[nodiscard]] R_PUBLIC_API const std::vector<ShaderArguments> &getShaderArgs() const noexcept;
+        [[nodiscard]] R_PUBLIC_API const std::vector<TextureArguments> &getTextureArgs() const noexcept;
 
     private:
 
@@ -67,40 +69,40 @@ public:
     using ShaderStorage = std::vector<ShaderType>;
 #endif
 
-    Material() = delete;
-    explicit Material(MaterialConfig &&config, bool deferred = false);
-    Material(ShaderType &&vertex, ShaderType &&fragment, bool deferred = false);
+    R_PUBLIC_API Material() = delete;
+    R_PUBLIC_API explicit Material(MaterialConfig &&config, bool deferred = false);
+    R_PUBLIC_API Material(ShaderType &&vertex, ShaderType &&fragment, bool deferred = false);
 #ifdef RDMN_OPENGL
-    Material(std::vector<ShaderType> &&shaders, std::vector<TextureType> &&textures);
+    R_PUBLIC_API Material(std::vector<ShaderType> &&shaders, std::vector<TextureType> &&textures);
 #endif
-    ~Material() = default;
+    R_PUBLIC_API ~Material() = default;
 
-    Material(Material &&other) = default;
-    Material &operator=(Material &&other) = default;
+    R_PUBLIC_API Material(Material &&other) = default;
+    R_PUBLIC_API Material &operator=(Material &&other) = default;
 
-    [[nodiscard]] bool isDeferred() const noexcept;
+    [[nodiscard]] R_PUBLIC_API bool isDeferred() const noexcept;
 
-    [[nodiscard]] const TextureStorage &getTextures() const noexcept;
-    [[nodiscard]] TextureStorage &getTextures() noexcept;
+    [[nodiscard]] R_PUBLIC_API const TextureStorage &getTextures() const noexcept;
+    [[nodiscard]] R_PUBLIC_API TextureStorage &getTextures() noexcept;
 
-    void initializeDeferredMaterial() const;
+    R_PUBLIC_API void initializeDeferredMaterial() const;
 
 #ifdef RDMN_VULKAN
     typename TextureStorage::iterator pushTexture(std::shared_ptr<TextureType> t);
 
-    bool addObjectMetadata(const size_t object_hash, const rcbe::visual::TexturePtr &vtex);
+    R_PUBLIC_API bool addObjectMetadata(const size_t object_hash, const rcbe::visual::TexturePtr &vtex);
 
-    const std::unique_ptr<ShaderType> &getVertex() const;
-    const std::unique_ptr<ShaderType> &getFragment() const;
+    R_PUBLIC_API const std::unique_ptr<ShaderType> &getVertex() const;
+    R_PUBLIC_API const std::unique_ptr<ShaderType> &getFragment() const;
 
-    std::unique_ptr<ShaderType> &getVertex();
-    std::unique_ptr<ShaderType> &getFragment();
+    R_PUBLIC_API std::unique_ptr<ShaderType> &getVertex();
+    R_PUBLIC_API std::unique_ptr<ShaderType> &getFragment();
 #endif
 
 #ifdef RDMN_OPENGL
-    void apply() const;
-    void useShaderProgram() const;
-    [[nodiscard]] const std::unique_ptr<ShaderProgram> &getShaderProgram() const noexcept;
+    R_PUBLIC_API void apply() const;
+    R_PUBLIC_API void useShaderProgram() const;
+    [[nodiscard]] R_PUBLIC_API const std::unique_ptr<ShaderProgram> &getShaderProgram() const noexcept;
 #endif
 
 private:

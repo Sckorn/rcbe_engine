@@ -9,6 +9,8 @@
 #include <rcbe-engine/datamodel/system/input_level_node.hpp>
 #include <rcbe-engine/datamodel/system/input_system_types.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 namespace rcbe::core {
 class InputDeviceScheme {
 public:
@@ -16,12 +18,12 @@ public:
     using HighLevelEvents = std::unordered_map<std::string, HighLevelInputNode>;
     using LowLevelEvents = std::unordered_map<int, LowLevelInputNode>;
 
-    explicit InputDeviceScheme(nlohmann::json &&j);
+    R_PUBLIC_API explicit InputDeviceScheme(nlohmann::json &&j);
     ~InputDeviceScheme() = default;
 
-    [[nodiscard]] const HighLevelEvents &highlevel() const noexcept;
-    [[nodiscard]] HighLevelEvents &highlevel();
-    [[nodiscard]] const LowLevelEvents &lowlevel() const noexcept;
+    [[nodiscard]] R_PUBLIC_API const HighLevelEvents &highlevel() const noexcept;
+    [[nodiscard]] R_PUBLIC_API HighLevelEvents &highlevel();
+    [[nodiscard]] R_PUBLIC_API const LowLevelEvents &lowlevel() const noexcept;
 
 private:
 
@@ -32,7 +34,7 @@ private:
 class InputScheme {
 public:
 
-    explicit InputScheme(nlohmann::json &&j);
+    R_PUBLIC_API explicit InputScheme(nlohmann::json &&j);
     ~InputScheme() = default;
 
     [[nodiscard]] auto get(const std::string &key) const {
@@ -63,7 +65,7 @@ public:
         return 0;
     }
 
-    void set(int key, int value);
+    R_PUBLIC_API void set(int key, int value);
 
 private:
 

@@ -5,11 +5,13 @@
 
 #include <vulkan/vulkan.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
 
-namespace rdmn::render {
-bool createImage(
+namespace rdmn::render { 
+R_PUBLIC_API bool createImage(
     VkDevice logical_device,
     VkPhysicalDevice phys_device,
     rcbe::core::IntegralDimensions dims,
@@ -21,7 +23,7 @@ bool createImage(
     VkSampleCountFlagBits num_samples,
     VkImage &image,
     VkDeviceMemory &device_memory);
-bool transitionImageLayout(
+R_PUBLIC_API bool transitionImageLayout(
     VkDevice logical_device,
     VkCommandPool cmd_pool,
     VkQueue target_queue,
@@ -30,7 +32,7 @@ bool transitionImageLayout(
     uint32_t mip_levels,
     VkImageLayout old_layout,
     VkImageLayout new_layout);
-bool copyBufferToImage(
+R_PUBLIC_API bool copyBufferToImage(
     VkDevice logical_device,
     VkCommandPool cmd_pool,
     VkQueue target_queue,
@@ -38,14 +40,14 @@ bool copyBufferToImage(
     VkImage image,
     rcbe::core::IntegralDimensions dims);
 
-std::optional<VkImageView> createImageView(
+R_PUBLIC_API std::optional<VkImageView> createImageView(
     VkDevice logical_device,
     VkImage image,
     VkFormat format,
     VkImageAspectFlags aspect_flags,
     uint32_t mip_levels);
 
-bool createTextureImage(
+R_PUBLIC_API bool createTextureImage(
     const rcbe::visual::Texture &texture,
     uint32_t mip_levels,
     VkDevice logical_device,
@@ -55,12 +57,12 @@ bool createTextureImage(
     VkImage &texture_image,
     VkDeviceMemory &texture_image_memory);
 
-bool createTextureSampler(
+R_PUBLIC_API bool createTextureSampler(
     VkDevice logical_device,
     VkSampler &texture_sampler,
     uint32_t mip_levels);
 
-bool generateMipmaps(
+R_PUBLIC_API bool generateMipmaps(
     VkDevice logical_device,
     VkCommandPool command_pool,
     VkQueue graph_queue,
@@ -69,7 +71,7 @@ bool generateMipmaps(
     uint32_t height,
     uint32_t mip_levels);
 
-uint32_t calculateMipLevels(size_t tex_width, size_t tex_height);
+R_PUBLIC_API uint32_t calculateMipLevels(size_t tex_width, size_t tex_height);
 }// namespace rdmn::render
 
 #endif//RCBE_ENGINE_RASTERIZER_TEXTURE_HELPERS_HPP
