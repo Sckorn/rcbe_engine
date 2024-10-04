@@ -1,8 +1,11 @@
 #include <gtest/gtest.h>
+#include <glog/logging.h>
 
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
 TEST(LoggerTests, LogInfoTest) {
-    static_assert(std::is_same_v<rdmn::core::log::trivial_logger &&, decltype(RDMN_LOG(rdmn::core::log::LoggerType::info))>, "Logger type mismatch");
-    RDMN_LOG(rdmn::core::log::LoggerType::info) << "Testing simple logger " << 1;
+    rdmn::core::log::trivial_logger(rdmn::core::log::LoggerType::info) << "Log info " << 1;
+    rdmn::core::log::trivial_logger(rdmn::core::log::LoggerType::error) << "Log error " << 1.0f << " " << 1.0;
+    rdmn::core::log::trivial_logger(rdmn::core::log::LoggerType::warn) << "Log Warn " << true << " " << 'c';
+
 }

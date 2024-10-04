@@ -62,23 +62,42 @@ R_PUBLIC_API trivial_logger::trivial_logger(LoggerType type)
 R_PUBLIC_API trivial_logger::~trivial_logger() {
     switch(type_) {
         case LoggerType::info:
-        log_info(iss_.str());
+            log_info(iss_.str());
+        break;
+        case LoggerType::warn:
+            log_warn(iss_.str());
+        break;
+        case LoggerType::error:
+            log_error(iss_.str());
+        break;
+        case LoggerType::trace:
+            log_trace(iss_.str());
+        break;
+        case LoggerType::debug:
+            log_debug(iss_.str());
+        break;
+        case LoggerType::fatal:
+            log_fatal(iss_.str());
         break;
         default:
         break;
     };
 }
 
-R_PUBLIC_API trivial_logger &&get_trivial_logger(LoggerType type) {
-    return std::move(trivial_logger(type));
-}
 }
 
-R_PUBLIC_API rdmn::core::log::trivial_logger &&RDMN_LOG(rdmn::core::log::LoggerType type) {
-    return get_trivial_logger(type);
-}
 
-R_PUBLIC_API rdmn::core::log::trivial_logger &rdmn::core::log::trivial_logger::operator<<(const char *v) {
-    iss_ << std::string(v);
+
+/*R_PUBLIC_API rdmn::core::log::trivial_logger &rdmn::core::log::trivial_logger::operator<<(const char *v) {
+    printf("Start const char operator %s\n", v);
+    std::string s = v;
+    std::ostringstream oss{};
+    printf("Start const char operator %s\n", s);
+    iss_ << s;
+    oss << "test";
+    //iss_ << "dafuq";
+    printf("Done const char operator %s\n", iss_.str());
+    printf("Start const char operator %s\n", v);
+    printf("OSS %s\n", std::string(oss.str()));
     return *this;
-}
+}*/

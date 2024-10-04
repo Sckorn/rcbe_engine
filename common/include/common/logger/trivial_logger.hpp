@@ -1,6 +1,7 @@
 #ifndef RDMN_COMMON_TRIVIAL_LOGGER_HPP
 #define RDMN_COMMON_TRIVIAL_LOGGER_HPP
 
+#include <iostream>
 #include <cstdint>
 #include <sstream>
 
@@ -31,31 +32,36 @@ struct trivial_logger {
     R_PUBLIC_API trivial_logger(LoggerType type);
     R_PUBLIC_API ~trivial_logger();
 
-    /*template <typename Val>
-    friend trivial_logger &operator<<(trivial_logger &tl, Val &&v) {
-        tl.iss_ << std::to_string(v);
-        return tl;
-    }*/
-
     template <typename Val>
     R_PUBLIC_API trivial_logger &operator<<(Val &&v) {
         iss_ << std::to_string(v);
         return *this;
     }
 
-    R_PUBLIC_API trivial_logger &operator<<(const char *v);
+    template <size_t Size>
+    R_PUBLIC_API trivial_logger &operator<<(const char (&cstr)[Size]) {
+        for (size_t i = 0; i < Size; ++i) {
+            iss_ << cstr[i];
+        }
+        if (cstr[Size] != '\0')
+            iss_ << '\0';
+        return *this;
+    }
+
+    R_PUBLIC_API trivial_logger &operator<<(char &&v) {
+        iss_ << v;
+        return *this;
+    }
 
 private:
-    std::stringstream iss_{};
+    std::ostringstream iss_ {};
     LoggerType type_;
-
 };
 //}
 
-R_PUBLIC_API [[nodiscard]] trivial_logger &&get_trivial_logger(LoggerType type);
-
 }
 
-R_PUBLIC_API [[nodiscard]] rdmn::core::log::trivial_logger &&RDMN_LOG(rdmn::core::log::LoggerType type);
+using RDMN_LOG = rdmn::core::log::trivial_logger;
+
 
 #endif // RDMN_COMMON_TRIVIAL_LOGGER_HPP
