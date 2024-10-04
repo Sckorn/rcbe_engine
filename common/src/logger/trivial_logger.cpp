@@ -1,5 +1,7 @@
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
+#include <iostream>
+
 #ifdef R_USE_BOOST_LOG
 #include <boost/log/trivial.hpp>
 #elif defined(R_USE_GLOG)
@@ -60,28 +62,32 @@ R_PUBLIC_API trivial_logger::trivial_logger(LoggerType type)
 : type_{type} {}
 
 R_PUBLIC_API trivial_logger::~trivial_logger() {
-    switch(type_) {
-        case LoggerType::info:
-            log_info(iss_.str());
-        break;
-        case LoggerType::warn:
-            log_warn(iss_.str());
-        break;
-        case LoggerType::error:
-            log_error(iss_.str());
-        break;
-        case LoggerType::trace:
-            log_trace(iss_.str());
-        break;
-        case LoggerType::debug:
-            log_debug(iss_.str());
-        break;
-        case LoggerType::fatal:
-            log_fatal(iss_.str());
-        break;
-        default:
-        break;
-    };
+    try { 
+        switch(type_) {
+            case LoggerType::info:
+                log_info(iss_.str());
+            break;
+            case LoggerType::warn:
+                log_warn(iss_.str());
+            break;
+            case LoggerType::error:
+                log_error(iss_.str());
+            break;
+            case LoggerType::trace:
+                log_trace(iss_.str());
+            break;
+            case LoggerType::debug:
+                log_debug(iss_.str());
+            break;
+            case LoggerType::fatal:
+                log_fatal(iss_.str());
+            break;
+            default:
+            break;
+        };
+    } catch (const std::exception &e) {
+        std::cerr << "Logger exception " << e.what() << std::endl;
+    }
 }
 
 }

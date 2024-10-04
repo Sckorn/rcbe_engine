@@ -4,8 +4,7 @@
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
 TEST(LoggerTests, LogInfoTest) {
-    rdmn::core::log::trivial_logger(rdmn::core::log::LoggerType::info) << "Log info " << 1;
-    rdmn::core::log::trivial_logger(rdmn::core::log::LoggerType::error) << "Log error " << 1.0f << " " << 1.0;
-    rdmn::core::log::trivial_logger(rdmn::core::log::LoggerType::warn) << "Log Warn " << true << " " << 'c';
-
+    RDMN_LOG(rdmn::core::log::LoggerType::info) << "Log info " << 1;
+    RDMN_LOG(rdmn::core::log::LoggerType::error) << "Log error " << 1.0f << " " << 1.0;
+    RDMN_LOG(rdmn::core::log::LoggerType::warn) << "Log Warn " << true << " " << 'c';
 }
