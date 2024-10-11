@@ -62,7 +62,11 @@ cc_library(
 
 cc_library(
     name = "engine_output_utils",
-    srcs = ["src/utils/output_utils.cpp"],
+    srcs = [
+        "src/utils/output_utils.cpp", 
+        "src/utils/boost_output_utils.hpp",
+        "src/utils/glog_output_utils.hpp",
+    ],
     hdrs = ["include/common/utils/output_utils.hpp"],
     defines = LOGGING_LIB_DEFINE,
     include_prefix = "rcbe-engine",
@@ -72,6 +76,7 @@ cc_library(
     deps = [
         ":engine_fundamentals",
         ":rdmn_trivial_logger",
+        "//meta_package/public_api:rdmn_public_api"
     ],
 )
 
@@ -148,6 +153,7 @@ cc_test(
         ":rcbe_delegate",
         ":engine_fundamentals",
         ":rdmn_trivial_logger",
+        ":engine_output_utils",
         "@com_google_googletest//:gtest_main",
     ],
 )

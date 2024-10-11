@@ -1,21 +1,13 @@
 #ifndef RDMN_COMMON_TRIVIAL_LOGGER_HPP
 #define RDMN_COMMON_TRIVIAL_LOGGER_HPP
 
-#include <cstdint>
 #include <sstream>
+#include <iostream>
 
 #include <rdmn-engine/public_api.hpp>
+#include <rdmn-engine/logger/LoggerType.hpp>
 
 namespace rdmn::core::log {
-
-enum class LoggerType : uint8_t {
-    info,
-    debug,
-    trace,
-    error,
-    warn,
-    fatal
-};
 
 R_PUBLIC_API void log_trace(std::string &&str);
 R_PUBLIC_API void log_info(std::string &&str);
@@ -36,22 +28,24 @@ struct trivial_logger {
 
     template <typename Val>
     R_PUBLIC_API trivial_logger &&operator<<(Val &&v) && {
-        iss_ << std::to_string(v);
+        iss_ << v;
         return std::move(*this);
     }
 
     template <size_t Size>
     R_PUBLIC_API trivial_logger &&operator<<(const char (&cstr)[Size]) && {
-        for (size_t i = 0; i < Size; ++i) {
+        for (size_t i = 0; i < Size - 1; ++i) {
             iss_ << cstr[i];
         }
-        if (cstr[Size] != '\0')
+
+        if (cstr[Size - 1] != '\0')
             iss_ << '\0';
+
         return std::move(*this);
     }
 
-    R_PUBLIC_API trivial_logger &&operator<<(char &&v) && {
-        iss_ << v;
+    R_PUBLIC_API trivial_logger &&operator<<(bool &&v) && {
+        iss_ << std::boolalpha << v;
         return std::move(*this);
     }
 

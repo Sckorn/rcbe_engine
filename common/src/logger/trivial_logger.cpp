@@ -91,19 +91,3 @@ R_PUBLIC_API trivial_logger::~trivial_logger() {
 }
 
 }
-
-
-
-/*R_PUBLIC_API rdmn::core::log::trivial_logger &rdmn::core::log::trivial_logger::operator<<(const char *v) {
-    printf("Start const char operator %s\n", v);
-    std::string s = v;
-    std::ostringstream oss{};
-    printf("Start const char operator %s\n", s);
-    iss_ << s;
-    oss << "test";
-    //iss_ << "dafuq";
-    printf("Done const char operator %s\n", iss_.str());
-    printf("Start const char operator %s\n", v);
-    printf("OSS %s\n", std::string(oss.str()));
-    return *this;
-}*/
