@@ -6,7 +6,7 @@
 #include <rcbe-engine/utils/output_utils.hpp>
 
 auto main(int argc, char *argv[]) -> int {
-    rcbe::utils::setup_logging(boost::log::trivial::trace);
+    rcbe::utils::setup_logging();
     const auto gltf_path = argv[1];
     const auto bin_path = argv[2];
 
