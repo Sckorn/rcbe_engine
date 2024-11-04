@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/core/gl_extensions.hpp>
 
@@ -120,7 +120,7 @@ const GLShader::ShaderHandle &GLShader::compile() {
         glGetShaderiv(shader_handle_, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader_handle_, SHADER_ERROR_MSG_SIZE, nullptr, info.data());
-            BOOST_LOG_TRIVIAL(warning) << "Shader compilation failed: " << info;
+            RDMN_LOG(RDMN_LOG_WARN) << "Shader compilation failed: " << info;
         }
         compiled_ = static_cast<bool>(success);
     }

@@ -3,9 +3,10 @@
 
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
+#include <rdmn-engine/public_api.hpp>
 
 namespace rcbe::math {
-class Transform {
+class R_PUBLIC_API Transform {
 public:
 
     using RotationType = Matrix3x3;
@@ -21,9 +22,9 @@ public:
 
     [[nodiscard]] Vector3d transform(const Vector3d &v) const;
     Vector3d operator()(const Vector3d &v) const;
-    friend Vector3d operator*(const Transform &t, const Vector3d &v);
-    friend Transform operator*(const Transform &lhs, const Transform &rhs);
-    friend Matrix3x3 operator*(const Transform &lhs, const Matrix3x3 &rhs);
+    friend R_PUBLIC_API Vector3d operator*(const Transform &t, const Vector3d &v);
+    friend R_PUBLIC_API Transform operator*(const Transform &lhs, const Transform &rhs);
+    friend R_PUBLIC_API Matrix3x3 operator*(const Transform &lhs, const Matrix3x3 &rhs);
 
     void inverse();
     [[nodiscard]] Transform inversed() const;

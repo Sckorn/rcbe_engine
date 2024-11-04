@@ -4,6 +4,7 @@
 #include <rcbe-engine/datamodel/math/Transform.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
+#include <rcbe-engine/fundamentals/constants.hpp>
 
 TEST(TransformTests, TranslateVectorPositive) {
     rcbe::math::Vector3d vec {0, 0, 0};
@@ -40,7 +41,7 @@ TEST(TransformTests, RotateVectorNinety) {
 
     auto new_vec = t * vec;
 
-    ASSERT_EQ(new_vec.x(), 1);
+    ASSERT_NEAR(new_vec.x(), 1.0, rcbe::core::EPSILON);
 }
 
 TEST(TransformTests, RotateVectorFourtyFive) {

@@ -1,4 +1,4 @@
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
 #include <rcbe-engine/datamodel/rendering/buffer_object_helpers.hpp>
@@ -35,7 +35,7 @@ bool createImage(
 
     if (vkCreateImage(
             logical_device, std::addressof(image_info), nullptr, std::addressof(image)) != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create texture image!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create texture image!";
         return false;
     }
 
@@ -47,7 +47,7 @@ bool createImage(
     alloc_info.memoryTypeIndex = findMemoryType(phys_device, mem_req.memoryTypeBits, properties);
 
     if (vkAllocateMemory(logical_device, std::addressof(alloc_info), nullptr, std::addressof(device_memory)) != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(error) << "Can't allocate memory for texture image!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't allocate memory for texture image!";
         return false;
     }
 
@@ -206,7 +206,7 @@ bool createTextureImage(
         staging_buffer, staging_buffer_memory);
 
     if (!buffer_created) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create staging buffer for texture!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create staging buffer for texture!";
         return false;
     }
 
@@ -229,7 +229,7 @@ bool createTextureImage(
         texture_image_memory);
 
     if (!image_created) {
-        BOOST_LOG_TRIVIAL(error) << "Image wasn't created!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Image wasn't created!";
         return false;
     }
 
@@ -244,7 +244,7 @@ bool createTextureImage(
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
     if (!layout_transitioned) {
-        BOOST_LOG_TRIVIAL(error) << "Can't transition image layout!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't transition image layout!";
         return false;
     }
 
@@ -257,7 +257,7 @@ bool createTextureImage(
         dims);
 
     if (!buff_copied) {
-        BOOST_LOG_TRIVIAL(error) << "Can't copy buffer to image!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't copy buffer to image!";
         return false;
     }
 
@@ -271,7 +271,7 @@ bool createTextureImage(
         mip_levels);
 
     if (!mipmaps_generated) {
-        BOOST_LOG_TRIVIAL(error) << "Can't generate mip maps!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't generate mip maps!";
         return false;
     }
 

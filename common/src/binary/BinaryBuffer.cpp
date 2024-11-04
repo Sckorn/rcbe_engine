@@ -61,7 +61,7 @@ R_PUBLIC_API BinaryBuffer BinaryBuffer::at(size_t &&offset, size_t size) const {
 }
 
 R_PUBLIC_API BinaryBuffer BinaryBuffer::at(size_t &offset, size_t size) const {
-    if (view_)
+    if (view_) 
         return constructFromChunk(buffer_view_, offset, size);
     else
         return constructFromChunk(buffer_, offset, size);
@@ -79,6 +79,7 @@ R_PUBLIC_API bool BinaryBuffer::isView() const {
 }
 
 R_PUBLIC_API void BinaryBuffer::read(std::istream &is, StorageType &s) {
+    static_assert(sizeof(ByteType) == sizeof(char), "Wrong byte format in binary buffer read!");
     while (!is.eof()) {
         ByteType b {};
         is.read(reinterpret_cast<char *>(&b), sizeof(b));

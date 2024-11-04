@@ -10,6 +10,7 @@ load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@bazel_skylib//lib:selects.bzl", "selects")
 
 expand_template(
     name = "rdmn_engine_config_template",
@@ -120,4 +121,19 @@ config_setting(
     values = {
         "compilation_mode": "dbg",
     },
+)
+
+selects.config_setting_group(
+    name = "rdmn_vulkan_windows",
+    match_all = [":rdmn_vk_rasterizer_backend", "@bazel_tools//src/conditions:windows"],
+)
+
+selects.config_setting_group(
+    name = "rdmn_vulkan_linux",
+    match_all = [":rdmn_vk_rasterizer_backend", "@bazel_tools//src/conditions:linux"],
+)
+
+selects.config_setting_group(
+    name = "rdmn_gl_linux",
+    match_all = [":rdmn_gl_rasterizer_backend", "@bazel_tools//src/conditions:linux"],
 )

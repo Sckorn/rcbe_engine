@@ -4,8 +4,10 @@
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 namespace rcbe::visual {
-class RGBAColor {
+class R_PUBLIC_API RGBAColor {
 public:
 
     static constexpr size_t DIMENSION = 4;
@@ -63,8 +65,8 @@ private:
 namespace nlohmann {
 template <>
 struct adl_serializer<rcbe::visual::RGBAColor> {
-    static void to_json(nlohmann::json &j, const rcbe::visual::RGBAColor &c);
-    static void from_json(const nlohmann::json &j, rcbe::visual::RGBAColor &c);
+    R_PUBLIC_API static void to_json(nlohmann::json &j, const rcbe::visual::RGBAColor &c);
+    R_PUBLIC_API static void from_json(const nlohmann::json &j, rcbe::visual::RGBAColor &c);
 };
 }// namespace nlohmann
 

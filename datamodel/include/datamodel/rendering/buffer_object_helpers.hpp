@@ -4,10 +4,13 @@
 #include <optional>
 #include <vector>
 
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
+
+#include <rdmn-engine/public_api.hpp>
 
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 #include <rcbe-engine/fundamentals/convinience.hpp>
+#include <rcbe-engine/fundamentals/types.hpp>
 
 #ifdef RDMN_VULKAN
 #include <vulkan/vulkan.hpp>
@@ -19,21 +22,21 @@ static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 
 namespace rdmn::render {
 #ifdef RDMN_VULKAN
-uint32_t findMemoryType(VkPhysicalDevice device, uint32_t type_filter, VkMemoryPropertyFlags properties);
-std::optional<VkCommandBuffer> beginSingleTimeCommands(VkDevice logical_device, VkCommandPool cmd_pool);
-bool endSingleTimeCommands(
+R_PUBLIC_API uint32_t findMemoryType(VkPhysicalDevice device, uint32_t type_filter, VkMemoryPropertyFlags properties);
+R_PUBLIC_API std::optional<VkCommandBuffer> beginSingleTimeCommands(VkDevice logical_device, VkCommandPool cmd_pool);
+R_PUBLIC_API bool endSingleTimeCommands(
     VkDevice logical_device,
     VkCommandBuffer cmd_buff,
     VkQueue graph_queue,
     VkCommandPool cmd_pool);
-bool copyBuffer(
+R_PUBLIC_API bool copyBuffer(
     VkDevice logical_device,
     VkBuffer src,
     VkBuffer dst,
     VkDeviceSize size,
     VkCommandPool command_pool,
     VkQueue target_queue);
-bool createBufferImpl(
+R_PUBLIC_API bool createBufferImpl(
     VkDevice &logical_device,
     VkPhysicalDevice &device,
     VkDeviceSize size,
@@ -65,7 +68,7 @@ bool createGeneralBuffer(size_t buffer_size,
         staging_buffer_memory);
 
     if (!res) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create buffer!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create buffer!";
         return false;
     }
 
@@ -83,13 +86,13 @@ bool createGeneralBuffer(size_t buffer_size,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             buff,
             memory)) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create buffer object";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create buffer object";
         return false;
     }
 
     auto buffer_copied = copyBuffer(logical_device, staging_buffer, buff, buffer_size, command_pool, presentation_queue);
     if (!buffer_copied) {
-        BOOST_LOG_TRIVIAL(error) << "Buffer couldn't be copied!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Buffer couldn't be copied!";
         return false;
     }
 
@@ -126,11 +129,11 @@ struct BufferObjectData {
 
     size_t buffer_byte_size;
 
-    void printSizes() const {
-        BOOST_LOG_TRIVIAL(debug) << "Vertices size " << vertices.size();
-        BOOST_LOG_TRIVIAL(debug) << "Normals size " << normals.size();
-        BOOST_LOG_TRIVIAL(debug) << "Colors size " << colors.size();
-        BOOST_LOG_TRIVIAL(debug) << "Texture coordinates size " << tex_coords.size();
+    R_PUBLIC_API void printSizes() const {
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Vertices size " << vertices.size();
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Normals size " << normals.size();
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Colors size " << colors.size();
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Texture coordinates size " << tex_coords.size();
     }
 };
 
@@ -158,7 +161,7 @@ BufferObjectData<ValueType, IndexType> extractBufferObjectData(
     ret.tex_coords.reserve(ret.source_size * 2);
 
     if (!ret.normals_intact) {
-        BOOST_LOG_TRIVIAL(warning) << "Normals are of wrong size!";
+        RDMN_LOG(RDMN_LOG_WARN) << "Normals are of wrong size!";
     } else {
         ret.normals.reserve(ret.source_size * 3);
     }

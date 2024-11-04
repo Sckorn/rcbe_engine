@@ -2,6 +2,9 @@
 
 
 namespace rcbe::rendering {
+
+#ifdef __linux__
+
 void RenderingContext::setDisplay(Display *d) {
     x_display_ = d;
 }
@@ -33,6 +36,18 @@ void RenderingContext::setDrawable(GLXDrawable d) {
 GLXDrawable RenderingContext::getDrawable() const noexcept {
     return gl_x_window_;
 }
+
+VisualID RenderingContext::visualId() const {
+    std::lock_guard lg {visualid_mutex_};
+    return visual_id_;
+}
+
+void RenderingContext::setVisualId(VisualID id) {
+    std::lock_guard lg {visualid_mutex_};
+    visual_id_ = id;
+}
+
+#endif
 
 void RenderingContext::setBackgroundColor(const rcbe::visual::RGBAColor &color) {
     background_color_ = color;
@@ -95,16 +110,6 @@ void RenderingContext::updateFov(const rcbe::math::deg zoom) {
     std::lock_guard lg {zoom_mutex_};
 
     zoom_ = zoom;
-}
-
-VisualID RenderingContext::visualId() const {
-    std::lock_guard lg {visualid_mutex_};
-    return visual_id_;
-}
-
-void RenderingContext::setVisualId(VisualID id) {
-    std::lock_guard lg {visualid_mutex_};
-    visual_id_ = id;
 }
 
 void RenderingContext::startTime(TimePointType &&t) {

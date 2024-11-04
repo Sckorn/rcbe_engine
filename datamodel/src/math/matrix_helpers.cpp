@@ -4,7 +4,7 @@
 
 namespace rcbe::math {
 
-Matrix4x4 matrixFromZXY(const roll r, const pitch p, const yaw y) {
+R_PUBLIC_API Matrix4x4 matrixFromZXY(const roll r, const pitch p, const yaw y) {
     const auto cr = std::cos(static_cast<double>(r.as_rad()));
     const auto sr = std::sin(static_cast<double>(r.as_rad()));
     const auto cp = std::cos(static_cast<double>(p.as_rad()));

@@ -3,6 +3,10 @@
 
 #include <filesystem>
 
+#ifdef _WIN32
+using ssize_t = ptrdiff_t;
+#endif
+
 namespace rcbe::core {
 using EngineScalar = double;
 using EngineIntergral = int;

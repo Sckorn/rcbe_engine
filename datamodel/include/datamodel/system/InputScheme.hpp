@@ -9,8 +9,10 @@
 #include <rcbe-engine/datamodel/system/input_level_node.hpp>
 #include <rcbe-engine/datamodel/system/input_system_types.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 namespace rcbe::core {
-class InputDeviceScheme {
+class R_PUBLIC_API InputDeviceScheme {
 public:
 
     using HighLevelEvents = std::unordered_map<std::string, HighLevelInputNode>;
@@ -29,7 +31,7 @@ private:
     LowLevelEvents lowlevel_;
 };
 
-class InputScheme {
+class R_PUBLIC_API InputScheme {
 public:
 
     explicit InputScheme(nlohmann::json &&j);

@@ -39,7 +39,8 @@ cc_library(
     deps = [
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_visual",
-        "@boost//:log",
+        "//meta_package/public_api:rdmn_public_api",
+        "//common:rdmn_trivial_logger",
     ],
 )
 

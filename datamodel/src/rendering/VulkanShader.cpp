@@ -2,8 +2,6 @@
 
 #include <fstream>
 
-#include <boost/log/trivial.hpp>
-
 namespace rdmn::render {
 VulkanShader::VulkanShader(const rcbe::core::EnginePath &path, ShaderType type, ShaderState state)
     : type_(type)

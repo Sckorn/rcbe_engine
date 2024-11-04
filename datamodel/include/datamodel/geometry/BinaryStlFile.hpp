@@ -12,6 +12,8 @@
 #include <rcbe-engine/binary/binary_file_concepts.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 
+#include <rdmn-engine/public_api.hpp>
+
 namespace rcbe::geometry {
 /**
  *
@@ -22,7 +24,7 @@ namespace rcbe::geometry {
  *
  * */
 
-struct binary_stl_header {
+R_PUBLIC_API struct binary_stl_header {
     static constexpr size_t SIZE = 80 * sizeof(uint8_t) + sizeof(uint32_t);
 
     static_assert(sizeof(char) == sizeof(uint8_t), "Sizes of char and uint8_t are different");
@@ -41,7 +43,7 @@ struct binary_stl_header {
  *
  * */
 
-struct binary_stl_chunk {
+R_PUBLIC_API struct binary_stl_chunk {
     static constexpr size_t SIZE = sizeof(float) * 4 * 3 + sizeof(uint16_t);
     rcbe::math::Vector3f normal;
     rcbe::math::Vector3f v1;
@@ -53,11 +55,11 @@ struct binary_stl_chunk {
 }// namespace rcbe::geometry
 
 namespace rcbe::binary {
-void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_header &bsh);
-void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_header &bsh);
+R_PUBLIC_API void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_header &bsh);
+R_PUBLIC_API void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_header &bsh);
 
-void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_chunk &bsc);
-void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_chunk &bsc);
+R_PUBLIC_API void from_binary(const BinaryBuffer &b, rcbe::geometry::binary_stl_chunk &bsc);
+R_PUBLIC_API void to_binary(BinaryBuffer &b, const rcbe::geometry::binary_stl_chunk &bsc);
 }// namespace rcbe::binary
 
 #endif//RCBE_ENGINE_BINARYSTLFILE_HPP

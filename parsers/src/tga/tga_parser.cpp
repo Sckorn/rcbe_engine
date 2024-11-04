@@ -1,4 +1,4 @@
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/binary/BinaryBuffer.hpp>
 #include <rcbe-engine/exceptions/not_implemented.hpp>
@@ -44,11 +44,9 @@ tga::extended_imagedata parseV1(rcbe::binary::BinaryBuffer &&bb) {
     auto image_body = ImageBodyType {image_spec.height, image_spec.width};
 
     if (color_map_type == 0) {
-        BOOST_LOG_TRIVIAL(warning) << "No color map data available!";
-
         const auto total_pixels = image_spec.width * image_spec.height;
         const auto pixel_depth_bytes = image_spec.pixel_depth / 8;
-
+        
         for (size_t i = 0; i < total_pixels; ++i) {
             std::vector<uint8_t> color_comp_bytes;
             color_comp_bytes.reserve(pixel_depth_bytes + 1);
@@ -165,9 +163,9 @@ extended_imagedata extended_parse(const rcbe::core::EnginePath &file_path) {
     if (file_path.extension().string() != ".tga" && file_path.extension().string() != ".TGA")
         throw std::runtime_error("Only supports TGA format!");
 
-    std::ifstream ifs {file_path};
+    std::ifstream ifs {file_path, std::ios_base::binary};
 
-    if (!ifs)
+    if (!ifs) 
         throw std::runtime_error("Can't open " + file_path.string() + " for reading!");
 
     rcbe::binary::BinaryBuffer bb;
@@ -175,13 +173,13 @@ extended_imagedata extended_parse(const rcbe::core::EnginePath &file_path) {
 
     auto check_str = bb.at(bb.size() - 19, 16).get<std::string>();
 
-    BOOST_LOG_TRIVIAL(debug) << "Check str is " << check_str << " check string size " << check_str.size();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Check str is " << check_str << " check string size " << check_str.size();
 
     if (check_str == std::string(TGA_VERSION_TWO_TOKEN)) {
-        BOOST_LOG_TRIVIAL(debug) << "Version 2 TGA file detected!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Version 2 TGA file detected!";
         return parseV2(std::move(bb));
     } else {
-        BOOST_LOG_TRIVIAL(debug) << "Version 1 TGA file detected!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Version 1 TGA file detected!";
         return parseV1(std::move(bb));
     }
 }

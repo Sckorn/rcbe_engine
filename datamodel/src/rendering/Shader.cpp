@@ -1,5 +1,3 @@
-#include <boost/log/trivial.hpp>
-
 #include <rcbe-engine/datamodel/rendering/Shader.hpp>
 #include <rcbe-engine/fundamentals/convinience.hpp>
 
