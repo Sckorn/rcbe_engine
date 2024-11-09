@@ -3,15 +3,17 @@
 
 #include <memory>
 
-#include <core/InputManagerImplementation.hpp>
+#include <rcbe-engine/core/InputManagerImplementation.hpp>
 
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/datamodel/math/euler_angles.hpp>
 
+#include <rdmn-engine/logger/trivial_logger.hpp>
+
 inline constexpr float MOVE_AND_STRAFE_SPEED = 25;
 
 namespace rcbe::core {
-class EditorInputManager final : protected InputManagerImplementation {
+class R_PUBLIC_API EditorInputManager final : protected InputManagerImplementation {
     using InputEventReference = InputManagerImplementation::InputEventReference;
     using PreviousEventReference = InputManagerImplementation::PreviousEventReference;
 
@@ -36,15 +38,17 @@ public:
             {InputEventType::key_release,
              [c](InputManagerImplementation &im, InputEventReference event, PreviousEventReference previous) {
                  if (!previous) {
-                     BOOST_LOG_TRIVIAL(error) << "No key press for corresponding key release!";
+                     RDMN_LOG(RDMN_LOG_ERROR) << "No key press for corresponding key release!";
                      return;
                  }
                  auto prev_event = *previous;
 
                  if (static_cast<int>(InputEventType::key_press) != prev_event.type) {
-                     BOOST_LOG_TRIVIAL(warning) << "Event order is broken!";
+                     RDMN_LOG(RDMN_LOG_WARN) << "Event order is broken!";
                  }
-                 BOOST_LOG_TRIVIAL(debug) << "Released button in " << event.xkey.time - prev_event.xkey.time;
+#ifdef __linux__
+                 RDMN_LOG(RDMN_LOG_DEBUG) << "Released button in " << event.xkey.time - prev_event.xkey.time;
+#endif
              }},
             {rcbe::core::InputEventType::key_press,
              [rendering_context = ctx, &c](

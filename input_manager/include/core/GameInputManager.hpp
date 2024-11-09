@@ -8,7 +8,7 @@
 #include <rcbe-engine/datamodel/system/InputScheme.hpp>
 
 namespace rcbe::core {
-class GameInputManager final : protected InputManagerImplementation {
+class R_PUBLIC_API GameInputManager final : protected InputManagerImplementation {
 public:
 
     GameInputManager() = delete;

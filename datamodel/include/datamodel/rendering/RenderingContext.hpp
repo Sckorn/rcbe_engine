@@ -12,6 +12,10 @@
 #include <GL/glx.h>
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/MatrixColumnMajorAdaptor.hpp>
@@ -67,6 +71,14 @@ public:
     void setVisualId(VisualID id);
 #endif
 
+#ifdef _WIN32
+    [[nodiscard]] HINSTANCE getInstance() const;
+    void setInstance(HINSTANCE i);
+
+    [[nodiscard]] HWND getWindow() const;
+    void setWindow(HWND hwnd);
+#endif
+
     void setBackgroundColor(const rcbe::visual::RGBAColor &color);
     [[nodiscard]] const rcbe::visual::RGBAColor &getBackgroundColor() const noexcept;
 
@@ -94,15 +106,24 @@ private:
     mutable std::mutex mouse_mutex_;
     mutable std::mutex zoom_mutex_;
     mutable std::mutex time_mutex_;
-    mutable std::mutex visualid_mutex_;
 
     // I presume pointer to X Display, should not be deleted, research
 #ifdef __linux__
+    mutable std::mutex visualid_mutex_;
+
     Display *x_display_ = nullptr;
     Atom x_delete_message_;
     GLXContext gl_x_context_;
     GLXDrawable gl_x_window_;
     VisualID visual_id_;
+#endif
+
+#ifdef _WIN32
+    mutable std::mutex instance_mutex_;
+    mutable std::mutex wnd_mutex_;
+
+    HINSTANCE instance_;
+    HWND window_;
 #endif
 
     rcbe::visual::RGBAColor background_color_;

@@ -96,7 +96,7 @@ std::array<typename RGBAColor::StorageType::ValueType, RGBAColor::DIMENSION> RGB
 }
 
 RGBAColor::operator uint32_t() const {
-
+#ifdef __linux__
     std::array<uint8_t, DIMENSION> tmp;
 
     for (size_t i = 0; i < DIMENSION; ++i) {
@@ -104,8 +104,21 @@ RGBAColor::operator uint32_t() const {
     }
 
     uint32_t ret = *reinterpret_cast<const uint32_t *>(tmp.data());
+#endif
+#ifdef _WIN32
+    uint32_t ret = (static_cast<uint32_t>(a() * COLOR_COMPONENT_DIVIDER) << 24) 
+        | (static_cast<uint32_t>(b() * COLOR_COMPONENT_DIVIDER) << 16) 
+        | (static_cast<uint32_t>(g() * COLOR_COMPONENT_DIVIDER) << 8) 
+        | static_cast<uint32_t>(r() * COLOR_COMPONENT_DIVIDER);
+#endif
     return ret;
 }
+
+#ifdef _WIN32
+RGBAColor::operator COLORREF() const {
+    return static_cast<uint32_t>(*this);
+}
+#endif
 
 }// namespace rcbe::visual
 

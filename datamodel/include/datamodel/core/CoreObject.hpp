@@ -10,7 +10,7 @@
 #include <unordered_set>
 
 namespace rcbe::core {
-class CoreObject {
+class R_PUBLIC_API CoreObject {
 public:
 
     struct default_core_object_t {};
@@ -112,6 +112,7 @@ private:
     struct CObjectImpl : CObjectImplInterface {
     public:
 
+#ifdef __linux__
         explicit CObjectImpl(const T &o)
             : value_ {o}
             , id_ {std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count())} {}
@@ -120,15 +121,26 @@ private:
             : value_ {std::move(o)}
             , id_ {std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count())} {}
 
-        explicit CObjectImpl(const T &o, std::string &&name)
+        CObjectImpl(const T &o, std::string &&name)
             : value_ {o}
             , id_ {std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count())}
             , name_ {name} {}
 
-        explicit CObjectImpl(T &&o, std::string &&name)
+        CObjectImpl(T &&o, std::string &&name)
             : value_ {std::move(o)}
             , id_ {std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count())}
             , name_ {name} {}
+#endif
+#ifdef _WIN32
+        explicit CObjectImpl(T &&o)
+            : value_ {o}
+            , id_ {std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count())} {}
+
+        CObjectImpl(T &&o, std::string &&name)
+            : value_ {o}
+            , id_ {std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count())}
+            , name_ {name} {}
+#endif
 
         [[nodiscard]] size_t hash() const override {
             return std::hash<size_t>()(id_);

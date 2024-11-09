@@ -17,7 +17,7 @@ namespace rcbe::rendering {
 
 using ShaderCollection = std::vector<rdmn::render::Shader>;
 
-class ShaderProgram {
+class R_PUBLIC_API ShaderProgram {
 public:
 
     using ShaderProgramHandle = size_t;

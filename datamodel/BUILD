@@ -10,6 +10,7 @@ cc_library(
     ]),
     include_prefix = "rcbe-engine",
     includes = ["include"],
+    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
@@ -108,6 +109,7 @@ cc_library(
     ]),
     copts = ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
+    defines = PUBLIC_API_PREFIX,
     includes = ["include"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],

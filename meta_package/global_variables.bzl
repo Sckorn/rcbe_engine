@@ -18,10 +18,10 @@ LOGGING_LIB_DEFINE = select({
 })
 
 WINDOWS_BUILD_DEFINES = [ # use it later # TODO: utilize it instead of a separate target with include file
-    "-DR_PUBLIC_API=__declspec(dllexport)",
+    "R_PUBLIC_API=__declspec(dllexport)",
 ]
 
 PUBLIC_API_PREFIX = select({ # use it later
     "@bazel_tools//src/conditions:windows": WINDOWS_BUILD_DEFINES,
-    "//conditions:default": [],
+    "//conditions:default": ["R_PUBLIC_API="],
 })

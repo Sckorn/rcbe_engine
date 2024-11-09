@@ -4,17 +4,15 @@
 #include <memory>
 #include <variant>
 
-#include <boost/log/trivial.hpp>
-
+#include <rcbe-engine/core/InputManagerTraits.hpp>
 #include <rcbe-engine/core/EditorInputManager.hpp>
 #include <rcbe-engine/core/GameInputManager.hpp>
 #include <rcbe-engine/datamodel/system/input_system_types.hpp>
-#include <rcbe-engine/traits/input_manager.hpp>
 
 namespace rcbe::core {
 using InputManagerVariant = std::variant<EditorInputManager, GameInputManager>;
 
-class AbstractInputManager {
+class R_PUBLIC_API AbstractInputManager {
 public:
 
     explicit AbstractInputManager(EditorInputManager &&manager)
@@ -25,6 +23,8 @@ public:
         : variant_(std::move(manager)) {
     }
 
+/// TODO: @sckorn @radameon introduce a class that incapsulates different input events (X and MS)
+#ifdef __linux__
     [[nodiscard]] decltype(auto) tryProcessEvent(XEvent &event) {
         return std::visit([&event](auto &arg) mutable -> bool {
             auto ret = arg.tryProcessEvent(event);
@@ -32,6 +32,16 @@ public:
         },
                           variant_);
     }
+#endif
+#ifdef _WIN32
+    [[nodiscard]] decltype(auto) tryProcessEvent(rdmn::core::windows_input_event &event) {
+        return std::visit([&event](auto &arg) mutable -> bool {
+            auto ret = arg.tryProcessEvent(event);
+            return ret;
+        },
+                          variant_);
+    }
+#endif
 
     [[nodiscard]] decltype(auto) getValue(core::MouseEventType event) const {
         return std::visit([event](const auto &m) { return m.getValue(event); }, variant_);

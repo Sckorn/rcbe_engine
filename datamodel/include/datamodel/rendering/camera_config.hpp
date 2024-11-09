@@ -7,7 +7,7 @@
 #include <rcbe-engine/datamodel/math/math_constants.hpp>
 
 namespace rcbe::rendering {
-struct camera_config {
+struct R_PUBLIC_API camera_config {
     math::Vector3d camera_position;
     math::Vector3d camera_lookat;
     math::Vector3d camera_up = math::WORLD_UP;

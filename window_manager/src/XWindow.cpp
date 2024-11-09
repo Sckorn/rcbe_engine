@@ -289,7 +289,7 @@ void XWindow::kill() {
     }
 }
 
-void XWindow::mapWindow() {
+void XWindow::show() {
     XMapWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
     BOOST_LOG_TRIVIAL(debug) << "Window should be visible";
 }

@@ -1,20 +1,96 @@
+load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+
+_WINDOWS_COPTS = [
+    "/c",
+    "/Z7",
+    "/nologo",
+    "/WX-",
+    "/diagnostics:column",
+    "/sdl", 
+    "/O2", 
+    "/Oi", 
+    "/DNDEBUG", 
+    "/D_WINDOWS", 
+    "/D_UNICODE", 
+    "/DUNICODE", 
+    "/Gm-",
+    "/EHsc",
+    "/MD",
+    "/GS", 
+    "/Gy",
+    "/GL",
+    "/fp:precise", 
+    "/Zc:wchar_t", 
+    "/Zc:forScope", 
+    "/Zc:inline", 
+    "/permissive-", 
+    "/external:W3",
+    "/Gd", 
+    "/TP", 
+    "/FC",
+    "/FS",
+    "/errorReport:prompt",
+]
+
+_WINDOWS_LINKOPTS = [
+    "/ERRORREPORT:PROMPT", 
+    "/INCREMENTAL:NO", 
+    "/NOLOGO", 
+    "kernel32.lib", 
+    "user32.lib",
+    "gdi32.lib",
+    "winspool.lib",
+    "comdlg32.lib",
+    "advapi32.lib",
+    "shell32.lib",
+    "ole32.lib",
+    "oleaut32.lib",
+    "uuid.lib",
+    "odbc32.lib",
+    "odbccp32.lib",
+    "/MANIFEST",
+    "/DEBUG",
+    "/SUBSYSTEM:WINDOWS",
+    "/OPT:REF",
+    "/OPT:ICF",
+    "/TLBID:1",
+    "/DYNAMICBASE",
+    "/NXCOMPAT",
+    "/MACHINE:X64"
+]
+
 cc_library(
     name = "rcbe_window_manager",
-    srcs = glob(
-        [
-            "src/**/*.cpp",
-            "src/**/*.hpp",
+    srcs = [
+        "src/RWindow.cpp",
+        "src/WindowManager.cpp",
+    ] + select({
+        "@bazel_tools//src/conditions:windows": [
+            "src/MsWindow.hpp",
+            "src/MsWindow.cpp",
         ],
-        exclude = ["src/main.cpp"],
-    ),
+        "//conditions:default": [
+            "src/XWindow.hpp",
+            "src/XWindow.cpp",
+        ]
+
+    }),
     hdrs = glob(["include/**/*.hpp"]),
     include_prefix = "rcbe-engine",
     includes = ["include"],
-    linkopts = [
-        "-lpthread",
-        "-lX11",
-        "-lXext",
-    ],
+    copts = select({
+       "@bazel_tools//src/conditions:windows": _WINDOWS_COPTS,
+        "//conditions:default": [],
+    }),
+    linkopts = select({
+        "@bazel_tools//src/conditions:windows": _WINDOWS_LINKOPTS,
+        "//conditions:default": [
+            "-lpthread",
+            "-lX11",
+            "-lXext",
+        ], 
+    }),
+    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
@@ -23,30 +99,11 @@ cc_library(
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_system",
         "//datamodel:engine_datamodel_visual",
+        "//datamodel:engine_datamodel_rendering",
         "//input_manager:rcbe_input_manager",
         "//renderer:rdmn_renderer",
-        "@boost//:log",
+        "//common:rdmn_trivial_logger",
         "@nlohmann//:nlohmann_json",
-    ],
-)
-
-cc_binary(
-    name = "check_tga",
-    srcs = ["src/main.cpp"],
-    data = [
-        "@awesomeface_texture//file",
-    ],
-    linkopts = [
-        "-lpthread",
-        "-lX11",
-        "-lXext",
-    ],
-    tags = ["local"],
-    deps = [
-        ":rcbe_window_manager",
-        "//common:engine_output_utils",
-        "//datamodel:engine_datamodel_visual",
-        "@boost//:log",
     ],
 )
 

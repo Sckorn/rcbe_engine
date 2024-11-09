@@ -1,6 +1,10 @@
 #ifndef RCBE_RGBACOLOR_HPP
 #define RCBE_RGBACOLOR_HPP
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
@@ -55,6 +59,10 @@ public:
     [[nodiscard]] std::array<typename StorageType::ValueType, DIMENSION> asArray() const;
 
     explicit operator uint32_t() const;
+
+#ifdef _WIN32
+    explicit operator COLORREF() const;
+#endif
 
 private:
 
