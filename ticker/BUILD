@@ -1,14 +1,17 @@
+load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+
 cc_library(
     name = "rcbe_ticker",
     srcs = glob(["src/**/*.cpp"]),
     hdrs = glob(["include/**/*.hpp"]),
     include_prefix = "rcbe-engine",
     includes = ["include"],
+    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
         "//traits:rcbe_traits",
-        "@boost//:log",
+        "//common:rdmn_trivial_logger",
     ],
 )
 
