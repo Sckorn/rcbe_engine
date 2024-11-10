@@ -14,7 +14,7 @@
 #include <rcbe-engine/datamodel/rendering/camera_config.hpp>
 
 namespace rcbe::rendering {
-class Camera {
+class R_PUBLIC_API Camera {
 public:
 
     using TransformType = math::Transform;

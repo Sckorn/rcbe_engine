@@ -20,7 +20,7 @@
 #include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 
 namespace rcbe::rendering {
-class RenderingContext {
+class R_PUBLIC_API RenderingContext {
 public:
 
     using TimePointType = std::chrono::steady_clock::time_point;

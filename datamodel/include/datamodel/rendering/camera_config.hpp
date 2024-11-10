@@ -19,7 +19,7 @@ struct camera_config {
 
 namespace nlohmann {
 template <>
-struct adl_serializer<rcbe::rendering::camera_config> {
+struct R_PUBLIC_API adl_serializer<rcbe::rendering::camera_config> {
     static void to_json(nlohmann::json &j, const rcbe::rendering::camera_config &c);
     static void from_json(const nlohmann::json &j, rcbe::rendering::camera_config &c);
 };

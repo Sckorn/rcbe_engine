@@ -1,3 +1,5 @@
+load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+
 cc_library(
     name = "engine_datamodel_core",
     srcs = glob([
@@ -173,7 +175,7 @@ cc_library(
             ],
         ),
     }),
-    defines = select({
+    defines = PUBLIC_API_PREFIX + select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
         "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
     }),
