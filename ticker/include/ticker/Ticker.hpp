@@ -6,12 +6,12 @@
 #include <mutex>
 #include <thread>
 
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/traits/time_traits.hpp>
 
 namespace rcbe::core {
-class Ticker {
+class R_PUBLIC_API Ticker {
 public:
 
     using PeriodType = std::chrono::nanoseconds;
@@ -27,7 +27,7 @@ public:
         , running_(true)
         , ticker_thread_([this]() {
             while (running_) {
-                BOOST_LOG_TRIVIAL(debug) << std::boolalpha << running_ << " thread id " << std::this_thread::get_id();
+                RDMN_LOG(RDMN_LOG_DEBUG) << std::boolalpha << running_ << " thread id " << std::this_thread::get_id();
                 if (handler_ && running_)
                     handler_();
                 std::this_thread::sleep_for(period_);
