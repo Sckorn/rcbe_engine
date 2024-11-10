@@ -1,8 +1,10 @@
+load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+
 cc_library(
     name = "rcbe_engine_camera",
     srcs = glob(["src/**/*.cpp"]),
     hdrs = glob(["include/**/*.hpp"]),
-    defines = select({
+    defines = PUBLIC_API_PREFIX + select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
         "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
     }),
