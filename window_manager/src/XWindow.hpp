@@ -40,7 +40,7 @@ public:
     [[nodiscard]] std::optional<GC> getGraphicContext() const;
 
     void kill();
-    void mapWindow();
+    void show();
     void setRenderer(rdmn::render::RendererPtr renderer_ptr);
     void setInputManager(const std::shared_ptr<AbstractInputManager> &manager);
 

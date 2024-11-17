@@ -1,4 +1,4 @@
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/core/AbstractInputManager.hpp>
 #include <rcbe-engine/core/EditorInputManager.hpp>
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
                                                            rcbe::core::InputManagerImplementation::InputEventReference event,
                                                            rcbe::core::InputManagerImplementation::PreviousEventReference previous) {
                  int x = event.xbutton.x, y = event.xbutton.y;
-                 BOOST_LOG_TRIVIAL(debug) << "Mouse button pressed " << x << " " << y;
+                 RDMN_LOG(RDMN_LOG_DEBUG) << "Mouse button pressed " << x << " " << y;
 
                  auto optional_gc = window->getGraphicContext();
 
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
              }},
             {rcbe::core::InputEventType::key_press, [window](rcbe::core::InputManagerImplementation &im, rcbe::core::InputManagerImplementation::InputEventReference event, rcbe::core::InputManagerImplementation::PreviousEventReference previous) {
                  if (window->getInputManager()->getValue(rcbe::core::KeyboardEventType::enter)) {
-                     BOOST_LOG_TRIVIAL(debug) << "Key pressed";
+                     RDMN_LOG(RDMN_LOG_DEBUG) << "Key pressed";
 
                      rcbe::visual::texture_config tconf {};
 
@@ -80,12 +80,13 @@ int main(int argc, char *argv[]) {
         window->setInputManager(std::make_shared<rcbe::core::AbstractInputManager>(std::move(eim)));
 
         window->show();
-
+        RDMN_LOG(RDMN_LOG_ERROR) << "After show";
         auto window_handle = window->startWindowLoopAsync();
+        RDMN_LOG(RDMN_LOG_ERROR) << "Async window LOop";
 
         window_handle.wait();
     } catch (const std::exception &e) {
-        BOOST_LOG_TRIVIAL(error) << "Exception thrown in main: " << e.what();
+        RDMN_LOG(RDMN_LOG_ERROR) << "Exception thrown in main: " << e.what();
         return 1;
     }
     return 0;

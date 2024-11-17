@@ -5,18 +5,21 @@
 #include <mutex>
 #include <unordered_map>
 
-#include <boost/log/trivial.hpp>
+#ifdef __linux__
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
+#endif
+
 #include <rcbe-engine/datamodel/system/input_system_types.hpp>
 #include <rcbe-engine/delegate/AbstractDelegate.hpp>
-#include <rcbe-engine/traits/input_manager.hpp>
+#include <rcbe-engine/core/InputManagerTraits.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 namespace rcbe::core {
 
-class InputManagerImplementation : public utility::InputManagerTraits {
+class R_PUBLIC_API InputManagerImplementation : public utility::InputManagerTraits {
 public:
 
     using DelegateType = Delegate<void, InputManagerImplementation &, InputEventReference, PreviousEventReference>;
@@ -38,7 +41,7 @@ public:
             if (!ret.second)
                 throw std::runtime_error("Can't insert handler for " + std::to_string(event_type));
             else
-                BOOST_LOG_TRIVIAL(debug) << "Inserted handler fot event type " << event_type;
+                RDMN_LOG(RDMN_LOG_DEBUG) << "Inserted handler fot event type " << event_type;
         } else {
             handlers_.at(etype).as<InputManagerImplementation &, InputEventReference, PreviousEventReference>() += std::move(h);
         }
@@ -76,14 +79,34 @@ private:
 
     std::unordered_map<InputEventType, rcbe::core::AbstractDelegate, input_event_type_hash> handlers_;
     std::unordered_map<int, bool> active_events_ = {
+#ifdef __linux__
         {static_cast<int>(InputEventType::button_press), false},
         {static_cast<int>(InputEventType::button_release), false},
+#endif
+#ifdef _WIN32
+        {static_cast<int>(InputEventType::left_button_press), false},
+        {static_cast<int>(InputEventType::left_button_release), false},
+        {static_cast<int>(InputEventType::right_button_press), false},
+        {static_cast<int>(InputEventType::right_button_release), false},
+        {static_cast<int>(InputEventType::middle_button_press), false},
+        {static_cast<int>(InputEventType::middle_button_release), false},
+#endif
         {static_cast<int>(InputEventType::key_press), false},
         {static_cast<int>(InputEventType::key_release), false},
         {static_cast<int>(InputEventType::mouse_motion), false}};
     const std::unordered_map<InputEventType, InputEventType, input_event_type_hash> exclusive_events_ = {
+#ifdef __linux__
         {InputEventType ::button_press, InputEventType ::button_release},
         {InputEventType ::button_release, InputEventType ::button_press},
+#endif
+#ifdef _WIN32
+        {InputEventType ::left_button_press, InputEventType ::left_button_release},
+        {InputEventType ::left_button_release, InputEventType ::left_button_press},
+        {InputEventType ::right_button_press, InputEventType ::right_button_release},
+        {InputEventType ::right_button_release, InputEventType ::right_button_press},
+        {InputEventType ::middle_button_press, InputEventType ::middle_button_release},
+        {InputEventType ::middle_button_release, InputEventType ::middle_button_press},
+#endif
         {InputEventType ::key_press, InputEventType ::key_release},
         {InputEventType ::key_release, InputEventType ::key_press}};
 

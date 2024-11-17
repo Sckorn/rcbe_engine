@@ -15,7 +15,7 @@
 namespace rdmn::render {
 class RasterizerTextureImplementation;
 
-class RasterizerTexture : public std::enable_shared_from_this<RasterizerTexture> {
+class R_PUBLIC_API RasterizerTexture : public std::enable_shared_from_this<RasterizerTexture> {
 public:
 
     RasterizerTexture() = delete;

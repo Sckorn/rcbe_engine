@@ -8,7 +8,9 @@
 #include <rcbe-engine/core/AbstractInputManager.hpp>
 #include <rcbe-engine/core/EditorInputManager.hpp>
 #include <rcbe-engine/core/WindowManager.hpp>
+#ifdef RDMN_OPENGL
 #include <rcbe-engine/core/gl_extensions.hpp>
+#endif
 #include <rcbe-engine/datamodel/core/CoreObject.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/datamodel/rendering/Material.hpp>
@@ -27,6 +29,8 @@
 #include <rcbe-engine/renderer/Renderer.hpp>
 #include <rcbe-engine/utils/json_utils.hpp>
 #include <rcbe-engine/utils/output_utils.hpp>
+
+#include <boost/log/trivial.hpp>
 
 int main(int argc, char *argv[]) {
     using rcbe::core::InputManagerImplementation;

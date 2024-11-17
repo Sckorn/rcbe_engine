@@ -25,7 +25,12 @@ struct window_config {
         unknown = 255
     };
 
+#ifdef __linux__
     std::string caption;
+#endif
+#ifdef _WIN32
+    std::wstring caption;
+#endif
     math::Vector2d position;
     core::IntegralDimensions size;
     visual::RGBAColor background_color;
@@ -61,7 +66,7 @@ static window_config::WindowType wnd_type_from_string(const std::string &type) {
 
 namespace nlohmann {
 template <>
-struct adl_serializer<rcbe::core::window_config> {
+struct R_PUBLIC_API adl_serializer<rcbe::core::window_config> {
     static void to_json(json &j, const rcbe::core::window_config &config);
     static void from_json(const json &j, rcbe::core::window_config &config);
 };

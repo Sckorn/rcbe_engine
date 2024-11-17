@@ -18,7 +18,7 @@ namespace {
 inline constexpr size_t UNIFORM_BUFFER_MEMBER_DEFAULT_ALIGNMENT = 16;
 }
 
-class VulkanVertexBufferObject {
+class R_PUBLIC_API VulkanVertexBufferObject {
 public:
 
     using ValueType = float;
@@ -84,7 +84,7 @@ private:
     VkDevice logical_device_;
 };
 
-class VulkanUniformBufferObject {
+class R_PUBLIC_API VulkanUniformBufferObject {
 public:
 
     VulkanUniformBufferObject() = delete;

@@ -1,3 +1,5 @@
+load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+
 cc_library(
     name = "rdmn_renderer",
     srcs = select({
@@ -17,7 +19,7 @@ cc_library(
         "//datamodel:datamodel_rendering_resources",
         "//parsers:x3d_test_resources",
     ],
-    defines = select({
+    defines = PUBLIC_API_PREFIX + select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
         "//meta_package:rdmn_gl_rasterizer_backend": [
             "RDMN_OPENGL",
@@ -26,18 +28,29 @@ cc_library(
     include_prefix = "rcbe-engine",
     includes = ["include"],
     linkopts = select({
-        "//meta_package:rdmn_vk_rasterizer_backend": ["-lvulkan"],
-        "//meta_package:rdmn_gl_rasterizer_backend": [
+        "//meta_package:rdmn_vulkan_linux": ["-lvulkan"],
+        "//meta_package:rdmn_gl_linux": [
             "-lGL",
             "-lGLX",
         ],
-    }) + [
-        "-lpthread",
-        "-lX11",
-    ],
+        "//conditions:default": [],
+    }) + select({
+        "@bazel_tools//src/conditions:windows": [],
+        "//conditions:default": [
+            "-lpthread",
+            "-lX11",
+        ],
+    }),
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = select({
+        "//meta_package:rdmn_vulkan_windows": [
+            "@vulkan_windows//:vulkan_cc_library",
+        ],
+        "//conditions:default": [
+            "//parsers:x3d_parser",  # will be used for skybox
+        ],
+    }) + select({
         "//meta_package:rdmn_vk_rasterizer_backend": [],
         "//meta_package:rdmn_gl_rasterizer_backend": [
             "//gl_extensions",
@@ -49,11 +62,10 @@ cc_library(
         "//datamodel:engine_datamodel_rendering",
         "//datamodel:engine_datamodel_visual",
         "//parsers:rdmn_tga_parser",  # will be used for skybox
-        "//parsers:x3d_parser",  # will be used for skybox
         "//ticker:rcbe_ticker",
-        "@boost//:log",
         "@nlohmann//:nlohmann_json",
         "//meta_package:rdmn_engine_config",
+        "//common:rdmn_trivial_logger",
     ],
 )
 

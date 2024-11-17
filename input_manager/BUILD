@@ -1,27 +1,39 @@
+load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+
 cc_library(
     name = "rcbe_input_manager",
-    srcs = glob(
-        ["src/**/*.cpp"],
-        exclude = ["src/main.cpp"],
-    ),
-    hdrs = glob(["include/**/*.hpp"]),
+    srcs = glob(["src/**/*.cpp"]),
+    hdrs = [
+        "include/core/AbstractInputManager.hpp", 
+        "include/core/EditorInputManager.hpp", 
+        "include/core/GameInputManager.hpp", 
+        "include/core/InputManagerImplementation.hpp", 
+        "include/core/InputManagerTraits.hpp",
+    ] + select({
+        "@bazel_tools//src/conditions:windows": ["include/core/windows_input_event.hpp"],
+        "//conditions:default": []
+    }),
     include_prefix = "rcbe-engine",
     includes = ["include"],
-    linkopts = [
-        "-lpthread",
-        "-lGL",
-        "-lGLX",
-        "-lX11",
-    ],
+    linkopts = select({
+       "@bazel_tools//src/conditions:windows": [""],
+        "//conditions:default": [
+            "-lpthread",
+            "-lGL",
+            "-lGLX",
+            "-lX11",
+        ], 
+    }),
+    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
-    deps = [
+    deps = select({
+        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions"],
+        "//meta_package:rdmn_vk_rasterizer_backend": [],
+    }) + [
         "//common:rcbe_delegate",
         "//datamodel:engine_datamodel_system",
-        "//gl_extensions",
-        "//traits:rcbe_traits",
-        "@boost//:bimap",
-        "@boost//:log",
+        "//common:rdmn_trivial_logger",
     ],
 )
 

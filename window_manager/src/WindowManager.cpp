@@ -1,13 +1,12 @@
-#include <boost/log/trivial.hpp>
-
 #include <nlohmann/json.hpp>
 
 #include <rcbe-engine/core/WindowManager.hpp>
-#include <rcbe-engine/core/XWWindow.hpp>
+#include <rcbe-engine/core/RWindow.hpp>
 
 static constexpr const char *x_del_window_msg = "WM_DELETE_WINDOW";
 
 namespace rcbe::core {
+#ifdef __linux__
 WindowManager::WindowManager(bool multi_thread, size_t max_wins)
     : maximum_windows_ {max_wins}
     , window_context_ {std::make_shared<WindowContext>()} {
@@ -26,13 +25,24 @@ WindowManager::WindowManager(bool multi_thread, size_t max_wins)
     window_context_->setDeleteMsg(XInternAtom(window_context_->getRootDisplay(), x_del_window_msg, true));
     window_context_->setRootWindow(XRootWindow(window_context_->getRootDisplay(), window_context_->getScreenNumber()));
 }
+#endif
+
+#ifdef _WIN32
+WindowManager::WindowManager(HINSTANCE instance, std::wstring window_class, int cmd_show, size_t max_windows) 
+: maximum_windows_ {max_windows}
+, window_context_ {std::make_shared<WindowContext>()} {
+    window_context_->setInstanceHandle(instance);
+    window_context_->setWindowClass(std::move(window_class));
+    window_context_->setShowCommand(cmd_show);
+}
+#endif
 
 WindowPtr WindowManager::createWindow(window_config &&config) {
     if (windows_created_.size() == maximum_windows_) {
         throw std::runtime_error("Already maximum amount of windows!");
     }
 
-    windows_created_.push(std::make_shared<XWWindow>(std::move(config), window_context_));
+    windows_created_.push(std::make_shared<RWindow>(std::move(config), window_context_));
     return windows_created_.top();
 }
 
@@ -48,6 +58,8 @@ WindowManager::~WindowManager() {
         windows_created_.pop();
     }
 
+#ifdef __linux__
     XCloseDisplay(window_context_->getRootDisplay());
+#endif
 }
 }// namespace rcbe::core

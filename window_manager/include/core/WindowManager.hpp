@@ -8,19 +8,26 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+#ifdef __linux__
 #include <X11/Xlib.h>
+#endif
 
-#include <rcbe-engine/core/XWWindow.hpp>
+#include <rcbe-engine/core/RWindow.hpp>
 #include <rcbe-engine/datamodel/system/WindowContext.hpp>
 #include <rcbe-engine/datamodel/system/window_config.hpp>
 
 namespace rcbe::core {
 
-class WindowManager {
+class R_PUBLIC_API WindowManager {
 public:
 
     WindowManager() = delete;
-    explicit WindowManager(bool multi_thread, size_t max_windows = 5);
+#ifdef __linux__
+    WindowManager(bool multi_thread, size_t max_windows = 5);
+#endif
+#ifdef _WIN32
+    WindowManager(HINSTANCE instance, std::wstring window_class, int cmd_show, size_t max_windows = 5);
+#endif
     ~WindowManager();
 
     WindowPtr createWindow(window_config &&config);

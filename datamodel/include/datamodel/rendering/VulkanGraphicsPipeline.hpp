@@ -11,7 +11,7 @@ namespace rdmn::render {
 
 class VulkanVertexBufferObject;
 
-class VulkanGraphicsPipeline {
+class R_PUBLIC_API VulkanGraphicsPipeline {
 public:
 
     VulkanGraphicsPipeline() = delete;

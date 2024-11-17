@@ -21,7 +21,12 @@ void adl_serializer<rcbe::core::window_config>::from_json(const json &j, rcbe::c
     config.size = j.at("size").get<rcbe::core::IntegralDimensions>();
     config.fullscreen = j.at("fullscreen").get<bool>();
     config.position = j.at("position").get<rcbe::math::Vector2d>();
+#ifdef __linux__
     config.caption = j.at("caption").get<std::string>();
+#endif
+#ifdef _WIN32
+    config.caption = j.at("caption").get<std::wstring>();
+#endif
     config.background_color = j.at("background_color").get<rcbe::visual::RGBAColor>();
     config.process_input = j.at("process_input").get<bool>();
     config.editor = j.at("editor").get<bool>();

@@ -1,7 +1,12 @@
 #ifndef RDMN_ENGINE_VULKANRENDERER_HPP
 #define RDMN_ENGINE_VULKANRENDERER_HPP
 
+#ifdef __linux__
 #define VK_USE_PLATFORM_XLIB_KHR
+#endif
+#ifdef _WIN32
+#define VK_USE_PLATFORM_WIN32_KHR
+#endif
 
 #include <condition_variable>
 #include <future>
@@ -19,10 +24,11 @@
 #include <rcbe-engine/datamodel/rendering/VulkanBufferObject.hpp>
 #include <rcbe-engine/datamodel/rendering/VulkanGraphicsPipeline.hpp>
 #include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
+#include <rdmn-engine/public_api.hpp>
 
 namespace rdmn::render {
 
-class VulkanRenderer {
+class R_PUBLIC_API VulkanRenderer {
 public:
 
     VulkanRenderer() = delete;

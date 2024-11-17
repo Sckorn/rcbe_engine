@@ -5,7 +5,13 @@
 #include <memory>
 #include <optional>
 
+#ifdef __linux__
 #include <X11/Xlib.h>
+#endif
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 #include <rcbe-engine/datamodel/rendering/RenderingContext.hpp>
 #include <rcbe-engine/datamodel/system/WindowContext.hpp>
@@ -26,14 +32,23 @@ class InputManagerImplementation;
 
 #ifdef __linux__
 class XWindow;
-class XWWindow {
+#elif defined(_WIN32)
+class MsWindow;
+#endif
+class R_PUBLIC_API RWindow {
 public:
+#ifdef _WIN32
+    using GraphicContext = HDC;
+#endif
+#ifdef __linux__
+    using GraphicContext = GC;
+#endif
 
-    XWWindow() = delete;
+    RWindow() = delete;
 
-    XWWindow(window_config &&config_, const WindowContextPtr &window_context);
+    RWindow(window_config &&config_, const WindowContextPtr &window_context);
 
-    ~XWWindow();
+    ~RWindow();
 
     [[nodiscard]] const window_config &getConfig() const;
 
@@ -47,6 +62,7 @@ public:
 
     void kill();
     void show();
+
     [[nodiscard]] const std::shared_ptr<core::AbstractInputManager> &getInputManager() const;
     void setInputManager(const std::shared_ptr<AbstractInputManager> &manager);
 
@@ -55,26 +71,25 @@ public:
 
     [[nodiscard]] const std::shared_ptr<rendering::RenderingContext> &getRenderingContext() const;
 
+    [[nodiscard]] std::optional<GraphicContext> getGraphicContext() const;
+
+#ifdef _WIN32
+    [[nodiscard]] HWND getWindowHandle() const;
+#endif
+
     void setRenderer(rdmn::render::RendererPtr renderer_ptr);
     [[nodiscard]] const rdmn::render::RendererPtr &getRenderer() const;
 
-    [[nodiscard]] std::optional<GC> getGraphicContext() const;
-
 private:
-
+#ifdef __linux__
     std::shared_ptr<XWindow> impl_;
-};
-
-#elif _WIN32
-//TODO: implement it for windows
-class XWWindow {
-};
-
-
+#elif defined(_WIN32)
+    std::shared_ptr<MsWindow> impl_;
 #endif
+};
 
-using WindowPtr = std::shared_ptr<XWWindow>;
-using WindowConstPtr = std::shared_ptr<const XWWindow>;
+using WindowPtr = std::shared_ptr<RWindow>;
+using WindowConstPtr = std::shared_ptr<const RWindow>;
 }// namespace rcbe::core
 
 #endif//RCBE_ENGINE_XWWINDOW_HPP

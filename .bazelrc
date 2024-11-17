@@ -73,9 +73,6 @@ build:windows --enable_runfiles
 # Make sure to include as little of windows.h as possible
 build:windows --copt=-DWIN32_LEAN_AND_MEAN
 build:windows --host_copt=-DWIN32_LEAN_AND_MEAN
-build:windows --copt=-DNOGDI
-build:windows --host_copt=-DNOGDI
-
 
 # Due to bazel needing bzip2 and us needing to build with clang 16
 # we need this flags, since bzip build fails miserably

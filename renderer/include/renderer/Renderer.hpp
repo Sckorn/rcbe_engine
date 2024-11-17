@@ -11,7 +11,7 @@
 namespace rdmn::render {
 class RendererImpl;
 
-class Renderer {
+class R_PUBLIC_API Renderer {
 public:
 
     Renderer() = delete;
@@ -50,11 +50,11 @@ private:
 using RendererPtr = std::unique_ptr<Renderer>;
 using RendererConstPtr = std::unique_ptr<const Renderer>;
 
-RendererPtr make_renderer_ptr(
+R_PUBLIC_API RendererPtr make_renderer_ptr(
     rcbe::rendering::renderer_config &&config,
     const std::shared_ptr<rcbe::rendering::RenderingContext> &context);
 
-RendererConstPtr make_renderer_const_ptr(
+R_PUBLIC_API RendererConstPtr make_renderer_const_ptr(
     rcbe::rendering::renderer_config &&config,
     const std::shared_ptr<rcbe::rendering::RenderingContext> &context);
 }// namespace rdmn::render

@@ -49,6 +49,28 @@ void RenderingContext::setVisualId(VisualID id) {
 
 #endif
 
+#ifdef _WIN32
+HINSTANCE RenderingContext::getInstance() const {
+    std::lock_guard lg{instance_mutex_};
+    return instance_;
+}
+
+void RenderingContext::setInstance(HINSTANCE i) {
+    std::lock_guard lg{ instance_mutex_ };
+    instance_ = i;
+}
+
+HWND RenderingContext::getWindow() const {
+    std::lock_guard lg{wnd_mutex_};
+    return window_;
+}
+
+void RenderingContext::setWindow(HWND hwnd) {
+    std::lock_guard lg{wnd_mutex_};
+    window_ = hwnd;
+}
+#endif
+
 void RenderingContext::setBackgroundColor(const rcbe::visual::RGBAColor &color) {
     background_color_ = color;
 }

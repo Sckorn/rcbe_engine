@@ -137,7 +137,7 @@ struct BufferObjectData {
     }
 };
 
-struct buffer_object_data_extraction_options {
+struct R_PUBLIC_API buffer_object_data_extraction_options {
     bool non_transformed = true;
     bool dont_use_facets = true;
 };

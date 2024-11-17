@@ -42,4 +42,46 @@ Atom WindowContext::getDeleteMsg() const {
     return delete_msg_;
 }
 #endif
+
+#ifdef _WIN32
+HINSTANCE WindowContext::getInstanceHandle() const {
+	std::lock_guard lg{instance_handle_mutex_};
+	return hinst_;
+}
+
+void WindowContext::setInstanceHandle(HINSTANCE hinst) {
+	std::lock_guard lg{instance_handle_mutex_};
+	hinst_ = hinst;
+}
+
+std::wstring WindowContext::getWindowClass() const {
+	std::lock_guard lg{window_class_mutex_};
+	return window_class_;
+}
+
+void WindowContext::setWindowClass(std::wstring&& window_class) {
+	std::lock_guard lg{window_class_mutex_};
+	window_class_ = window_class;
+}
+
+std::wstring WindowContext::getCommandLineParameters() const {
+	std::lock_guard lg{command_line_str_mutex_};
+	return command_line_params_str_;
+}
+
+void WindowContext::setCommandLineParameters(std::wstring&& cmd_params) {
+	std::lock_guard lg{command_line_str_mutex_};
+	command_line_params_str_ = cmd_params;
+}
+
+int WindowContext::getShowCommand() const {
+	std::lock_guard lg{window_show_command_mutex_};
+	return window_show_command_code_;
+}
+
+void WindowContext::setShowCommand(int command) {
+	std::lock_guard lg{window_show_command_mutex_};
+	window_show_command_code_ = command;
+}
+#endif
 }// namespace rcbe::core

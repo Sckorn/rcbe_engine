@@ -1,16 +1,24 @@
+#ifdef __linux__
 #define VK_USE_PLATFORM_XLIB_KHR
+#endif
+#ifdef _WIN32
+#define VK_USE_PLATFORM_WIN32_KHR
+#endif
 
 #include "VulkanRenderer.hpp"
-
-#include <boost/log/trivial.hpp>
 
 #include <algorithm>
 #include <exception>
 #include <limits>
-#include <vector>
 #include <set>
+#include <vector>
 
+#ifdef __linux__
 #include <vulkan/vulkan_xlib.h>
+#endif
+#ifdef _WIN32
+#include <vulkan/vulkan_win32.h>
+#endif
 
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
@@ -20,7 +28,10 @@
 #include <rcbe-engine/datamodel/rendering/rasterizer_texture_helpers.hpp>
 #include <rcbe-engine/engine_config.hpp>
 #include <rcbe-engine/parsers/tga/tga_parser.hpp>
-#include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
+#ifdef __linux__
+#include <rcbe-engine/parsers/x3d/x3d_parser.hpp>// enable when Boost errors during windows compilation is fixed
+#endif
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 inline constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
 inline constexpr size_t TOTAL_VK_EXTENSIONS = 6;
@@ -60,6 +71,7 @@ std::pair<std::vector<VkSampler>, std::vector<VkImageView>> repopulateSamplersAn
     return ret;
 }
 
+#ifdef __linux__
 rcbe::core::CoreObject loadCorner() {
     rcbe::visual::texture_config tex_conf;
     tex_conf.component_order = decltype(tex_conf.component_order)::RGBA;
@@ -102,6 +114,7 @@ rcbe::core::CoreObject loadCorner() {
 
     return co;
 }
+#endif
 }// namespace
 
 namespace rdmn::render {
@@ -380,7 +393,7 @@ const rcbe::rendering::renderer_config &VulkanRenderer::getConfig() const noexce
 void VulkanRenderer::start() {
     bool curr = running_.load();
     if (!running_.compare_exchange_strong(curr, true)) {
-        BOOST_LOG_TRIVIAL(warning) << "Renderer already running!";
+        RDMN_LOG(RDMN_LOG_WARN) << "Renderer already running!";
         return;
     }
 
@@ -392,20 +405,19 @@ void VulkanRenderer::start() {
 void VulkanRenderer::stop() {
     bool curr = running_.load();
     if (!running_.compare_exchange_strong(curr, false))
-        BOOST_LOG_TRIVIAL(warning) << "Renderer already stopped!";
+        RDMN_LOG(RDMN_LOG_WARN) << "Renderer already stopped!";
 }
 
 bool VulkanRenderer::addObject(rcbe::core::CoreObject &&renderer_object) {
     if (!renderer_object.hasComponent<rcbe::rendering::Material>()) {
-        BOOST_LOG_TRIVIAL(trace) << "Object doesn't have material, should at least have default!";
+        RDMN_LOG(RDMN_LOG_TRACE) << "Object doesn't have material, should at least have default!";
         return false;
     }
 
     handleRenderedObject(renderer_object, objects_, material_cache_);
 
     bool object_added_flag = added_object_.load();
-    while (!added_object_.compare_exchange_strong(object_added_flag, true))
-        ;
+    while (!added_object_.compare_exchange_strong(object_added_flag, true));
 
     return true;
 }
@@ -413,7 +425,7 @@ bool VulkanRenderer::addObject(rcbe::core::CoreObject &&renderer_object) {
 bool VulkanRenderer::addObjects(std::vector<rcbe::core::CoreObject> &&renderer_objects) {
     for (auto &&ro : renderer_objects) {
         if (!ro.hasComponent<rcbe::rendering::Material>()) {
-            BOOST_LOG_TRIVIAL(trace) << "Object doesn't have material, should at least have default! Skipping " << ro.name();
+            RDMN_LOG(RDMN_LOG_TRACE) << "Object doesn't have material, should at least have default! Skipping " << ro.name();
             continue;
         }
 
@@ -421,8 +433,7 @@ bool VulkanRenderer::addObjects(std::vector<rcbe::core::CoreObject> &&renderer_o
     }
 
     bool object_added_flag = added_object_.load();
-    while (!added_object_.compare_exchange_strong(object_added_flag, true))
-        ;
+    while (!added_object_.compare_exchange_strong(object_added_flag, true));
 
     return true;
 }
@@ -518,8 +529,7 @@ void VulkanRenderer::renderFrame() {
         recreateSwapchain(device_, logical_device_, added_object_.load() || resized_.load());
         resized_.store(false);
         bool added_object_value = added_object_.load();
-        while (!added_object_.compare_exchange_strong(added_object_value, false))
-            ;
+        while (!added_object_.compare_exchange_strong(added_object_value, false));
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("Failed to present swapchain images");
     }
@@ -558,7 +568,12 @@ bool VulkanRenderer::createVulkanInstance(VkInstance &instance) {
     std::vector<const char *> exts;
     exts.resize(TOTAL_VK_EXTENSIONS);
     exts[0] = VK_KHR_SURFACE_EXTENSION_NAME;
+#ifdef __linux__
     exts[1] = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
+#endif
+#ifdef _WIN32
+    exts[1] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+#endif
     exts[2] = "VK_KHR_get_physical_device_properties2";
     exts[3] = "VK_KHR_external_memory_capabilities";
     exts[4] = "VK_EXT_validation_features";
@@ -574,11 +589,11 @@ bool VulkanRenderer::createVulkanInstance(VkInstance &instance) {
 
     auto res = vkCreateInstance(std::addressof(inst_crt_info), nullptr, std::addressof(instance));
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Couldn't create Vulkan instance";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Couldn't create Vulkan instance";
         return false;
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "Vulkan instance created successfully";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Vulkan instance created successfully";
     return true;
 }
 
@@ -592,20 +607,20 @@ bool VulkanRenderer::listAndCheckExtensions(std::vector<std::string> required, s
         nullptr);
 
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Can't enumerate instance extensions properties";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't enumerate instance extensions properties";
         return false;
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "Total VK Extensions " << extensions;
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Total VK Extensions " << extensions;
 
     std::vector<VkExtensionProperties> ext_props(extensions);
 
     vkEnumerateInstanceExtensionProperties(nullptr, std::addressof(extensions), ext_props.data());
 
-    BOOST_LOG_TRIVIAL(debug) << "Extensions:";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Extensions:";
 
     for (const auto &e : ext_props) {
-        BOOST_LOG_TRIVIAL(debug) << "\t" << e.extensionName;
+        RDMN_LOG(RDMN_LOG_DEBUG) << "\t" << e.extensionName;
     }
 
     if (!required.empty()) {
@@ -615,7 +630,7 @@ bool VulkanRenderer::listAndCheckExtensions(std::vector<std::string> required, s
             });
 
             if (it == ext_props.end()) {
-                BOOST_LOG_TRIVIAL(error) << "Can't find required extension!";
+                RDMN_LOG(RDMN_LOG_ERROR) << "Can't find required extension!";
                 return false;
             }
         }
@@ -629,17 +644,17 @@ bool VulkanRenderer::listAndCheckExtensions(std::vector<std::string> required, s
             });
 
             if (it == ext_props.end()) {
-                BOOST_LOG_TRIVIAL(debug) << "Optional extension is not found, using fallback!";
+                RDMN_LOG(RDMN_LOG_DEBUG) << "Optional extension is not found, using fallback!";
                 const auto res = fallback();
                 if (!res) {
-                    BOOST_LOG_TRIVIAL(error) << "Optional extension fallback failed!";
+                    RDMN_LOG(RDMN_LOG_ERROR) << "Optional extension fallback failed!";
                     return false;
                 }
             }
         }
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "Required extension found!";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Required extension found!";
     return true;
 }
 
@@ -647,19 +662,19 @@ bool VulkanRenderer::listAndCheckLayers(const std::vector<const char *> &to_chec
     uint32_t layers_count = 0;
     auto res = vkEnumerateInstanceLayerProperties(std::addressof(layers_count), nullptr);
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Can't enumerate validation layers!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't enumerate validation layers!";
         return false;
     }
 
     std::vector<VkLayerProperties> available_layers(layers_count);
     vkEnumerateInstanceLayerProperties(std::addressof(layers_count), available_layers.data());
 
-    BOOST_LOG_TRIVIAL(debug) << "Total validation layers: " << layers_count;
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Total validation layers: " << layers_count;
 
-    BOOST_LOG_TRIVIAL(debug) << "Layers:";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Layers:";
 
     for (const auto &l : available_layers) {
-        BOOST_LOG_TRIVIAL(debug) << "\t" << l.layerName;
+        RDMN_LOG(RDMN_LOG_DEBUG) << "\t" << l.layerName;
     }
 
     if (!to_check.empty()) {
@@ -669,7 +684,7 @@ bool VulkanRenderer::listAndCheckLayers(const std::vector<const char *> &to_chec
             });
 
             if (it == available_layers.end()) {
-                BOOST_LOG_TRIVIAL(error) << "Can't find required validation layer!";
+                RDMN_LOG(RDMN_LOG_ERROR) << "Can't find required validation layer!";
                 return false;
             }
         }
@@ -679,29 +694,31 @@ bool VulkanRenderer::listAndCheckLayers(const std::vector<const char *> &to_chec
 }
 
 bool VulkanRenderer::selectPhysicalDevice(VkPhysicalDevice &device) {
+#ifdef __linux__
     XSync(context_->getDisplay(), false);
+#endif
     uint32_t devices_count = 0;
     auto res = vkEnumeratePhysicalDevices(instance_, std::addressof(devices_count), nullptr);
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Can't enumerate physical devices!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't enumerate physical devices!";
         return false;
     }
 
     if (devices_count == 0) {
-        BOOST_LOG_TRIVIAL(debug) << "Zero physical devices found!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Zero physical devices found!";
         return false;
     }
 
     std::vector<VkPhysicalDevice> devices(devices_count);
     vkEnumeratePhysicalDevices(instance_, std::addressof(devices_count), devices.data());
 
-    BOOST_LOG_TRIVIAL(debug) << "Searching for proper device";
-    BOOST_LOG_TRIVIAL(debug) << "Total devices found " << devices.size();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Searching for proper device";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Total devices found " << devices.size();
 
     for (const auto &d : devices) {
-        BOOST_LOG_TRIVIAL(debug) << "Processing device " << static_cast<uint64_t>(std::addressof(d) - devices.data());
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Processing device " << static_cast<uint64_t>(std::addressof(d) - devices.data());
         if (deviceSupported(d)) {
-            BOOST_LOG_TRIVIAL(debug) << "Supported device found";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Supported device found";
             device = d;
             msaa_samples_ = getMaxUsableSamplesCount();
             break;
@@ -709,11 +726,11 @@ bool VulkanRenderer::selectPhysicalDevice(VkPhysicalDevice &device) {
     }
 
     if (device == VK_NULL_HANDLE) {
-        BOOST_LOG_TRIVIAL(debug) << "Couldn't find supported physical device!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Couldn't find supported physical device!";
         return false;
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "Physical device selected successfully";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Physical device selected successfully";
     return true;
 }
 
@@ -726,7 +743,7 @@ bool VulkanRenderer::deviceSupported(VkPhysicalDevice device) {
 
     auto queue_index = getQueueFamilyIndices(device);
 
-    BOOST_LOG_TRIVIAL(debug) << "Queue index set " << std::boolalpha << queue_index.indexSet();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Queue index set " << std::boolalpha << queue_index.indexSet();
 
     auto device_ext_supported = checkDeviceExtensionSupport(device);
 
@@ -734,16 +751,16 @@ bool VulkanRenderer::deviceSupported(VkPhysicalDevice device) {
     if (device_ext_supported) {
         auto swp_chn_sup = querySwapChainSupportDetails(device);
         if (!swp_chn_sup.obtained_successfully) {
-            BOOST_LOG_TRIVIAL(debug) << "Can't obtain swap chain support details!";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Can't obtain swap chain support details!";
             return false;
         }
         swap_chain_fits = !swp_chn_sup.formats.empty() && !swp_chn_sup.modes.empty();
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "device of right type: " << std::boolalpha << (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
-    BOOST_LOG_TRIVIAL(debug) << "Has geometry shader: " << std::boolalpha << features.geometryShader;
-    BOOST_LOG_TRIVIAL(debug) << "Device extension supported: " << std::boolalpha << device_ext_supported;
-    BOOST_LOG_TRIVIAL(debug) << "Swap chain fits: " << std::boolalpha << swap_chain_fits;
+    RDMN_LOG(RDMN_LOG_DEBUG) << "device of right type: " << std::boolalpha << (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Has geometry shader: " << std::boolalpha << features.geometryShader;
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Device extension supported: " << std::boolalpha << device_ext_supported;
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Swap chain fits: " << std::boolalpha << swap_chain_fits;
 
     if (!features.shaderSampledImageArrayDynamicIndexing)
         use_global_sampler_ = true;
@@ -760,25 +777,30 @@ VulkanRenderer::queue_family_indices VulkanRenderer::getQueueFamilyIndices(VkPhy
     std::vector<VkQueueFamilyProperties> queue_families(queue_families_count);
     vkGetPhysicalDeviceQueueFamilyProperties(device, std::addressof(queue_families_count), queue_families.data());
 
-    BOOST_LOG_TRIVIAL(debug) << "Total queue families " << queue_families.size();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Total queue families " << queue_families.size();
 
     int i = 0;
     for (const auto &f : queue_families) {
-        BOOST_LOG_TRIVIAL(debug) << "Processing queue family index " << i;
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Processing queue family index " << i;
+#ifdef __linux__
         VkBool32 presentation_supported = vkGetPhysicalDeviceXlibPresentationSupportKHR(device, i, context_->getDisplay(), context_->visualId());
+#endif
+#ifdef _WIN32
+        VkBool32 presentation_supported = vkGetPhysicalDeviceWin32PresentationSupportKHR(device, i);
+#endif
 
         if (presentation_supported) {
-            BOOST_LOG_TRIVIAL(debug) << "Queue " << i << " supports presentation";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Queue " << i << " supports presentation";
             ret.presentation_family = i;
         }
 
         if (f.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            BOOST_LOG_TRIVIAL(debug) << "Queue " << i << " supports graphics";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Queue " << i << " supports graphics";
             ret.graphics_family = i;
         }
 
         if (ret.indexSet()) {
-            BOOST_LOG_TRIVIAL(debug) << "Fitting queue family found!";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Fitting queue family found!";
             break;
         }
 
@@ -792,7 +814,7 @@ bool VulkanRenderer::createLogicalDevice(VkDevice &logical_device) {
     queue_family_indices index = getQueueFamilyIndices(device_);
 
     if (!index.indexSet()) {
-        BOOST_LOG_TRIVIAL(debug) << "Queue family index is not set!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Queue family index is not set!";
         return false;
     }
 
@@ -831,7 +853,7 @@ bool VulkanRenderer::createLogicalDevice(VkDevice &logical_device) {
 
     auto res = vkCreateDevice(device_, std::addressof(create_info), nullptr, std::addressof(logical_device));
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Can't create logical device";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't create logical device";
         return false;
     }
 
@@ -842,6 +864,7 @@ bool VulkanRenderer::createLogicalDevice(VkDevice &logical_device) {
 }
 
 bool VulkanRenderer::createSurface() {
+#ifdef __linux__
     XSync(context_->getDisplay(), false);
     VkXlibSurfaceCreateInfoKHR surf_create_info {};
     surf_create_info.dpy = context_->getDisplay();
@@ -849,11 +872,26 @@ bool VulkanRenderer::createSurface() {
     surf_create_info.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
 
     auto result = vkCreateXlibSurfaceKHR(instance_, std::addressof(surf_create_info), nullptr, std::addressof(surface_));
+#endif
+#ifdef _WIN32
+    VkWin32SurfaceCreateInfoKHR create_info {};
+    create_info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+    create_info.hinstance = context_->getInstance();
+    create_info.hwnd = context_->getWindow();
+
+    auto result = vkCreateWin32SurfaceKHR(instance_, std::addressof(create_info), nullptr, std::addressof(surface_));
+#endif
 
     if (result != VK_SUCCESS)
-        BOOST_LOG_TRIVIAL(debug) << "Can't create XLib surface!";
+#ifdef __linux__
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't create XLib surface!";
+#endif
+#ifdef _WIN32
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't create Win32 surface!";
+#endif
 
-    BOOST_LOG_TRIVIAL(debug) << "Surface created successfully!";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Surface created successfully!";
+
 
     return result == VK_SUCCESS;
 }
@@ -867,21 +905,21 @@ bool VulkanRenderer::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 
     std::set<std::string> required_extensions(device_extensions_.begin(), device_extensions_.end());
 
-    BOOST_LOG_TRIVIAL(debug) << "total required extensions: " << required_extensions.size();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "total required extensions: " << required_extensions.size();
 
     for (const auto &re : required_extensions) {
-        BOOST_LOG_TRIVIAL(debug) << "\t" << re;
+        RDMN_LOG(RDMN_LOG_DEBUG) << "\t" << re;
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "Available physical device extensions amount: " << available_extensions.size();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Available physical device extensions amount: " << available_extensions.size();
 
-    BOOST_LOG_TRIVIAL(debug) << "Extensions: ";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Extensions: ";
     for (const auto &e : available_extensions) {
-        BOOST_LOG_TRIVIAL(debug) << "\t" << e.extensionName;
+        RDMN_LOG(RDMN_LOG_DEBUG) << "\t" << e.extensionName;
         required_extensions.erase(e.extensionName);
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "Extension found: " << std::boolalpha << required_extensions.empty();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Extension found: " << std::boolalpha << required_extensions.empty();
 
     return required_extensions.empty();
 }
@@ -891,7 +929,7 @@ VulkanRenderer::swap_chain_support_details VulkanRenderer::querySwapChainSupport
 
     auto res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface_, std::addressof(ret.capabilities));
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Can't get device surface capabilities";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't get device surface capabilities";
         ret.obtained_successfully = false;
         return ret;
     }
@@ -899,7 +937,7 @@ VulkanRenderer::swap_chain_support_details VulkanRenderer::querySwapChainSupport
     uint32_t format_count;
     res = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, std::addressof(format_count), nullptr);
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Can't get device surface formats";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't get device surface formats";
         ret.obtained_successfully = false;
         return ret;
     }
@@ -908,7 +946,7 @@ VulkanRenderer::swap_chain_support_details VulkanRenderer::querySwapChainSupport
         ret.formats.resize(format_count);
         res = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface_, std::addressof(format_count), ret.formats.data());
         if (res != VK_SUCCESS) {
-            BOOST_LOG_TRIVIAL(debug) << "Can't get device surface formats";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Can't get device surface formats";
             ret.obtained_successfully = false;
             return ret;
         }
@@ -917,7 +955,7 @@ VulkanRenderer::swap_chain_support_details VulkanRenderer::querySwapChainSupport
     uint32_t pres_mode_count;
     res = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, std::addressof(pres_mode_count), nullptr);
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Can't get device surface present modes";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't get device surface present modes";
         ret.obtained_successfully = false;
         return ret;
     }
@@ -926,13 +964,13 @@ VulkanRenderer::swap_chain_support_details VulkanRenderer::querySwapChainSupport
         ret.modes.resize(pres_mode_count);
         res = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface_, std::addressof(pres_mode_count), ret.modes.data());
         if (res != VK_SUCCESS) {
-            BOOST_LOG_TRIVIAL(debug) << "Can't get device surface present modes";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Can't get device surface present modes";
             ret.obtained_successfully = false;
             return ret;
         }
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "Returning swap chain details";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Returning swap chain details";
 
     ret.obtained_successfully = true;
     return ret;
@@ -1014,7 +1052,7 @@ bool VulkanRenderer::createSwapChain(VkPhysicalDevice device) {
     auto indicies = getQueueFamilyIndices(device);
 
     if (!indicies.indexSet()) {
-        BOOST_LOG_TRIVIAL(debug) << "Queue family indices not found!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Queue family indices not found!";
         return false;
     }
 
@@ -1037,7 +1075,7 @@ bool VulkanRenderer::createSwapChain(VkPhysicalDevice device) {
 
     auto res = vkCreateSwapchainKHR(logical_device_, std::addressof(create_info), nullptr, std::addressof(swap_chain_));
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(debug) << "Can't create swapchain";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't create swapchain";
         return false;
     }
 
@@ -1082,7 +1120,7 @@ bool VulkanRenderer::createGraphicsPipeline(VkDevice logical_device) {
                                                           sizeof(MeshPushConstants))});
             ++counter;
         } catch (const std::exception &e) {
-            BOOST_LOG_TRIVIAL(error) << e.what();
+            RDMN_LOG(RDMN_LOG_ERROR) << e.what();
             return false;
         }
     }
@@ -1108,7 +1146,7 @@ bool VulkanRenderer::createRenderPass(VkDevice logical_device) {
         VK_IMAGE_TILING_OPTIMAL,
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     if (!opt_dep_form) {
-        BOOST_LOG_TRIVIAL(error) << "Can't find depth format!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't find depth format!";
         return false;
     }
 
@@ -1309,7 +1347,7 @@ bool VulkanRenderer::createCommandBuffers(VkDevice logical_device) {
                     0,
                     0);
             else
-                BOOST_LOG_TRIVIAL(error) << "No VBO";
+                RDMN_LOG(RDMN_LOG_ERROR) << "No VBO";
 
             if (uniform_buffer_object_)
                 uniform_buffer_object_->bind(
@@ -1317,7 +1355,7 @@ bool VulkanRenderer::createCommandBuffers(VkDevice logical_device) {
                     pipeline->getLayout(),
                     i);
             else
-                BOOST_LOG_TRIVIAL(error) << "No UBO";
+                RDMN_LOG(RDMN_LOG_ERROR) << "No UBO";
 
 
             {
@@ -1415,7 +1453,7 @@ bool VulkanRenderer::createSyncObjects(VkDevice logical_device) {
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
         if (vkCreateSemaphore(logical_device, std::addressof(screate_info), nullptr, std::addressof(image_available_[i])) != VK_SUCCESS || vkCreateSemaphore(logical_device, std::addressof(screate_info), nullptr, std::addressof(render_finished_[i])) != VK_SUCCESS || vkCreateFence(logical_device, std::addressof(fence_create), nullptr, std::addressof(inflight_fences_[i])) != VK_SUCCESS) {
-            BOOST_LOG_TRIVIAL(error) << "Can't create semaphores!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't create semaphores!";
             return false;
         }
     }
@@ -1425,7 +1463,7 @@ bool VulkanRenderer::createSyncObjects(VkDevice logical_device) {
 
 bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical_device, bool handle_rendering_objects) {
     while (context_->getWindowDimensions().width == 0 || context_->getWindowDimensions().height == 0) {
-        BOOST_LOG_TRIVIAL(debug) << "Window is minimized!";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Window is minimized!";
     }
 
     vkDeviceWaitIdle(logical_device);
@@ -1435,7 +1473,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createSwapChain(device);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) << "Can't recreate swapchain!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't recreate swapchain!";
             return false;
         }
     }
@@ -1443,7 +1481,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createSwapChainViews();
         if (!res.success) {
-            BOOST_LOG_TRIVIAL(error) << "Can't create swapchain views!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't create swapchain views!";
             return false;
         }
     }
@@ -1451,7 +1489,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createRenderPass(logical_device);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) << "Can't recreate render pass!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't recreate render pass!";
             return false;
         }
     }
@@ -1466,7 +1504,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createGraphicsPipeline(logical_device);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) << "Can't recreate graphics pipeline!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't recreate graphics pipeline!";
             return false;
         }
     }
@@ -1474,7 +1512,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createColorResources(logical_device);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) << "Can't recreate color buffer!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't recreate color buffer!";
             return false;
         }
     }
@@ -1482,7 +1520,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createDepthResources(logical_device);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) << "Can't recreate depth buffer!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't recreate depth buffer!";
             return false;
         }
     }
@@ -1490,16 +1528,16 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createFramebuffers(logical_device);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) << "Can't recreate framebuffers!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't recreate framebuffers!";
             return false;
         }
     }
 
     if (!handle_rendering_objects) {
-        BOOST_LOG_TRIVIAL(info) << "Here?";
+        RDMN_LOG(RDMN_LOG_INFO) << "Here?";
         auto res = initPreexistentTextures(preexistent_objects_data);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) << "Can't init preexistent textures!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't init preexistent textures!";
             return false;
         }
     }
@@ -1541,7 +1579,7 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
     {
         auto res = createCommandBuffers(logical_device);
         if (!res) {
-            BOOST_LOG_TRIVIAL(error) << "Can't recreate command buffers!";
+            RDMN_LOG(RDMN_LOG_ERROR) << "Can't recreate command buffers!";
             return false;
         }
     }
@@ -1557,7 +1595,7 @@ bool VulkanRenderer::createDescriptorSetLayout(VkDevice logical_device) {
     ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     ubo_layout_binding.pImmutableSamplers = nullptr;
 
-    BOOST_LOG_TRIVIAL(trace) << std::boolalpha << " use global sampler " << use_global_sampler_;
+    RDMN_LOG(RDMN_LOG_TRACE) << std::boolalpha << " use global sampler " << use_global_sampler_;
 
     VkDescriptorSetLayoutBinding sampler_layout_binding {};
     sampler_layout_binding.binding = 1;
@@ -1604,7 +1642,7 @@ bool VulkanRenderer::createDescriptorSetLayout(VkDevice logical_device) {
         nullptr,
         std::addressof(descriptor_set_layout_));
     if (res != VK_SUCCESS) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create descriptor set layout";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create descriptor set layout";
         return false;
     }
 
@@ -1619,7 +1657,7 @@ bool VulkanRenderer::createDepthResources(VkDevice logical_device) {
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     if (!opt_format) {
-        BOOST_LOG_TRIVIAL(error) << "No suitable format found!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "No suitable format found!";
         return false;
     }
 
@@ -1638,7 +1676,7 @@ bool VulkanRenderer::createDepthResources(VkDevice logical_device) {
         depth_image_memory_);
     auto dep_img_view_opt = createImageView(logical_device, depth_image_, format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
     if (!dep_img_view_opt) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create depth image view!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create depth image view!";
         return false;
     }
 
@@ -1710,7 +1748,7 @@ bool VulkanRenderer::createColorResources(VkDevice logical_device) {
             msaa_samples_,
             color_image_,
             color_image_memory_)) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create color image!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create color image!";
         return false;
     }
 
@@ -1722,7 +1760,7 @@ bool VulkanRenderer::createColorResources(VkDevice logical_device) {
         1);
 
     if (!opt_img_view) {
-        BOOST_LOG_TRIVIAL(error) << "Can't create image view!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't create image view!";
         return false;
     }
 
@@ -1752,11 +1790,13 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
             }
         };
         if (!secondary_invokation) {
+#ifdef __linux__
             auto edge_object = loadCorner();
             meshes.reserve(1);
             object_to_sampler_index_.reserve(1);
 
             meshes.push_back(edge_object.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>());
+#endif
 
             if (use_global_sampler_) {
                 size_t mip_levels = calculate_mip_levels_wrapper();
@@ -1772,12 +1812,14 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
 
             std::unordered_set<rcbe::visual::TexturePtr> tex_cache;
 
+#ifdef __linux__
             {
                 const auto [it, res] = material_cache_.insert(edge_object.getComponent<rcbe::rendering::Material>());
                 if (objects_[*it].empty())
                     objects_[*it].reserve(1);
                 objects_[*it].push_back(std::move(edge_object));
             }
+#endif
 
             for (auto &[pipeline, objects_collection] : objects_) {
                 for (size_t i = 0; i < objects_collection.size(); ++i) {
@@ -1817,7 +1859,7 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
                 }
             }
         } else {
-            BOOST_LOG_TRIVIAL(debug) << "Secondary objects invokation";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Secondary objects invokation";
             if (use_global_sampler_) {
                 auto res = createTextureSampler(
                     logical_device_,
@@ -1839,11 +1881,11 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
                 const auto &m = material_object_ptr->as<rcbe::rendering::Material>();
 
                 if (!m.getVertex()) {
-                    BOOST_LOG_TRIVIAL(warning) << "Vertex is not present";
+                    RDMN_LOG(RDMN_LOG_WARN) << "Vertex is not present";
                 }
 
                 if (!m.getFragment()) {
-                    BOOST_LOG_TRIVIAL(warning) << "Fragment is not present";
+                    RDMN_LOG(RDMN_LOG_WARN) << "Fragment is not present";
                 }
 
                 material_cache_.insert(material_object_ptr);
@@ -1863,7 +1905,7 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
             }
         }
     } catch (const std::exception &e) {
-        BOOST_LOG_TRIVIAL(fatal) << "Can't parse scene! " << e.what();
+        RDMN_LOG(RDMN_LOG_FATAL) << "Can't parse scene! " << e.what();
         throw;
     }
 
@@ -1919,17 +1961,17 @@ bool VulkanRenderer::initMaterialTextures(const rcbe::rendering::Material &mat) 
         if (use_global_sampler_) {
             if (!inserted_tex->init(
                     logical_device_, device_, command_pool_, graphics_queue_, rasterizer_tex_global_sampler_)) {
-                BOOST_LOG_TRIVIAL(error) << "Can't init texture!";
+                RDMN_LOG(RDMN_LOG_ERROR) << "Can't init texture!";
                 return false;
             } else {
-                BOOST_LOG_TRIVIAL(trace) << "Successfully inited texture";
+                RDMN_LOG(RDMN_LOG_TRACE) << "Successfully inited texture";
             }
         } else {
             if (!inserted_tex->init(logical_device_, device_, command_pool_, graphics_queue_)) {
-                BOOST_LOG_TRIVIAL(error) << "Can't init texture!";
+                RDMN_LOG(RDMN_LOG_ERROR) << "Can't init texture!";
                 return false;
             } else {
-                BOOST_LOG_TRIVIAL(trace) << "Successfully inited texture";
+                RDMN_LOG(RDMN_LOG_TRACE) << "Successfully inited texture";
             }
         }
     }
@@ -1948,7 +1990,7 @@ void VulkanRenderer::handleRenderedObject(
         it = inserted_it;
         const auto &m = (*it)->as<rcbe::rendering::Material>();
         if (!initMaterialTextures(m)) {
-            BOOST_LOG_TRIVIAL(fatal) << "Can't init texture of added object " << renderer_object.name();
+            RDMN_LOG(RDMN_LOG_FATAL) << "Can't init texture of added object " << renderer_object.name();
         }
     }
     if (objects[*it].empty())

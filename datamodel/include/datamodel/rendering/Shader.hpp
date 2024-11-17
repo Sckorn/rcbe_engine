@@ -7,7 +7,6 @@
 #include <rcbe-engine/fundamentals/convinience.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
-
 #if defined(RDMN_VULKAN)
 #include <vulkan/vulkan.hpp>
 #elif defined(RDMN_OPENGL)
@@ -17,7 +16,6 @@
 #else
 static_assert(false, RASTERIZER_NOT_SET_ERROR_MSG);
 #endif
-
 
 namespace rdmn::render {
 static constexpr size_t SHADER_ERROR_MSG_SIZE = 512;
@@ -49,7 +47,7 @@ enum class ShaderType {
 
 class ShaderImpl;
 
-class Shader {
+class R_PUBLIC_API Shader {
 public:
 
 #ifdef RDMN_VULKAN
