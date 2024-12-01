@@ -1,9 +1,12 @@
+load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+
 cc_library(
     name = "x3d_parser",
     srcs = ["src/x3d/x3d_parser.cpp"],
     hdrs = ["include/parsers/x3d/x3d_parser.hpp"],
     include_prefix = "rcbe-engine",
     includes = ["include"],
+    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
@@ -20,6 +23,7 @@ cc_library(
     hdrs = ["include/parsers/stl/stl_parser.hpp"],
     include_prefix = "rcbe-engine",
     includes = ["include"],
+    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
@@ -34,6 +38,7 @@ cc_library(
     hdrs = ["include/parsers/tga/tga_parser.hpp"],
     include_prefix = "rcbe-engine",
     includes = ["include"],
+    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
@@ -52,7 +57,7 @@ cc_library(
     data = [
         "//datamodel:datamodel_rendering_resources",
     ],
-    defines = select({
+    defines = PUBLIC_API_PREFIX + select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
         "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
     }),
@@ -74,18 +79,12 @@ cc_library(
         "//datamodel:engine_datamodel_geometry",
         "//datamodel:engine_datamodel_math",
         "//datamodel:engine_datamodel_rendering",
-        "@boost//:log",
+        "//common:rdmn_trivial_logger",
         "@nlohmann//:nlohmann_json",
     ],
 )
 
 ### Remove after debug
-
-cc_binary(
-    name = "gltf_parser_tester",
-    srcs = ["src/gltf/main.cpp"],
-    deps = [":rdmn_gltf_parser"],
-)
 
 filegroup(
     name = "x3d_test_resources",
@@ -151,6 +150,26 @@ cc_test(
     visibility = ["//visibility:public"],
     deps = [
         ":rdmn_tga_parser",
+        "//datamodel:engine_datamodel_math",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "rdmn_gltf_parsers_test",
+    srcs = [
+        "test/parsers_test.cpp",
+        "test/gltf_parser_test.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    data = [
+        "//datamodel:datamodel_rendering_resources",
+        "@gltf_test_data_archive//:gltf_tests_archive",
+    ],
+    tags = ["local"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rdmn_gltf_parser",
         "//datamodel:engine_datamodel_math",
         "@com_google_googletest//:gtest_main",
     ],

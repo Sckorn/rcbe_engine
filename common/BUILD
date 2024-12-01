@@ -1,5 +1,6 @@
 load("//meta_package:global_variables.bzl", "LOGGING_LIB")
 load("//meta_package:global_variables.bzl", "LOGGING_LIB_DEFINE")
+load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
 
 _COMMON_LINKOPTS = select({
     "@bazel_tools//src/conditions:windows": [""],
@@ -28,6 +29,7 @@ cc_library(
         "include/common/utils/json_utils.hpp",
     ],
     copts = ["-Iexternal/nlohmann/include"],
+    defines = PUBLIC_API_PREFIX,
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
     linkopts = _COMMON_LINKOPTS,

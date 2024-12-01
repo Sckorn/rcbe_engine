@@ -8,7 +8,7 @@
 
 namespace rcbe::utils {
 
-nlohmann::json read_raw(const std::string &path);
+R_PUBLIC_API nlohmann::json read_raw(const std::string &path);
 
 template <typename ReturnConfig>
 ReturnConfig read_from_file(const std::string &path) {
