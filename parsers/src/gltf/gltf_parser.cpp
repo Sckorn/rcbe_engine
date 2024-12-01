@@ -4,8 +4,6 @@
 #include <thread>
 #include <vector>
 
-#include <boost/log/trivial.hpp>
-
 #include <nlohmann/json.hpp>
 
 #include <rcbe-engine/datamodel/core/CoreObject.hpp>
@@ -18,6 +16,9 @@
 #include <rcbe-engine/parsers/tga/tga_parser.hpp>
 #include <rcbe-engine/utils/json_utils.hpp>
 #include <rcbe-engine/utils/output_utils.hpp>
+#include <rcbe-engine/fundamentals/types.hpp>
+
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #ifdef RDMN_VULKAN
 #include <vulkan/vulkan.hpp>
@@ -417,7 +418,7 @@ std::vector<R> getValuesByAccessor(
             }
         }
     } else {
-        BOOST_LOG_TRIVIAL(warning) << "No data available";
+        RDMN_LOG(RDMN_LOG_WARN) << "No data available";
         ret = std::vector<R> {size_to_fill_if_empty, R {}};
     }
 
@@ -465,7 +466,7 @@ rcbe::geometry::Mesh::FacetStorage getValuesByAccessor(
 
 namespace rdmn::parse::gltf {
 
-std::vector<rcbe::core::CoreObject> parse(
+R_PUBLIC_API std::vector<rcbe::core::CoreObject> parse(
     const rcbe::core::EnginePath &gltf_file_path,
     const rcbe::core::EnginePath &bin_file_path) {
     if (!std::filesystem::exists(gltf_file_path) || !std::filesystem::exists(bin_file_path))
@@ -479,18 +480,18 @@ std::vector<rcbe::core::CoreObject> parse(
 
     std::vector<rcbe::core::CoreObject> ret {};
     /// TODO: below is a texture cash to reduce parsing times, remove it when proper ResourceManager is introduced
-    std::unordered_map<rcbe::core::EnginePath, rcbe::visual::TexturePtr> tex_cache;
+    std::unordered_map<std::string, rcbe::visual::TexturePtr> tex_cache;
     {
         rcbe::binary::BinaryBuffer bb;
         std::jthread bin_parser([bin_file_path, &bb]() {
             std::ifstream ifs {bin_file_path.string(), std::ios::binary | std::ios::in};
             ifs >> bb;
 
-            BOOST_LOG_TRIVIAL(trace) << "Read binary part of GLTF successfully!";
+            RDMN_LOG(RDMN_LOG_TRACE) << "Read binary part of GLTF successfully!";
         });
         const auto gltf_json = rcbe::utils::read_raw(gltf_file_path.string());
 
-        BOOST_LOG_TRIVIAL(trace) << "Total nodes " << gltf_json.at("nodes").size();
+        RDMN_LOG(RDMN_LOG_TRACE) << "Total nodes " << gltf_json.at("nodes").size();
 
         const auto total_gltf_nodes = gltf_json.at("nodes").size();
         std::vector<gltf_node> nodes(total_gltf_nodes);
@@ -500,11 +501,11 @@ std::vector<rcbe::core::CoreObject> parse(
             nodes[i] = gltf_json.at("nodes")[i].get<gltf_node>();
             if (nodes[i].children_indices.size() > 1) {
                 root_node_idx = i;
-                BOOST_LOG_TRIVIAL(trace) << "Multiple children in node " << i;
+                RDMN_LOG(RDMN_LOG_TRACE) << "Multiple children in node " << i;
             }
         }
 
-        BOOST_LOG_TRIVIAL(trace) << "Total meshes " << gltf_json.at("meshes").size();
+        RDMN_LOG(RDMN_LOG_TRACE) << "Total meshes " << gltf_json.at("meshes").size();
         const auto total_gltf_meshes = gltf_json.at("meshes").size();
         std::vector<gltf_mesh> meshes(total_gltf_meshes);
         for (size_t i = 0; i < total_gltf_meshes; ++i) {
@@ -513,7 +514,7 @@ std::vector<rcbe::core::CoreObject> parse(
 
         const auto accessors_node = gltf_json.at("accessors");
         const auto total_accessors = accessors_node.size();
-        BOOST_LOG_TRIVIAL(trace) << "Total accessors " << total_accessors;
+        RDMN_LOG(RDMN_LOG_TRACE) << "Total accessors " << total_accessors;
         std::vector<gltf_accessor> accessors(total_accessors);
         for (size_t i = 0; i < total_accessors; ++i) {
             accessors[i] = accessors_node[i].get<gltf_accessor>();
@@ -521,7 +522,7 @@ std::vector<rcbe::core::CoreObject> parse(
 
         const auto buffer_views_node = gltf_json.at("bufferViews");
         const auto total_buffer_views = buffer_views_node.size();
-        BOOST_LOG_TRIVIAL(trace) << "Total buffer views " << total_buffer_views;
+        RDMN_LOG(RDMN_LOG_TRACE) << "Total buffer views " << total_buffer_views;
         std::vector<gltf_buffer_view> buffer_views(total_buffer_views);
         for (size_t i = 0; i < total_buffer_views; ++i) {
             buffer_views[i] = buffer_views_node[i].get<gltf_buffer_view>();
@@ -529,7 +530,7 @@ std::vector<rcbe::core::CoreObject> parse(
 
         const auto buffers_node = gltf_json.at("buffers");
         const auto total_buffers = buffers_node.size();
-        BOOST_LOG_TRIVIAL(trace) << "Total buffers " << total_buffers;
+        RDMN_LOG(RDMN_LOG_TRACE) << "Total buffers " << total_buffers;
         std::vector<gltf_buffer> buffers(total_buffers);
         for (size_t i = 0; i < total_buffers; ++i) {
             buffers[i] = buffers_node[i].get<gltf_buffer>();
@@ -537,7 +538,7 @@ std::vector<rcbe::core::CoreObject> parse(
 
         const auto materials_node = gltf_json.at("materials");
         const auto total_materials = materials_node.size();
-        BOOST_LOG_TRIVIAL(trace) << "Total materials " << total_materials;
+        RDMN_LOG(RDMN_LOG_TRACE) << "Total materials " << total_materials;
         std::vector<gltf_material> materials(total_materials);
         for (size_t i = 0; i < total_materials; ++i) {
             materials[i] = materials_node[i].get<gltf_material>();
@@ -545,7 +546,7 @@ std::vector<rcbe::core::CoreObject> parse(
 
         const auto textures_node = gltf_json.at("textures");
         const auto total_textures = textures_node.size();
-        BOOST_LOG_TRIVIAL(trace) << "Total textures " << total_textures;
+        RDMN_LOG(RDMN_LOG_TRACE) << "Total textures " << total_textures;
         std::vector<gltf_texture> textures(total_textures);
         for (size_t i = 0; i < total_textures; ++i) {
             textures[i] = textures_node[i].get<gltf_texture>();
@@ -553,7 +554,7 @@ std::vector<rcbe::core::CoreObject> parse(
 
         const auto images_node = gltf_json.at("images");
         const auto total_iamges = images_node.size();
-        BOOST_LOG_TRIVIAL(trace) << "Total images " << total_iamges;
+        RDMN_LOG(RDMN_LOG_TRACE) << "Total images " << total_iamges;
         std::vector<gltf_image> images(total_iamges);
         for (size_t i = 0; i < total_iamges; ++i) {
             images[i] = images_node[i].get<gltf_image>();
@@ -572,20 +573,20 @@ std::vector<rcbe::core::CoreObject> parse(
         }
 
         ret.reserve(meshes.size());
-        BOOST_LOG_TRIVIAL(trace) << "Starting iterating over nodes, looking for meshes!";
+        RDMN_LOG(RDMN_LOG_TRACE) << "Starting iterating over nodes, looking for meshes!";
         for (size_t i = start_index; i < nodes.size();) {
             auto &n = nodes[i];
             if (nodes_processed[i]) {
-                BOOST_LOG_TRIVIAL(trace) << "Node " << i << " is already processed!";
+                RDMN_LOG(RDMN_LOG_TRACE) << "Node " << i << " is already processed!";
                 ++i;
                 continue;
             }
 
-            BOOST_LOG_TRIVIAL(trace) << "Processing node " << i;
+            RDMN_LOG(RDMN_LOG_TRACE) << "Processing node " << i;
             nodes_processed[i] = true;
 
             if (n.children_indices.size() > 1) {
-                BOOST_LOG_TRIVIAL(trace) << "Not handling nodes with more than one children!";
+                RDMN_LOG(RDMN_LOG_TRACE) << "Not handling nodes with more than one children!";
                 ++i;
                 continue;
             }
@@ -595,7 +596,7 @@ std::vector<rcbe::core::CoreObject> parse(
             /// We do not expect the node that has children to also have mesh index,
             /// so single if such node is found
             if (has_mesh && !n.children_indices.empty())
-                BOOST_LOG_TRIVIAL(trace) << "Node with children and mesh index found!";
+                RDMN_LOG(RDMN_LOG_TRACE) << "Node with children and mesh index found!";
 
             rcbe::math::Matrix4x4 transform = root_trn;
             if (!n.matrix.empty())
@@ -625,7 +626,7 @@ std::vector<rcbe::core::CoreObject> parse(
 
             for (const auto vi : visited_indices) {
                 nodes_processed[vi] = true;
-                BOOST_LOG_TRIVIAL(trace) << "Node " << vi << " is processed as a child of " << i;
+                RDMN_LOG(RDMN_LOG_TRACE) << "Node " << vi << " is processed as a child of " << i;
             }
 
             if (mesh_index == UNSET_INDEX)
@@ -660,7 +661,7 @@ std::vector<rcbe::core::CoreObject> parse(
             }
 
             if (vertices.empty()) {
-                BOOST_LOG_TRIVIAL(trace) << "No vertices parsed for the mesh, no use parsing anything else";
+                RDMN_LOG(RDMN_LOG_TRACE) << "No vertices parsed for the mesh, no use parsing anything else";
                 continue;
             }
 
@@ -697,10 +698,10 @@ std::vector<rcbe::core::CoreObject> parse(
                     vertices.size() / 3);
             }
 
-            BOOST_LOG_TRIVIAL(trace) << "Total vertices: " << vertices.size();
-            BOOST_LOG_TRIVIAL(trace) << "Total normals: " << normals.size();
-            BOOST_LOG_TRIVIAL(trace) << "Total tex coords: " << tex_coord.size();
-            BOOST_LOG_TRIVIAL(trace) << "Total facets: " << facets.size();
+            RDMN_LOG(RDMN_LOG_TRACE) << "Total vertices: " << vertices.size();
+            RDMN_LOG(RDMN_LOG_TRACE) << "Total normals: " << normals.size();
+            RDMN_LOG(RDMN_LOG_TRACE) << "Total tex coords: " << tex_coord.size();
+            RDMN_LOG(RDMN_LOG_TRACE) << "Total facets: " << facets.size();
 
             if (vertices.size() != tex_coord.size()) {
                 throw std::runtime_error("Vertices and tex coords are of unequal sizes!");
@@ -730,22 +731,30 @@ std::vector<rcbe::core::CoreObject> parse(
                             const auto proper_ext_file = rel_path.stem().string() + std::string(".tga");
                             const auto proper_path = dir / rel_path.parent_path() / std::filesystem::path {proper_ext_file};
                             if (std::filesystem::exists(proper_path)) {
-                                const auto it = tex_cache.find(proper_path);
+                                const auto it = tex_cache.find(proper_path.string());
                                 rcbe::visual::TexturePtr tex_ptr;
                                 if (it != tex_cache.end()) {
-                                    BOOST_LOG_TRIVIAL(trace) << "Found texture in cache!";
+                                    RDMN_LOG(RDMN_LOG_TRACE) << "Found texture in cache!";
                                     tex_ptr = it->second;
                                 } else {
-                                    BOOST_LOG_TRIVIAL(trace) << "No texture in cache!";
+                                    RDMN_LOG(RDMN_LOG_TRACE) << "No texture in cache!";
                                     tex_ptr = rcbe::visual::make_tex_ptr(proper_path, rdmn::parse::tga::parse);
-                                    tex_cache.insert({proper_path, tex_ptr});
+                                    tex_cache.insert({proper_path.string(), tex_ptr});
                                 }
                                 rdmn::render::rasterizer_texture_config rtc {};
                                 rdmn::render::RasterizerTexture rt {rtc, tex_ptr};
+#ifdef _WIN32
+                                auto rtptr = std::make_shared<rcbe::core::CoreObject>(rt);
 
-                                BOOST_LOG_TRIVIAL(trace) << "Setting material for object";
+                                RDMN_LOG(RDMN_LOG_TRACE) << "Setting material for object";
+
+                                obj.addComponent<rdmn::render::RasterizerTexture>(rtptr);
+#endif
+#ifdef __linux__
+                                RDMN_LOG(RDMN_LOG_TRACE) << "Setting material for object";
 
                                 obj.addComponent<rdmn::render::RasterizerTexture>(std::move(rt));
+#endif
                             }
                         }
                     }

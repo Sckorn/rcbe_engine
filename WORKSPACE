@@ -129,6 +129,16 @@ http_archive(
     ],
 )
 
+http_archive(
+    name = "tinyxml2",
+    build_file = "@//thirdparty:tinyxml2.BUILD",
+    sha256 = "3bdf15128ba16686e69bce256cc468e76c7b94ff2c7f391cc5ec09e40bff3839",
+    urls = [
+        "https://github.com/leethomason/tinyxml2/archive/refs/tags/10.0.0.tar.gz",
+    ],
+    strip_prefix = "tinyxml2-10.0.0",
+)
+
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("@rules_pkg//:rpm.bzl", "pkg_rpm")
