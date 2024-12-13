@@ -14,7 +14,7 @@
 
 namespace rcbe::geometry {
 
-struct triangle_indices {
+struct R_PUBLIC_API triangle_indices {
     using ValueType = size_t;
 
     triangle_indices() {
@@ -43,11 +43,11 @@ struct triangle_indices {
 };
 }// namespace rcbe::geometry
 
-std::istream &operator>>(std::istream &is, rcbe::geometry::triangle_indices &tri);
+R_PUBLIC_API std::istream &operator>>(std::istream &is, rcbe::geometry::triangle_indices &tri);
 
 namespace nlohmann {
 template <>
-struct adl_serializer<rcbe::geometry::triangle_indices> {
+struct R_PUBLIC_API adl_serializer<rcbe::geometry::triangle_indices> {
     static void to_json(nlohmann::json &j, const rcbe::geometry::triangle_indices &t);
     static void from_json(const nlohmann::json &j, rcbe::geometry::triangle_indices &t);
 };
