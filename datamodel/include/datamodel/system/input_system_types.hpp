@@ -43,6 +43,8 @@ enum class InputEventType {
     right_button_release = WM_RBUTTONUP,
     middle_button_release = WM_MBUTTONUP,// same as above
     mouse_motion = WM_MOUSEMOVE,
+    wheel_up = WM_MOUSEWHEEL,
+    wheel_down = WM_MOUSEWHEEL,
 #endif
 
 #endif

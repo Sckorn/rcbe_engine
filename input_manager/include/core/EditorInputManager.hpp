@@ -1,6 +1,11 @@
 #ifndef RCBE_ENGINE_EDITORINPUTMANAGER_HPP
 #define RCBE_ENGINE_EDITORINPUTMANAGER_HPP
 
+#ifdef _WIN32
+#include <Windows.h>
+#include <windowsx.h>
+#endif
+
 #include <memory>
 
 #include <rcbe-engine/core/InputManagerImplementation.hpp>
@@ -10,7 +15,13 @@
 
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
-inline constexpr float MOVE_AND_STRAFE_SPEED = 25;
+
+#ifdef _WIN32
+inline constexpr float MOVE_AND_STRAFE_SPEED = 1000;
+#endif
+#ifdef __linux__
+inline constexpr float MOVE_AND_STRAFE_SPEED = 100;
+#endif
 
 namespace rcbe::core {
 class R_PUBLIC_API EditorInputManager final : protected InputManagerImplementation {
@@ -118,6 +129,7 @@ public:
                      return;
                  }
              }},
+#ifdef __linux__
             {rcbe::core::InputEventType::button_press,
              [rendering_context = ctx, &c](
                  InputManagerImplementation &im,
@@ -138,19 +150,73 @@ public:
                      return;
                  }
              }},
+#endif
+#ifdef _WIN32
+            {rcbe::core::InputEventType::middle_button_press,
+             [rendering_context = ctx, &c](
+                 InputManagerImplementation &im,
+                 InputManagerImplementation::InputEventReference event,
+                 InputManagerImplementation::PreviousEventReference previous) {
+                 
+                c->resetView();
+                return;
+             }},
+             {rcbe::core::InputEventType::left_button_press,
+             [rendering_context = ctx, &c](
+                 InputManagerImplementation &im,
+                 InputManagerImplementation::InputEventReference event,
+                 InputManagerImplementation::PreviousEventReference previous) {
+                 
+                SetCapture(rendering_context->getWindow()); /// TODO: figure out, why button is not set as pressed, might be windows specifics
+                return;
+             }},
+             {rcbe::core::InputEventType::left_button_release,
+             [rendering_context = ctx, &c](
+                 InputManagerImplementation &im,
+                 InputManagerImplementation::InputEventReference event,
+                 InputManagerImplementation::PreviousEventReference previous) {
+                 
+                ReleaseCapture();
+                return;
+             }},
+             {rcbe::core::InputEventType::wheel_down, // on windows there's a singular event for mouse wheel input
+             [rendering_context = ctx, &c](
+                 InputManagerImplementation &im,
+                 InputManagerImplementation::InputEventReference event,
+                 InputManagerImplementation::PreviousEventReference previous) {
+                auto zdelta = GET_WHEEL_DELTA_WPARAM(event.wparam);
+
+                if (zdelta > 0) {
+                    c->zoomIn();
+                } else {
+                    c->zoomOut();
+                }
+                return;
+             }},
+#endif
             {rcbe::core::InputEventType::mouse_motion,
              [rendering_context = ctx, &c](
                  InputManagerImplementation &im,
                  InputManagerImplementation::InputEventReference event,
                  InputManagerImplementation::PreviousEventReference previous) {
+#ifdef __linux__
                  const auto current_x = event.xmotion.x;
                  const auto current_y = event.xmotion.y;
+#endif
+#ifdef _WIN32
+                 const auto current_x = GET_X_LPARAM(event.lparam);
+                 const auto current_y = GET_Y_LPARAM(event.lparam);
+#endif
 
                  if (!rendering_context->getMouseCoordinates().has_value()) {
                      rendering_context->setMouseCoordinates(rcbe::math::Vector2d(current_x, current_y));
                  }
-
+#ifdef __linux__
                  if (im.getValue(rcbe::core::MouseEventType::left_button)) {
+#endif
+#ifdef _WIN32
+                 if (event.wparam & MK_LBUTTON) {
+#endif
                      auto mc = rendering_context->getMouseCoordinates();
                      auto x_offset = current_x - mc->x();
                      auto y_offset = mc->y() - current_y;

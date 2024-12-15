@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 
 #include <nlohmann/json.hpp>
 
@@ -23,6 +24,19 @@ ReturnConfig read_from_file(const std::string &path) {
     ReturnConfig ret = j;
 
     return ret;
+}
+
+template <typename StructType>
+bool write_to_file(StructType &&s, std::string &&file_path) {
+    std::ofstream ofs {file_path};
+
+    if (!ofs)
+        return false;
+
+    nlohmann::json j = s;
+
+    ofs << std::setw(4) << j << std::endl;
+    return true;
 }
 
 }// namespace rcbe::utils

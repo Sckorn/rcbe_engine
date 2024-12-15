@@ -47,9 +47,7 @@ cc_library(
         "//meta_package:rdmn_vulkan_windows": [
             "@vulkan_windows//:vulkan_cc_library",
         ],
-        "//conditions:default": [
-            "//parsers:x3d_parser",  # will be used for skybox
-        ],
+        "//conditions:default": [],
     }) + select({
         "//meta_package:rdmn_vk_rasterizer_backend": [],
         "//meta_package:rdmn_gl_rasterizer_backend": [
@@ -66,41 +64,7 @@ cc_library(
         "@nlohmann//:nlohmann_json",
         "//meta_package:rdmn_engine_config",
         "//common:rdmn_trivial_logger",
-    ],
-)
-
-cc_binary(
-    name = "test_renderer",
-    srcs = ["src/main.cpp"],
-    data = [
-        "//datamodel:datamodel_rendering_resources",
-        "//datamodel:datamodel_system_resources",
-        "//parsers:x3d_test_resources",
-        "@awesomeface_texture//file",
-        "@brick_wall_texture//file",
-        "@gltf_test_data_archive//:gltf_tests_archive",
-        "@low_poly_wolf_stl//file",
-    ],
-    linkopts = [
-        "-lpthread",
-        "-lX11",
-        "-lXext",
-    ],
-    tags = ["local"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":rdmn_renderer",
-        "//camera:rcbe_engine_camera",
-        "//common:engine_json_utils",
-        "//common:engine_output_utils",
-        "//common:rcbe_profiling",
-        "//datamodel:engine_datamodel_math",
-        "//parsers:rcbe_stl_parser",
-        "//parsers:rdmn_gltf_parser",
-        "//parsers:rdmn_tga_parser",
-        "//parsers:x3d_parser",
-        "//window_manager:rcbe_window_manager",
-        "@boost//:log",
+        "//parsers:x3d_parser",  # will be used for skybox
     ],
 )
 

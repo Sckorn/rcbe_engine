@@ -28,9 +28,7 @@
 #include <rcbe-engine/datamodel/rendering/rasterizer_texture_helpers.hpp>
 #include <rcbe-engine/engine_config.hpp>
 #include <rcbe-engine/parsers/tga/tga_parser.hpp>
-#ifdef __linux__
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>// enable when Boost errors during windows compilation is fixed
-#endif
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
 inline constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
@@ -71,7 +69,6 @@ std::pair<std::vector<VkSampler>, std::vector<VkImageView>> repopulateSamplersAn
     return ret;
 }
 
-#ifdef __linux__
 rcbe::core::CoreObject loadCorner() {
     rcbe::visual::texture_config tex_conf;
     tex_conf.component_order = decltype(tex_conf.component_order)::RGBA;
@@ -114,7 +111,6 @@ rcbe::core::CoreObject loadCorner() {
 
     return co;
 }
-#endif
 }// namespace
 
 namespace rdmn::render {
@@ -124,6 +120,7 @@ VulkanRenderer::VulkanRenderer(
     const std::shared_ptr<rcbe::rendering::RenderingContext> &context)
     : config_(std::move(config))
     , context_(context) {
+
     {
         auto instance_created = createVulkanInstance(instance_);
         if (!instance_created) {
@@ -140,7 +137,7 @@ VulkanRenderer::VulkanRenderer(
     {
         auto listed_extensions = listAndCheckExtensions(
             {},
-            {OptionalExtensionRequest {
+            {optional_ext_req {
                 std::string_view {VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME},
                 [this]() { return (use_global_sampler_ = true); }}});
         if (!listed_extensions)
@@ -193,9 +190,9 @@ VulkanRenderer::VulkanRenderer(
             throw std::runtime_error("Can't create descriptor set layout!");
     }
 
-    preexistant_objects_load_result preexistent_objects_data {};
+    predef_objs_load_res preexistent_objects_data {};
     {
-        preexistent_objects_data = loadPreexistentObjects();
+        preexistent_objects_data = loadPredefObjs(/*secondary_invokation=*/false);
         if (!preexistent_objects_data.success)
             throw std::runtime_error("Can't load preexistent objects into scene!");
     }
@@ -232,13 +229,6 @@ VulkanRenderer::VulkanRenderer(
         auto command_pool_created = createCommandPool(logical_device_);
         if (!command_pool_created)
             throw std::runtime_error("Can't create command pool!");
-    }
-
-    /// Replace with textureObject creation when it is done
-    {
-        auto res = initPreexistentTextures(preexistent_objects_data);
-        if (!res)
-            throw std::runtime_error("Can't init preexistent textures!");
     }
 
     auto &[meshes, rasterizer_tex_image_views, rasterizer_tex_samplers, _] = preexistent_objects_data;
@@ -414,7 +404,12 @@ bool VulkanRenderer::addObject(rcbe::core::CoreObject &&renderer_object) {
         return false;
     }
 
-    handleRenderedObject(renderer_object, objects_, material_cache_);
+    if (!renderer_object.hasComponent<rcbe::geometry::Mesh>()) {
+        RDMN_LOG(RDMN_LOG_TRACE) << "Object doesn't have Mesh, nothing to render! Skipping " << renderer_object.name();
+        return false;
+    }
+
+    handleRenderedObject(std::move(renderer_object), objects_, material_cache_);
 
     bool object_added_flag = added_object_.load();
     while (!added_object_.compare_exchange_strong(object_added_flag, true));
@@ -423,13 +418,19 @@ bool VulkanRenderer::addObject(rcbe::core::CoreObject &&renderer_object) {
 }
 
 bool VulkanRenderer::addObjects(std::vector<rcbe::core::CoreObject> &&renderer_objects) {
-    for (auto &&ro : renderer_objects) {
+    auto total_objects = renderer_objects.size();
+    for (auto &ro : renderer_objects) {
         if (!ro.hasComponent<rcbe::rendering::Material>()) {
             RDMN_LOG(RDMN_LOG_TRACE) << "Object doesn't have material, should at least have default! Skipping " << ro.name();
             continue;
         }
 
-        handleRenderedObject(ro, objects_, material_cache_);
+        if (!ro.hasComponent<rcbe::geometry::Mesh>()) {
+            RDMN_LOG(RDMN_LOG_TRACE) << "Object doesn't have Mesh, nothing to render! Skipping " << ro.name() << " with hash " << ro.hash();
+            continue;
+        }
+
+        handleRenderedObject(std::move(ro), objects_, material_cache_, total_objects);
     }
 
     bool object_added_flag = added_object_.load();
@@ -465,7 +466,7 @@ void VulkanRenderer::renderFrame() {
         std::addressof(image_index));
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        recreateSwapchain(device_, logical_device_);
+        recreateSwapchain(device_, logical_device_, /*objects_added=*/false, /*resized=*/false);
         return;
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("Failed to acquire swap chain images!");
@@ -508,6 +509,13 @@ void VulkanRenderer::renderFrame() {
     submit_info.pSignalSemaphores = signal_semaphores;
 
     vkResetFences(logical_device_, 1, std::addressof(inflight_fences_[current_frame_]));
+
+    for (const auto &mat : material_cache_) {
+        auto res = initMaterialTextures(mat->as<rcbe::rendering::Material>());
+        if (!res)
+            throw std::runtime_error("Can't init textures!");
+    }
+
     auto res = vkQueueSubmit(graphics_queue_, 1, std::addressof(submit_info), inflight_fences_[current_frame_]);
     if (res != VK_SUCCESS)
         throw std::runtime_error("Failed to submit draw command buffer!");
@@ -526,10 +534,13 @@ void VulkanRenderer::renderFrame() {
     res = vkQueuePresentKHR(presentation_queue_, std::addressof(present_info));
 
     if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR || resized_ || added_object_) {
-        recreateSwapchain(device_, logical_device_, added_object_.load() || resized_.load());
-        resized_.store(false);
+        recreateSwapchain(device_, logical_device_, added_object_.load(), resized_.load());
+        bool resized_value = resized_.load();
+        if (resized_value)
+            while (!resized_.compare_exchange_strong(resized_value, false));
         bool added_object_value = added_object_.load();
-        while (!added_object_.compare_exchange_strong(added_object_value, false));
+        if (added_object_value)
+            while (!added_object_.compare_exchange_strong(added_object_value, false));
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("Failed to present swapchain images");
     }
@@ -599,7 +610,7 @@ bool VulkanRenderer::createVulkanInstance(VkInstance &instance) {
 
 /// TODO: return with specification of fail if at least single is not found or not.
 /// consider returning a map <extension, result>
-bool VulkanRenderer::listAndCheckExtensions(std::vector<std::string> required, std::vector<OptionalExtensionRequest> optional) {
+bool VulkanRenderer::listAndCheckExtensions(std::vector<std::string> required, std::vector<optional_ext_req> optional) {
     uint32_t extensions = 0;
     auto res = vkEnumerateInstanceExtensionProperties(
         nullptr,
@@ -865,6 +876,15 @@ bool VulkanRenderer::createLogicalDevice(VkDevice &logical_device) {
 
 bool VulkanRenderer::createSurface() {
 #ifdef __linux__
+    return createXlibSurface();
+#endif
+#ifdef _WIN32
+    return createWin32Surface();
+#endif
+}
+
+#ifdef __linux__
+bool VulkanRenderer::createXlibSurface() {
     XSync(context_->getDisplay(), false);
     VkXlibSurfaceCreateInfoKHR surf_create_info {};
     surf_create_info.dpy = context_->getDisplay();
@@ -872,29 +892,29 @@ bool VulkanRenderer::createSurface() {
     surf_create_info.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
 
     auto result = vkCreateXlibSurfaceKHR(instance_, std::addressof(surf_create_info), nullptr, std::addressof(surface_));
+    if (result != VK_SUCCESS)
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't create XLib surface!";
+
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Surface created successfully!";
+    return result == VK_SUCCESS;
+}
 #endif
 #ifdef _WIN32
+bool VulkanRenderer::createWin32Surface() {
     VkWin32SurfaceCreateInfoKHR create_info {};
     create_info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     create_info.hinstance = context_->getInstance();
     create_info.hwnd = context_->getWindow();
+    create_info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 
     auto result = vkCreateWin32SurfaceKHR(instance_, std::addressof(create_info), nullptr, std::addressof(surface_));
-#endif
-
     if (result != VK_SUCCESS)
-#ifdef __linux__
-        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't create XLib surface!";
-#endif
-#ifdef _WIN32
         RDMN_LOG(RDMN_LOG_DEBUG) << "Can't create Win32 surface!";
-#endif
 
     RDMN_LOG(RDMN_LOG_DEBUG) << "Surface created successfully!";
-
-
     return result == VK_SUCCESS;
 }
+#endif
 
 bool VulkanRenderer::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     uint32_t device_extension_count;
@@ -1357,7 +1377,6 @@ bool VulkanRenderer::createCommandBuffers(VkDevice logical_device) {
             else
                 RDMN_LOG(RDMN_LOG_ERROR) << "No UBO";
 
-
             {
                 const auto &o = objects_[material_object][0];
                 const auto &mesh = o.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>();
@@ -1461,7 +1480,7 @@ bool VulkanRenderer::createSyncObjects(VkDevice logical_device) {
     return true;
 }
 
-bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical_device, bool handle_rendering_objects) {
+bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical_device, bool added_objects, bool reshape) {
     while (context_->getWindowDimensions().width == 0 || context_->getWindowDimensions().height == 0) {
         RDMN_LOG(RDMN_LOG_DEBUG) << "Window is minimized!";
     }
@@ -1494,9 +1513,9 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
         }
     }
 
-    preexistant_objects_load_result preexistent_objects_data {};
+    predef_objs_load_res preexistent_objects_data {};
     {
-        preexistent_objects_data = loadPreexistentObjects(handle_rendering_objects);
+        preexistent_objects_data = loadPredefObjs(/*secondary_invokation=*/true, added_objects, reshape);
         if (!preexistent_objects_data.success)
             throw std::runtime_error("Can't load preexistent objects into scene!");
     }
@@ -1533,21 +1552,12 @@ bool VulkanRenderer::recreateSwapchain(VkPhysicalDevice device, VkDevice logical
         }
     }
 
-    if (!handle_rendering_objects) {
-        RDMN_LOG(RDMN_LOG_INFO) << "Here?";
-        auto res = initPreexistentTextures(preexistent_objects_data);
-        if (!res) {
-            RDMN_LOG(RDMN_LOG_ERROR) << "Can't init preexistent textures!";
-            return false;
-        }
-    }
-
     texture_to_index_.clear();
     auto [s, v] = repopulateSamplersAndViews(texture_to_index_, material_cache_, use_global_sampler_);
 
     repopulateTextureIndices();
 
-    if (handle_rendering_objects) {
+    if (added_objects) {
         buffer_object_.reset();
         buffer_object_ = std::make_shared<VulkanVertexBufferObject>(
             preexistent_objects_data.meshes,
@@ -1769,8 +1779,8 @@ bool VulkanRenderer::createColorResources(VkDevice logical_device) {
     return true;
 }
 
-VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentObjects(bool secondary_invokation) {
-    preexistant_objects_load_result ret {};
+VulkanRenderer::predef_objs_load_res VulkanRenderer::loadPredefObjs(bool secondary_invokation, bool added_object, bool resized) {
+    predef_objs_load_res ret {};
     auto &meshes = ret.meshes;
     auto &rasterizer_tex_samplers = ret.rasterizer_tex_samplers;
     auto &rasterizer_tex_image_views = ret.rasterizer_tex_image_views;
@@ -1790,13 +1800,11 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
             }
         };
         if (!secondary_invokation) {
-#ifdef __linux__
             auto edge_object = loadCorner();
             meshes.reserve(1);
             object_to_sampler_index_.reserve(1);
 
             meshes.push_back(edge_object.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>());
-#endif
 
             if (use_global_sampler_) {
                 size_t mip_levels = calculate_mip_levels_wrapper();
@@ -1812,14 +1820,12 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
 
             std::unordered_set<rcbe::visual::TexturePtr> tex_cache;
 
-#ifdef __linux__
             {
                 const auto [it, res] = material_cache_.insert(edge_object.getComponent<rcbe::rendering::Material>());
                 if (objects_[*it].empty())
                     objects_[*it].reserve(1);
                 objects_[*it].push_back(std::move(edge_object));
             }
-#endif
 
             for (auto &[pipeline, objects_collection] : objects_) {
                 for (size_t i = 0; i < objects_collection.size(); ++i) {
@@ -1860,6 +1866,7 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
             }
         } else {
             RDMN_LOG(RDMN_LOG_DEBUG) << "Secondary objects invokation";
+
             if (use_global_sampler_) {
                 auto res = createTextureSampler(
                     logical_device_,
@@ -1877,6 +1884,8 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
             });
             meshes.reserve(reserve_val);
 
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Total game objects " << reserve_val;
+
             for (const auto &[material_object_ptr, object_collection] : objects_) {
                 const auto &m = material_object_ptr->as<rcbe::rendering::Material>();
 
@@ -1890,9 +1899,12 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
 
                 material_cache_.insert(material_object_ptr);
 
-                std::transform(object_collection.begin(), object_collection.end(), std::back_inserter(meshes), [](const auto &entry) {
-                    return entry.template getComponent<rcbe::geometry::Mesh>()->template as<rcbe::geometry::Mesh>();
-                });
+                for (auto &o : object_collection) {
+                    RDMN_LOG(RDMN_LOG_TRACE) << "Trying to process object with name " << o.name() << " with hash " << o.hash();
+                    RDMN_LOG(RDMN_LOG_TRACE) << "Object has mesh " << o.hasComponent<rcbe::geometry::Mesh>();
+                    if (o.hasComponent<rcbe::geometry::Mesh>()) 
+                        meshes.push_back(o.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>());
+                }
             }
 
             for (const auto &o : material_cache_) {
@@ -1911,16 +1923,6 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
 
     ret.success = true;
     return ret;
-}
-
-bool VulkanRenderer::initPreexistentTextures(preexistant_objects_load_result &objects) {
-    for (const auto &m : material_cache_) {
-        const auto &mat = m->as<rcbe::rendering::Material>();
-        if (!initMaterialTextures(mat))
-            return false;
-    }
-
-    return true;
 }
 
 void VulkanRenderer::repopulateTextureIndices() {
@@ -1979,9 +1981,15 @@ bool VulkanRenderer::initMaterialTextures(const rcbe::rendering::Material &mat) 
 }
 
 void VulkanRenderer::handleRenderedObject(
-    rcbe::core::CoreObject &renderer_object,
+    rcbe::core::CoreObject &&renderer_object,
     std::unordered_map<std::shared_ptr<rcbe::core::CoreObject>, std::vector<rcbe::core::CoreObject>> &objects,
-    std::unordered_set<std::shared_ptr<rcbe::core::CoreObject>> &material_cache) {
+    std::unordered_set<std::shared_ptr<rcbe::core::CoreObject>> &material_cache,
+    size_t reserve_for) {
+    if (!renderer_object.hasComponent<rcbe::geometry::Mesh>()) {
+        RDMN_LOG(RDMN_LOG_ERROR) << "Object" << renderer_object.name() << " with hash " << renderer_object.hash() << " has no mesh! Skipping it";
+        return;
+    }
+
     const auto &mat_ptr = renderer_object.getComponent<rcbe::rendering::Material>();
 
     auto it = material_cache.find(mat_ptr);
@@ -1989,12 +1997,15 @@ void VulkanRenderer::handleRenderedObject(
         auto [inserted_it, res] = material_cache.insert(mat_ptr);
         it = inserted_it;
         const auto &m = (*it)->as<rcbe::rendering::Material>();
+#ifdef __linux__ /// TODO: figure out, why the difference between Windows and linux here @sckorn
         if (!initMaterialTextures(m)) {
             RDMN_LOG(RDMN_LOG_FATAL) << "Can't init texture of added object " << renderer_object.name();
+            return;
         }
+#endif
     }
     if (objects[*it].empty())
-        objects[*it].reserve(1);
+        objects[*it].reserve(reserve_for);
 
     objects[*it].push_back(std::move(renderer_object));
 }
