@@ -79,6 +79,8 @@ public:
 
     Material(Material &&other) = default;
     Material &operator=(Material &&other) = default;
+    /*Material(const Material &other) = default;
+    Material &operator=(const Material &other) = default;*/
 
     [[nodiscard]] bool isDeferred() const noexcept;
 

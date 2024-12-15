@@ -30,7 +30,7 @@
 #include <rcbe-engine/utils/json_utils.hpp>
 #include <rcbe-engine/utils/output_utils.hpp>
 
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 int main(int argc, char *argv[]) {
     using rcbe::core::InputManagerImplementation;
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 
         renderer->waitRendererReady();
 
-        BOOST_LOG_TRIVIAL(debug) << "Renderer is ready";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Renderer is ready";
 
 #ifdef RDMN_OPENGL
         struct some_object {};
@@ -280,11 +280,11 @@ int main(int argc, char *argv[]) {
         auto aim = std::make_shared<rcbe::core::AbstractInputManager>(rcbe::core::EditorInputManager::create(
             window->getRenderingContext(), camera));
         auto end = std::chrono::steady_clock::now();
-        BOOST_LOG_TRIVIAL(debug) << "Editor Input Manager created in " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " nsecs";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Editor Input Manager created in " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " nsecs";
         window->setInputManager(aim);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        BOOST_LOG_TRIVIAL(debug) << "Meshes should be visible now";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Meshes should be visible now";
 
 #ifdef RDMN_OPENGL
         renderer->addObject(std::move(first_corner_wall));
@@ -301,7 +301,7 @@ int main(int argc, char *argv[]) {
         renderer_handle.wait();
         window_handle.wait();
     } catch (const std::exception &e) {
-        BOOST_LOG_TRIVIAL(error) << "Exception thrown: " << e.what();
+        RDMN_LOG(RDMN_LOG_ERROR) << "Exception thrown: " << e.what();
         return 1;
     }
 

@@ -14,6 +14,7 @@ MsWindow::MsWindow(window_config &&config, const WindowContextPtr &context)
 
     rendering_context_->setWindow(getWindowHandle());
     rendering_context_->setInstance(context_->getInstanceHandle());
+    rendering_context_->setWindowDimensions(config_.size);
 }
 
 MsWindow::~MsWindow() {}
@@ -111,7 +112,7 @@ void MsWindow::onUnmap(window::UunmapHandlerType &&handler) {
     unmap_handler_ = std::move(handler);
 }
 
-rcbe::rendering::RenderingContextPtr MsWindow::getRenderingContext() const {
+const rcbe::rendering::RenderingContextPtr &MsWindow::getRenderingContext() const {
     return rendering_context_;
 }
 

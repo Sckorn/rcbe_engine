@@ -92,6 +92,7 @@ VulkanVertexBufferObject::VulkanVertexBufferObject(
     VkQueue &presentation_queue,
     VkCommandPool &command_pool)
     : logical_device_(logical_device) {
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Total meshes " << meshes.size();
     // right now keeping it simple, it's not a VBO's business to validate meshes
     // they'll be validated by scene graph
     auto bod = extractBufferObjectData<ValueType, IndexType>(meshes, {true, true});

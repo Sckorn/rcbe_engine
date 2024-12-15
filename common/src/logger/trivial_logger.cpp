@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <fstream>
+
 #ifdef R_USE_BOOST_LOG
 #include <boost/log/trivial.hpp>
 #elif defined(R_USE_GLOG)
@@ -14,7 +16,10 @@ R_PUBLIC_API void log_trace(std::string &&str) noexcept {
 #ifdef R_USE_BOOST_LOG
     BOOST_LOG_TRIVIAL(trace) << str;
 #elif defined(R_USE_GLOG)
-    LOG(INFO) << str; // no trace in GLOG 
+    auto f = fopen("C:\\Temp\\rdmn_engine.log", "a");
+    fprintf(f, (str + "\n").c_str());
+    fclose(f);
+    //LOG(INFO) << str; // no trace in GLOG 
 #endif
 }
 
@@ -22,7 +27,10 @@ R_PUBLIC_API void log_info(std::string &&str) noexcept {
 #ifdef R_USE_BOOST_LOG
     BOOST_LOG_TRIVIAL(info) << str;
 #elif defined(R_USE_GLOG)
-    LOG(INFO) << str;
+    auto f = fopen("C:\\Temp\\rdmn_engine.log", "a");
+    fprintf(f, (str + "\n").c_str());
+    fclose(f);
+    //LOG(INFO) << str;
 #endif
 }
 
@@ -30,7 +38,10 @@ R_PUBLIC_API void log_debug(std::string &&str) noexcept {
 #ifdef R_USE_BOOST_LOG
     BOOST_LOG_TRIVIAL(debug) << str;
 #elif defined(R_USE_GLOG)
-    LOG(INFO) << str; // no debug in GLOG 
+    auto f = fopen("C:\\Temp\\rdmn_engine.log", "a");
+    fprintf(f, (str + "\n").c_str());
+    fclose(f);
+    //LOG(INFO) << str; // no debug in GLOG 
 #endif
 }
 
@@ -38,7 +49,10 @@ R_PUBLIC_API void log_warn(std::string &&str) noexcept {
 #ifdef R_USE_BOOST_LOG
     BOOST_LOG_TRIVIAL(warning) << str;
 #elif defined(R_USE_GLOG)
-    LOG(WARNING) << str; 
+    auto f = fopen("C:\\Temp\\rdmn_engine.log", "a");
+    fprintf(f, (str + "\n").c_str());
+    fclose(f);
+    //LOG(WARNING) << str; 
 #endif
 }
 
@@ -46,7 +60,10 @@ R_PUBLIC_API void log_error(std::string &&str) noexcept {
 #ifdef R_USE_BOOST_LOG
     BOOST_LOG_TRIVIAL(error) << str;
 #elif defined(R_USE_GLOG)
-    LOG(ERROR) << str;
+    auto f = fopen("C:\\Temp\\rdmn_engine.log", "a");
+    fprintf(f, (str + "\n").c_str());
+    fclose(f);
+    //LOG(ERROR) << str;
 #endif
 }
 
@@ -54,7 +71,10 @@ R_PUBLIC_API void log_fatal(std::string &&str) noexcept {
 #ifdef R_USE_BOOST_LOG
     BOOST_LOG_TRIVIAL(fatal) << str;
 #elif defined(R_USE_GLOG)
-    LOG(ERROR) << str; // fatal in GLOG terminates the program, so shouldn't be used
+    auto f = fopen("C:\\Temp\\rdmn_engine.log", "a");
+    fprintf(f, (str + "\n").c_str());
+    fclose(f);
+    //LOG(ERROR) << str; // fatal in GLOG terminates the program, so shouldn't be used
 #endif
 }
 

@@ -28,9 +28,7 @@
 #include <rcbe-engine/datamodel/rendering/rasterizer_texture_helpers.hpp>
 #include <rcbe-engine/engine_config.hpp>
 #include <rcbe-engine/parsers/tga/tga_parser.hpp>
-#ifdef __linux__
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>// enable when Boost errors during windows compilation is fixed
-#endif
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
 inline constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
@@ -71,7 +69,6 @@ std::pair<std::vector<VkSampler>, std::vector<VkImageView>> repopulateSamplersAn
     return ret;
 }
 
-#ifdef __linux__
 rcbe::core::CoreObject loadCorner() {
     rcbe::visual::texture_config tex_conf;
     tex_conf.component_order = decltype(tex_conf.component_order)::RGBA;
@@ -114,7 +111,6 @@ rcbe::core::CoreObject loadCorner() {
 
     return co;
 }
-#endif
 }// namespace
 
 namespace rdmn::render {
@@ -124,6 +120,9 @@ VulkanRenderer::VulkanRenderer(
     const std::shared_ptr<rcbe::rendering::RenderingContext> &context)
     : config_(std::move(config))
     , context_(context) {
+        if(!context)
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Context is somehow null";
+
     {
         auto instance_created = createVulkanInstance(instance_);
         if (!instance_created) {
@@ -249,6 +248,8 @@ VulkanRenderer::VulkanRenderer(
         repopulateSamplersAndViews(texture_to_index_, material_cache_, use_global_sampler_);
 
     repopulateTextureIndices();
+
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Total meshes 1 " << meshes.size();
 
     buffer_object_ = std::make_shared<VulkanVertexBufferObject>(
         meshes,
@@ -864,6 +865,7 @@ bool VulkanRenderer::createLogicalDevice(VkDevice &logical_device) {
 }
 
 bool VulkanRenderer::createSurface() {
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Trying to create surface!";
 #ifdef __linux__
     XSync(context_->getDisplay(), false);
     VkXlibSurfaceCreateInfoKHR surf_create_info {};
@@ -875,9 +877,15 @@ bool VulkanRenderer::createSurface() {
 #endif
 #ifdef _WIN32
     VkWin32SurfaceCreateInfoKHR create_info {};
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Before invokation! 1";
     create_info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Before invokation! 2";
     create_info.hinstance = context_->getInstance();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Before invokation! 3";
     create_info.hwnd = context_->getWindow();
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Before invokation! 4";
+
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Before invokation! 5";
 
     auto result = vkCreateWin32SurfaceKHR(instance_, std::addressof(create_info), nullptr, std::addressof(surface_));
 #endif
@@ -892,6 +900,23 @@ bool VulkanRenderer::createSurface() {
 
     RDMN_LOG(RDMN_LOG_DEBUG) << "Surface created successfully!";
 
+
+/*
+VkWin32SurfaceCreateInfoKHR create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+        create_info.hinstance = context_->getInstance();
+        create_info.hwnd = context_->getWindow();
+
+        auto result = vkCreateWin32SurfaceKHR(instance_, std::addressof(create_info), nullptr, std::addressof(surface_));
+
+        if (result != VK_SUCCESS)
+            ofs << "Can't create xlib surface!" << std::endl;
+
+        ofs << "Surface created successfully!" << std::endl;
+
+        return result == VK_SUCCESS;
+
+*/
 
     return result == VK_SUCCESS;
 }
@@ -1790,13 +1815,11 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
             }
         };
         if (!secondary_invokation) {
-#ifdef __linux__
             auto edge_object = loadCorner();
             meshes.reserve(1);
             object_to_sampler_index_.reserve(1);
 
             meshes.push_back(edge_object.getComponent<rcbe::geometry::Mesh>()->as<rcbe::geometry::Mesh>());
-#endif
 
             if (use_global_sampler_) {
                 size_t mip_levels = calculate_mip_levels_wrapper();
@@ -1812,14 +1835,12 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
 
             std::unordered_set<rcbe::visual::TexturePtr> tex_cache;
 
-#ifdef __linux__
             {
                 const auto [it, res] = material_cache_.insert(edge_object.getComponent<rcbe::rendering::Material>());
                 if (objects_[*it].empty())
                     objects_[*it].reserve(1);
                 objects_[*it].push_back(std::move(edge_object));
             }
-#endif
 
             for (auto &[pipeline, objects_collection] : objects_) {
                 for (size_t i = 0; i < objects_collection.size(); ++i) {
@@ -1870,12 +1891,17 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
                 }
             }
 
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Sample created";
+
             std::unordered_set<rcbe::visual::TexturePtr> tex_cache;
 
             auto reserve_val = std::accumulate(objects_.begin(), objects_.end(), 0, [](auto l, const auto &r) {
                 return l + r.second.size();
             });
             meshes.reserve(reserve_val);
+
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Reserved space for meshes";
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Total game objects " << objects_.size();
 
             for (const auto &[material_object_ptr, object_collection] : objects_) {
                 const auto &m = material_object_ptr->as<rcbe::rendering::Material>();
@@ -1888,12 +1914,20 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
                     RDMN_LOG(RDMN_LOG_WARN) << "Fragment is not present";
                 }
 
+                RDMN_LOG(RDMN_LOG_DEBUG) << "Inserting material cache";
+
                 material_cache_.insert(material_object_ptr);
+
+                RDMN_LOG(RDMN_LOG_DEBUG) << "Done transforming objects";
 
                 std::transform(object_collection.begin(), object_collection.end(), std::back_inserter(meshes), [](const auto &entry) {
                     return entry.template getComponent<rcbe::geometry::Mesh>()->template as<rcbe::geometry::Mesh>();
                 });
+
+                RDMN_LOG(RDMN_LOG_DEBUG) << "Done transforming objects";
             }
+
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Done iterating over objects";
 
             for (const auto &o : material_cache_) {
                 const auto &mat = o->as<rcbe::rendering::Material>();
@@ -1903,6 +1937,7 @@ VulkanRenderer::preexistant_objects_load_result VulkanRenderer::loadPreexistentO
                     rasterizer_tex_image_views.push_back(t->getImageView());
                 }
             }
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Secondary objects invokation done";
         }
     } catch (const std::exception &e) {
         RDMN_LOG(RDMN_LOG_FATAL) << "Can't parse scene! " << e.what();

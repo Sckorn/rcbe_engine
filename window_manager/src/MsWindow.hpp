@@ -101,7 +101,7 @@ public:
     [[nodiscard]] HWND getWindowHandle() const;
     void setWindowHandle(HWND hwnd);
 
-    [[nodiscard]] rcbe::rendering::RenderingContextPtr getRenderingContext() const;
+    [[nodiscard]] const rcbe::rendering::RenderingContextPtr &getRenderingContext() const;
 
     void onConfigure(window::ConfigureHandlerType &&handler);
     void onUnmap(window::UunmapHandlerType &&handler);

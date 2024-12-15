@@ -743,18 +743,9 @@ R_PUBLIC_API std::vector<rcbe::core::CoreObject> parse(
                                 }
                                 rdmn::render::rasterizer_texture_config rtc {};
                                 rdmn::render::RasterizerTexture rt {rtc, tex_ptr};
-#ifdef _WIN32
-                                auto rtptr = std::make_shared<rcbe::core::CoreObject>(rt);
-
-                                RDMN_LOG(RDMN_LOG_TRACE) << "Setting material for object";
-
-                                obj.addComponent<rdmn::render::RasterizerTexture>(rtptr);
-#endif
-#ifdef __linux__
                                 RDMN_LOG(RDMN_LOG_TRACE) << "Setting material for object";
 
                                 obj.addComponent<rdmn::render::RasterizerTexture>(std::move(rt));
-#endif
                             }
                         }
                     }
