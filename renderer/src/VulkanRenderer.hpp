@@ -81,12 +81,12 @@ private:
     };
 
     using OptionalExtensionFallback = std::function<bool()>;
-    struct OptionalExtensionRequest {
+    struct optional_ext_req {
         std::string_view extension_name;
         OptionalExtensionFallback fallback;
     };
 
-    struct preexistant_objects_load_result {
+    struct predef_objs_load_res {
         std::vector<rcbe::geometry::Mesh> meshes;
         std::vector<VkImageView> rasterizer_tex_image_views;
         std::vector<VkSampler> rasterizer_tex_samplers;
@@ -99,13 +99,19 @@ private:
     void mainLoop();
     void renderFrame();
     bool createVulkanInstance(VkInstance &instance);
-    bool listAndCheckExtensions(std::vector<std::string> required = {}, std::vector<OptionalExtensionRequest> optional = {});
+    bool listAndCheckExtensions(std::vector<std::string> required = {}, std::vector<optional_ext_req> optional = {});
     bool listAndCheckLayers(const std::vector<const char *> &to_check = {});
     bool selectPhysicalDevice(VkPhysicalDevice &device);
     bool deviceSupported(VkPhysicalDevice device);
     queue_family_indices getQueueFamilyIndices(VkPhysicalDevice device);
     bool createLogicalDevice(VkDevice &logical_device);
     bool createSurface();
+#ifdef __linux__
+    bool createXlibSurface();
+#endif
+#ifdef _WIN32
+    bool createWin32Surface();
+#endif
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
     swap_chain_support_details querySwapChainSupportDetails(VkPhysicalDevice device);
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &available_formats);
@@ -119,13 +125,12 @@ private:
     bool createCommandPool(VkDevice logical_device);
     bool createCommandBuffers(VkDevice logical_device);
     bool createSyncObjects(VkDevice logical_device);
-    bool recreateSwapchain(VkPhysicalDevice device, VkDevice logical_device, bool handle_rendering_objects = false);
+    bool recreateSwapchain(VkPhysicalDevice device, VkDevice logical_device, bool objects_added, bool resized);
     void cleanupSwapchain(bool final_cleanup = true);
     bool createDescriptorSetLayout(VkDevice logical_device);
     VkSampleCountFlagBits getMaxUsableSamplesCount();
     bool createColorResources(VkDevice logical_device);
-    preexistant_objects_load_result loadPreexistentObjects(bool secondary_invokation = false);
-    bool initPreexistentTextures(preexistant_objects_load_result &objects);
+    predef_objs_load_res loadPredefObjs(bool secondary_invokation, bool added_object = false, bool resized = false);
     void repopulateTextureIndices();
     bool initMaterialTextures(const rcbe::rendering::Material &mat);
     bool createDepthResources(VkDevice logical_device);
@@ -136,9 +141,10 @@ private:
         VkFormatFeatureFlags features);
     bool hasStencilComponent(VkFormat format);
     void handleRenderedObject(
-        rcbe::core::CoreObject &renderer_object,
+        rcbe::core::CoreObject &&renderer_object,
         std::unordered_map<MaterialPtr, GameObjects> &objects,
-        std::unordered_set<MaterialPtr> &material_cache);
+        std::unordered_set<MaterialPtr> &material_cache,
+        size_t reserve_for = 1);
 
     /// Depth buffer
     VkImage depth_image_;

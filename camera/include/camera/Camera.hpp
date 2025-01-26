@@ -107,7 +107,7 @@ private:
 using CameraPtr = std::shared_ptr<Camera>;
 using CameraConstPtr = std::shared_ptr<const Camera>;
 
-CameraPtr make_camera(rendering::RenderingContextPtr ctx, const rendering::camera_config &config);
+R_PUBLIC_API CameraPtr make_camera(rendering::RenderingContextPtr ctx, const rendering::camera_config &config);
 }// namespace rcbe::rendering
 
 #endif//RCBE_ENGINE_CAMERA_HPP

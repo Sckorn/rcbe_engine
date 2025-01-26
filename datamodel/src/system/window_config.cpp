@@ -25,7 +25,8 @@ void adl_serializer<rcbe::core::window_config>::from_json(const json &j, rcbe::c
     config.caption = j.at("caption").get<std::string>();
 #endif
 #ifdef _WIN32
-    config.caption = j.at("caption").get<std::wstring>();
+    auto cstring = j.at("caption").get<std::string>();
+    config.caption = std::wstring(cstring.begin(), cstring.end()); /// TODO: not secure, address when codecvt problem is addressed @sckorn
 #endif
     config.background_color = j.at("background_color").get<rcbe::visual::RGBAColor>();
     config.process_input = j.at("process_input").get<bool>();

@@ -46,7 +46,9 @@ bool endSingleTimeCommands(
     VkCommandBuffer cmd_buff,
     VkQueue graph_queue,
     VkCommandPool cmd_pool) {
-    if (vkEndCommandBuffer(cmd_buff) != VK_SUCCESS) {
+    auto vk_res = vkEndCommandBuffer(cmd_buff);
+    if (vk_res != VK_SUCCESS) {
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't end command buffer in Vulkan " << vk_res;
         return false;
     }
 
@@ -55,10 +57,14 @@ bool endSingleTimeCommands(
     sub_info.commandBufferCount = 1;
     sub_info.pCommandBuffers = std::addressof(cmd_buff);
 
-    if (vkQueueSubmit(graph_queue, 1, std::addressof(sub_info), VK_NULL_HANDLE) != VK_SUCCESS) {
+    auto que_submit_res = vkQueueSubmit(graph_queue, 1, std::addressof(sub_info), VK_NULL_HANDLE);
+    if (que_submit_res != VK_SUCCESS) {
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Queue submit " << que_submit_res;
         return false;
     }
-    if (vkQueueWaitIdle(graph_queue) != VK_SUCCESS) {
+    auto wait_idle_res = vkQueueWaitIdle(graph_queue);
+    if (wait_idle_res != VK_SUCCESS) {
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Wait idle " << wait_idle_res;
         return false;
     }
 

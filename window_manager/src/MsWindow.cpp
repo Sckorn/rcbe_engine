@@ -14,6 +14,7 @@ MsWindow::MsWindow(window_config &&config, const WindowContextPtr &context)
 
     rendering_context_->setWindow(getWindowHandle());
     rendering_context_->setInstance(context_->getInstanceHandle());
+    rendering_context_->setWindowDimensions(config_.size);
 }
 
 MsWindow::~MsWindow() {}
@@ -57,14 +58,17 @@ LRESULT MsWindow::handleMessage(rdmn::core::windows_input_event we) {
         }
             return false;
 
+        case WM_SIZE: {
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Resize event recieved";
+            UINT width = LOWORD(we.lparam);
+            UINT height = HIWORD(we.lparam);
+            rendering_context_->setWindowDimensions({.width = static_cast<int>(width), .height = static_cast<int>(height)});
+            if (renderer_) /// TODO: decouple Renderet and Window, handle this via callback. @sckorn
+                renderer_->reshape();
+        }
+            return false;
+
         case WM_PAINT: {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(window_handle_, &ps);
-            const auto &bg_color = config_.background_color;
-            HBRUSH brush = CreateSolidBrush(RGB(bg_color.r() * 255, bg_color.g() * 255, bg_color.b() * 255));// TODO: add functionality to RGBAColor
-            FillRect(hdc, &ps.rcPaint, brush);
-            EndPaint(window_handle_, &ps);
-            DeleteObject(brush);
         }
             return false;
 
@@ -111,7 +115,7 @@ void MsWindow::onUnmap(window::UunmapHandlerType &&handler) {
     unmap_handler_ = std::move(handler);
 }
 
-rcbe::rendering::RenderingContextPtr MsWindow::getRenderingContext() const {
+const rcbe::rendering::RenderingContextPtr &MsWindow::getRenderingContext() const {
     return rendering_context_;
 }
 

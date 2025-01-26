@@ -53,7 +53,11 @@ public:
     template <typename T>
     void addComponent(T &&component) {
         const auto type_ind = std::type_index(typeid(std::decay_t<T>));
-        components_.insert_or_assign(type_ind, std::make_shared<CoreObject>(std::forward<T>(component)));
+        if constexpr (std::is_same_v<std::decay_t<T> &&, decltype(component)>) {
+           components_.insert_or_assign(type_ind, std::make_shared<CoreObject>(std::move(component)));
+        } else {
+            components_.insert_or_assign(type_ind, std::make_shared<CoreObject>(std::forward<T>(component)));
+        }
     }
 
     template <typename U>
@@ -133,11 +137,11 @@ private:
 #endif
 #ifdef _WIN32
         explicit CObjectImpl(T &&o)
-            : value_ {o}
+            : value_ {std::forward<T>(o)}
             , id_ {std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count())} {}
 
         CObjectImpl(T &&o, std::string &&name)
-            : value_ {o}
+            : value_ {std::forward<T>(o)}
             , id_ {std::hash<size_t>()(std::chrono::steady_clock::now().time_since_epoch().count())}
             , name_ {name} {}
 #endif

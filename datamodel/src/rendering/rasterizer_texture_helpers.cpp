@@ -66,8 +66,10 @@ bool transitionImageLayout(
     VkImageLayout old_layout,
     VkImageLayout new_layout) {
     auto opt_cmd_buff = beginSingleTimeCommands(logical_device, cmd_pool);
-    if (!opt_cmd_buff)
+    if (!opt_cmd_buff) {
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't begin single time commands";
         return false;
+    }
 
     auto cmd_buff = *opt_cmd_buff;
 
@@ -100,6 +102,7 @@ bool transitionImageLayout(
         source_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         destination_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     } else {
+        RDMN_LOG(RDMN_LOG_DEBUG) << "No suitable layouts";
         return false;
     }
 
@@ -112,8 +115,10 @@ bool transitionImageLayout(
         std::addressof(barrier));
 
     const auto res = endSingleTimeCommands(logical_device, cmd_buff, target_queue, cmd_pool);
-    if (!res)
+    if (!res) {
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Can't end commands buffer";
         return false;
+    }
 
     return true;
 }
@@ -416,4 +421,4 @@ bool generateMipmaps(
 uint32_t calculateMipLevels(size_t tex_width, size_t tex_height) {
     return (static_cast<uint32_t>(std::floor(std::log2(std::max(tex_width, tex_height)))) + 1);
 }
-}// namespace rdmn::render
+}// namespace rdmn::render 

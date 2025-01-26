@@ -69,7 +69,9 @@ bool InputManagerImplementation::tryProcessEvent(rdmn::core::windows_input_event
 
         return true;
     } else {
+#ifdef RDMN_DEBUG
         RDMN_LOG(RDMN_LOG_WARN) << "Can't find handler for event type " << event.type;
+#endif
         excludeEvent(event_type);
         return false;
     }

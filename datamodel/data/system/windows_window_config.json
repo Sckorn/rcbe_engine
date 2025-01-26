@@ -1,0 +1,22 @@
+{
+    "background_color": {
+        "a": 1.0,
+        "b": 0.5,
+        "g": 0.5,
+        "r": 0.5
+    },
+    "caption": "RDMN Engine",
+    "editor": true,
+    "fullscreen": false,
+    "input_scheme": "",
+    "position": {
+        "x": 10.0,
+        "y": 10.0
+    },
+    "process_input": true,
+    "size": {
+        "height": 768,
+        "width": 1024
+    },
+    "type": "gl_renderer_window"
+}

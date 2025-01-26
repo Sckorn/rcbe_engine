@@ -52,6 +52,8 @@ public:
               VkPhysicalDevice physical_device,
               VkCommandPool command_pool,
               VkQueue graphics_queue) {
+        if (initialised_)
+            return true;
         auto sampler_created = createTextureSampler(logical_device, texture_sampler_, mip_levels_);
         if (!sampler_created) {
             RDMN_LOG(RDMN_LOG_ERROR) << "Can't create texture sampler";
@@ -81,6 +83,9 @@ public:
         VkCommandPool command_pool,
         VkQueue graphics_queue,
         VkSampler global_sampler) {
+        if (initialised_)
+            return true;
+
         const auto res = commonInitPreamble(logical_device, physical_device, command_pool, graphics_queue);
         if (!res)
             return false;
