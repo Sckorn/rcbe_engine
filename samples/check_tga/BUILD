@@ -26,7 +26,6 @@ cc_binary(
     tags = ["local"],
     deps = [
         "//window_manager:rcbe_window_manager",
-        "//common:engine_output_utils",
         "//datamodel:engine_datamodel_visual",
         "//common:rdmn_trivial_logger",
         "//parsers:rdmn_tga_parser",

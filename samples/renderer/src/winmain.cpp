@@ -26,7 +26,6 @@
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
 #include <rcbe-engine/renderer/Renderer.hpp>
 #include <rcbe-engine/utils/json_utils.hpp>
-#include <rcbe-engine/utils/output_utils.hpp>
 
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
@@ -37,8 +36,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
     using rcbe::core::InputManagerImplementation;
+    namespace rlog = rdmn::core::log;
     try {
-        rcbe::utils::setup_logging();
+        rlog::trivial_logger::set_log_level(rlog::LoggerType::info);
         rcbe::core::WindowManager manager {hInstance,/*window_class=*/ L"RDMNWindow", nCmdShow};
 
         auto wconf = rcbe::utils::read_from_file<rcbe::core::window_config>(
