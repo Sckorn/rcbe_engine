@@ -35,7 +35,6 @@ cc_binary(
         "//renderer:rdmn_renderer",
         "//camera:rcbe_engine_camera",
         "//common:engine_json_utils",
-        "//common:engine_output_utils",
         "//common:rcbe_profiling",
         "//datamodel:engine_datamodel_math",
         "//parsers:rcbe_stl_parser",

@@ -61,7 +61,10 @@ struct trivial_logger {
         return std::move(*this);
     }
 
+    R_PUBLIC_API static void set_log_level(LoggerType level);
+
 private:
+    static LoggerType log_level_;
     std::ostringstream iss_ {};
     LoggerType type_;
 };

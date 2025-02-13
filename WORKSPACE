@@ -42,14 +42,6 @@ vulkan_repositories(
 )
 
 http_archive(
-    name = "com_github_google_glog",
-    sha256 = "c17d85c03ad9630006ef32c7be7c65656aba2e7e2fbfc82226b7e680c771fc88",
-    strip_prefix = "glog-0.7.1",
-    build_file = "@//thirdparty:glog.BUILD",
-    urls = ["https://github.com/google/glog/archive/v0.7.1.zip"],
-)
-
-http_archive(
   name = "com_google_googletest",
   urls = ["https://github.com/google/googletest/archive/5ab508a01f9eb089207ee87fd547d290da39d015.zip"],
   strip_prefix = "googletest-5ab508a01f9eb089207ee87fd547d290da39d015",

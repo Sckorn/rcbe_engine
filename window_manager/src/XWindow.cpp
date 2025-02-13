@@ -2,7 +2,7 @@
 
 #include <future>
 
-#include <boost/log/trivial.hpp>
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 #include <rcbe-engine/core/AbstractInputManager.hpp>
 #include <rcbe-engine/core/EditorInputManager.hpp>
@@ -53,7 +53,7 @@ bool XWindow::createRasterizerWindow(const WindowContextPtr &window_context) {
     XVisualInfo *visInfo = glXGetVisualFromFBConfig(root_display_, fbConfigs[0]);
 
     if (visInfo == nullptr) {
-        BOOST_LOG_TRIVIAL(error) << "VisualInfo is null pointer";
+        RDMN_LOG(RDMN_LOG_ERROR) << "VisualInfo is null pointer";
         return false;
     }
 
@@ -77,7 +77,7 @@ bool XWindow::createRasterizerWindow(const WindowContextPtr &window_context) {
     rendering_context_->setGlxContext(
         glXCreateContext(rendering_context_->getDisplay(), visInfo, nullptr, true));
     if (rendering_context_->getGlxContext() == nullptr) {
-        BOOST_LOG_TRIVIAL(error) << "GLX create context is NULL";
+        RDMN_LOG(RDMN_LOG_ERROR) << "GLX create context is NULL";
         return false;
     }
 
@@ -95,7 +95,7 @@ bool XWindow::createRasterizerWindow(const WindowContextPtr &window_context) {
             if (!config_.input_scheme.empty()) {
                 input_manager_ = std::make_shared<AbstractInputManager>(GameInputManager(utils::read_raw(config_.input_scheme)));
             } else {
-                BOOST_LOG_TRIVIAL(error) << "Input requested but no input scheme provided!";
+                RDMN_LOG(RDMN_LOG_ERROR) << "Input requested but no input scheme provided!";
                 return false;
             }
         }
@@ -172,10 +172,10 @@ void XWindow::windowLoop() {
                     XNextEvent(rendering_context_->getDisplay(), &event);
                     if (event.type == ClientMessage && static_cast<unsigned int>(event.xclient.data.l[0]) ==
                                                            rendering_context_->getDeleteMessage()) {
-                        BOOST_LOG_TRIVIAL(info) << "Window close event received.";
+                        RDMN_LOG(RDMN_LOG_INFO) << "Window close event received.";
                         break;
                     } else if (event.type == Expose && event.xexpose.count == 0 && config_.type == decltype(config_.type)::drawing_window) {
-                        BOOST_LOG_TRIVIAL(info) << "Window exposure event received.";
+                        RDMN_LOG(RDMN_LOG_INFO) << "Window exposure event received.";
                         // redraw X11 window
                         XClearWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
                     }
@@ -183,7 +183,7 @@ void XWindow::windowLoop() {
                     if (config_.type == decltype(config_.type)::drawing_window) {
                         if (config_.process_input)
                             if (!input_manager_->tryProcessEvent(event))
-                                BOOST_LOG_TRIVIAL(warning) << "Event handler is absent! Event won't be handled!";
+                                RDMN_LOG(RDMN_LOG_WARN) << "Event handler is absent! Event won't be handled!";
                     }
                 }
             }
@@ -207,7 +207,7 @@ void XWindow::windowLoop() {
                     // Structure notify
                     case ConfigureNotify: {// size or position change
 
-                        BOOST_LOG_TRIVIAL(info) << "configure win " << rendering_context_->getDrawable() << ": pos [" << event.xconfigurerequest.x << " " << event.xconfigurerequest.y << "], size [" << event.xconfigurerequest.width << " "
+                        RDMN_LOG(RDMN_LOG_INFO) << "configure win " << rendering_context_->getDrawable() << ": pos [" << event.xconfigurerequest.x << " " << event.xconfigurerequest.y << "], size [" << event.xconfigurerequest.width << " "
                                                 << event.xconfigurerequest.height << "]";
                         // Warning this is not thread safe
                         rendering_context_->setWindowDimensions({event.xconfigurerequest.width, event.xconfigurerequest.height});
@@ -219,24 +219,24 @@ void XWindow::windowLoop() {
                             renderer_->reshape();
                     } break;
                     case CirculateNotify:
-                        BOOST_LOG_TRIVIAL(info) << "CirculateNotify";
+                        RDMN_LOG(RDMN_LOG_INFO) << "CirculateNotify";
                         break;
                     case DestroyNotify: {
-                        BOOST_LOG_TRIVIAL(warning) << "DestroyNotify event signals that a running window was killed_, in order for window to stop gracefully use stop_window_loop!";
+                        RDMN_LOG(RDMN_LOG_WARN) << "DestroyNotify event signals that a running window was killed_, in order for window to stop gracefully use stop_window_loop!";
                         stopWindowLoop();
                     } break;
                     case GravityNotify:
-                        BOOST_LOG_TRIVIAL(info) << "GravityNotify";
+                        RDMN_LOG(RDMN_LOG_INFO) << "GravityNotify";
                         break;
                     case ReparentNotify:
-                        BOOST_LOG_TRIVIAL(info) << "ReparentNotify";
+                        RDMN_LOG(RDMN_LOG_INFO) << "ReparentNotify";
                         break;
                     case MapNotify:
-                        BOOST_LOG_TRIVIAL(info) << "Map win " << event.xmap.window;
+                        RDMN_LOG(RDMN_LOG_INFO) << "Map win " << event.xmap.window;
                         break;
                     case UnmapNotify: {
                         std::lock_guard lg2 {kill_mutex_};
-                        BOOST_LOG_TRIVIAL(info) << "UnMap win " << event.xunmap.window;
+                        RDMN_LOG(RDMN_LOG_INFO) << "UnMap win " << event.xunmap.window;
                         if (unmap_handler_)
                             unmap_handler_();
 
@@ -252,16 +252,16 @@ void XWindow::windowLoop() {
                             stopWindowLoop();
                     } break;
                     case ClientMessage: {
-                        BOOST_LOG_TRIVIAL(info) << "Client message";
+                        RDMN_LOG(RDMN_LOG_INFO) << "Client message";
                     } break;
                     case Expose: {
-                        BOOST_LOG_TRIVIAL(info) << "Exposure event";
+                        RDMN_LOG(RDMN_LOG_INFO) << "Exposure event";
                         if (configure_handler_)
                             configure_handler_();
                     } break;
                         // Unhandled message
                     default: {
-                        BOOST_LOG_TRIVIAL(info) << "Type " << event.type;
+                        RDMN_LOG(RDMN_LOG_INFO) << "Type " << event.type;
                     } break;
                 }
     }
@@ -291,7 +291,7 @@ void XWindow::kill() {
 
 void XWindow::show() {
     XMapWindow(rendering_context_->getDisplay(), rendering_context_->getDrawable());
-    BOOST_LOG_TRIVIAL(debug) << "Window should be visible";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "Window should be visible";
 }
 
 const std::shared_ptr<AbstractInputManager> &XWindow::getInputManager() const {
@@ -320,7 +320,7 @@ void XWindow::startWindowLoop() {
         bool current_expected = false;
         running_.compare_exchange_strong(current_expected, true);
         if (current_expected)
-            BOOST_LOG_TRIVIAL(warning) << "WindowLoop is already running!";
+            RDMN_LOG(RDMN_LOG_WARN) << "WindowLoop is already running!";
     }
 
     windowLoop();
@@ -330,7 +330,7 @@ void XWindow::stopWindowLoop() {
     bool current_expected = true;
     running_.compare_exchange_strong(current_expected, false);
     if (!current_expected)
-        BOOST_LOG_TRIVIAL(warning) << "Window loop already stopped";
+        RDMN_LOG(RDMN_LOG_WARN) << "Window loop already stopped";
 }
 
 const rdmn::render::RendererPtr &XWindow::getRenderer() const {

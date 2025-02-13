@@ -15,7 +15,6 @@
 #include <rcbe-engine/parsers/gltf/gltf_parser.hpp>
 #include <rcbe-engine/parsers/tga/tga_parser.hpp>
 #include <rcbe-engine/utils/json_utils.hpp>
-#include <rcbe-engine/utils/output_utils.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
 #include <rdmn-engine/logger/trivial_logger.hpp>

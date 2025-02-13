@@ -9,7 +9,6 @@
 #include <rcbe-engine/datamodel/system/window_config.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
 #include <rcbe-engine/parsers/tga/tga_parser.hpp>
-#include <rcbe-engine/utils/output_utils.hpp>
 
 #include <thread>
 

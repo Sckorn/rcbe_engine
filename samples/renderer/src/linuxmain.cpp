@@ -28,14 +28,14 @@
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
 #include <rcbe-engine/renderer/Renderer.hpp>
 #include <rcbe-engine/utils/json_utils.hpp>
-#include <rcbe-engine/utils/output_utils.hpp>
 
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
 int main(int argc, char *argv[]) {
     using rcbe::core::InputManagerImplementation;
+    namespace rlog = rdmn::core::log;
     try {
-        rcbe::utils::setup_logging();
+        rlog::trivial_logger::set_log_level(rlog::LoggerType::info);
         rcbe::core::WindowManager manager {true};
 
         auto wconf = rcbe::utils::read_from_file<rcbe::core::window_config>(

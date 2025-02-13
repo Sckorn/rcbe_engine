@@ -1,5 +1,3 @@
-load("//meta_package:global_variables.bzl", "LOGGING_LIB")
-load("//meta_package:global_variables.bzl", "LOGGING_LIB_DEFINE")
 load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
 
 _COMMON_LINKOPTS = select({
@@ -63,26 +61,6 @@ cc_library(
 )
 
 cc_library(
-    name = "engine_output_utils",
-    srcs = [
-        "src/utils/output_utils.cpp", 
-        "src/utils/boost_output_utils.hpp",
-        "src/utils/glog_output_utils.hpp",
-    ],
-    hdrs = ["include/common/utils/output_utils.hpp"],
-    defines = LOGGING_LIB_DEFINE,
-    include_prefix = "rcbe-engine",
-    includes = ["include/common"],
-    strip_include_prefix = "include/common",
-    visibility = ["//visibility:public"],
-    deps = [
-        ":engine_fundamentals",
-        ":rdmn_trivial_logger",
-        "//meta_package/public_api:rdmn_public_api"
-    ],
-)
-
-cc_library(
     name = "engine_fuzzy_logic",
     hdrs = glob([
         "include/common/fuzzy_logic/*.hpp",
@@ -133,14 +111,13 @@ cc_library(
     name = "rdmn_trivial_logger",
     srcs = glob(["src/logger/**/*.cpp"]),
     hdrs = glob(["include/common/logger/**/*.hpp"]),
-    defines = LOGGING_LIB_DEFINE,
     include_prefix = "rdmn-engine",
     includes = ["include/common"],
     strip_include_prefix = "include/common",
     visibility = ["//visibility:public"],
     deps = [
         "//meta_package/public_api:rdmn_public_api"
-    ] + LOGGING_LIB,
+    ],
 )
 
 ### tests
@@ -155,7 +132,6 @@ cc_test(
         ":rcbe_delegate",
         ":engine_fundamentals",
         ":rdmn_trivial_logger",
-        ":engine_output_utils",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -228,39 +204,6 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_json",
-    version = ENGINE_VERSION_FULL,
-)
-
-# output-utils
-
-pkg_tar(
-    name = "common-utils-output-data",
-    srcs = [
-        "//common:engine_output_utils",
-    ],
-    mode = "0644",
-    package_dir = "/usr/local/lib",
-)
-
-pkg_tar(
-    name = "common-utils-output-package-data",
-    extension = "tar.gz",
-    visibility = ["//visibility:public"],
-    deps = [
-        ":common-utils-output-data",
-    ],
-)
-
-pkg_deb(
-    name = "common-utils-output-deb",
-    architecture = TARGET_ARCH,
-    built_using = "unzip (6.0.1)",
-    data = ":common-utils-output-package-data",
-    depends = ["libboost-log{}.0".format(BOOST_TARGET_VERSION)],
-    description = "RCBE game engine console output related utilities package",
-    homepage = PROJECT_URL,
-    maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_output",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -429,43 +372,6 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_utils_math_dev",
-    version = ENGINE_VERSION_FULL,
-)
-
-# output-utils-dev
-
-pkg_tar(
-    name = "output-utils-data-headers",
-    srcs = glob([
-        "include/common/utils/output_utils.hpp",
-    ]),
-    mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/utils",
-)
-
-pkg_tar(
-    name = "common-output-utils-dev-package-data",
-    extension = "tar.gz",
-    visibility = ["//visibility:public"],
-    deps = [
-        ":output-utils-data-headers",
-    ],
-)
-
-pkg_deb(
-    name = "common-output-utils-dev-deb",
-    architecture = TARGET_ARCH,
-    built_using = "unzip (6.0.1)",
-    data = ":common-output-utils-dev-package-data",
-    depends = [
-        "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
-        "rcbe_common_output_utils_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-    ],
-    description = "RCBE game engine common math functionality headers package",
-    homepage = PROJECT_URL,
-    maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_output_dev",
     version = ENGINE_VERSION_FULL,
 )
 

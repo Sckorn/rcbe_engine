@@ -82,7 +82,6 @@ cc_library(
         ":rdmn_tga_parser",
         "//common:engine_fundamentals",
         "//common:engine_json_utils",
-        "//common:engine_output_utils",
         "//common:rcbe_binary_tools",
         "//datamodel:engine_datamodel_core",
         "//datamodel:engine_datamodel_geometry",

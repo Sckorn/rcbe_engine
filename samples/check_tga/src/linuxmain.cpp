@@ -6,11 +6,10 @@
 #include <rcbe-engine/datamodel/system/window_config.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
 #include <rcbe-engine/parsers/tga/tga_parser.hpp>
-#include <rcbe-engine/utils/output_utils.hpp>
 
 int main(int argc, char *argv[]) {
     try {
-        rcbe::utils::setup_logging();
+        rdmn::core::log::trivial_logger::set_log_level(rdmn::core::log::LoggerType::info);
         rcbe::core::WindowManager wm {true};
 
         rcbe::core::window_config window_conf;
