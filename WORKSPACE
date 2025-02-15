@@ -17,18 +17,8 @@ http_archive(
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
+
 # External deps
-
-http_archive(
-    name = "com_github_nelhage_rules_boost",
-    url = "https://github.com/nelhage/rules_boost/archive/5d04542e52164931841d06d5a6b3fd2f43c436d0.tar.gz",
-    strip_prefix = "rules_boost-5d04542e52164931841d06d5a6b3fd2f43c436d0",
-    sha256 = "6c15542d0d3b6f47cd4d2a1632a3054a0502b5102e471b4453354312cb474407",
-)
-
-load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
-
-boost_deps()
 
 git_repository(
     name = "rules_vulkan",
