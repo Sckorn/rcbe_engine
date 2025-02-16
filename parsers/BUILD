@@ -1,13 +1,3 @@
-_X3D_PARSER_DEFINES = select({
-    "@bazel_tools//src/conditions:windows": ["R_TINYXML"],
-    "//conditions:default": ["R_BOOST_PTREE"],
-})
-
-_X3D_PARSER_DEP = select({
-    "@bazel_tools//src/conditions:windows": ["@tinyxml2//:tinyxml2"],
-    "//conditions:default": ["@boost//:property_tree"],
-})
-
 load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
 
 cc_library(
@@ -16,10 +6,11 @@ cc_library(
     hdrs = ["include/parsers/x3d/x3d_parser.hpp"],
     include_prefix = "rcbe-engine",
     includes = ["include"],
-    defines = PUBLIC_API_PREFIX + _X3D_PARSER_DEFINES,
+    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
-    deps = _X3D_PARSER_DEP + [
+    deps = [
+        "@tinyxml2//:tinyxml2",
         "//common:engine_filesystem_utils",
         "//datamodel:engine_datamodel_geometry",
         "//datamodel:engine_datamodel_math",
