@@ -10,7 +10,7 @@ static constexpr size_t DEFAULT_DELEGATE_SIZE = 100;
 
 
 template <typename Ret, typename... Signature>
-class Delegate;
+class R_PUBLIC_API Delegate;
 
 //TODO: actually handle different return types
 // consider introducing InvocationResult class
@@ -18,7 +18,7 @@ class Delegate;
 // template <typename Ret, typename ... Signature>
 // class Delegate;
 template <typename... Signature>
-class Delegate<void, Signature...> {
+class R_PUBLIC_API Delegate<void, Signature...> {
 public:
 
     using InvocationType = std::function<void(Signature &&...)>;

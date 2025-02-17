@@ -371,8 +371,6 @@ TEST(MatrixQuaternion, CreateMatrixFromQuat) {
 
     auto rcbe_persp = rcbe::math::makePerspectiveMatrix(near, far, fov, view);
 
-  BOOST_LOG_TRIVIAL(info) << "My " << rcbe_persp.at(2, 3) << " glm  " << glm_persp[2][3];
-
     ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(0, 0)), glm_persp[0][0]));
     ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(1, 1)), -glm_persp[1][1])); // due to differences in axes
     ASSERT_TRUE(rcbe::core::fuzzy_equal(static_cast<float>(rcbe_persp.at(2, 2)), glm_persp[2][2], 0.01));

@@ -23,11 +23,10 @@ cc_binary(
             "-lXext",
         ],
     }),
-    tags = ["local"],
     deps = [
-        "//window_manager:rcbe_window_manager",
-        "//datamodel:engine_datamodel_visual",
-        "//common:rdmn_trivial_logger",
-        "//parsers:rdmn_tga_parser",
+        "//window_manager:rdmn_engine_window_manager",
+        "//datamodel:rdmn_engine_datamodel_visual",
+        "//common:rdmn_engine_common_trivial_logger",
+        "//parsers:rdmn_engine_parser_tga",
     ],
 )

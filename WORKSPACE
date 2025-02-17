@@ -20,22 +20,32 @@ bazel_skylib_workspace()
 
 # External deps
 
-git_repository(
-    name = "rules_vulkan",
-    remote = "https://github.com/jadarve/rules_vulkan.git",
-    tag = "v0.0.11"
+http_archive(
+    name = "rules_7zip",
+    strip_prefix = "rules_7zip-9addcf58cdc5022fa5188b5f270bc0c9bb240f46",
+    urls = ["https://github.com/zaucy/rules_7zip/archive/9addcf58cdc5022fa5188b5f270bc0c9bb240f46.zip"],
+    sha256 = "89db47017a95de6fc30acd0ff0b70c25e468a21b5e1286940feb21505854f28b",
 )
 
-load("@rules_vulkan//vulkan:repositories.bzl", "vulkan_repositories")
-vulkan_repositories(
-    android_use_host_vulkan_sdk = True, # For android, whether or not use the Vulkan headers provided by the NDK.
+load("@rules_7zip//:setup.bzl", "setup_7zip")
+
+setup_7zip()
+
+git_repository(
+    name = "com_github_zaucy_rules_vulkan",
+    remote = "https://github.com/Sckorn/rules_vulkan.git",
+    commit = "66ca0ad5666b79feedc99a4b2a637f94c25a3a76",
 )
+
+load("@com_github_zaucy_rules_vulkan//:repo.bzl", "vulkan_repos")
+
+vulkan_repos()
 
 http_archive(
-  name = "com_google_googletest",
-  urls = ["https://github.com/google/googletest/archive/5ab508a01f9eb089207ee87fd547d290da39d015.zip"],
-  strip_prefix = "googletest-5ab508a01f9eb089207ee87fd547d290da39d015",
-  sha256 = "755f9a39bc7205f5a0c428e920ddad092c33c8a1b46997def3f1d4a82aded6e1",
+    name = "com_google_googletest",
+    urls = ["https://github.com/google/googletest/archive/5ab508a01f9eb089207ee87fd547d290da39d015.zip"],
+    strip_prefix = "googletest-5ab508a01f9eb089207ee87fd547d290da39d015",
+    sha256 = "755f9a39bc7205f5a0c428e920ddad092c33c8a1b46997def3f1d4a82aded6e1",
 )
 
 http_archive(
@@ -70,8 +80,8 @@ http_file(
     name = "low_poly_wolf_stl",
     downloaded_file_path = "LowPolyWolf.stl",
     sha256 = "3da76bfc52b98e7e7cc8e805345b7c54fc7d53e24cb501c1e4ae542760947aa1",
-    tags = ["local"],
     urls = [
+        "https://www.dropbox.com/scl/fi/7w4ny3l2e8823gi8a901g/LowPolyWolf.stl?rlkey=uqgb5y8qf8xymbomb1ho4gn1m&st=04xsg7uo&dl=1",
         "http://localhost:8080/static/LowPolyWolf.stl",
         "file:../test_data/LowPolyWolf.stl"
     ],
@@ -81,8 +91,8 @@ http_file(
     name = "brick_wall_texture",
     downloaded_file_path = "brick_wall_texture.tga",
     sha256 = "bc1f3b97a10dbe671abd2cce7393e67094273c6fcf1c136c872380dd91ec8646",
-    tags = ["local"],
     urls = [
+        "https://www.dropbox.com/scl/fi/g4y8mv954l68rq8ztrz5u/tex.tga?rlkey=41vlint5apc4x594rxl8gm0ik&st=1uucv6rg&dl=1",
         "http://localhost:8080/static/tex.tga",
         "file:../test_data/tex.tga"
     ],
@@ -92,8 +102,8 @@ http_file(
     name = "awesomeface_texture",
     downloaded_file_path = "awesomeface_texture.tga",
     sha256 = "66510d10328a164669a8d3690f98c669a72e7cfd72bc8c2cebfbcbcc5f450cd6",
-    tags = ["local"],
     urls = [
+        "https://www.dropbox.com/scl/fi/678kxgtxq0amq42qhmwaz/tex2.tga?rlkey=3leu2lf3l2j72t3ewnqjcqoez&st=k4ksvz54&dl=1",
         "http://localhost:8080/static/tex2.tga",
         "file:../test_data/tex2.tga"
     ],
@@ -103,8 +113,8 @@ http_archive(
     name = "stl_test_data_archive",
     build_file = "@//thirdparty:stl_tests_archive.BUILD",
     sha256 = "8e045f19f73320715bea8162161a3107b1c3a26d6c822a252bd201836897c7de",
-    tags = ["local"],
     urls = [
+        "https://www.dropbox.com/scl/fi/yn1w69g7b7g2gze574f7f/test_stls.tar.gz?rlkey=1a97h04xjtfp7q2knaj2z06ls&st=sciag8hn&dl=1",
         "http://localhost:8080/static/test_stls.tar.gz",
         "file:../test_data/test_stls.tar.gz"
     ],
@@ -114,8 +124,8 @@ http_archive(
     name = "gltf_test_data_archive",
     build_file = "@//thirdparty:gltf_tests_archive.BUILD",
     sha256 = "8332c78756816faa99a15d85bb44db87937299b782da4a42a9c1f2f7e04e89cc",
-    tags = ["local"],
     urls = [
+        "https://www.dropbox.com/scl/fi/h1g0idp3dkxoip38gnijm/viking_room.tar.xz?rlkey=7bz8t4on2twirsk381o9lcjxe&st=b5ogqlti&dl=1",
         "http://localhost:8080/static/viking_room.tar.xz",
         "file:../test_data/viking_room.tar.xz"
     ],

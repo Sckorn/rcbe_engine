@@ -177,6 +177,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         auto camera = rcbe::rendering::make_camera(window->getRenderingContext(), camera_conf);
         auto start = std::chrono::steady_clock::now();
+
         auto aim = std::make_shared<rcbe::core::AbstractInputManager>(rcbe::core::EditorInputManager::create(
             window->getRenderingContext(), camera)); /// TODO: it seems InputManager should go inside window, and be invoked from inside window @sckorn
         auto end = std::chrono::steady_clock::now();

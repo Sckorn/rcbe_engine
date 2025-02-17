@@ -1,14 +1,12 @@
 #ifndef RCBE_ENGINE_TGA_PARSER_HPP
 #define RCBE_ENGINE_TGA_PARSER_HPP
 
-#include <rdmn-engine/public_api.hpp>
-
 #include <rcbe-engine/datamodel/visual/image_data.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
 namespace rdmn::parse::tga {
-struct extended_imagedata {
-    struct colormap_specification {
+struct R_PUBLIC_API extended_imagedata {
+    struct R_PUBLIC_API colormap_specification {
         static constexpr size_t SIZE = sizeof(uint16_t) * 2 + sizeof(uint8_t);
 
         uint16_t first_entry_index;

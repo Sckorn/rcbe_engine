@@ -6,7 +6,7 @@
 #include <rcbe-engine/delegate/Delegate.hpp>
 
 namespace rcbe::core {
-class AbstractDelegate {
+class R_PUBLIC_API AbstractDelegate {
 public:
 
     template <typename... Signature>

@@ -3,7 +3,6 @@
 
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
-#include <rdmn-engine/public_api.hpp>
 
 namespace rcbe::math {
 class R_PUBLIC_API Transform {

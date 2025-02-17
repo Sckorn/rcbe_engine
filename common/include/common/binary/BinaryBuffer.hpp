@@ -10,88 +10,88 @@
 #include <rcbe-engine/binary/base_serializer.hpp>
 
 namespace rcbe::binary {
-R_PUBLIC_API class BinaryBuffer {
+class R_PUBLIC_API BinaryBuffer {
 public:
 
     using ByteType = unsigned char;
 
-    R_PUBLIC_API BinaryBuffer() = default;
-    R_PUBLIC_API explicit BinaryBuffer(std::istream &is);
-    R_PUBLIC_API explicit BinaryBuffer(std::basic_ifstream<char> &is);
+    BinaryBuffer() = default;
+    explicit BinaryBuffer(std::istream &is);
+    explicit BinaryBuffer(std::basic_ifstream<char> &is);
 
-    R_PUBLIC_API explicit BinaryBuffer(std::vector<ByteType> &&buf);
+    explicit BinaryBuffer(std::vector<ByteType> &&buf);
 
-    R_PUBLIC_API BinaryBuffer(std::initializer_list<BinaryBuffer> &&bb);
+    BinaryBuffer(std::initializer_list<BinaryBuffer> &&bb);
 
-    R_PUBLIC_API explicit BinaryBuffer(std::vector<BinaryBuffer> &&bb);
+    explicit BinaryBuffer(std::vector<BinaryBuffer> &&bb);
 
     template <typename V>
-    R_PUBLIC_API BinaryBuffer(V v) {
+    BinaryBuffer(V v) {
         using rcbe::binary::to_binary;
         to_binary(*this, v);
     }
 
     template <typename V, size_t S>
-    R_PUBLIC_API BinaryBuffer(V (&source)[S]) {
+    BinaryBuffer(V (&source)[S]) {
         using rcbe::binary::to_binary;
         for (const auto &v : source) {
             to_binary(*this, v);
         }
     }
 
-    R_PUBLIC_API ~BinaryBuffer() = default;
+    ~BinaryBuffer() = default;
 
-    R_PUBLIC_API BinaryBuffer(const BinaryBuffer &b) = default;
-    R_PUBLIC_API BinaryBuffer(BinaryBuffer &&b) = default;
+    BinaryBuffer(const BinaryBuffer &b) = default;
+    BinaryBuffer(BinaryBuffer &&b) = default;
 
-    R_PUBLIC_API BinaryBuffer &operator=(const BinaryBuffer &bb);
+    BinaryBuffer &operator=(const BinaryBuffer &bb);
 
-    R_PUBLIC_API BinaryBuffer &operator=(BinaryBuffer &&bb);
+    BinaryBuffer &operator=(BinaryBuffer &&bb);
 
-    R_PUBLIC_API BinaryBuffer &append(const BinaryBuffer &bb);
+    BinaryBuffer &append(const BinaryBuffer &bb);
 
-    R_PUBLIC_API BinaryBuffer &append(BinaryBuffer &&bb);
+    BinaryBuffer &append(BinaryBuffer &&bb);
 
-    R_PUBLIC_API friend std::istream &operator>>(std::istream &is, BinaryBuffer &bb) {
+    friend std::istream &operator>>(std::istream &is, BinaryBuffer &bb) {
         bb.read(is, bb.buffer_);
 
         return is;
     }
 
-    R_PUBLIC_API friend std::ostream &operator<<(std::ostream &os, const BinaryBuffer &bb) {
+    friend std::ostream &operator<<(std::ostream &os, const BinaryBuffer &bb) {
         os.write(reinterpret_cast<const char *>(bb.buffer_.data()), bb.buffer_.size());
 
         return os;
     }
 
-    [[nodiscard]] R_PUBLIC_API BinaryBuffer at(size_t &&offset, size_t size = 0) const;
-    [[nodiscard]] R_PUBLIC_API BinaryBuffer at(size_t &offset, size_t size = 0) const;
+    [[nodiscard]] BinaryBuffer at(size_t &&offset, size_t size = 0) const;
+    [[nodiscard]] BinaryBuffer at(size_t &offset, size_t size = 0) const;
 
     template <typename ReturnType>
-    [[nodiscard]] R_PUBLIC_API ReturnType get() {
+    [[nodiscard]] ReturnType get() {
         using rcbe::binary::from_binary;
         ReturnType rt {};
         from_binary(*this, rt);
         return rt;
     }
 
-    [[nodiscard]] R_PUBLIC_API size_t size() const;
+    [[nodiscard]] size_t size() const;
 
-    [[nodiscard]] R_PUBLIC_API bool isView() const;
+    [[nodiscard]] bool isView() const;
 
 private:
 
     using StorageType = std::vector<ByteType>;
     using ViewType = std::vector<const ByteType *>;
 
-    R_PUBLIC_API void read(std::istream &is, StorageType &s);
+    void read(std::istream &is, StorageType &s);
 
-    R_PUBLIC_API BinaryBuffer(StorageType::const_iterator begin, StorageType::const_iterator end);
+    BinaryBuffer(StorageType::const_iterator begin, StorageType::const_iterator end);
 
-    R_PUBLIC_API BinaryBuffer(ViewType::const_iterator begin, ViewType::const_iterator end);
+    BinaryBuffer(ViewType::const_iterator begin, ViewType::const_iterator end);
 
     template <typename BinaryBufferContainer>
-    R_PUBLIC_API BinaryBuffer constructFromChunk(const BinaryBufferContainer &bbc, size_t &offset, const size_t size) const {
+    BinaryBuffer constructFromChunk(const BinaryBufferContainer &bbc, size_t &offset, const size_t size) const {
         if (bbc.empty())
             throw std::runtime_error("BinaryBuffer::at on empty buffer");
         auto it = bbc.begin();
@@ -103,7 +103,7 @@ private:
     }
 
     template <typename Invocable, typename Iterator>
-    R_PUBLIC_API void initView(Invocable &&i, Iterator begin, Iterator end) {
+    void initView(Invocable &&i, Iterator begin, Iterator end) {
         if (begin == end)
             throw std::runtime_error("Wrong range supplied for constructing binary buffer chunk!");
         buffer_.resize(0);
@@ -112,9 +112,9 @@ private:
         std::transform(begin, end, std::back_inserter(buffer_view_), i);
     }
 
-    R_PUBLIC_API BinaryBuffer &appendImplementation(const BinaryBuffer &source);
-    R_PUBLIC_API void appendImplementation(const StorageType &storage);
-    R_PUBLIC_API void appendImplementation(const ViewType &storage);
+    BinaryBuffer &appendImplementation(const BinaryBuffer &source);
+    void appendImplementation(const StorageType &storage);
+    void appendImplementation(const ViewType &storage);
 
     StorageType buffer_; // TODO: StorageType buffer_;
     ViewType buffer_view_; // TODO: ViewType buffer_view_;
