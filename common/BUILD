@@ -141,7 +141,6 @@ cc_test(
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
-load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
@@ -236,6 +235,38 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_common_binary_tools",
+    version = ENGINE_VERSION_FULL,
+)
+
+# trivial-logger
+
+pkg_tar(
+    name = "rdmn-trivial-logger-data",
+    srcs = [
+        "//common:rdmn_trivial_logger",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "rdmn-trivial-logger-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rdmn-trivial-logger-data",
+    ],
+)
+
+pkg_deb(
+    name = "rdmn-trivial-logger-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":rdmn-trivial-logger-package-data",
+    description = "RDMN trivial logger lib package.",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rdmn_trivial_logger",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -438,7 +469,7 @@ pkg_deb(
     data = ":common-delegate-dev-package-data",
     depends = [
         "rcbe_common_fundamentals_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
+        "rdmn_trivial_logger_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine abstract and concrete delegate function headers package",
     homepage = PROJECT_URL,
@@ -476,5 +507,37 @@ pkg_deb(
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_binary_tools_dev",
+    version = ENGINE_VERSION_FULL,
+)
+
+# trivial-logger-dev
+
+pkg_tar(
+    name = "trivial-logger-data-headers",
+    srcs = glob([
+        "include/common/binary/**/*.hpp",
+    ]),
+    mode = "0644",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/binary",
+)
+
+pkg_tar(
+    name = "trivial-logger-dev-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":trivial-logger-data-headers",
+    ],
+)
+
+pkg_deb(
+    name = "trivial-logger-dev-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":trivial-logger-dev-package-data",
+    description = "RDMN trivial logger lib header files.",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rdmn_trivial_logger_dev",
     version = ENGINE_VERSION_FULL,
 )

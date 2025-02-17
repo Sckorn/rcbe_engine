@@ -54,7 +54,7 @@ def main(packages_path, engine_version, target_arch, output_file_path, extension
     print("Trying to deploy version {}".format(engine_version))
     print("For arch {}".format(target_arch))
     print("Starting bazel build for deploy")
-    bazel_exit_code = os.system("bazel build --build_tag_filters=-local //...")  # the simplest way is to build packages prior to packaging
+    bazel_exit_code = os.system("bazel build --config=linux --build_tag_filters=-local //...")  # the simplest way is to build packages prior to packaging
                                     # , and since there is no tag value for packages, we are building a;l
 
     if (bazel_exit_code != 0):

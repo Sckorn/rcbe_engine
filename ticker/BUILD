@@ -39,7 +39,6 @@ cc_test(
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
-load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
@@ -69,7 +68,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":ticker-package-data",
     depends = [
-        "libboost-log{}.0".format(BOOST_TARGET_VERSION),
+        "rdmn_trivial_logger_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine ticker libraries package",
     homepage = PROJECT_URL,

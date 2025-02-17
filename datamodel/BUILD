@@ -305,7 +305,6 @@ cc_test(
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
-load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
@@ -445,7 +444,7 @@ pkg_deb(
         "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-log{}.0".format(BOOST_TARGET_VERSION),
+        "rdmn_trivial_logger_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel rendering libraries package",
     homepage = PROJECT_URL,
@@ -482,8 +481,7 @@ pkg_deb(
     depends = [
         "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-container{}.0".format(BOOST_TARGET_VERSION),
+        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH)
     ],
     description = "RCBE game engine datamodel system libraries package",
     homepage = PROJECT_URL,
@@ -668,7 +666,7 @@ pkg_deb(
         "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_gl_extensions_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
+        "rdmn_trivial_logger_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine datamodel rendering headers package",
     homepage = PROJECT_URL,
@@ -707,7 +705,6 @@ pkg_deb(
         "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_datamodel_visual_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_datamodel_system_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-container{}-dev".format(BOOST_TARGET_VERSION),
     ],
     description = "RCBE game engine datamodel system headers package",
     homepage = PROJECT_URL,

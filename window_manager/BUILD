@@ -112,7 +112,6 @@ cc_library(
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
-load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
@@ -148,7 +147,7 @@ pkg_deb(
         "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_input_manager_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rdmn_renderer_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-log{}.0".format(BOOST_TARGET_VERSION),
+        "rdmn_trivial_logger_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine window manager libraries package",
     homepage = PROJECT_URL,
@@ -190,7 +189,7 @@ pkg_deb(
         "rcbe_input_manager_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rdmn_renderer_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "rcbe_window_manager_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-log{}-dev".format(BOOST_TARGET_VERSION),
+        "rdmn_trivial_logger_dev".format(ENGINE_VERSION_FULL, TARGET_ARCH),
         "nlohmann-json3-dev",
     ],
     description = "RCBE game engine window manager headers package",

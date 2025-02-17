@@ -44,7 +44,6 @@ cc_library(
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
-load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
@@ -73,8 +72,7 @@ pkg_deb(
     data = ":input-manager-package-data",
     depends = [
         "rcbe_datamodel_system_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "libboost-log{}.0".format(BOOST_TARGET_VERSION),
-        "libboost-container{}.0".format(BOOST_TARGET_VERSION),
+        "rdmn_trivial_logger_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
     ],
     description = "RCBE game engine input manager libraries package",
     homepage = PROJECT_URL,
