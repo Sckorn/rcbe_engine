@@ -46,3 +46,51 @@ cc_binary(
         "@nlohmann//:nlohmann_json",
     ],
 )
+
+### packaging 
+
+## Bin
+
+pkg_tar(
+    name = "renderer-sample-data",
+    srcs = [
+        ":renderer_sample",
+    ],
+    mode = "0644",
+    package_dir = "/opt/radameon/",
+)
+
+pkg_tar(
+    name = "renderer-sample-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":renderer-sample-data",
+    ],
+)
+
+pkg_deb(
+    name = "renderer-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":renderer-package-data",
+    depends = [
+        "rcbe_common_utils_json_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_window_manager_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_ticker_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_parsers_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_camera_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rdmn_trivial_logger_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "nlohmann-json3-dev",
+    ],
+    description = "RDMN renderer sample application.",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rdmn_renderer_sample",
+    version = ENGINE_VERSION_FULL,
+)
