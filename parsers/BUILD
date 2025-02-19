@@ -206,7 +206,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":x3d-parser-package-data",
     depends = [
-        "rcbe_common_filesystem_utils",
+        "rcbe_common_utils_filesystem",
         "rcbe_datamodel_geometry",
         "rcbe_datamodel_math",
     ],
@@ -243,7 +243,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":stl-parsers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils",
+        "rcbe_common_utils_filesystem",
         "rcbe_datamodel_geometry",
         "rcbe_datamodel_math",
         "rcbe_common_binary_tools",
@@ -281,7 +281,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":tga-parsers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils",
+        "rcbe_common_utils_filesystem",
         "rcbe_datamodel_geometry",
         "rcbe_datamodel_math",
         "rcbe_common_binary_tools",
@@ -319,7 +319,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":gltf-parsers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils",
+        "rcbe_common_utils_filesystem",
         "rcbe_datamodel_geometry",
         "rcbe_datamodel_math",
         "rcbe_common_binary_tools",
@@ -359,7 +359,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-headers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils_dev",
+        "rcbe_common_utils_filesystem_dev",
         "rcbe_datamodel_geometry_dev",
         "rcbe_datamodel_math_dev",
         "rcbe_parsers",
@@ -397,7 +397,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-stl-headers-package-data-dev",
     depends = [
-        "rcbe_common_filesystem_utils_dev",
+        "rcbe_common_utils_filesystem_dev",
         "rcbe_datamodel_geometry_dev",
         "rcbe_datamodel_math_dev",
         "rcbe_stl_parsers",
@@ -433,7 +433,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-tga-headers-package-data-dev",
     depends = [
-        "rcbe_common_filesystem_utils_dev",
+        "rcbe_common_utils_filesystem_dev",
         "rcbe_datamodel_geometry_dev",
         "rcbe_datamodel_math_dev",
         "rcbe_stl_parsers",
@@ -469,7 +469,7 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-gltf-headers-package-data-dev",
     depends = [
-        "rcbe_common_filesystem_utils_dev",
+        "rcbe_common_utils_filesystem_dev",
         "rcbe_datamodel_geometry_dev",
         "rcbe_datamodel_math_dev",
         "rcbe_stl_parsers",

@@ -92,6 +92,7 @@ pkg_deb(
         "rcbe_parsers",
         "rcbe_stl_parsers",
         "rcbe_camera",
+        "rdmn_renderer",
         "rdmn_trivial_logger",
         "nlohmann-json3-dev",
     ],
