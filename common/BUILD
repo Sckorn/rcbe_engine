@@ -172,7 +172,7 @@ pkg_deb(
     description = "RCBE game engine common filesystem functionality package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_filesystem_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_utils_filesystem",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -202,7 +202,7 @@ pkg_deb(
     description = "RCBE game engine json related functionality package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_json_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_utils_json",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -234,7 +234,7 @@ pkg_deb(
     description = "RCBE game engine binary data manipulation utilities package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_binary_tools_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_binary_tools",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -266,7 +266,7 @@ pkg_deb(
     description = "RDMN trivial logger lib package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rdmn_trivial_logger_{}".format(ENGINE_VERSION_FULL),
+    package = "rdmn_trivial_logger",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -297,11 +297,11 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-filesystem-dev-package-data",
-    depends = ["rcbe_common_utils_filesystem_{}".format(ENGINE_VERSION_FULL)],
+    depends = ["rcbe_common_utils_filesystem"],
     description = "RCBE game engine common filesystem functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_filesystem_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_utils_filesystem_dev",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -336,7 +336,7 @@ pkg_deb(
     description = "RCBE game engine common json functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_json_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_utils_json_dev",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -365,11 +365,11 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-fundamentals-dev-package-data",
-    depends = ["rcbe_engine_config_{}".format(ENGINE_VERSION_FULL)],
+    depends = ["rcbe_engine_config"],
     description = "RCBE game engine common fundamental types and functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_fundamentals_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_fundamentals_dev",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -398,11 +398,11 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-math-utils-dev-package-data",
-    depends = ["rcbe_common_fundamentals_dev_{}".format(ENGINE_VERSION_FULL)],
+    depends = ["rcbe_common_fundamentals_dev"],
     description = "RCBE game engine common math functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_math_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_utils_math_dev",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -432,12 +432,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-fuzzy-logic-dev-package-data",
     depends = [
-        "rcbe_common_fundamentals_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_common_fundamentals_dev",
     ],
     description = "RCBE game engine fuzzy logics functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_fuzzy_logic_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_fuzzy_logic_dev",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -468,13 +468,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-delegate-dev-package-data",
     depends = [
-        "rcbe_common_fundamentals_dev_{}".format(ENGINE_VERSION_FULL),
-        "rdmn_trivial_logger_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_common_fundamentals_dev",
+        "rdmn_trivial_logger_dev",
     ],
     description = "RCBE game engine abstract and concrete delegate function headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_delegate_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_common_delegate_dev",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -506,7 +506,7 @@ pkg_deb(
     description = "RCBE game engine abstract and concrete delegate function headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_binary_tools_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_binary_tools_dev",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -536,6 +536,6 @@ pkg_deb(
     description = "RDMN trivial logger lib header files.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rdmn_trivial_logger_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rdmn_trivial_logger_dev",
     version = ENGINE_VERSION_FULL,
 )

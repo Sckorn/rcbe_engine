@@ -48,7 +48,7 @@ pkg_deb(
     description = "RCBE game engine gl extensions libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_gl_extensions_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_gl_extensions",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -77,10 +77,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":gl-extensions-headers-package-data",
-    depends = ["rcbe_gl_extensions_{}".format(ENGINE_VERSION_FULL)],
+    depends = ["rcbe_gl_extensions"],
     description = "RCBE game engine gl extensions headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_gl_extensions_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_gl_extensions_dev",
     version = ENGINE_VERSION_FULL,
 )

@@ -71,13 +71,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":input-manager-package-data",
     depends = [
-        "rcbe_datamodel_system_{}".format(ENGINE_VERSION_FULL),
-        "rdmn_trivial_logger_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_system",
+        "rdmn_trivial_logger",
     ],
     description = "RCBE game engine input manager libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_input_manager_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_input_manager",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -106,10 +106,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":input-manager-headers-package-data",
-    depends = ["rcbe_input_manager_{}".format(ENGINE_VERSION_FULL)],
+    depends = ["rcbe_input_manager"],
     description = "RCBE game engine input manager headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_input_manager_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_input_manager_dev",
     version = ENGINE_VERSION_FULL,
 )

@@ -44,6 +44,6 @@ pkg_deb(
     description = "RCBE game engine type traits headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_type_traits_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_type_traits_dev",
     version = ENGINE_VERSION_FULL,
 )

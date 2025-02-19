@@ -78,13 +78,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":camera-package-data",
     depends = [
-        "rcbe_datamodel_math_{}".format(ENGINE_VERSION_FULL),
-        "rcbe_datamodel_rendering_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math",
+        "rcbe_datamodel_rendering",
     ],
     description = "RCBE game engine camera libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_camera_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_camera",
     version = ENGINE_VERSION_FULL,
 )
 
@@ -114,13 +114,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":camera-headers-package-data",
     depends = [
-        "rcbe_datamodel_math_dev_{}".format(ENGINE_VERSION_FULL),
-        "rcbe_datamodel_rendering_dev_{}".format(ENGINE_VERSION_FULL),
-        "rcbe_camera_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_dev",
+        "rcbe_datamodel_rendering_dev",
+        "rcbe_camera_dev",
     ],
     description = "RCBE game engine camera headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_camera_dev_{}".format(ENGINE_VERSION_FULL),
+    package = "rcbe_camera_dev",
     version = ENGINE_VERSION_FULL,
 )
