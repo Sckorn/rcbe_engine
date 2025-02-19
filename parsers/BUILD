@@ -183,7 +183,7 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 # X3D
 
 pkg_tar(
-    name = "parsers-data",
+    name = "x3d-parser-data",
     srcs = [
         ":x3d_parser",
     ],
@@ -192,11 +192,11 @@ pkg_tar(
 )
 
 pkg_tar(
-    name = "parsers-package-data",
+    name = "x3d-parser-package-data",
     extension = "tar.gz",
     visibility = ["//visibility:public"],
     deps = [
-        ":parsers-data",
+        ":x3d-parser-data",
     ],
 )
 
@@ -204,16 +204,16 @@ pkg_deb(
     name = "parsers-deb",
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
-    data = ":parsers-package-data",
+    data = ":x3d-parser-package-data",
     depends = [
-        "rcbe_common_filesystem_utils_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_common_filesystem_utils_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_geometry_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_{}".format(ENGINE_VERSION_FULL),
     ],
     description = "RCBE game engine parser libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_parsers",
+    package = "rcbe_parsers_{}".format(ENGINE_VERSION_FULL),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -243,15 +243,91 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":stl-parsers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_geometry_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_common_binary_tools_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_common_filesystem_utils_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_geometry_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_common_binary_tools_{}".format(ENGINE_VERSION_FULL),
     ],
     description = "RCBE game engine parser libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_stl_parsers",
+    package = "rcbe_stl_parsers_{}".format(ENGINE_VERSION_FULL),
+    version = ENGINE_VERSION_FULL,
+)
+
+# TGA
+
+pkg_tar(
+    name = "tga-parsers-data",
+    srcs = [
+        ":rdmn_tga_parser",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "tga-parsers-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":tga-parsers-data",
+    ],
+)
+
+pkg_deb(
+    name = "tga-parsers-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":tga-parsers-package-data",
+    depends = [
+        "rcbe_common_filesystem_utils_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_geometry_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_common_binary_tools_{}".format(ENGINE_VERSION_FULL),
+    ],
+    description = "RDMN game engine TGA images parser lib package.",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rcbe_tga_parsers_{}".format(ENGINE_VERSION_FULL),
+    version = ENGINE_VERSION_FULL,
+)
+
+# GLTF
+
+pkg_tar(
+    name = "gltf-parsers-data",
+    srcs = [
+        ":rdmn_gltf_parser",
+    ],
+    mode = "0644",
+    package_dir = "/usr/local/lib",
+)
+
+pkg_tar(
+    name = "gltf-parsers-package-data",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":gltf-parsers-data",
+    ],
+)
+
+pkg_deb(
+    name = "gltf-parsers-deb",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":gltf-parsers-package-data",
+    depends = [
+        "rcbe_common_filesystem_utils_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_geometry_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_common_binary_tools_{}".format(ENGINE_VERSION_FULL),
+    ],
+    description = "RDMN game engine GLTF models parser lib package.",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rcbe_gltf_parsers_{}".format(ENGINE_VERSION_FULL),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -283,15 +359,15 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-headers-package-data",
     depends = [
-        "rcbe_common_filesystem_utils_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_parsers_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_common_filesystem_utils_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_geometry_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_parsers_{}".format(ENGINE_VERSION_FULL),
     ],
     description = "RCBE game engine parser headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_parsers_dev",
+    package = "rcbe_parsers_dev_{}".format(ENGINE_VERSION_FULL),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -321,14 +397,86 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":parsers-stl-headers-package-data-dev",
     depends = [
-        "rcbe_common_filesystem_utils_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_geometry_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_math_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_stl_parsers_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_common_filesystem_utils_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_geometry_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_stl_parsers_{}".format(ENGINE_VERSION_FULL),
     ],
     description = "RCBE game engine STL parser headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_stl_parsers_dev",
+    package = "rcbe_stl_parsers_dev_{}".format(ENGINE_VERSION_FULL),
+    version = ENGINE_VERSION_FULL,
+)
+
+# TGA
+
+pkg_tar(
+    name = "parsers-tga-headers-data-dev",
+    srcs = ["include/parsers/tga/tga_parser.hpp"],
+    mode = "0644",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/parsers/tga",
+)
+
+pkg_tar(
+    name = "parsers-tga-headers-package-data-dev",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":parsers-tga-headers-data-dev",
+    ],
+)
+
+pkg_deb(
+    name = "parsers-tga-headers-deb-dev",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":parsers-tga-headers-package-data-dev",
+    depends = [
+        "rcbe_common_filesystem_utils_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_geometry_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_stl_parsers_{}".format(ENGINE_VERSION_FULL),
+    ],
+    description = "RDMN game engine TGA images parser headers package.",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rcbe_tga_parsers_dev_{}".format(ENGINE_VERSION_FULL),
+    version = ENGINE_VERSION_FULL,
+)
+
+# GLTF
+
+pkg_tar(
+    name = "parsers-gltf-headers-data-dev",
+    srcs = ["include/parsers/gltf/gltf_parser.hpp"],
+    mode = "0644",
+    package_dir = "/usr/local/include/rcbe/rcbe-engine/parsers/gltf",
+)
+
+pkg_tar(
+    name = "parsers-gltf-headers-package-data-dev",
+    extension = "tar.gz",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":parsers-gltf-headers-data-dev",
+    ],
+)
+
+pkg_deb(
+    name = "parsers-gltf-headers-deb-dev",
+    architecture = TARGET_ARCH,
+    built_using = "unzip (6.0.1)",
+    data = ":parsers-gltf-headers-package-data-dev",
+    depends = [
+        "rcbe_common_filesystem_utils_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_geometry_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_stl_parsers_{}".format(ENGINE_VERSION_FULL),
+    ],
+    description = "RDMN game engine GLTF models parser headers package.",
+    homepage = PROJECT_URL,
+    maintainer = PROJECT_MAINTAINER,
+    package = "rcbe_gltf_parsers_dev_{}".format(ENGINE_VERSION_FULL),
     version = ENGINE_VERSION_FULL,
 )

@@ -49,6 +49,12 @@ cc_binary(
 
 ### packaging 
 
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
+load("//meta_package:global_variables.bzl", "TARGET_ARCH")
+load("//meta_package:global_variables.bzl", "PROJECT_URL")
+load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
+
 ## Bin
 
 pkg_tar(
@@ -75,22 +81,23 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":renderer-package-data",
     depends = [
-        "rcbe_common_utils_json_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_core_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_math_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_rendering_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_datamodel_visual_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_window_manager_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_gl_extensions_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_ticker_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_parsers_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_camera_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rdmn_trivial_logger_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_common_utils_json_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_core_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_math_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_rendering_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_datamodel_visual_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_window_manager_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_gl_extensions_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_ticker_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_parsers_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_stl_parsers_{}".format(ENGINE_VERSION_FULL)
+        "rcbe_camera_{}".format(ENGINE_VERSION_FULL),
+        "rdmn_trivial_logger_{}".format(ENGINE_VERSION_FULL),
         "nlohmann-json3-dev",
     ],
     description = "RDMN renderer sample application.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rdmn_renderer_sample",
+    package = "rdmn_renderer_sample_{}".format(ENGINE_VERSION_FULL),
     version = ENGINE_VERSION_FULL,
 )

@@ -68,12 +68,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":ticker-package-data",
     depends = [
-        "rdmn_trivial_logger_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rdmn_trivial_logger_{}".format(ENGINE_VERSION_FULL),
     ],
     description = "RCBE game engine ticker libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_ticker",
+    package = "rcbe_ticker_{}".format(ENGINE_VERSION_FULL),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -103,12 +103,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":ticker-headers-package-data",
     depends = [
-        "rcbe_type_traits_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_ticker_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rcbe_type_traits_dev_{}".format(ENGINE_VERSION_FULL),
+        "rcbe_ticker_{}".format(ENGINE_VERSION_FULL),
     ],
     description = "RCBE game engine ticker headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_ticker_dev",
+    package = "rcbe_ticker_dev_{}".format(ENGINE_VERSION_FULL),
     version = ENGINE_VERSION_FULL,
 )
