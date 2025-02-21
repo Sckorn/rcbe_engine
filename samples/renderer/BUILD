@@ -62,7 +62,7 @@ pkg_tar(
     srcs = [
         ":renderer_sample",
     ],
-    mode = "0644",
+    mode = "0755",
     package_dir = "/opt/radameon/",
 )
 

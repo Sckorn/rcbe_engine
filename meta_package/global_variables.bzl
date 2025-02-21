@@ -5,6 +5,7 @@ ENGINE_VERSION_FULL = "{}.{}.{}".format(ENGINE_VERSION_MAJOR, ENGINE_VERSION_MIN
 TARGET_ARCH = "amd64"
 PROJECT_URL = "https://github.com/Sckorn/rcbe_engine"
 PROJECT_MAINTAINER = "Daniil Kireev <sckorn@gmail.com>"
+ENGINE_BUILD_TARGET_PREFIX = "rdmn_engine"
 
 WINDOWS_BUILD_DEFINES = [ # use it later # TODO: utilize it instead of a separate target with include file
     "R_PUBLIC_API=__declspec(dllexport)",

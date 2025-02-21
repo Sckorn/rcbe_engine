@@ -1,7 +1,11 @@
 load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
+
+_PACKAGE_NAME = "camera"
+_CAMERA_LIB_TARGET = "{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
 
 cc_library(
-    name = "rcbe_engine_camera",
+    name = _CAMERA_LIB_TARGET,
     srcs = glob(["src/**/*.cpp"]),
     hdrs = glob(["include/**/*.hpp"]),
     defines = PUBLIC_API_PREFIX + select({
@@ -9,6 +13,9 @@ cc_library(
         "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
     }),
     include_prefix = "rcbe-engine",
+    linkopts = [
+        "-Wl,-soname,lib{}_{}.so".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+    ],
     includes = ["include"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
@@ -33,7 +40,7 @@ cc_test(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":rcbe_engine_camera",
+        _CAMERA_LIB_TARGET,
         "//common:engine_fuzzy_logic",
         "//common:engine_json_utils",
         "//datamodel:engine_datamodel_math",
@@ -57,7 +64,7 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 pkg_tar(
     name = "camera-data",
     srcs = [
-        ":rcbe_engine_camera",
+        _CAMERA_LIB_TARGET,
     ],
     mode = "0644",
     package_dir = "/usr/local/lib",
@@ -118,9 +125,9 @@ pkg_deb(
         "rcbe_datamodel_rendering_dev",
         "rcbe_camera_dev",
     ],
-    description = "RCBE game engine camera headers package",
+    description = "RDMN game engine camera headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_camera_dev",
+    package = "{}_dev".format(_CAMERA_LIB_TARGET),
     version = ENGINE_VERSION_FULL,
 )
