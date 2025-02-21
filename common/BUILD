@@ -1,12 +1,19 @@
 load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
+load("//meta_package:rules.bzl", "r_cc_library")
+
 
 _COMMON_LINKOPTS = select({
     "@bazel_tools//src/conditions:windows": [""],
     "//conditions:default": ["-lpthread"],
 })
 
-cc_library(
-    name = "engine_filesystem_utils",
+_PACKAGE_NAME = "common"
+
+_FILESYSTEM_UTILS_TARGET = "{}_{}_filesystem_utils".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _FILESYSTEM_UTILS_TARGET,
     srcs = [
         "src/utils/file_utils.cpp",
     ],
@@ -72,8 +79,10 @@ cc_library(
     deps = [":engine_fundamentals"],
 )
 
-cc_library(
-    name = "rcbe_delegate",
+_DELEGATE_TARGET = "{}_{}_delegate".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME);
+
+r_cc_library(
+    name = _DELEGATE_TARGET,
     hdrs = glob(["include/common/delegate/**/*.hpp"]),
     include_prefix = "rcbe-engine",
     includes = ["include/common"],
@@ -129,7 +138,7 @@ cc_test(
     visibility = ["//visibility:public"],
     deps = [
         ":rcbe_binary_tools",
-        ":rcbe_delegate",
+        _DELEGATE_TARGET,
         ":engine_fundamentals",
         ":rdmn_trivial_logger",
         "@com_google_googletest//:gtest_main",
@@ -149,7 +158,7 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 pkg_tar(
     name = "filesystem-data",
     srcs = [
-        "//common:engine_filesystem_utils",
+        _FILESYSTEM_UTILS_TARGET,
     ],
     mode = "0644",
     package_dir = "/usr/local/lib",

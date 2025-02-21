@@ -14,7 +14,7 @@ cc_library(
     }),
     include_prefix = "rcbe-engine",
     linkopts = [
-        "-Wl,-soname,lib{}_{}.so".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+        "-Wl,-soname,lib{}.so".format(_CAMERA_LIB_TARGET)
     ],
     includes = ["include"],
     strip_include_prefix = "include",
@@ -30,11 +30,10 @@ cc_library(
 ### tests
 
 cc_test(
-    name = "rdmn_camera_tests",
+    name = "{}_tests".format(_CAMERA_LIB_TARGET),
     srcs = glob(
         ["test/*.cpp"],
     ),
-    copts = ["-Iexternal/gtest/include"],
     data = [
         "//datamodel:datamodel_rendering_resources",
     ],
@@ -67,7 +66,7 @@ pkg_tar(
         _CAMERA_LIB_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -85,10 +84,10 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":camera-package-data",
     depends = [
-        "rcbe_datamodel_math",
-        "rcbe_datamodel_rendering",
+        "rdmn_datamodel_math",
+        "rdmn_datamodel_rendering",
     ],
-    description = "RCBE game engine camera libraries package",
+    description = "RDMN game engine camera libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "rcbe_camera",
@@ -103,7 +102,7 @@ pkg_tar(
         "include/camera/Camera.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/camera",
+    package_dir = "/usr/include/rcbe/rcbe-engine/camera",
 )
 
 pkg_tar(
@@ -121,9 +120,9 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":camera-headers-package-data",
     depends = [
-        "rcbe_datamodel_math_dev",
-        "rcbe_datamodel_rendering_dev",
-        "rcbe_camera_dev",
+        "rdmn_datamodel_math_dev",
+        "rdmn_datamodel_rendering_dev",
+        "rdmn_camera_dev",
     ],
     description = "RDMN game engine camera headers package",
     homepage = PROJECT_URL,
