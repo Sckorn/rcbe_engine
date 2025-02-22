@@ -1,4 +1,3 @@
-load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
 load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
 load("//meta_package:rules.bzl", "r_cc_library")
 
@@ -7,6 +6,8 @@ _COMMON_LINKOPTS = select({
     "@bazel_tools//src/conditions:windows": [""],
     "//conditions:default": ["-lpthread"],
 })
+
+_COMMON_INCLUDE_PATH = "include/common"
 
 _PACKAGE_NAME = "common"
 
@@ -21,62 +22,68 @@ r_cc_library(
         "include/common/utils/file_utils.hpp",
     ],
     include_prefix = "rcbe-engine",
-    includes = ["include/common"],
+    includes = [_COMMON_INCLUDE_PATH],
     linkopts = _COMMON_LINKOPTS,
-    strip_include_prefix = "include/common",
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
 )
 
-cc_library(
-    name = "engine_json_utils",
+_JSON_UTILS_TARGET = "{}_{}_json_utils".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _JSON_UTILS_TARGET,
     srcs = ["src/utils/json_utils.cpp"],
     hdrs = [
         "include/common/utils/json_utils.hpp",
     ],
-    copts = ["-Iexternal/nlohmann/include"],
-    defines = PUBLIC_API_PREFIX,
     include_prefix = "rcbe-engine",
-    includes = ["include/common"],
+    includes = [_COMMON_INCLUDE_PATH],
     linkopts = _COMMON_LINKOPTS,
-    strip_include_prefix = "include/common",
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = ["@nlohmann//:nlohmann_json"],
 )
 
-cc_library(
-    name = "engine_fundamentals",
+_FUNDAMENTALS_TARGET = "{}_{}_fundamentals".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _FUNDAMENTALS_TARGET,
     hdrs = glob([
         "include/common/fundamentals/**/*.hpp",
     ]),
     include_prefix = "rcbe-engine",
-    includes = ["include/common"],
-    strip_include_prefix = "include/common",
+    includes = [_COMMON_INCLUDE_PATH],
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = ["//meta_package:rdmn_engine_config"],
 )
 
-cc_library(
-    name = "engine_math_utils",
+_MATH_UTILS_TARGET = "{}_{}_math_utils".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _MATH_UTILS_TARGET,
     hdrs = [
         "include/common/utils/math_utils.hpp",
     ],
     include_prefix = "rcbe-engine",
-    includes = ["include/common"],
-    strip_include_prefix = "include/common",
+    includes = [_COMMON_INCLUDE_PATH],
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
-    deps = [":engine_fundamentals"],
+    deps = [_FUNDAMENTALS_TARGET],
 )
 
-cc_library(
-    name = "engine_fuzzy_logic",
+_FUZZY_LOGIC_TARGET = "{}_{}_fuzzy_logic".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _FUZZY_LOGIC_TARGET,
     hdrs = glob([
         "include/common/fuzzy_logic/*.hpp",
     ]),
     include_prefix = "rcbe-engine",
-    includes = ["include/common"],
-    strip_include_prefix = "include/common",
+    includes = [_COMMON_INCLUDE_PATH],
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
-    deps = [":engine_fundamentals"],
+    deps = [":rdmn_engine_common_fundamentals"],
 )
 
 _DELEGATE_TARGET = "{}_{}_delegate".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME);
@@ -85,62 +92,64 @@ r_cc_library(
     name = _DELEGATE_TARGET,
     hdrs = glob(["include/common/delegate/**/*.hpp"]),
     include_prefix = "rcbe-engine",
-    includes = ["include/common"],
-    strip_include_prefix = "include/common",
+    includes = [_COMMON_INCLUDE_PATH],
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = [
-        ":engine_fundamentals",
+        ":rdmn_engine_common_fundamentals",
     ],
 )
 
-cc_library(
-    name = "rcbe_profiling",
+_PROFILING_TARGET = "{}_{}_profiling".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+# add packaging for DEV version
+r_cc_library(
+    name = _PROFILING_TARGET,
     hdrs = ["include/common/utils/profiling_utils.hpp"],
     include_prefix = "rcbe-engine",
-    includes = ["include/common"],
-    strip_include_prefix = "include/common",
+    includes = [_COMMON_INCLUDE_PATH],
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = [
-        ":engine_fundamentals",
+        _FUNDAMENTALS_TARGET,
     ],
 )
 
-cc_library(
-    name = "rcbe_binary_tools",
+_BINARY_TOOLS_TARGET = "{}_{}_binary_tools".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _BINARY_TOOLS_TARGET,
     srcs = glob(["src/binary/**/*.cpp"]),
     hdrs = glob(["include/common/binary/**/*.hpp"]),
     include_prefix = "rcbe-engine",
-    includes = ["include/common"],
-    strip_include_prefix = "include/common",
+    includes = [_COMMON_INCLUDE_PATH],
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
-    deps = ["//meta_package/public_api:rdmn_public_api"],
 )
 
-cc_library(
-    name = "rdmn_trivial_logger",
+_LOGGER_TARGET = "{}_{}_trivial_logger".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _LOGGER_TARGET,
     srcs = glob(["src/logger/**/*.cpp"]),
     hdrs = glob(["include/common/logger/**/*.hpp"]),
     include_prefix = "rdmn-engine",
-    includes = ["include/common"],
-    strip_include_prefix = "include/common",
+    includes = [_COMMON_INCLUDE_PATH],
+    strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
-    deps = [
-        "//meta_package/public_api:rdmn_public_api"
-    ],
 )
 
 ### tests
 
 cc_test(
-    name = "rcbe_common_tests",
+    name = "{}_{}_tests".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME),
     srcs = glob(["test/*.cpp"]),
-    copts = ["-Iexternal/gtest/include"],
     visibility = ["//visibility:public"],
     deps = [
-        ":rcbe_binary_tools",
+        _BINARY_TOOLS_TARGET,
         _DELEGATE_TARGET,
-        ":engine_fundamentals",
-        ":rdmn_trivial_logger",
+        _FUNDAMENTALS_TARGET,
+        _LOGGER_TARGET,
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -161,7 +170,7 @@ pkg_tar(
         _FILESYSTEM_UTILS_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -178,20 +187,20 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-filesystem-package-data",
-    description = "RCBE game engine common filesystem functionality package",
+    description = "RDMN game engine common filesystem functionality package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_filesystem",
+    package = _FILESYSTEM_UTILS_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
 pkg_tar(
     name = "json-data",
     srcs = [
-        "//common:engine_json_utils",
+        _JSON_UTILS_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -208,10 +217,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":json-package-data",
-    description = "RCBE game engine json related functionality package",
+    description = "RDMN game engine json related functionality package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_json",
+    package = _JSON_UTILS_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -220,10 +229,10 @@ pkg_deb(
 pkg_tar(
     name = "common-binary-tools-data",
     srcs = [
-        "//common:rcbe_binary_tools",
+        _BINARY_TOOLS_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -240,10 +249,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-binary-tools-package-data",
-    description = "RCBE game engine binary data manipulation utilities package",
+    description = "RDMN game engine binary data manipulation utilities package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_binary_tools",
+    package = _BINARY_TOOLS_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -252,10 +261,10 @@ pkg_deb(
 pkg_tar(
     name = "rdmn-trivial-logger-data",
     srcs = [
-        "//common:rdmn_trivial_logger",
+        _LOGGER_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -275,7 +284,7 @@ pkg_deb(
     description = "RDMN trivial logger lib package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rdmn_trivial_logger",
+    package = _LOGGER_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -289,7 +298,7 @@ pkg_tar(
         "include/common/utils/file_utils.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/utils",
+    package_dir = "/usr/include/rcbe/rcbe-engine/utils",
 )
 
 pkg_tar(
@@ -306,11 +315,11 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-filesystem-dev-package-data",
-    depends = ["rcbe_common_utils_filesystem"],
-    description = "RCBE game engine common filesystem functionality headers package",
+    depends = [_FILESYSTEM_UTILS_TARGET],
+    description = "RDMN game engine common filesystem functionality headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_filesystem_dev",
+    package = "{}_dev".format(_FILESYSTEM_UTILS_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -322,7 +331,7 @@ pkg_tar(
         "include/common/utils/json_utils.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/utils",
+    package_dir = "/usr/include/rcbe/rcbe-engine/utils",
 )
 
 pkg_tar(
@@ -342,10 +351,10 @@ pkg_deb(
     depends = [
         "nlohmann-json3-dev",
     ],
-    description = "RCBE game engine common json functionality headers package",
+    description = "RDMN game engine common json functionality headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_json_dev",
+    package = "{}_dev".format(_JSON_UTILS_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -357,7 +366,7 @@ pkg_tar(
         "include/common/fundamentals/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/fundamentals",
+    package_dir = "/usr/include/rcbe/rcbe-engine/fundamentals",
 )
 
 pkg_tar(
@@ -374,11 +383,11 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-fundamentals-dev-package-data",
-    depends = ["rcbe_engine_config"],
-    description = "RCBE game engine common fundamental types and functionality headers package",
+    depends = ["rdmn_engine_config"],
+    description = "RDMN game engine common fundamental types and functionality headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_fundamentals_dev",
+    package = "{}_dev".format(_FUNDAMENTALS_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -390,7 +399,7 @@ pkg_tar(
         "include/common/utils/math_utils.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/utils",
+    package_dir = "/usr/include/rcbe/rcbe-engine/utils",
 )
 
 pkg_tar(
@@ -407,11 +416,11 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":common-math-utils-dev-package-data",
-    depends = ["rcbe_common_fundamentals_dev"],
-    description = "RCBE game engine common math functionality headers package",
+    depends = ["rdmn_engine_common_fundamentals_dev"],
+    description = "RDMN game engine common math functionality headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_utils_math_dev",
+    package = "{}_dev".format(_MATH_UTILS_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -423,7 +432,7 @@ pkg_tar(
         "include/common/fuzzy_logic/fuzzy_logic.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/fuzzy_logic",
+    package_dir = "/usr/include/rcbe/rcbe-engine/fuzzy_logic",
 )
 
 pkg_tar(
@@ -441,12 +450,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-fuzzy-logic-dev-package-data",
     depends = [
-        "rcbe_common_fundamentals_dev",
+        "rcbe_engine_common_fundamentals_dev",
     ],
-    description = "RCBE game engine fuzzy logics functionality headers package",
+    description = "RDMN game engine fuzzy logics functionality headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_fuzzy_logic_dev",
+    package = "{}_dev".format(_FUZZY_LOGIC_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -459,7 +468,7 @@ pkg_tar(
         "include/common/delegate/Delegate.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/delegate",
+    package_dir = "/usr/include/rcbe/rcbe-engine/delegate",
 )
 
 pkg_tar(
@@ -477,13 +486,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":common-delegate-dev-package-data",
     depends = [
-        "rcbe_common_fundamentals_dev",
-        "rdmn_trivial_logger_dev",
+        "rdmn_engine_common_fundamentals_dev",
+        "rdmn_engine_common_trivial_logger_dev",
     ],
-    description = "RCBE game engine abstract and concrete delegate function headers package",
+    description = "RDMN game engine abstract and concrete delegate function headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_common_delegate_dev",
+    package = "{}_dev".format(_DELEGATE_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -495,7 +504,7 @@ pkg_tar(
         "include/common/binary/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/binary",
+    package_dir = "/usr/include/rcbe/rcbe-engine/binary",
 )
 
 pkg_tar(
@@ -512,10 +521,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":binary-tools-dev-package-data",
-    description = "RCBE game engine abstract and concrete delegate function headers package",
+    description = "RDMN game engine abstract and concrete delegate function headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_binary_tools_dev",
+    package = "{}_dev".format(_BINARY_TOOLS_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -525,7 +534,7 @@ pkg_tar(
     name = "trivial-logger-data-headers",
     srcs = glob(["include/common/logger/**/*.hpp"]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/binary",
+    package_dir = "/usr/include/rcbe/rcbe-engine/binary",
 )
 
 pkg_tar(
@@ -545,6 +554,6 @@ pkg_deb(
     description = "RDMN trivial logger lib header files.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rdmn_trivial_logger_dev",
+    package = "{}_dev".format(_LOGGER_TARGET),
     version = ENGINE_VERSION_FULL,
 )

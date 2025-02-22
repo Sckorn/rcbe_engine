@@ -17,12 +17,15 @@ def r_cc_library(
         name: Name of library
         srcs: Source files
         hdrs: Headers files
-        deps: All non-TF dependencies
-        tf_deps: All TF depenedencies
+        includes: Include directorires
+        include_prefix: A prefix to add to virtual includes
+        defines: A list of command lines defines to pass to compiler
+        deps: All dependencies
+        data: All non code dependencies (configs files, shaders etc.)
+        linkopts: Linker options
         copts: C options
-        compatible_with: List of environments target can be built for
-        testonly: If library is only for testing
-        alwayslink: If symbols should be exported
+        strip_include_prefix: A portion of include path, to strip from virtual include
+        visibility: package visibility in terms of Bazel
     """
     defines += select({ 
         "@bazel_tools//src/conditions:windows": ["R_PUBLIC_API=__declspec(dllexport)"],

@@ -5,8 +5,6 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include <rdmn-engine/public_api.hpp>
-
 namespace rcbe::binary {
 template <typename Buffer, typename ActualType>
 R_PUBLIC_API void to_binary(Buffer &c, const ActualType &a) {
