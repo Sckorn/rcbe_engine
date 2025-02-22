@@ -42,10 +42,10 @@ cc_library(
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
-        "//datamodel:engine_datamodel_math",
-        "//datamodel:engine_datamodel_visual",
+        "//datamodel:rdmn_engine_datamodel_math",
+        "//datamodel:rdmn_engine_datamodel_visual",
         "//meta_package/public_api:rdmn_public_api",
-        "//common:rdmn_trivial_logger",
+        "//common:rdmn_engine_common_trivial_logger",
     ],
 )
 

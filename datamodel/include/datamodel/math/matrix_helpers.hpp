@@ -10,7 +10,6 @@
 #include <rcbe-engine/datamodel/math/rotation_units.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 #include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
-#include <rdmn-engine/public_api.hpp>
 
 namespace rcbe::math {
 

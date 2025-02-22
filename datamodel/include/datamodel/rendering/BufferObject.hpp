@@ -7,8 +7,6 @@
 
 #include <GL/gl.h>
 
-#include <rdmn-engine/public_api.hpp>
-
 #include <rcbe-engine/core/gl_extensions.hpp>
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 

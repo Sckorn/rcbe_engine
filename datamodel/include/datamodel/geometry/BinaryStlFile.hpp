@@ -12,8 +12,6 @@
 #include <rcbe-engine/binary/binary_file_concepts.hpp>
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 
-#include <rdmn-engine/public_api.hpp>
-
 namespace rcbe::geometry {
 /**
  *

@@ -1,7 +1,16 @@
-load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+load("//meta_package:rules.bzl", "r_cc_library")
+load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
 
-cc_library(
-    name = "engine_datamodel_core",
+_PACKAGE_NAME = "datamodel"
+
+_DATAMODEL_INCLUDE_PATH = "include"
+
+_TARGET_PACKAGE_PREFIX = "{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+_CORE_TARGET = "{}_core".format(_TARGET_PACKAGE_PREFIX)
+
+r_cc_library(
+    name = _CORE_TARGET,
     srcs = glob([
         "src/core/**/*.cpp",
     ]),
@@ -9,19 +18,19 @@ cc_library(
         "include/datamodel/core/**/*.hpp",
     ]),
     include_prefix = "rcbe-engine",
-    includes = ["include"],
-    defines = PUBLIC_API_PREFIX,
-    strip_include_prefix = "include",
+    includes = [_DATAMODEL_INCLUDE_PATH],
+    strip_include_prefix = _DATAMODEL_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = [
-        "//common:engine_fundamentals",
+        "//common:rdmn_engine_common_fundamentals",
         "@nlohmann//:nlohmann_json",
-        "//meta_package/public_api:rdmn_public_api",
     ],
 )
 
-cc_library(
-    name = "engine_datamodel_math",
+_MATH_TARGET = "{}_math".format(_TARGET_PACKAGE_PREFIX)
+
+r_cc_library(
+    name = _MATH_TARGET,
     srcs = glob([
         "src/math/**/*.cpp",
     ]),
@@ -32,22 +41,23 @@ cc_library(
         "RCBE_SCALAR_LINALG",
     ],
     include_prefix = "rcbe-engine",
-    includes = ["include"],
-    strip_include_prefix = "include",
+    includes = [_DATAMODEL_INCLUDE_PATH],
+    strip_include_prefix = _DATAMODEL_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = [
-        ":engine_datamodel_core",
-        "//common:engine_fuzzy_logic",
-        "//common:engine_math_utils",
-        "//common:rcbe_binary_tools",
+        _CORE_TARGET,
+        "//common:rdmn_engine_common_fuzzy_logic",
+        "//common:rdmn_engine_common_math_utils",
+        "//common:rdmn_engine_common_binary_tools",
+        "//common:rdmn_engine_common_trivial_logger",
         "@nlohmann//:nlohmann_json",
-        "//meta_package/public_api:rdmn_public_api",
-        "//common:rdmn_trivial_logger",
     ],
 )
 
-cc_library(
-    name = "engine_datamodel_visual",
+_VISUAL_TARGET = "{}_visual".format(_TARGET_PACKAGE_PREFIX)
+
+r_cc_library(
+    name = _VISUAL_TARGET,
     srcs = glob([
         "src/visual/**/*.cpp",
         "src/visual/**/*.hpp",
@@ -55,76 +65,74 @@ cc_library(
     hdrs = glob([
         "include/datamodel/visual/**/*.hpp",
     ]),
-    copts = ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
-    includes = ["include"],
+    includes = [_DATAMODEL_INCLUDE_PATH],
     linkopts = select({
         "//meta_package:rdmn_gl_rasterizer_backend": ["-lGL"],
         "//meta_package:rdmn_vk_rasterizer_backend": [],
     }) + [
         "-lpthread",
     ],
-    strip_include_prefix = "include",
+    strip_include_prefix = _DATAMODEL_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = select({
         "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions"],
         "//meta_package:rdmn_vk_rasterizer_backend": [],
     }) + [
-        ":engine_datamodel_math",
+        _MATH_TARGET,
         "//exceptions:rcbe_exception",
+        "//common:rdmn_engine_common_trivial_logger",
         "@nlohmann//:nlohmann_json",
-        "//meta_package/public_api:rdmn_public_api",
-        "//common:rdmn_trivial_logger",
     ],
 )
 
-cc_library(
-    name = "engine_datamodel_geometry",
+_GEOMETRY_TARGET = "{}_geometry".format(_TARGET_PACKAGE_PREFIX)
+
+r_cc_library(
+    name = _GEOMETRY_TARGET,
     srcs = glob(["src/geometry/**/*.cpp"]),
     hdrs = glob([
         "include/datamodel/geometry/**/*.hpp",
     ]),
-    copts = ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
-    includes = ["include"],
-    defines = PUBLIC_API_PREFIX,
-    strip_include_prefix = "include",
+    includes = [_DATAMODEL_INCLUDE_PATH],
+    strip_include_prefix = _DATAMODEL_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = [
-        ":engine_datamodel_core",
-        ":engine_datamodel_math",
-        ":engine_datamodel_visual",
-        "//common:rcbe_binary_tools",
+        _CORE_TARGET,
+        _MATH_TARGET,
+        _VISUAL_TARGET,
+        "//common:rdmn_engine_common_binary_tools",
         "@nlohmann//:nlohmann_json",
-        "//meta_package/public_api:rdmn_public_api",
     ],
 )
 
-cc_library(
-    name = "engine_datamodel_system",
+_SYSTEM_TARGET = "{}_system".format(_TARGET_PACKAGE_PREFIX)
+
+r_cc_library(
+    name = _SYSTEM_TARGET,
     srcs = glob([
         "src/system/**/*.cpp",
     ]),
     hdrs = glob([
         "include/datamodel/system/**/*.hpp",
     ]),
-    copts = ["-Iexternal/nlohmann/include"],
     include_prefix = "rcbe-engine",
-    defines = PUBLIC_API_PREFIX,
-    includes = ["include"],
-    strip_include_prefix = "include",
+    includes = [_DATAMODEL_INCLUDE_PATH],
+    strip_include_prefix = _DATAMODEL_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = [
-        ":engine_datamodel_core",
-        ":engine_datamodel_math",
-        ":engine_datamodel_visual",
+        _CORE_TARGET,
+        _MATH_TARGET,
+        _VISUAL_TARGET,
         "@nlohmann//:nlohmann_json",
-        "//meta_package/public_api:rdmn_public_api",
     ],
 )
 
-cc_library(
-    name = "engine_datamodel_rendering",
+_RENDERING_TARGET = "{}_rendering".format(_TARGET_PACKAGE_PREFIX)
+
+r_cc_library(
+    name = _RENDERING_TARGET,
     srcs = select({
         "//meta_package:rdmn_vk_rasterizer_backend": glob(
             [
@@ -178,12 +186,12 @@ cc_library(
             ],
         ),
     }),
-    defines = PUBLIC_API_PREFIX + select({
+    defines = select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
         "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
     }),
     include_prefix = "rcbe-engine",
-    includes = ["include"],
+    includes = [_DATAMODEL_INCLUDE_PATH],
     linkopts = select({
         "//meta_package:rdmn_vulkan_linux": ["-lvulkan"],
         "//meta_package:rdmn_gl_linux": ["-lGL"],
@@ -192,7 +200,7 @@ cc_library(
         "@bazel_tools//src/conditions:linux": ["-lpthread"],
         "//conditions:default": [],
     }),
-    strip_include_prefix = "include",
+    strip_include_prefix = _DATAMODEL_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = select({
         "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions"],
@@ -201,14 +209,13 @@ cc_library(
         "//meta_package:rdmn_vulkan_windows": ["@vulkan_windows//:vulkan_cc_library",],
         "//conditions:default": [],
     }) + [
-        ":engine_datamodel_core",
-        ":engine_datamodel_geometry",
-        ":engine_datamodel_math",
-        ":engine_datamodel_visual",
-        "//common:engine_fundamentals",
-        "//meta_package/public_api:rdmn_public_api",
+        _CORE_TARGET,
+        _GEOMETRY_TARGET,
+        _MATH_TARGET,
+        _VISUAL_TARGET,
+        "//common:rdmn_engine_common_fundamentals",
+        "//common:rdmn_engine_common_trivial_logger",
         "@nlohmann//:nlohmann_json",
-        "//common:rdmn_trivial_logger",
     ],
 )
 
@@ -229,7 +236,7 @@ filegroup(
 ### tests
 
 cc_test(
-    name = "rcbe_all_datamodel_tests",
+    name = "{}_all_tests".format(_TARGET_PACKAGE_PREFIX),
     srcs = glob(
         ["test/*.cpp"],
         exclude = [
@@ -237,29 +244,27 @@ cc_test(
             "test/texture_tests.cpp",
         ],
     ),
-    copts = ["-Iexternal/gtest/include"],
     data = [
         ":datamodel_rendering_resources",
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":engine_datamodel_math",
-        ":engine_datamodel_rendering",
-        ":engine_datamodel_visual",
-        "//common:engine_fuzzy_logic",
-        "//common:engine_json_utils",
+        _MATH_TARGET,
+        _RENDERING_TARGET,
+        _VISUAL_TARGET,
+        "//common:rdmn_engine_common_fuzzy_logic",
+        "//common:rdmn_engine_common_json_utils",
         "@com_google_googletest//:gtest_main",
         "@nlohmann//:nlohmann_json",
     ],
 )
 
 cc_test(
-    name = "rcbe_geometry_datamodel_tests",
+    name = "{}_geometry_tests".format(_TARGET_PACKAGE_PREFIX),
     srcs = [
         "test/datamodel_tests.cpp",
         "test/geometry_tests.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
     data = [
         ":datamodel_rendering_resources",
         "@low_poly_wolf_stl//file",
@@ -267,23 +272,22 @@ cc_test(
     tags = ["local"],
     visibility = ["//visibility:public"],
     deps = [
-        ":engine_datamodel_math",
-        ":engine_datamodel_rendering",
-        ":engine_datamodel_visual",
-        "//common:engine_fuzzy_logic",
-        "//common:engine_json_utils",
+        _MATH_TARGET,
+        _RENDERING_TARGET,
+        _VISUAL_TARGET,
+        "//common:rdmn_engine_common_fuzzy_logic",
+        "//common:rdmn_engine_common_json_utils",
         "@com_google_googletest//:gtest_main",
         "@nlohmann//:nlohmann_json",
     ],
 )
 
 cc_test(
-    name = "rcbe_textures_datamodel_tests",
+    name = "{}_textures_tests".format(_TARGET_PACKAGE_PREFIX),
     srcs = [
         "test/datamodel_tests.cpp",
         "test/texture_tests.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
     data = [
         ":datamodel_rendering_resources",
         "@brick_wall_texture//file",
@@ -291,9 +295,9 @@ cc_test(
     tags = ["local"],
     visibility = ["//visibility:public"],
     deps = [
-        ":engine_datamodel_math",
-        ":engine_datamodel_rendering",
-        ":engine_datamodel_visual",
+        _MATH_TARGET,
+        _RENDERING_TARGET,
+        _VISUAL_TARGET,
         "//parsers:rdmn_tga_parser",
         "@com_google_googletest//:gtest_main",
         "@nlohmann//:nlohmann_json",
@@ -315,10 +319,10 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 pkg_tar(
     name = "datamodel-core-data",
     srcs = [
-        ":engine_datamodel_core",
+        _CORE_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -335,10 +339,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":datamodel-core-package-data",
-    description = "RCBE game engine datamodel core libraries package",
+    description = "RDMN game engine datamodel core libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_core",
+    package = _CORE_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -347,10 +351,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-geometry-data",
     srcs = [
-        ":engine_datamodel_geometry",
+        _GEOMETRY_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -368,13 +372,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-geometry-package-data",
     depends = [
-        "rcbe_datamodel_core",
-        "rcbe_datamodel_visual",
+        _CORE_TARGET,
+        _VISUAL_TARGET,
     ],
-    description = "RCBE game engine datamodel geometry libraries package",
+    description = "RDMN game engine datamodel geometry libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_geometry",
+    package = _GEOMETRY_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -383,10 +387,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-math-data",
     srcs = [
-        ":engine_datamodel_math",
+        _MATH_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -404,12 +408,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-math-package-data",
     depends = [
-        "rcbe_datamodel_core",
+        _CORE_TARGET,
     ],
-    description = "RCBE game engine datamodel math libraries package",
+    description = "RDMN game engine datamodel math libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_math",
+    package = _MATH_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -418,10 +422,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-rendering-data",
     srcs = [
-        ":engine_datamodel_rendering",
+        _RENDERING_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -439,17 +443,20 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-rendering-package-data",
     depends = [
-        "rcbe_datamodel_core",
-        "rcbe_datamodel_geometry",
-        "rcbe_datamodel_math",
-        "rcbe_datamodel_visual",
-        "rcbe_gl_extensions",
-        "rdmn_trivial_logger",
-    ],
-    description = "RCBE game engine datamodel rendering libraries package",
+        _CORE_TARGET,
+        _GEOMETRY_TARGET,
+        _MATH_TARGET,
+        _VISUAL_TARGET,
+        "rdmn_engine_common_trivial_logger",
+    ] + select({
+        "//meta_package:rdmn_gl_linux": ["rdmn_engine_gl_extensions"],
+        "//meta_package:rdmn_vulkan_linux": ["vulkan-sdk"],
+        "//conditions:default": [],
+    }),
+    description = "RDMN game engine datamodel rendering libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_rendering",
+    package = _RENDERING_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -458,10 +465,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-system-data",
     srcs = [
-        ":engine_datamodel_system",
+        _SYSTEM_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -479,14 +486,14 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-system-package-data",
     depends = [
-        "rcbe_datamodel_core",
-        "rcbe_datamodel_math",
-        "rcbe_datamodel_visual"
+        _CORE_TARGET,
+        _MATH_TARGET,
+        _VISUAL_TARGET
     ],
-    description = "RCBE game engine datamodel system libraries package",
+    description = "RDMN game engine datamodel system libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_system",
+    package = _SYSTEM_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -495,10 +502,10 @@ pkg_deb(
 pkg_tar(
     name = "datamodel-visual-data",
     srcs = [
-        ":engine_datamodel_visual",
+        _VISUAL_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -515,11 +522,11 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":datamodel-visual-package-data",
-    depends = ["rcbe_datamodel_math"],
-    description = "RCBE game engine datamodel visual libraries package",
+    depends = [_MATH_TARGET],
+    description = "RDMN game engine datamodel visual libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_visual",
+    package = _VISUAL_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -533,7 +540,7 @@ pkg_tar(
         "include/datamodel/core/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/core",
+    package_dir = "/usr/include/rcbe/rcbe-engine/datamodel/core",
 )
 
 pkg_tar(
@@ -551,13 +558,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-core-headers-package-data",
     depends = [
-        "rcbe_datamodel_core",
-        "rcbe_datamodel_config",
+        _CORE_TARGET,
+        "rdmn_engine_config",
     ],
-    description = "RCBE game engine datamodel core headers package",
+    description = "RDMN game engine datamodel core headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_core_dev",
+    package = "{}_dev".format(_CORE_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -569,7 +576,7 @@ pkg_tar(
         "include/datamodel/geometry/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/geometry",
+    package_dir = "/usr/include/rcbe/rcbe-engine/datamodel/geometry",
 )
 
 pkg_tar(
@@ -587,14 +594,14 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-geometry-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev",
-        "rcbe_datamodel_visual_dev",
-        "rcbe_datamodel_geometry",
+        "{}_dev".format(_CORE_TARGET),
+        "{}_dev".format(_VISUAL_TARGET),
+        _GEOMETRY_TARGET,
     ],
-    description = "RCBE game engine datamodel geometry headers package",
+    description = "RDMN game engine datamodel geometry headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_geometry_dev",
+    package = "{}_dev".format(_GEOMETRY_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -606,7 +613,7 @@ pkg_tar(
         "include/datamodel/math/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/math",
+    package_dir = "/usr/include/rcbe/rcbe-engine/datamodel/math",
 )
 
 pkg_tar(
@@ -624,13 +631,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-math-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev",
-        "rcbe_datamodel_math",
+        "{}_dev".format(_CORE_TARGET),
+        _MATH_TARGET,
     ],
-    description = "RCBE game engine datamodel math headers package",
+    description = "RDMN game engine datamodel math headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_math_dev",
+    package = "{}_dev".format(_MATH_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -660,18 +667,18 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-rendering-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev",
-        "rcbe_datamodel_geometry_dev",
-        "rcbe_datamodel_math_dev",
-        "rcbe_datamodel_visual_dev",
-        "rcbe_datamodel_rendering",
-        "rcbe_gl_extensions_dev",
-        "rdmn_trivial_logger_dev",
+        "{}_dev".format(_CORE_TARGET),
+        "{}_dev".format(_GEOMETRY_TARGET),
+        "{}_dev".format(_MATH_TARGET),
+        "{}_dev".format(_GEOMETRY_TARGET),
+        _RENDERING_TARGET,
+        "rdmn_engine_gl_extensions_dev",
+        "rdmn_engine_common_trivial_logger_dev",
     ],
-    description = "RCBE game engine datamodel rendering headers package",
+    description = "RDMN game engine datamodel rendering headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_rendering_dev",
+    package = "{}_dev".format(_RENDERING_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -683,7 +690,7 @@ pkg_tar(
         "include/datamodel/system/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/system",
+    package_dir = "/usr/include/rcbe/rcbe-engine/datamodel/system",
 )
 
 pkg_tar(
@@ -701,15 +708,15 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-system-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev",
-        "rcbe_datamodel_math_dev",
-        "rcbe_datamodel_visual_dev",
-        "rcbe_datamodel_system",
+        "{}_dev".format(_CORE_TARGET),
+        "{}_dev".format(_MATH_TARGET),
+        "{}_dev".format(_VISUAL_TARGET),
+        _SYSTEM_TARGET,
     ],
-    description = "RCBE game engine datamodel system headers package",
+    description = "RDMN game engine datamodel system headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_system_dev",
+    package = "{}_dev".format(_SYSTEM_TARGET),
     version = ENGINE_VERSION_FULL,
 )
 
@@ -721,7 +728,7 @@ pkg_tar(
         "include/datamodel/visual/RGBAColor.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/datamodel/visual",
+    package_dir = "/usr/include/rcbe/rcbe-engine/datamodel/visual",
 )
 
 pkg_tar(
@@ -739,12 +746,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":datamodel-visual-headers-package-data",
     depends = [
-        "rcbe_datamodel_math_dev",
-        "rcbe_datamodel_visual",
+        "{}_dev".format(_MATH_TARGET),
+        _VISUAL_TARGET,
     ],
-    description = "RCBE game engine datamodel visual headers package",
+    description = "RDMN game engine datamodel visual headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_datamodel_visual_dev",
+    package = "{}_dev".format(_VISUAL_TARGET),
     version = ENGINE_VERSION_FULL,
 )

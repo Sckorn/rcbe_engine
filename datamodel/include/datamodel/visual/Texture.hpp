@@ -9,8 +9,6 @@
 #include <rcbe-engine/datamodel/visual/image_data.hpp>
 #include <rcbe-engine/datamodel/visual/texture_types.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
-
-#include <rdmn-engine/public_api.hpp>
 namespace rcbe::visual {
 
 class TextureImplementation;

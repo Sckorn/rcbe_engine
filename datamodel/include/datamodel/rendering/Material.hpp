@@ -6,8 +6,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include <rdmn-engine/public_api.hpp>
-
 #include <rcbe-engine/fundamentals/types.hpp>
 
 #ifdef RDMN_VULKAN

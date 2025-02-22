@@ -9,8 +9,6 @@
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/datamodel/visual/RGBAColor.hpp>
 
-#include <rdmn-engine/public_api.hpp>
-
 namespace rcbe::rendering {
 enum class RendererType {
     hardware,
