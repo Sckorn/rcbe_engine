@@ -1,29 +1,26 @@
-load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+load("//meta_package:rules.bzl", "r_cc_library")
 load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
 
 _PACKAGE_NAME = "camera"
 _CAMERA_LIB_TARGET = "{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
 
-cc_library(
+r_cc_library(
     name = _CAMERA_LIB_TARGET,
     srcs = glob(["src/**/*.cpp"]),
     hdrs = glob(["include/**/*.hpp"]),
-    defines = PUBLIC_API_PREFIX + select({
+    defines = select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
         "//meta_package:rdmn_gl_rasterizer_backend": ["RDMN_OPENGL"],
     }),
     include_prefix = "rcbe-engine",
-    linkopts = [
-        "-Wl,-soname,lib{}.so".format(_CAMERA_LIB_TARGET)
-    ],
     includes = ["include"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
-        "//common:engine_fundamentals",
-        "//datamodel:engine_datamodel_math",
-        "//datamodel:engine_datamodel_rendering",
-        "//common:rdmn_trivial_logger",
+        "//common:rdmn_engine_common_trivial_logger",
+        "//common:rdmn_engine_common_fundamentals",
+        "//datamodel:rdmn_engine_datamodel_math",
+        "//datamodel:rdmn_engine_datamodel_rendering",
     ],
 )
 
@@ -40,11 +37,11 @@ cc_test(
     visibility = ["//visibility:public"],
     deps = [
         _CAMERA_LIB_TARGET,
-        "//common:engine_fuzzy_logic",
-        "//common:engine_json_utils",
-        "//datamodel:engine_datamodel_math",
-        "//datamodel:engine_datamodel_rendering",
-        "//datamodel:engine_datamodel_visual",
+        "//common:rdmn_engine_common_fuzzy_logic",
+        "//common:rdmn_engine_common_json_utils",
+        "//datamodel:rdmn_engine_datamodel_math",
+        "//datamodel:rdmn_engine_datamodel_rendering",
+        "//datamodel:rdmn_engine_datamodel_visual",
         "@com_google_googletest//:gtest_main",
         "@nlohmann//:nlohmann_json",
     ],
@@ -84,13 +81,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":camera-package-data",
     depends = [
-        "rdmn_datamodel_math",
-        "rdmn_datamodel_rendering",
+        "rdmn_engine_datamodel_math",
+        "rdmn_engine_datamodel_rendering",
     ],
-    description = "RDMN game engine camera libraries package",
+    description = "RDMN game engine camera libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_camera",
+    package = _CAMERA_LIB_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -120,11 +117,11 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":camera-headers-package-data",
     depends = [
-        "rdmn_datamodel_math_dev",
-        "rdmn_datamodel_rendering_dev",
-        "rdmn_camera_dev",
+        "rdmn_engine_datamodel_math_dev",
+        "rdmn_engine_datamodel_rendering_dev",
+        _CAMERA_LIB_TARGET,
     ],
-    description = "RDMN game engine camera headers package",
+    description = "RDMN game engine camera headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
     package = "{}_dev".format(_CAMERA_LIB_TARGET),
