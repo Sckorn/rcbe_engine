@@ -29,7 +29,6 @@ r_cc_library(
             "-lX11",
         ], 
     }),
-    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = select({

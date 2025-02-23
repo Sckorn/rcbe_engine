@@ -1,7 +1,12 @@
-load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+load("//meta_package:rules.bzl", "r_cc_library")
+load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
 
-cc_library(
-    name = "rdmn_renderer",
+_PACKAGE_NAME = "renderer"
+
+_RENDERER_TARGET = "{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _RENDERER_TARGET,
     srcs = select({
         "//meta_package:rdmn_vk_rasterizer_backend": [
             "src/VulkanRenderer.cpp",
@@ -19,7 +24,7 @@ cc_library(
         "//datamodel:datamodel_rendering_resources",
         "//parsers:x3d_test_resources",
     ],
-    defines = PUBLIC_API_PREFIX + select({
+    defines = select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
         "//meta_package:rdmn_gl_rasterizer_backend": [
             "RDMN_OPENGL",
@@ -54,17 +59,17 @@ cc_library(
             "//gl_extensions:rdmn_engine_gl_extensions",
         ],
     }) + [
-        "//camera:rcbe_engine_camera",
-        "//datamodel:engine_datamodel_core",
-        "//datamodel:engine_datamodel_math",
-        "//datamodel:engine_datamodel_rendering",
-        "//datamodel:engine_datamodel_visual",
-        "//parsers:rdmn_tga_parser",  # will be used for skybox
-        "//ticker:rcbe_ticker",
-        "@nlohmann//:nlohmann_json",
+        "//camera:rdmn_engine_camera",
+        "//datamodel:rdmn_engine_datamodel_core",
+        "//datamodel:rdmn_engine_datamodel_math",
+        "//datamodel:rdmn_engine_datamodel_rendering",
+        "//datamodel:rdmn_engine_datamodel_visual",
+        "//parsers:rdmn_engine_parser_tga",  # will be used for skybox
+        "//ticker:rdmn_engine_ticker",
         "//meta_package:rdmn_engine_config",
-        "//common:rdmn_trivial_logger",
-        "//parsers:x3d_parser",  # will be used for skybox
+        "//common:rdmn_engine_common_trivial_logger",
+        "//parsers:rdmn_engine_parser_x3d",  # will be used for skybox
+        "@nlohmann//:nlohmann_json",
     ],
 )
 
@@ -81,10 +86,10 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 pkg_tar(
     name = "renderer-data",
     srcs = [
-        ":rdmn_renderer",
+        _RENDERER_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -102,18 +107,21 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":renderer-package-data",
     depends = [
-        "rcbe_datamodel_core",
-        "rcbe_datamodel_math",
-        "rcbe_datamodel_rendering",
-        "rcbe_datamodel_visual",
-        "rcbe_gl_extensions",
+        "rdmn_engine_datamodel_core",
+        "rdmn_engine_datamodel_math",
+        "rdmn_engine_datamodel_rendering",
+        "rdmn_engine_datamodel_visual",
         "rcbe_ticker",
-        "rdmn_trivial_logger",
-    ],
-    description = "RCBE game engine renderer libraries package",
+        "rdmn_engine_common_trivial_logger",
+    ] + select({
+        "//meta_package:rdmn_gl_linux": ["rdmn_engine_gl_extensions"],
+        "//meta_package:rdmn_vulkan_linux": ["vulkan-sdk"],
+        "//conditions:default": [],
+    }),
+    description = "RDMN game engine renderer libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rdmn_renderer",
+    package = _RENDERER_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -125,7 +133,7 @@ pkg_tar(
         "include/renderer/Renderer.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/renderer",
+    package_dir = "/usr/include/rcbe/rcbe-engine/renderer",
 )
 
 pkg_tar(
@@ -143,19 +151,22 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":renderer-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev",
-        "rcbe_datamodel_math_dev",
-        "rcbe_datamodel_rendering_dev",
-        "rcbe_datamodel_visual_dev",
-        "rcbe_gl_extensions_dev",
+        "rdmn_engine_datamodel_core_dev",
+        "rdmn_engine_datamodel_math_dev",
+        "rdmn_engine_datamodel_rendering_dev",
+        "rdmn_engine_datamodel_visual_dev",
         "rcbe_ticker_dev",
-        "rdmn_renderer",
-        "rdmn_trivial_logger_dev",
+        _RENDERER_TARGET,
+        "rdmn_engine_common_trivial_logger_dev",
         "nlohmann-json3-dev",
-    ],
-    description = "RCBE game engine renderer headers package",
+    ] + select({
+        "//meta_package:rdmn_gl_linux": ["rdmn_engine_gl_extensions"],
+        "//meta_package:rdmn_vulkan_linux": ["vulkan-sdk"],
+        "//conditions:default": [],
+    }),
+    description = "RDMN game engine renderer headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rdmn_renderer_dev",
+    package = "{}_dev".format(_RENDERER_TARGET),
     version = ENGINE_VERSION_FULL,
 )

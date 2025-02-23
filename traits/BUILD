@@ -1,11 +1,17 @@
-cc_library(
-    name = "rcbe_traits",
+load("//meta_package:rules.bzl", "r_cc_library")
+load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
+
+_PACKAGE_NAME = "type_traits"
+
+_TRAITS_TARGET = "{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _TRAITS_TARGET,
     hdrs = glob(["include/**/*.hpp"]),
     include_prefix = "rcbe-engine",
     includes = ["include"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
-    deps = [],
 )
 
 ### Packaging
@@ -24,7 +30,7 @@ pkg_tar(
         "include/traits/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/traits",
+    package_dir = "/usr/include/rcbe/rcbe-engine/traits",
 )
 
 pkg_tar(
@@ -41,9 +47,9 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":type-traits-headers-package-data",
-    description = "RCBE game engine type traits headers package",
+    description = "RDMN game engine type traits headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_type_traits_dev",
+    package = "{}_dev".format(_TRAITS_TARGET),
     version = ENGINE_VERSION_FULL,
 )

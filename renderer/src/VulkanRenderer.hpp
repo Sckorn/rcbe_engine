@@ -24,7 +24,6 @@
 #include <rcbe-engine/datamodel/rendering/VulkanBufferObject.hpp>
 #include <rcbe-engine/datamodel/rendering/VulkanGraphicsPipeline.hpp>
 #include <rcbe-engine/datamodel/rendering/renderer_config.hpp>
-#include <rdmn-engine/public_api.hpp>
 
 namespace rdmn::render {
 

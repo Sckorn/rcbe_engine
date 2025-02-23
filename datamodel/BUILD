@@ -298,7 +298,7 @@ cc_test(
         _MATH_TARGET,
         _RENDERING_TARGET,
         _VISUAL_TARGET,
-        "//parsers:rdmn_tga_parser",
+        "//parsers:rdmn_engine_parser_tga",
         "@com_google_googletest//:gtest_main",
         "@nlohmann//:nlohmann_json",
     ],

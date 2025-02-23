@@ -1,4 +1,7 @@
-load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+load("//meta_package:rules.bzl", "r_cc_library")
+load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
+
+_PACKAGE_NAME = "window_manager"
 
 _WINDOWS_COPTS = [
     "/c",
@@ -59,8 +62,10 @@ _WINDOWS_LINKOPTS = [
     "/MACHINE:X64"
 ]
 
-cc_library(
-    name = "rcbe_window_manager",
+_MANAGER_TARGET = "{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _MANAGER_TARGET,
     srcs = [
         "src/RWindow.cpp",
         "src/WindowManager.cpp",
@@ -90,19 +95,18 @@ cc_library(
             "-lXext",
         ], 
     }),
-    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
-        "//common:engine_json_utils",
-        "//datamodel:engine_datamodel_core",
-        "//datamodel:engine_datamodel_math",
-        "//datamodel:engine_datamodel_system",
-        "//datamodel:engine_datamodel_visual",
-        "//datamodel:engine_datamodel_rendering",
-        "//input_manager:rcbe_input_manager",
-        "//renderer:rdmn_renderer",
-        "//common:rdmn_trivial_logger",
+        "//common:rdmn_engine_common_json_utils",
+        "//common:rdmn_engine_common_trivial_logger",
+        "//datamodel:rdmn_engine_datamodel_core",
+        "//datamodel:rdmn_engine_datamodel_math",
+        "//datamodel:rdmn_engine_datamodel_system",
+        "//datamodel:rdmn_engine_datamodel_visual",
+        "//datamodel:rdmn_engine_datamodel_rendering",
+        "//input_manager:rdmn_engine_input_manager",
+        "//renderer:rdmn_engine_renderer",
         "@nlohmann//:nlohmann_json",
     ],
 )
@@ -120,10 +124,10 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 pkg_tar(
     name = "window-manager-data",
     srcs = [
-        ":rcbe_window_manager",
+        _MANAGER_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -141,18 +145,18 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":wm-package-data",
     depends = [
-        "rcbe_datamodel_core",
-        "rcbe_datamodel_math",
-        "rcbe_datamodel_system",
-        "rcbe_datamodel_visual",
-        "rcbe_input_manager",
-        "rdmn_renderer",
-        "rdmn_trivial_logger",
+        "rdmn_engine_datamodel_core",
+        "rdmn_engine_datamodel_math",
+        "rdmn_engine_datamodel_system",
+        "rdmn_engine_datamodel_visual",
+        "rdmn_engine_input_manager",
+        "rdmn_engine_renderer",
+        "rdmn_engine_common_trivial_logger",
     ],
-    description = "RCBE game engine window manager libraries package",
+    description = "RDMN game engine window manager libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_window_manager",
+    package = _MANAGER_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -164,7 +168,7 @@ pkg_tar(
         "include/core/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/core",
+    package_dir = "/usr/include/rcbe/rcbe-engine/core",
 )
 
 pkg_tar(
@@ -182,19 +186,19 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":wm-headers-package-data",
     depends = [
-        "rcbe_datamodel_core_dev",
-        "rcbe_datamodel_math_dev",
-        "rcbe_datamodel_system_dev",
-        "rcbe_datamodel_visual_dev",
-        "rcbe_input_manager_dev",
-        "rdmn_renderer_dev",
-        "rcbe_window_manager",
-        "rdmn_trivial_logger_dev",
+        "rdmn_engine_datamodel_core_dev",
+        "rdmn_engine_datamodel_math_dev",
+        "rdmn_engine_datamodel_system_dev",
+        "rdmn_engine_datamodel_visual_dev",
+        "rdmn_engine_input_manager_dev",
+        "rdmn_engine_renderer_dev",
+        "rdmn_engine_window_manager",
+        "rdmn_engine_common_trivial_logger_dev",
         "nlohmann-json3-dev",
     ],
-    description = "RCBE game engine window manager headers package",
+    description = "RDMN game engine window manager headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_window_manager_dev",
+    package = "{}_dev".format(_MANAGER_TARGET),
     version = ENGINE_VERSION_FULL,
 )

@@ -462,7 +462,7 @@ pkg_tar(
     name = "parsers-gltf-headers-data-dev",
     srcs = ["include/parsers/gltf/gltf_parser.hpp"],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/parsers/gltf",
+    package_dir = "/usr/include/rcbe/rcbe-engine/parsers/gltf",
 )
 
 pkg_tar(
