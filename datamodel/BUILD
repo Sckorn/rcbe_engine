@@ -76,7 +76,7 @@ r_cc_library(
     strip_include_prefix = _DATAMODEL_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = select({
-        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions:rdmn_engine_gl_extensions"],
         "//meta_package:rdmn_vk_rasterizer_backend": [],
     }) + [
         _MATH_TARGET,
@@ -203,7 +203,7 @@ r_cc_library(
     strip_include_prefix = _DATAMODEL_INCLUDE_PATH,
     visibility = ["//visibility:public"],
     deps = select({
-        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions:rdmn_engine_gl_extensions"],
         "//meta_package:rdmn_vk_rasterizer_backend": [],
     }) + select({
         "//meta_package:rdmn_vulkan_windows": ["@vulkan_windows//:vulkan_cc_library",],

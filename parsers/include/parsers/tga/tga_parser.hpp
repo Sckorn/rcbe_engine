@@ -1,8 +1,6 @@
 #ifndef RCBE_ENGINE_TGA_PARSER_HPP
 #define RCBE_ENGINE_TGA_PARSER_HPP
 
-#include <rdmn-engine/public_api.hpp>
-
 #include <rcbe-engine/datamodel/visual/image_data.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 

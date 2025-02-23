@@ -1,7 +1,12 @@
-load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+load("//meta_package:rules.bzl", "r_cc_library")
+load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
 
-cc_library(
-    name = "rcbe_input_manager",
+_PACKAGE_NAME = "input_manager"
+
+_INPUT_MNGR_TARGET = "{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+
+r_cc_library(
+    name = _INPUT_MNGR_TARGET,
     srcs = glob(["src/**/*.cpp"]),
     hdrs = [
         "include/core/AbstractInputManager.hpp", 
@@ -28,12 +33,12 @@ cc_library(
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = select({
-        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions"],
+        "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions:rdmn_engine_gl_extensions"],
         "//meta_package:rdmn_vk_rasterizer_backend": [],
     }) + [
-        "//common:rcbe_delegate",
-        "//datamodel:engine_datamodel_system",
-        "//common:rdmn_trivial_logger",
+        "//common:rdmn_engine_common_delegate",
+        "//datamodel:rdmn_engine_datamodel_system",
+        "//common:rdmn_engine_common_trivial_logger",
     ],
 )
 
@@ -50,10 +55,10 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 pkg_tar(
     name = "input-manager-data",
     srcs = [
-        ":rcbe_input_manager",
+        _INPUT_MNGR_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -71,13 +76,13 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":input-manager-package-data",
     depends = [
-        "rcbe_datamodel_system",
-        "rdmn_trivial_logger",
+        "rdmn_engine_datamodel_system",
+        "rdmn_engine_common_trivial_logger",
     ],
-    description = "RCBE game engine input manager libraries package",
+    description = "RDMN game engine input manager libraries package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_input_manager",
+    package = _INPUT_MNGR_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -89,7 +94,7 @@ pkg_tar(
         "include/core/**/*.hpp",
     ]),
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/core/",
+    package_dir = "/usr/include/rcbe/rcbe-engine/core/",
 )
 
 pkg_tar(
@@ -106,10 +111,10 @@ pkg_deb(
     architecture = TARGET_ARCH,
     built_using = "unzip (6.0.1)",
     data = ":input-manager-headers-package-data",
-    depends = ["rcbe_input_manager"],
-    description = "RCBE game engine input manager headers package",
+    depends = [_INPUT_MNGR_TARGET],
+    description = "RDMN game engine input manager headers package",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_input_manager_dev",
+    package = "{}_dev".format(_INPUT_MNGR_TARGET),
     version = ENGINE_VERSION_FULL,
 )

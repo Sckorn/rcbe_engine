@@ -51,7 +51,7 @@ cc_library(
     }) + select({
         "//meta_package:rdmn_vk_rasterizer_backend": [],
         "//meta_package:rdmn_gl_rasterizer_backend": [
-            "//gl_extensions",
+            "//gl_extensions:rdmn_engine_gl_extensions",
         ],
     }) + [
         "//camera:rcbe_engine_camera",
