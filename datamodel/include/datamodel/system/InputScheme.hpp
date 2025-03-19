@@ -9,8 +9,6 @@
 #include <rcbe-engine/datamodel/system/input_level_node.hpp>
 #include <rcbe-engine/datamodel/system/input_system_types.hpp>
 
-#include <rdmn-engine/public_api.hpp>
-
 namespace rcbe::core {
 class R_PUBLIC_API InputDeviceScheme {
 public:

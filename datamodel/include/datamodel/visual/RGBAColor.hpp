@@ -8,8 +8,6 @@
 #include <rcbe-engine/datamodel/math/Vector.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
-#include <rdmn-engine/public_api.hpp>
-
 namespace rcbe::visual {
 class R_PUBLIC_API RGBAColor {
 public:

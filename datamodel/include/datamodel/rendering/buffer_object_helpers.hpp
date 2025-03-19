@@ -6,8 +6,6 @@
 
 #include <rdmn-engine/logger/trivial_logger.hpp>
 
-#include <rdmn-engine/public_api.hpp>
-
 #include <rcbe-engine/datamodel/geometry/Mesh.hpp>
 #include <rcbe-engine/fundamentals/convinience.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>

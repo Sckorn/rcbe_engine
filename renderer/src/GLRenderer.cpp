@@ -7,8 +7,6 @@
 #include <ranges>
 #include <unordered_map>
 
-#include <boost/log/trivial.hpp>
-
 #include <rcbe-engine/core/gl_extensions.hpp>
 #include <rcbe-engine/datamodel/math/Matrix.hpp>
 #include <rcbe-engine/datamodel/math/matrix_helpers.hpp>
@@ -17,6 +15,8 @@
 #include <rcbe-engine/datamodel/rendering/ShaderProgram.hpp>
 #include <rcbe-engine/datamodel/rendering/matrix_helpers.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
+
+#include <rdmn-engine/logger/trivial_logger.hpp>
 
 namespace {
 static constexpr GLint ignore_errors[] = {GL_INVALID_VALUE};
@@ -151,7 +151,7 @@ void GLRenderer::start() {
         ticker_->wait();
 
     } catch (const std::exception &e) {
-        BOOST_LOG_TRIVIAL(error) << "Exception in main rendering routine " << e.what();
+        RDMN_LOG(RDMN_LOG_ERROR) << "Exception in main rendering routine " << e.what();
         stop();
         throw;
     }
@@ -172,7 +172,7 @@ void GLRenderer::stop() {
 
 void GLRenderer::addObject(rcbe::core::CoreObject &&object) {
     if (!object.hasComponent<rcbe::rendering::Material>() && !object.hasComponent<rcbe::geometry::Mesh>()) {
-        BOOST_LOG_TRIVIAL(error) << "Can't add object to renderer!";
+        RDMN_LOG(RDMN_LOG_ERROR) << "Can't add object to renderer!";
         return;
     }
 
@@ -220,7 +220,7 @@ void GLRenderer::drawBuffers(
              const std::unordered_map<size_t, rcbe::core::CoreObject> &shader_prog) {
             /// TODO: renderer is hardware, this only changes wheather shaders are used or not.
             bool hardware_renderer = (config_.renderer_type == rcbe::rendering::RendererType ::hardware);
-            BOOST_LOG_TRIVIAL(debug) << "Renderer is " << ((hardware_renderer) ? "hardware." : "software.");
+            RDMN_LOG(RDMN_LOG_DEBUG) << "Renderer is " << ((hardware_renderer) ? "hardware." : "software.");
             // bind VBOs with IDs and set the buffer offsets of the bound VBOs
             // When buffer object is bound with its ID, all pointers in gl*Pointer()
             // are treated as offset instead of real pointer.
@@ -329,7 +329,7 @@ void GLRenderer::renderFrame() {
         }
     }
 
-    BOOST_LOG_TRIVIAL(debug) << "VBO is " << (vbo_supported_ ? "" : "not ") << "supported";
+    RDMN_LOG(RDMN_LOG_DEBUG) << "VBO is " << (vbo_supported_ ? "" : "not ") << "supported";
 
     rcbe::core::GLErrorProcessor error_processor {};
 
@@ -363,7 +363,7 @@ void GLRenderer::renderFrame() {
             }
         }
 
-        BOOST_LOG_TRIVIAL(debug) << "Trying to invoke drawBuffers";
+        RDMN_LOG(RDMN_LOG_DEBUG) << "Trying to invoke drawBuffers";
         drawBuffers(*vertex_buffer_, *index_buffer_, objects_);
     }
     /// end rendering start
@@ -371,8 +371,8 @@ void GLRenderer::renderFrame() {
     auto error = glGetError();
     if (error != GL_NO_ERROR) {
         if (!isErrorIgnored(error)) {
-            BOOST_LOG_TRIVIAL(error) << error_processor(error);
-            BOOST_LOG_TRIVIAL(error) << "error hex code " << std::hex << error;
+            RDMN_LOG(RDMN_LOG_ERROR) << error_processor(error);
+            RDMN_LOG(RDMN_LOG_ERROR) << "error hex code " << std::hex << error;
         }
     }
 

@@ -5,7 +5,6 @@
 
 #include <nlohmann/json_fwd.hpp>
 
-#include <rdmn-engine/public_api.hpp>
 #include <rcbe-engine/fundamentals/types.hpp>
 
 namespace rcbe::core {

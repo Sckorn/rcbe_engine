@@ -4,7 +4,7 @@
 #include <Windows.h>
 
 namespace rdmn::core {
-struct windows_input_event {
+struct R_PUBLIC_API windows_input_event {
     UINT type;
     WPARAM wparam;
     LPARAM lparam;

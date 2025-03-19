@@ -5,8 +5,6 @@
 
 #include <vulkan/vulkan.hpp>
 
-#include <rdmn-engine/public_api.hpp>
-
 #include <rcbe-engine/datamodel/core/Dimensions.hpp>
 #include <rcbe-engine/datamodel/visual/Texture.hpp>
 

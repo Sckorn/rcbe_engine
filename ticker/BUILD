@@ -1,26 +1,42 @@
-load("//meta_package:global_variables.bzl", "PUBLIC_API_PREFIX")
+load("//meta_package:global_variables.bzl", "SHARED_LIB_SUFFIX")
+load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
+load("//meta_package:rules.bzl", "r_cc_library")
+load("//meta_package:rules.bzl", "r_cc_shared_library")
 
-cc_library(
-    name = "rcbe_ticker",
+_PACKAGE_NAME = "ticker"
+
+_TICKER_TARGET = "{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME)
+_SHARED_TICKER_TARGET = "{}_{}_{}".format(ENGINE_BUILD_TARGET_PREFIX, _PACKAGE_NAME, SHARED_LIB_SUFFIX)
+
+r_cc_library(
+    name = _TICKER_TARGET,
     srcs = glob(["src/**/*.cpp"]),
     hdrs = glob(["include/**/*.hpp"]),
     include_prefix = "rcbe-engine",
     includes = ["include"],
-    defines = PUBLIC_API_PREFIX,
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
-        "//traits:rcbe_traits",
-        "//common:rdmn_trivial_logger",
+        "//common:rdmn_engine_common_trivial_logger",
+        "//traits:rdmn_engine_type_traits",
+    ],
+)
+
+r_cc_shared_library(
+    name = _SHARED_TICKER_TARGET,
+    deps = [_TICKER_TARGET],
+    shared_lib_name = _TICKER_TARGET,
+    visibility = ["//visibility:public"],
+    dynamic_deps = [
+        "//common:rdmn_engine_common_trivial_logger_shared",
     ],
 )
 
 ### tests
 
 cc_test(
-    name = "rcbe_ticker_tests",
+    name = "{}_tests".format(_TICKER_TARGET),
     srcs = glob(["test/*.cpp"]),
-    copts = ["-Iexternal/gtest/include"],
     defines = select({
         "//meta_package:rdmn_vk_rasterizer_backend": ["RDMN_VULKAN"],
         "//meta_package:rdmn_gl_rasterizer_backend": [
@@ -29,7 +45,7 @@ cc_test(
     }),
     visibility = ["//visibility:public"],
     deps = [
-        ":rcbe_ticker",
+        _TICKER_TARGET,
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -39,7 +55,6 @@ cc_test(
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
-load("//meta_package:global_variables.bzl", "BOOST_TARGET_VERSION")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
 load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 
@@ -48,10 +63,10 @@ load("//meta_package:global_variables.bzl", "PROJECT_MAINTAINER")
 pkg_tar(
     name = "ticker-data",
     srcs = [
-        ":rcbe_ticker",
+        _SHARED_TICKER_TARGET,
     ],
     mode = "0644",
-    package_dir = "/usr/local/lib",
+    package_dir = "/usr/lib",
 )
 
 pkg_tar(
@@ -69,12 +84,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":ticker-package-data",
     depends = [
-        "libboost-log{}.0".format(BOOST_TARGET_VERSION),
+        "rdmn_engine_common_trivial_logger",
     ],
-    description = "RCBE game engine ticker libraries package",
+    description = "RDMN game engine ticker libraries package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_ticker",
+    package = _TICKER_TARGET,
     version = ENGINE_VERSION_FULL,
 )
 
@@ -86,7 +101,7 @@ pkg_tar(
         "include/ticker/Ticker.hpp",
     ],
     mode = "0644",
-    package_dir = "/usr/local/include/rcbe/rcbe-engine/ticker",
+    package_dir = "/usr/include/rcbe/rcbe-engine/ticker",
 )
 
 pkg_tar(
@@ -104,12 +119,12 @@ pkg_deb(
     built_using = "unzip (6.0.1)",
     data = ":ticker-headers-package-data",
     depends = [
-        "rcbe_type_traits_dev_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
-        "rcbe_ticker_{}_{}".format(ENGINE_VERSION_FULL, TARGET_ARCH),
+        "rdmn_engine_type_traits_dev",
+        _TICKER_TARGET,
     ],
-    description = "RCBE game engine ticker headers package",
+    description = "RDMN game engine ticker headers package.",
     homepage = PROJECT_URL,
     maintainer = PROJECT_MAINTAINER,
-    package = "rcbe_ticker_dev",
+    package = "{}_dev".format(_TICKER_TARGET),
     version = ENGINE_VERSION_FULL,
 )

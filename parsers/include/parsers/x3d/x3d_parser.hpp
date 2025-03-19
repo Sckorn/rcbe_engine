@@ -5,7 +5,6 @@
 
 namespace rcbe::parsers {
 R_PUBLIC_API std::vector<geometry::Mesh> parse_meshes(const std::string &file_path);
-R_PUBLIC_API std::vector<geometry::Mesh> parse_meshes(std::istream &&input_stream);
 }// namespace rcbe::parsers
 
 #endif

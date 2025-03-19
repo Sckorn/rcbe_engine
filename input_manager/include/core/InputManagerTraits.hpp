@@ -17,7 +17,7 @@
 #endif
 
 namespace rcbe::utility {
-class InputManagerTraits {
+class R_PUBLIC_API InputManagerTraits {
 public:
 
     static constexpr size_t DEFAULT_MAXIMUM_DELEGATE_SIZE = 10;

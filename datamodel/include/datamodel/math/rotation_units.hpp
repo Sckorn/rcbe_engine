@@ -7,7 +7,6 @@
 
 #include <rcbe-engine/fundamentals/types.hpp>
 #include <rcbe-engine/utils/math_utils.hpp>
-#include <rdmn-engine/public_api.hpp>
 
 namespace rcbe::math {
 

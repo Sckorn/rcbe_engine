@@ -14,7 +14,6 @@
 #include <rcbe-engine/fundamentals/types.hpp>
 #include <rcbe-engine/fuzzy_logic/fuzzy_logic.hpp>
 #include <rcbe-engine/utils/math_utils.hpp>
-#include <rdmn-engine/public_api.hpp>
 
 #ifdef RDMN_GLM_INTEGRATION
 #include <glm/mat4x4.hpp>

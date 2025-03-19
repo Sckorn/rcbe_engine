@@ -3,7 +3,6 @@
 
 #include <sstream>
 
-#include <rdmn-engine/public_api.hpp>
 #include <rdmn-engine/logger/LoggerType.hpp>
 
 namespace rdmn::core::log {
