@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product Name='RDMN Engine Renderer Sample' Id='1fadf4e3-cb3f-4a07-9175-3b6a05459d53' UpgradeCode='1fadf4e3-cb3f-4a07-9175-3b6a05459d53'
-    Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='RADAMEON Entertainment'>
+    Language='1033' Codepage='1252' Version='0.1.0' Manufacturer='RADAMEON Entertainment'>
 
     <Package Id='*' Keywords='Installer'
       Description="RDMN Engine sample renderering application"
@@ -139,7 +139,7 @@
 
             <Component Id='MainExecutable' Guid='1fadf4e3-cb3f-4a07-9175-3b6a05459d53'>
               <File Id='ExampleEXE' Name='renderer_sample.exe' DiskId='1' Source='renderer_sample.exe' KeyPath='yes'>
-                <Shortcut Id="startmenuExample" Directory="ProgramMenuDir" Name="RDMN Engine" WorkingDirectory='INSTALLDIR' IconIndex="0" Advertise="yes" />
+                <Shortcut Id="startmenuExample" Directory="ProgramMenuDir" Name="RDMN Engine" WorkingDirectory='INSTALLDIR' Icon="radameon_logo.ico" IconIndex="0" Advertise="yes" />
                 <Shortcut Id="desktopExample" Directory="DesktopFolder" Name="RDMN Engine" WorkingDirectory='INSTALLDIR' IconIndex="0" Advertise="yes" />
               </File>
             </Component>
@@ -305,7 +305,9 @@
     <UIRef Id="WixUI_Mondo" />
     <UIRef Id="WixUI_ErrorProgressText" />
 
-    <Icon Id="renderer_sample.exe" SourceFile="renderer_sample.exe" />
+    <Icon Id="radameon_logo.ico" SourceFile="$(sys.SOURCEFILEDIR)/resources/radameon_logo.ico" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="$(sys.SOURCEFILEDIR)/resources/license.rtf" />
 
   </Product>
 </Wix>
