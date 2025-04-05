@@ -66,6 +66,7 @@ cc_binary(
 ### packaging 
 
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("@rules_wix//:rules.bzl", "pkg_msi")
 load("//meta_package:global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "TARGET_ARCH")
 load("//meta_package:global_variables.bzl", "PROJECT_URL")
@@ -222,4 +223,39 @@ pkg_deb(
     maintainer = PROJECT_MAINTAINER,
     package = "{}_renderer_sample".format(ENGINE_BUILD_TARGET_PREFIX),
     version = ENGINE_VERSION_FULL,
+)
+
+pkg_msi(
+  name = "rdmn_engine_renderer_sample.msi",
+  src = "packaging/renderer_sample.wxs",
+  deps = [
+    ":renderer_sample",
+    "//renderer:rdmn_engine_renderer_shared",
+    "//camera:rdmn_engine_camera_shared",
+    "//common:rdmn_engine_common_json_utils_shared",
+    "//datamodel:rdmn_engine_datamodel_math_shared",
+    "//datamodel:rdmn_engine_datamodel_geometry_shared",
+    "//datamodel:rdmn_engine_datamodel_visual_shared",
+    "//datamodel:rdmn_engine_datamodel_system_shared",
+    "//datamodel:rdmn_engine_datamodel_rendering_shared",
+    "//parsers:rdmn_engine_parser_stl_shared",
+    "//parsers:rdmn_engine_parser_gltf_shared",
+    "//parsers:rdmn_engine_parser_tga_shared",
+    "//parsers:rdmn_engine_parser_x3d_shared",
+    "//window_manager:rdmn_engine_window_manager_shared",
+    "//input_manager:rdmn_engine_input_manager_shared",
+    "//common:rdmn_engine_common_trivial_logger_shared",
+    #data 
+    "//datamodel:datamodel_rendering_resources",
+    "//datamodel:datamodel_system_resources",
+    "//parsers:x3d_test_resources",
+    "@awesomeface_texture//file",
+    "@brick_wall_texture//file",
+    "@gltf_test_data_archive//:gltf_tests_archive",
+    "@low_poly_wolf_stl//file",
+  ],
+  arch = "x64",
+  exts = [
+    "WixUiExtension",
+  ],
 )

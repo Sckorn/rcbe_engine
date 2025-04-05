@@ -1,3 +1,5 @@
+load("@rules_wix//:rules.bzl", "pkg_msi")
+
 cc_binary(
     name = "test_config_settings",
     srcs = select({
@@ -10,4 +12,16 @@ cc_binary(
         "//conditions:default": [],
     }),
     deps = ["//meta_package:rdmn_engine_config"],
+)
+
+pkg_msi(
+  name = "test_config_settings.msi",
+  src = "packaging/test_config_settings.wxs",
+  deps = [
+    ":test_config_settings",
+  ],
+  arch = "x64",
+  exts = [
+    "WixUiExtension",
+  ],
 )

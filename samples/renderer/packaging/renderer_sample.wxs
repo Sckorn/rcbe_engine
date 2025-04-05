@@ -1,0 +1,311 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <Product Name='RDMN Engine Renderer Sample' Id='1fadf4e3-cb3f-4a07-9175-3b6a05459d53' UpgradeCode='1fadf4e3-cb3f-4a07-9175-3b6a05459d53'
+    Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='RADAMEON Entertainment'>
+
+    <Package Id='*' Keywords='Installer'
+      Description="RDMN Engine sample renderering application"
+      Comments='comment' Manufacturer='RADAMEON Entertainment'
+      Platform="x64"
+      InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+
+    <Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
+    <Property Id='DiskPrompt' Value="RDMN Engine" />
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFiles64Folder' Name='PFiles'>
+        <Directory Id='RADAMEON' Name='RADAMEON'>
+          <Directory Id='INSTALLDIR' Name='RDMN Engine Renderer Sample'>
+            
+            <Directory Id='Parsers' Name='parsers'>
+              <Directory Id='Test' Name='test'>
+                <Directory Id='Resources' Name='resources'>
+
+                  <Component Id='SimpleEdge' Guid='fbda34c1-0591-4148-b523-abe73a4af5c0'>
+                    <File Id='SimpleEdgeX3d' Name='simple_edge_quad.x3d' DiskId='1' Source='renderer_sample.exe.runfiles/_main/parsers/test/resources/simple_edge_quad.x3d' KeyPath='yes'>
+                    </File>
+                  </Component>
+
+                </Directory>
+              </Directory>
+            </Directory>
+
+            
+
+            <Directory Id='External' Name='external'>
+
+              <Directory Id='AwesomeDir' Name='awesomeface_texture'>
+                <Directory Id='AwesomeFileDir' Name='file'>
+
+                  <Component Id='FaceTex' Guid='8d355e8a-f221-4d36-b140-0cc39a168fcd'>
+                    <File Id='FaceTexTga' Name='awesomeface_texture.tga' DiskId='1' Source='renderer_sample.exe.runfiles/awesomeface_texture/file/awesomeface_texture.tga' KeyPath='yes'>
+                    </File>
+                  </Component>
+
+                </Directory>
+              </Directory>
+
+              <Directory Id='BrickWallDir' Name='brick_wall_texture'>
+                <Directory Id='BrickWallFileDir' Name='file'>
+
+                  <Component Id='WallTex' Guid='1f4ad76d-75c2-4495-8d35-6db1a3ebc379'>
+                    <File Id='WallTexTga' Name='brick_wall_texture.tga' DiskId='1' Source='renderer_sample.exe.runfiles/brick_wall_texture/file/brick_wall_texture.tga' KeyPath='yes'>
+                    </File>
+                  </Component>
+
+                </Directory>
+              </Directory>
+
+              <Directory Id='GltfBaseDir' Name='gltf_test_data_archive'>
+                <Directory Id='VkRoomDir' Name='viking_room'>
+
+                  <Component Id='SceneGltf' Guid='c4db2a86-2b3f-49bc-ac49-09eeb4e71c9d'>
+                    <File Id='SceneGltfFile' Name='scene.gltf' DiskId='1' Source='renderer_sample.exe.runfiles/gltf_test_data_archive/viking_room/scene.gltf' KeyPath='yes'>
+                    </File>
+                  </Component>
+
+                  <Component Id='SceneBin' Guid='7e28e0d0-adfd-40e4-ad40-67df84ba2e02'>
+                    <File Id='SceneBinfFile' Name='scene.bin' DiskId='1' Source='renderer_sample.exe.runfiles/gltf_test_data_archive/viking_room/scene.bin' KeyPath='yes'>
+                    </File>
+                  </Component>
+
+                  <Directory Id='VkRoomTexDir' Name='textures'>
+                    <Component Id='Material2' Guid='b99f800f-b032-4d55-b16c-d68078447435'>
+                      <File Id='Material2Tga' Name='Material_2_baseColor.tga' DiskId='1' Source='renderer_sample.exe.runfiles/gltf_test_data_archive/viking_room/textures/Material_2_baseColor.tga' KeyPath='yes'>
+                      </File>
+                    </Component>
+
+                    <Component Id='Material3' Guid='24a15dda-39c4-48b7-b1e6-5841a7bc9037'>
+                      <File Id='Material3Tga' Name='Material_3_baseColor.tga' DiskId='1' Source='renderer_sample.exe.runfiles/gltf_test_data_archive/viking_room/textures/Material_3_baseColor.tga' KeyPath='yes'>
+                      </File>
+                    </Component>
+                  </Directory>
+
+                </Directory>
+              </Directory>
+
+            </Directory>
+
+            <Directory Id='Datamodel' Name='datamodel'>
+              <Directory Id='DatamodelData' Name='data'>
+                <Directory Id='DatamodelDataSystem' Name='system'>
+
+                  <Component Id='WindowConfig' Guid='53829d56-4d7e-42bf-9e67-890f44bc580b'>
+                    <File Id='WindowConfigJson' Name='windows_window_config.json' DiskId='1' Source='renderer_sample.exe.runfiles/_main/datamodel/data/system/windows_window_config.json' KeyPath='yes'>
+                    </File>
+                  </Component>
+
+                </Directory>
+
+                <Directory Id='DatamodelDataRendering' Name='rendering'>
+
+                  <Directory Id='DatamodelDataRenderingShaders' Name='shaders'>
+
+                    <Component Id='DefaultVertShader' Guid='aadd77d5-2793-41e3-bd1f-4100aa5b1350'>
+                      <File Id='DefaultVertShaderSpv' Name='default_vulkan.vert.spv' DiskId='1' Source='renderer_sample.exe.runfiles/_main/datamodel/data/rendering/shaders/default_vulkan.vert.spv' KeyPath='yes'>
+                      </File>
+                    </Component>
+
+                    <Component Id='DefaultFragShader' Guid='331d10cb-2dc6-428f-8371-eaeda529dc79'>
+                      <File Id='DefaultFragShaderSpv' Name='default_vulkan.frag.spv' DiskId='1' Source='renderer_sample.exe.runfiles/_main/datamodel/data/rendering/shaders/default_vulkan.frag.spv' KeyPath='yes'>
+                      </File>
+                    </Component>
+
+                    <Component Id='VkRoomVertShader' Guid='cb2af1c4-5e9d-474c-8721-cd8efd9bca51'>
+                      <File Id='VkRoomVertShaderSpv' Name='viking_room.vert.spv' DiskId='1' Source='renderer_sample.exe.runfiles/_main/datamodel/data/rendering/shaders/viking_room.vert.spv' KeyPath='yes'>
+                      </File>
+                    </Component>
+
+                    <Component Id='VkRoomFragShader' Guid='f258d7c6-a3c8-4083-90e5-bdc58970c09b'>
+                      <File Id='VkRoomFragShaderSpv' Name='viking_room.frag.spv' DiskId='1' Source='renderer_sample.exe.runfiles/_main/datamodel/data/rendering/shaders/viking_room.frag.spv' KeyPath='yes'>
+                      </File>
+                    </Component>
+
+                    <Component Id='WolfShader' Guid='85aad3d6-9e41-4868-923b-b1bebfa97df7'>
+                      <File Id='WolfFragShaderSpv' Name='wolf_vulkan.frag.spv' DiskId='1' Source='renderer_sample.exe.runfiles/_main/datamodel/data/rendering/shaders/wolf_vulkan.frag.spv' KeyPath='yes'>
+                      </File>
+                    </Component>
+
+                  </Directory>
+
+                  <Component Id='RendererConfig' Guid='f2607902-6e89-4348-995e-5701c38e9ad3'>
+                    <File Id='RendererConfigJson' Name='windows_vulkan_renderer_config.json' DiskId='1' Source='renderer_sample.exe.runfiles/_main/datamodel/data/rendering/windows_vulkan_renderer_config.json' KeyPath='yes'>
+                    </File>
+                  </Component>
+
+                </Directory>  
+              </Directory>
+            </Directory>
+
+            <Component Id='MainExecutable' Guid='1fadf4e3-cb3f-4a07-9175-3b6a05459d53'>
+              <File Id='ExampleEXE' Name='renderer_sample.exe' DiskId='1' Source='renderer_sample.exe' KeyPath='yes'>
+                <Shortcut Id="startmenuExample" Directory="ProgramMenuDir" Name="RDMN Engine" WorkingDirectory='INSTALLDIR' IconIndex="0" Advertise="yes" />
+                <Shortcut Id="desktopExample" Directory="DesktopFolder" Name="RDMN Engine" WorkingDirectory='INSTALLDIR' IconIndex="0" Advertise="yes" />
+              </File>
+            </Component>
+
+            <Component Id='RendererDep' Guid='c3294f77-8a3f-4b79-bc19-720a151c2092'>
+              <File Id='RendererDLL' Name='rdmn_engine_renderer.dll' DiskId='1' Source='rdmn_engine_renderer.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='WindowManagerDep' Guid='678189b2-8afe-4605-a326-c0ca77903fb9'>
+              <File Id='WindowManager' Name='rdmn_engine_window_manager.dll' DiskId='1' Source='rdmn_engine_window_manager.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='TickerDep' Guid='8be4a595-9a31-4d48-823c-c4340ee37b9c'>
+              <File Id='Ticker' Name='rdmn_engine_ticker.dll' DiskId='1' Source='rdmn_engine_ticker.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='X3dDep' Guid='627e8fe7-f607-4130-95cd-688c73475f45'>
+              <File Id='X3dDLL' Name='rdmn_engine_parser_x3d.dll' DiskId='1' Source='rdmn_engine_parser_x3d.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='TgaDep' Guid='446a388d-aec3-48d9-91f9-5553cab47596'>
+              <File Id='TgaDLL' Name='rdmn_engine_parser_tga.dll' DiskId='1' Source='rdmn_engine_parser_tga.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='StlDep' Guid='e88a7280-98d6-4847-a481-1868c5073022'>
+              <File Id='StlDLL' Name='rdmn_engine_parser_stl.dll' DiskId='1' Source='rdmn_engine_parser_stl.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='GltfDep' Guid='cf48b976-1ebc-4b19-9107-2885cb28589c'>
+              <File Id='GltfDLL' Name='rdmn_engine_parser_gltf.dll' DiskId='1' Source='rdmn_engine_parser_gltf.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='InputManagerDep' Guid='16d07440-a416-4f0d-9b91-64110d817cf3'>
+              <File Id='InputManagerDLL' Name='rdmn_engine_input_manager.dll' DiskId='1' Source='rdmn_engine_input_manager.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='DatamodelVisualDep' Guid='bfdca9dc-773b-425a-8673-dc57638f0fa3'>
+              <File Id='DatamodelVisualDLL' Name='rdmn_engine_datamodel_visual.dll' DiskId='1' Source='rdmn_engine_datamodel_visual.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='DatamodelSystemDep' Guid='6b177e16-a0dc-4ddc-a287-19d2fb7911b0'>
+              <File Id='DatamodelSystemDLL' Name='rdmn_engine_datamodel_system.dll' DiskId='1' Source='rdmn_engine_datamodel_system.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='DatamodelRenderingDep' Guid='394c34a2-ac03-423d-aa36-b486be599466'>
+              <File Id='DatamodelRenderingDLL' Name='rdmn_engine_datamodel_rendering.dll' DiskId='1' Source='rdmn_engine_datamodel_rendering.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='DatamodelMathDep' Guid='3e35c794-8a09-4eea-ac9c-69fd5aa8843b'>
+              <File Id='DatamodelMathDLL' Name='rdmn_engine_datamodel_math.dll' DiskId='1' Source='rdmn_engine_datamodel_math.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='DatamodelGeometryDep' Guid='70fb76bf-289f-4d98-952f-e13418c68398'>
+              <File Id='DatamodelGeometryDLL' Name='rdmn_engine_datamodel_geometry.dll' DiskId='1' Source='rdmn_engine_datamodel_geometry.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='DatamodelCoreDep' Guid='08140a76-e8a4-42f7-a9e8-1adc96e8e671'>
+              <File Id='DatamodelCoreDLL' Name='rdmn_engine_datamodel_core.dll' DiskId='1' Source='rdmn_engine_datamodel_core.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='LoggerDep' Guid='a08e51ac-2992-4b22-be4a-cb00131f140a'>
+              <File Id='LoggerDLL' Name='rdmn_engine_common_trivial_logger.dll' DiskId='1' Source='rdmn_engine_common_trivial_logger.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='JsonUtilsDep' Guid='862dc75d-6f55-42c7-be45-27677be4b37b'>
+              <File Id='JsonUtilsDLL' Name='rdmn_engine_common_json_utils.dll' DiskId='1' Source='rdmn_engine_common_json_utils.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='FsUtilsDep' Guid='4d51f8b3-875f-4df3-b44b-465f0a53cb71'>
+              <File Id='FsUtilsDLL' Name='rdmn_engine_common_filesystem_utils.dll' DiskId='1' Source='rdmn_engine_common_filesystem_utils.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='BinToolsDep' Guid='5ef767f7-7ac4-40dc-803c-df2557e7da66'>
+              <File Id='BinToolsDLL' Name='rdmn_engine_common_binary_tools.dll' DiskId='1' Source='rdmn_engine_common_binary_tools.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+            <Component Id='CameraDep' Guid='36634b8a-eded-4c24-8555-e5a904e6e718'>
+              <File Id='CameraDLL' Name='rdmn_engine_camera.dll' DiskId='1' Source='rdmn_engine_camera.dll' KeyPath='yes'>
+              </File>
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="RADAMEON">
+          <Component Id="ProgramMenuDir" Guid="76d62a84-6abb-42db-8f67-729ac9afa147">
+            <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
+            <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+
+    <Feature Id='Complete' Title='Example' Description='The complete example package.'
+      Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+      <Feature Id='MainProgram' Title='Program' Description='The main executable.' Level='1'>
+        <ComponentRef Id='MainExecutable' />
+        <ComponentRef Id='RendererDep' />
+        <ComponentRef Id='WindowManagerDep' />
+        <ComponentRef Id='TickerDep' />
+        <ComponentRef Id='X3dDep' />
+        <ComponentRef Id='TgaDep' />
+        <ComponentRef Id='StlDep' />
+        <ComponentRef Id='GltfDep' />
+        <ComponentRef Id='InputManagerDep' />
+        <ComponentRef Id='DatamodelVisualDep' />
+        <ComponentRef Id='DatamodelSystemDep' />
+        <ComponentRef Id='DatamodelRenderingDep' />
+        <ComponentRef Id='DatamodelMathDep' />
+        <ComponentRef Id='DatamodelGeometryDep' />
+        <ComponentRef Id='DatamodelCoreDep' />
+        <ComponentRef Id='LoggerDep' />
+        <ComponentRef Id='JsonUtilsDep' />
+        <ComponentRef Id='FsUtilsDep' />
+        <ComponentRef Id='BinToolsDep' />
+        <ComponentRef Id='CameraDep' />
+        <ComponentRef Id='ProgramMenuDir' />
+
+        <ComponentRef Id='WindowConfig' />
+        <ComponentRef Id='RendererConfig' />
+
+        <ComponentRef Id='DefaultVertShader' />
+        <ComponentRef Id='DefaultFragShader' />
+        <ComponentRef Id='VkRoomVertShader' />
+        <ComponentRef Id='VkRoomFragShader' />
+        <ComponentRef Id='WolfShader' />
+
+        <ComponentRef Id='FaceTex' />
+        <ComponentRef Id='WallTex' />
+
+        <ComponentRef Id='SceneGltf' />
+        <ComponentRef Id='SceneBin' />
+        <ComponentRef Id='Material2' />
+        <ComponentRef Id='Material3' />
+
+        <ComponentRef Id='SimpleEdge' />
+      </Feature>
+
+    </Feature>
+
+    <UIRef Id="WixUI_Mondo" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Icon Id="renderer_sample.exe" SourceFile="renderer_sample.exe" />
+
+  </Product>
+</Wix>

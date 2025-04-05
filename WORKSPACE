@@ -131,6 +131,21 @@ http_archive(
     ],
 )
 
+RULES_WIX_COMMIT = "3c16deac685466a380d555f186de61d07c7d2cbe"
+
+http_archive(
+    name = "rules_wix",
+    url = "https://github.com/mjbots/rules_wix/archive/{}.zip".format(RULES_WIX_COMMIT),
+
+    # Replace this with the value from the bazel error message.
+    sha256 = "6d6d0fd3f76496d44df7195989e9eba36bc73727e07a9a013fff2977018ff949",
+
+    strip_prefix = "rules_wix-{}".format(RULES_WIX_COMMIT),
+)
+
+load("@rules_wix//:deps.bzl", "add_wix_deps")
+add_wix_deps()
+
 RULES_PKG_VERSION = "0.9.1"
 
 http_archive(
