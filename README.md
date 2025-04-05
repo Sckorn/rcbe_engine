@@ -5,11 +5,11 @@ Video game framework (to-be), who's main purpose is to be a training pet-project
 
 Supported and to-be supported architectures are listed in the table below.
 
-|Arch|Support status|
-|:------|----------|
-|x86-64|:heavy_check_mark:|
-|aarch64|WIP|
-|RV64|TBD|
+|Arch|Linux status|Windows status|
+|:------|----------|---|
+|x86-64|:heavy_check_mark:|:heavy_check_mark:|
+|aarch64|WIP|TBD|
+|RV64|TBD|:x:|
 
 ## OS support
 
@@ -18,7 +18,7 @@ Supported and to-be supported OS are listed in the table below.
 |OS|Support status|
 |:------|----------|
 |Linux (Debian based)|:heavy_check_mark:|
-|Windows|WIP|
+|Windows|:heavy_check_mark:|
 |MacOS|TBD|
 
 ## Compiler and rasterizer support
