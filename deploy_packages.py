@@ -4,19 +4,19 @@ import sys
 import os
 import shutil
 import argparse
+import platform
 from shutil import copyfile
 
 def parse_arguments(argv):
     parser = argparse.ArgumentParser(description="RCBE deb packages deploy script")
     parser.add_argument('-d', '--packages-directory', default='bazel-bin', help='Path to directory with built deb pacakges')
-    parser.add_argument('-e', '--engine-version', default='0.0.4', help='Engine version for which deb packages were built')
     parser.add_argument('-a', '--target-architecture', default='amd64', help='Engine target architecture for which deb pacakges were built')
     parser.add_argument('-o', '--output-directory', default='/tmp', help='Output directory where a tar.gz file containing all deployed deb pacakges will be created')
     parser.add_argument('-p', '--packages-extension', default='deb', help='Extension of packages to be deployed')
 
     parsed_args = parser.parse_args(argv)
 
-    return parsed_args.packages_directory, parsed_args.engine_version, parsed_args.target_architecture, parsed_args.output_directory, parsed_args.packages_extension
+    return parsed_args.packages_directory, parsed_args.target_architecture, parsed_args.output_directory, parsed_args.packages_extension
 
 def clear_dir(path):
     for filename in os.listdir(path):
@@ -55,7 +55,7 @@ def main(packages_path, engine_version, target_arch, output_file_path, extension
     print("For arch {}".format(target_arch))
     print("Starting bazel build for deploy")
     bazel_exit_code = os.system("bazel build --config=linux --build_tag_filters=-local //...")  # the simplest way is to build packages prior to packaging
-                                    # , and since there is no tag value for packages, we are building a;l
+                                    # , and since there is no tag value for packages, we are building all
 
     if (bazel_exit_code != 0):
         print("Error while building packages")
@@ -104,7 +104,31 @@ def main(packages_path, engine_version, target_arch, output_file_path, extension
 
     print("Deploy finished!")
 
+def get_engine_version():
+    f = open("meta_package/global_variables.bzl", "r")
+    major, minor, patch = '', '', ''
+    for l in f:
+        if 'VERSION' in l:
+            if 'FULL' in l:
+                continue
+
+            if 'MAJOR' in l:
+                major = l.split('=')[-1].strip(' ').strip('"').strip('\n').rstrip('"')
+            
+            if 'MINOR' in l:
+                minor = l.split('=')[-1].strip(' ').strip('"').strip('\n').rstrip('"')
+
+            if 'PATCH' in l:
+                patch = l.split('=')[-1].strip(' ').strip('"').strip('\n').rstrip('"')
+    
+    return '{}.{}.{}'.format(major, minor, patch) 
+
 if __name__ == "__main__":
-    source_dir, engine_version, target_arch, output_file, extension = parse_arguments(sys.argv[1:])
+    engine_version = get_engine_version()
+    print('Deploying version {}'.format(engine_version))
+    if platform.system() == 'Windows':
+        print('Windows deploy is not supported yet!')
+        exit(1)
+    source_dir, target_arch, output_file, extension = parse_arguments(sys.argv[1:])
 
     main(source_dir, engine_version, target_arch, output_file, extension)
