@@ -109,7 +109,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         env:
-          engine_version: "0.0.4"
+          engine_version: "0.1.0"
           target_architecture: "amd64"
         with:
           name: ${{ format('rcbe_engine_{0}_{1}_{2}', env.engine_version, env.target_architecture, github.sha) }}
