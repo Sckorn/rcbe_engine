@@ -27,7 +27,7 @@ Due to project being in pre-alpha state.  And in order to be as close to the ble
 So as of now there is little to none backward compiler support.
 
 > [!IMPORTANT]
-> Currently project uses C++20, and we will move to C++23 ASAP.
+> Currently project uses C++23, and we will move to C++26 as soon as it's available.
 
 Compiler and rasterizer support table can be found below.
 
@@ -103,9 +103,6 @@ Possible values for `meta_package:rdmn_rasterizer_back` option are:
 Possible values for `config` option are:
 1. `linux`
 2. `windows`
-
-> [!CAUTION]
-> `windows` support is a WIP feature, and only implemented for a limited set of packages.
 
 ## Binary releases
 
