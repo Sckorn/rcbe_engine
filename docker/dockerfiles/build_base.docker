@@ -9,6 +9,15 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring 
 
+#
+# Install Postfix to avoid interactive prompt during Vulkan setup
+#
+
+RUN debconf-set-selections <<< "postfix postfix/mailname string your.hostname.com"
+RUN debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+RUN apt-get -qq update && \
+    apt-get install --assume-yes postfix
+
 RUN apt-get -qq update && \
     apt-get install --fix-missing -q -y \
         pkg-config \
@@ -28,7 +37,6 @@ RUN apt-get -qq update && \
         python3-jinja2 \
         python3.6 \
         python3-tk \
-        python3-lib2to3 \
         python3-pip \
         python3.6 \
         # libraries
@@ -56,3 +64,46 @@ RUN apt-get -qq update && \
         libfreetype6-dev \
         python3-tornado \
         wget
+
+
+# 
+# Install Vulkan SDK deps
+#
+
+# TODO: check duplicates in the two lists in this file @Sckorn
+
+RUN mv /bin/sh /bin/sh-old && \
+    ln -s /bin/bash /bin/sh && \
+    # install packages
+    add-apt-repository ppa:graphics-drivers/ppa && \
+    apt-get -qq update && \
+    apt-get install --fix-missing -q -y \
+        libxcb-dri3-0 \
+        libxcb-present0 \
+        libpciaccess0 \
+        libpng-dev \
+        libxcb-keysyms1-dev \
+        libxcb-dri3-dev \
+        libx11-dev \
+        libwayland-dev \
+        libxrandr-dev \
+        libxcb-randr0-dev \
+        libxcb-ewmh-dev \
+        python-is-python3 \
+        bison \
+        libx11-xcb-dev \
+        liblz4-dev \
+        libzstd-dev \
+        ocaml-core \
+        ninja-build \
+        pkg-config \
+        libxml2-dev \
+        wayland-protocols \
+        python3-jsonschema \
+	    clang-format \
+        qtbase5-dev \
+        qt6-base-dev \
+        libxcb-glx0-dev \
+        git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*

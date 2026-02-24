@@ -600,6 +600,8 @@ bool VulkanRenderer::createVulkanInstance(VkInstance &instance) {
 
     auto res = vkCreateInstance(std::addressof(inst_crt_info), nullptr, std::addressof(instance));
     if (res != VK_SUCCESS) {
+        if (res == VK_ERROR_EXTENSION_NOT_PRESENT)
+            RDMN_LOG(RDMN_LOG_ERROR) << "Requested extension is not available";
         RDMN_LOG(RDMN_LOG_DEBUG) << "Couldn't create Vulkan instance";
         return false;
     }

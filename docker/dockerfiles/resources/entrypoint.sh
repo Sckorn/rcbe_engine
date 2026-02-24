@@ -50,6 +50,8 @@ export MESA_GL_VERSION_OVERRIDE=3.3
 
 chmod +x /start_storage.sh
 
+echo "source /opt/vulkan/${VULKAN_VERSION}/setup-env.sh" >> ${OPER_HOME}/.bashrc
 echo "/start_storage.sh" >> ${OPER_HOME}/.bashrc
 
 su radameon -s /bin/bash
+

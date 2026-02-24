@@ -33,8 +33,10 @@ Compiler and rasterizer support table can be found below.
 
 |Compiler\Rasterizer|Vulkan|OpenGL|
 |:-------|----------|---|
-|GCC 14.0.1|:heavy_check_mark:|:heavy_check_mark:|
-|Clang 18.1.8|:heavy_check_mark:|:heavy_check_mark:|
+|GCC 15.2.0|:heavy_check_mark:|:heavy_check_mark:|
+|Clang 21.1.8|:heavy_check_mark:|:heavy_check_mark:|
+|GCC 14.0.1|:heavy_check_mark::asterisk:|:heavy_check_mark::asterisk:|
+|Clang 18.1.8|:heavy_check_mark::asterisk:|:heavy_check_mark::asterisk:|
 |GCC 13.2|:heavy_check_mark::asterisk:|:heavy_check_mark::asterisk:|
 |Clang 16|:heavy_check_mark::asterisk:|:heavy_check_mark::asterisk:|
 |MSVC 19.42.34436 (VS 17.12)|:heavy_check_mark:|:x:|
@@ -49,8 +51,10 @@ Compiler and rasterizer support table can be found below.
 
 |Compiler|Revision|
 |:-------|----------|
-|GCC 14.0.1|master|
-|Clang 18.1.8|master|
+|GCC 15.2.0|master|
+|Clang 21.1.8|master|
+|GCC 14.0.1|[9d2c2080ff266e9112bd639bba30512d6d9565ef](https://github.com/Sckorn/rcbe_engine/commit/9d2c2080ff266e9112bd639bba30512d6d9565ef)|
+|Clang 18.1.8|[9d2c2080ff266e9112bd639bba30512d6d9565ef](https://github.com/Sckorn/rcbe_engine/commit/9d2c2080ff266e9112bd639bba30512d6d9565ef)|
 |MSVC 19.42.34436 (VS 17.12)|master|
 |GCC 13.2|[6101ca2edcc4fbc622791df04afc117911e1c8d6](https://github.com/Sckorn/rcbe_engine/commit/6101ca2edcc4fbc622791df04afc117911e1c8d6)|
 |Clang 16|[6101ca2edcc4fbc622791df04afc117911e1c8d6](https://github.com/Sckorn/rcbe_engine/commit/6101ca2edcc4fbc622791df04afc117911e1c8d6)|
@@ -72,8 +76,10 @@ docker pull radameon/build
 Currently it holds the following tags
 |Tag name| Descriptiom|
 |:-|:-|
-|gcc-14|Build image with GCC 13, Clang 16 and Bazel 7.3.0, Vulkan 1.3.290|
-|clang-18|Build image with GCC 13, Clang 16 and Bazel 7.3.0, Vulkan 1.3.290|
+|gcc-15|Build image with GCC 15, Clang 21 and Bazel 7.5.0, Vulkan 1.4.335|
+|clang-18|Build image with GCC 15, Clang 21 and Bazel 7.5.0, Vulkan 1.4.335|
+|gcc-14|Build image with GCC 14, Clang 18 and Bazel 7.3.0, Vulkan 1.3.290|
+|clang-18|Build image with GCC 14, Clang 18 and Bazel 7.3.0, Vulkan 1.3.290|
 |gcc-13|Build image with GCC 13, Clang 16 and Bazel 7.0.0, Vulkan 1.3.231|
 |clang-16|Build image with GCC 13, Clang 16 and Bazel 7.0.0, Vulkan 1.3.231|
 |gcc-12|Build image with GCC 12, Clang 14 and Bazel 5.2.0, Vulkan 1.2.x|

@@ -6,46 +6,54 @@ FROM radameon/build_${BASE}:latest
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Installing all clang 18 packages
+# Installing all clang 22 packages
+
+# Installing keys for repository
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key > ~/llvm-snapshot.gpg.key && \
+    gpg --no-default-keyring --keyring ./llvm_keyring.gpg --import ~/llvm-snapshot.gpg.key && \
+    gpg --no-default-keyring --keyring ./llvm_keyring.gpg --export > ./llvm-snapshot.gpg && \
+    mv ./llvm-snapshot.gpg /etc/apt/trusted.gpg.d/
 
 RUN echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble main" >> /etc/apt/sources.list && \
     echo "deb-src http://apt.llvm.org/noble/ llvm-toolchain-noble main" >> /etc/apt/sources.list && \
-    echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" >> /etc/apt/sources.list && \
-    echo "deb-src http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" >> /etc/apt/sources.list && \
-    wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
+    echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-21 main" >> /etc/apt/sources.list && \
+    echo "deb-src http://apt.llvm.org/noble/ llvm-toolchain-noble-21 main" >> /etc/apt/sources.list && \
+    echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-22 main" >> /etc/apt/sources.list && \
+    echo "deb-src http://apt.llvm.org/noble/ llvm-toolchain-noble-22 main" >> /etc/apt/sources.list && \
+    sudo add-apt-repository --remove ppa:ondrej/php && \
     apt-get -qq update && \
     apt-get -y -qq install \
         # LLVM
-        libllvm-18-ocaml-dev \
-        libllvm18 \
-        llvm-18 \
-        llvm-18-dev \
-        llvm-18-doc \
-        llvm-18-examples \
-        llvm-18-runtime \
+        libllvm-21-ocaml-dev \
+        libllvm21 \
+        llvm-21 \
+        llvm-21-dev \
+        llvm-21-doc \
+        llvm-21-examples \
+        llvm-21-runtime \
         # Clang and co
-        clang-18 \
-        clang-tools-18 \
-        clang-18-doc \
-        libclang-common-18-dev \
-        libclang-18-dev \
-        libclang1-18 \
-        clang-format-18 \
-        clangd-18 \
+        clang-21 \
+        clang-tools-21 \
+        clang-21-doc \
+        libclang-common-21-dev \
+        libclang-21-dev \
+        libclang1-21 \
+        clang-format-21 \
+        clangd-21 \
         # libfuzzer
-        libfuzzer-18-dev \
+        libfuzzer-21-dev \
         # lldb
-        lldb-18 \
+        lldb-21 \
         # lld (linker)
-        lld-18 \
+        lld-21 \
         # libc++
-        libc++-18-dev \
-        libc++abi-18-dev \
+        libc++-21-dev \
+        libc++abi-21-dev \
         # OpenMP
-        libomp-18-dev \
+        libomp-21-dev \
         # libclc
-        libclc-18-dev \
+        libclc-21-dev \
         # libunwind
-        libunwind-18-dev && \
+        libunwind-21-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
