@@ -34,7 +34,7 @@ setup_7zip()
 git_repository(
     name = "com_github_zaucy_rules_vulkan",
     remote = "https://github.com/Sckorn/rules_vulkan.git",
-    commit = "66ca0ad5666b79feedc99a4b2a637f94c25a3a76",
+    commit = "6b4abceb94aa6ca5336e965155a240a502a75084",
 )
 
 load("@com_github_zaucy_rules_vulkan//:repo.bzl", "vulkan_repos")

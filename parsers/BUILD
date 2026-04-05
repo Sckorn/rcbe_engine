@@ -118,7 +118,7 @@ r_cc_library(
     include_prefix = "rcbe-engine",
     includes = [_PARSER_INCLUDE_PATH],
     linkopts = select({
-        "//meta_package:rdmn_vk_rasterizer_backend": ["-lvulkan"],
+        "//meta_package:rdmn_vk_rasterizer_backend": [],
         "//meta_package:rdmn_gl_rasterizer_backend": ["-lGL"],
     }),
     strip_include_prefix = _PARSER_INCLUDE_PATH,

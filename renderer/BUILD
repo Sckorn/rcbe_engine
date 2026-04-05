@@ -36,7 +36,7 @@ r_cc_library(
     include_prefix = "rcbe-engine",
     includes = ["include"],
     linkopts = select({
-        "//meta_package:rdmn_vulkan_linux": ["-lvulkan"],
+        "//meta_package:rdmn_vulkan_linux": [],
         "//meta_package:rdmn_gl_linux": [
             "-lGL",
             "-lGLX",
@@ -53,6 +53,9 @@ r_cc_library(
     visibility = ["//visibility:public"],
     deps = select({
         "//meta_package:rdmn_vulkan_windows": [
+            "@vulkan_sdk//:vulkan"
+        ],
+        "//meta_package:rdmn_vulkan_linux": [
             "@vulkan_sdk//:vulkan"
         ],
         "//conditions:default": [],
