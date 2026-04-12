@@ -1,5 +1,7 @@
 load(":global_variables.bzl", "ENGINE_VERSION_FULL")
 load("//meta_package:global_variables.bzl", "SHARED_LIB_SUFFIX")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
 
 def r_cc_library(
         name,
@@ -35,7 +37,7 @@ def r_cc_library(
         "//conditions:default": ["R_PUBLIC_API="],
     })
 
-    native.cc_library(
+    cc_library(
         name = name,
         srcs = srcs,
         hdrs = hdrs,
@@ -79,7 +81,7 @@ def r_cc_shared_library(
         "//conditions:default": "",
     })
 
-    native.cc_shared_library(
+    cc_shared_library(
         name = name,
         shared_lib_name = shared_lib_name,
         deps = deps,

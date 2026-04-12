@@ -1,3 +1,5 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library") #TODO: replace with r_cc_library @sckorn
+
 cc_library(
     name = "rcbe_exception",
     hdrs = glob([

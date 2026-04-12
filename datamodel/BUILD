@@ -2,6 +2,7 @@ load("//meta_package:global_variables.bzl", "SHARED_LIB_SUFFIX")
 load("//meta_package:global_variables.bzl", "ENGINE_BUILD_TARGET_PREFIX")
 load("//meta_package:rules.bzl", "r_cc_library")
 load("//meta_package:rules.bzl", "r_cc_shared_library")
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
 
 _PACKAGE_NAME = "datamodel"
 
@@ -84,7 +85,6 @@ r_cc_library(
     name = _VISUAL_TARGET,
     srcs = glob([
         "src/visual/**/*.cpp",
-        "src/visual/**/*.hpp",
     ]),
     hdrs = glob([
         "include/datamodel/visual/**/*.hpp",

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <tinyxml2/tinyxml2.h>
+#include <tinyxml2.h>
 
 #include <rcbe-engine/parsers/x3d/x3d_parser.hpp>
 

@@ -1,4 +1,5 @@
 load("//meta_package:rdmn_build_constants.bzl", "LIB_INCLUDE_PREFIX")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 cc_library(
     name = "rdmn_public_api",
