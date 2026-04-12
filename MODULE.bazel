@@ -1,12 +1,84 @@
-###############################################################################
-# Bazel now uses Bzlmod by default to manage external dependencies.
-# Please consider migrating your external dependencies from WORKSPACE to MODULE.bazel.
-#
-# For more details, please check https://github.com/bazelbuild/bazel/issues/18958
-###############################################################################
+module(name = "rcbe_engine", version="")
 
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "nlohmann_json", version = "3.12.0.bcr.1", repo_name = "nlohmann")
+bazel_dep(name = "googletest", version = "1.17.0.bcr.2", repo_name = "com_google_googletest")
+bazel_dep(name = "rules_pkg", version = "1.2.0")
+bazel_dep(name = "tinyxml2", version = "10.0.0")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
 # -- bazel_dep definitions -- #
 
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 # -- use_repo_rule statements -- #
 
+
+http_archive(
+  name = "gltf_test_data_archive",
+  urls = [
+    "https://www.dropbox.com/scl/fi/h1g0idp3dkxoip38gnijm/viking_room.tar.xz?rlkey=7bz8t4on2twirsk381o9lcjxe&st=b5ogqlti&dl=1",
+    "http://localhost:8080/static/viking_room.tar.xz",
+    "file:../test_data/viking_room.tar.xz"
+  ],
+  sha256 = "8332c78756816faa99a15d85bb44db87937299b782da4a42a9c1f2f7e04e89cc",
+  build_file = "//thirdparty:gltf_tests_archive.BUILD",
+)
+
+http_archive(
+  name = "stl_test_data_archive",
+  urls = [
+    "https://www.dropbox.com/scl/fi/yn1w69g7b7g2gze574f7f/test_stls.tar.gz?rlkey=1a97h04xjtfp7q2knaj2z06ls&st=sciag8hn&dl=1",
+    "http://localhost:8080/static/test_stls.tar.gz",
+    "file:../test_data/test_stls.tar.gz"
+  ],
+  sha256 = "8e045f19f73320715bea8162161a3107b1c3a26d6c822a252bd201836897c7de",
+  build_file = "//thirdparty:stl_tests_archive.BUILD",
+)
+
+http_file(
+  name = "low_poly_wolf_stl",
+  downloaded_file_path = "LowPolyWolf.stl",
+  sha256 = "3da76bfc52b98e7e7cc8e805345b7c54fc7d53e24cb501c1e4ae542760947aa1",
+  urls = [
+    "https://www.dropbox.com/scl/fi/7w4ny3l2e8823gi8a901g/LowPolyWolf.stl?rlkey=uqgb5y8qf8xymbomb1ho4gn1m&st=04xsg7uo&dl=1",
+    "http://localhost:8080/static/LowPolyWolf.stl",
+    "file:../test_data/LowPolyWolf.stl"
+  ],
+)
+
+http_file(
+  name = "awesomeface_texture",
+  downloaded_file_path = "awesomeface_texture.tga",
+  sha256 = "66510d10328a164669a8d3690f98c669a72e7cfd72bc8c2cebfbcbcc5f450cd6",
+  urls = [
+    "https://www.dropbox.com/scl/fi/678kxgtxq0amq42qhmwaz/tex2.tga?rlkey=3leu2lf3l2j72t3ewnqjcqoez&st=k4ksvz54&dl=1",
+    "http://localhost:8080/static/tex2.tga",
+    "file:../test_data/tex2.tga"
+  ],
+)
+
+http_file(
+  name = "brick_wall_texture",
+  downloaded_file_path = "brick_wall_texture.tga",
+  sha256 = "bc1f3b97a10dbe671abd2cce7393e67094273c6fcf1c136c872380dd91ec8646",
+  urls = [
+    "https://www.dropbox.com/scl/fi/g4y8mv954l68rq8ztrz5u/tex.tga?rlkey=41vlint5apc4x594rxl8gm0ik&st=1uucv6rg&dl=1",
+    "http://localhost:8080/static/tex.tga",
+    "file:../test_data/tex.tga"
+  ],
+)
 # -- repo definitions -- #
+
+#extension_for_vulkan_repos = use_extension("//:extension_for_vulkan_repos.bzl", "extension_for_vulkan_repos")
+#use_repo(extension_for_vulkan_repos, "vulkan_sdk")
+
+bazel_dep(name = "rules_vulkan", version = "0.8.0")
+
+vulkan_sdk = use_extension("@rules_vulkan//vulkan:extensions.bzl", "vulkan_sdk")
+
+vulkan_sdk.toolchain(version = "1.4.335")
+use_repo(vulkan_sdk, "vulkan_sdk_1.4.335")
+
+register_toolchains("@vulkan_sdk_1.4.335//:all")
+
+# End of extension `extension_for_vulkan_repos`

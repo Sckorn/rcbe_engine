@@ -133,7 +133,7 @@ r_cc_library(
         "//datamodel:rdmn_engine_datamodel_geometry",
         "//datamodel:rdmn_engine_datamodel_math",
         "//datamodel:rdmn_engine_datamodel_rendering",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 

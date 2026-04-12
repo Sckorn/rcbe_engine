@@ -110,7 +110,7 @@ r_cc_library(
         "//datamodel:rdmn_engine_datamodel_rendering",
         "//input_manager:rdmn_engine_input_manager",
         "//renderer:rdmn_engine_renderer",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 

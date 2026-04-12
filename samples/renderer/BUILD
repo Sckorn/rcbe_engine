@@ -42,7 +42,7 @@ cc_binary(
         "//parsers:rdmn_engine_parser_x3d",
         "//window_manager:rdmn_engine_window_manager",
         "//common:rdmn_engine_common_trivial_logger",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
     dynamic_deps = [
         "//renderer:rdmn_engine_renderer_shared",

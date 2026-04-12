@@ -26,7 +26,7 @@ r_cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common:rdmn_engine_common_fundamentals",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 
@@ -61,7 +61,7 @@ r_cc_library(
         "//common:rdmn_engine_common_math_utils",
         "//common:rdmn_engine_common_binary_tools",
         "//common:rdmn_engine_common_trivial_logger",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 
@@ -106,7 +106,7 @@ r_cc_library(
         _MATH_TARGET,
         "//exceptions:rcbe_exception",
         "//common:rdmn_engine_common_trivial_logger",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 
@@ -142,7 +142,7 @@ r_cc_library(
         _MATH_TARGET,
         _VISUAL_TARGET,
         "//common:rdmn_engine_common_binary_tools",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 
@@ -178,7 +178,7 @@ r_cc_library(
         _CORE_TARGET,
         _MATH_TARGET,
         _VISUAL_TARGET,
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 
@@ -272,8 +272,8 @@ r_cc_library(
         "//meta_package:rdmn_gl_rasterizer_backend": ["//gl_extensions:rdmn_engine_gl_extensions"],
         "//meta_package:rdmn_vk_rasterizer_backend": [],
     }) + select({
-        "//meta_package:rdmn_vulkan_windows": ["@vulkan_sdk//:vulkan"],
-        "//meta_package:rdmn_vulkan_linux": ["@vulkan_sdk//:vulkan"],
+        "//meta_package:rdmn_vulkan_windows": ["@vulkan_sdk_1.4.335//:vulkan"],
+        "//meta_package:rdmn_vulkan_linux": ["@vulkan_sdk_1.4.335//:vulkan"],
         "//conditions:default": [],
     }) + [
         _CORE_TARGET,
@@ -282,7 +282,7 @@ r_cc_library(
         _VISUAL_TARGET,
         "//common:rdmn_engine_common_fundamentals",
         "//common:rdmn_engine_common_trivial_logger",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 
@@ -378,7 +378,7 @@ cc_test(
         "//common:rdmn_engine_common_fuzzy_logic",
         "//common:rdmn_engine_common_json_utils",
         "@com_google_googletest//:gtest_main",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
     dynamic_deps = [
         _SHARED_MATH_TARGET,
@@ -408,7 +408,7 @@ cc_test(
         "//common:rdmn_engine_common_json_utils",
         "//parsers:rdmn_engine_parser_stl",
         "@com_google_googletest//:gtest_main",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
     dynamic_deps = [
         _SHARED_MATH_TARGET,
@@ -438,7 +438,7 @@ cc_test(
         _VISUAL_TARGET,
         "//parsers:rdmn_engine_parser_tga",
         "@com_google_googletest//:gtest_main",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
     dynamic_deps = [
         _SHARED_MATH_TARGET,

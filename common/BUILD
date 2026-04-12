@@ -52,7 +52,7 @@ r_cc_library(
     linkopts = _COMMON_LINKOPTS,
     strip_include_prefix = _COMMON_INCLUDE_PATH,
     visibility = ["//visibility:public"],
-    deps = ["@nlohmann//:nlohmann_json"],
+    deps = ["@nlohmann//:json"],
 )
 
 r_cc_shared_library(

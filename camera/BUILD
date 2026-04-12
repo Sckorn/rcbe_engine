@@ -58,7 +58,7 @@ cc_test(
         "//datamodel:rdmn_engine_datamodel_rendering",
         "//datamodel:rdmn_engine_datamodel_visual",
         "@com_google_googletest//:gtest_main",
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
     dynamic_deps = [
         _SHARED_CAMERA_LIB_TARGET,

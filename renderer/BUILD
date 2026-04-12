@@ -53,10 +53,10 @@ r_cc_library(
     visibility = ["//visibility:public"],
     deps = select({
         "//meta_package:rdmn_vulkan_windows": [
-            "@vulkan_sdk//:vulkan"
+            "@vulkan_sdk_1.4.335//:vulkan"
         ],
         "//meta_package:rdmn_vulkan_linux": [
-            "@vulkan_sdk//:vulkan"
+            "@vulkan_sdk_1.4.335//:vulkan"
         ],
         "//conditions:default": [],
     }) + select({
@@ -75,7 +75,7 @@ r_cc_library(
         "//meta_package:rdmn_engine_config",
         "//common:rdmn_engine_common_trivial_logger",
         "//parsers:rdmn_engine_parser_x3d",  # will be used for skybox
-        "@nlohmann//:nlohmann_json",
+        "@nlohmann//:json",
     ],
 )
 
