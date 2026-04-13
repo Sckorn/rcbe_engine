@@ -8,7 +8,7 @@
 static constexpr size_t TOTAL_TRIANGLES = 6291;
 
 TEST(GeometryTests, BinaryStlFileTest) {
-    std::ifstream ifs {"external/low_poly_wolf_stl/file/LowPolyWolf.stl", std::ios::in | std::ios::binary};
+    std::ifstream ifs {"../+http_file+low_poly_wolf_stl/file/LowPolyWolf.stl", std::ios::in | std::ios::binary};
     rcbe::binary::BinaryBuffer bb;
     ifs >> bb;
 
