@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
                      tconf.component_order = decltype(tconf.component_order)::GBR;
                      rcbe::visual::Texture tex {
-                         "external/awesomeface_texture/file/awesomeface_texture.tga",
+                         "../+http_file+awesomeface_texture/file/awesomeface_texture.tga",
                          rdmn::parse::tga::parse};
                      const auto &pixels = tex.getPixels();
                      auto optional_gc = window->getGraphicContext();
@@ -79,9 +79,8 @@ int main(int argc, char *argv[]) {
         window->setInputManager(std::make_shared<rcbe::core::AbstractInputManager>(std::move(eim)));
 
         window->show();
-        RDMN_LOG(RDMN_LOG_ERROR) << "After show";
+        
         auto window_handle = window->startWindowLoopAsync();
-        RDMN_LOG(RDMN_LOG_ERROR) << "Async window LOop";
 
         window_handle.wait();
     } catch (const std::exception &e) {

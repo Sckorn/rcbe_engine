@@ -3,6 +3,7 @@
 #include <chrono>
 #include <memory>
 #include <span>// left to clarify that c++20 is used
+#include <filesystem>
 
 #include <rcbe-engine/camera/Camera.hpp>
 #include <rcbe-engine/core/AbstractInputManager.hpp>
@@ -34,6 +35,7 @@
 int main(int argc, char *argv[]) {
     using rcbe::core::InputManagerImplementation;
     namespace rlog = rdmn::core::log;
+    RDMN_LOG(RDMN_LOG_INFO) << "CWD " << std::filesystem::current_path().string();
     try {
         rlog::trivial_logger::set_log_level(rlog::LoggerType::info);
         rcbe::core::WindowManager manager {true};
@@ -105,7 +107,7 @@ int main(int argc, char *argv[]) {
 
         auto meshes = rcbe::parsers::parse_meshes("parsers/test/resources/simple_edge_quad.x3d");
         auto second_mesh = meshes[0];
-        auto low_poly_wolf_mesh = rcbe::parsers::stl::parse_mesh("../../+http_file+low_poly_wolf_stl/file/LowPolyWolf.stl");
+        auto low_poly_wolf_mesh = rcbe::parsers::stl::parse_mesh("../+http_file+low_poly_wolf_stl/file/LowPolyWolf.stl");
 
 #ifdef RDMN_OPENGL
         {
@@ -162,8 +164,8 @@ int main(int argc, char *argv[]) {
 #ifdef RDMN_VULKAN
 
         auto viking_room_objects = rdmn::parse::gltf::parse(
-            "../../+http_archive+gltf_test_data_archive/viking_room/scene.gltf",
-            "../../+http_archive+gltf_test_data_archive/scene.bin");
+            "../+http_archive+gltf_test_data_archive/viking_room/scene.gltf",
+            "../+http_archive+gltf_test_data_archive/viking_room/scene.bin");
 
         std::string name = "wolf";
         rcbe::core::CoreObject wolf_object {std::move(name)};
@@ -189,9 +191,9 @@ int main(int argc, char *argv[]) {
                  rdmn::render::ShaderState::precompiled});
 
             auto brick_wall_tex = rcbe::visual::make_tex_ptr(
-                "../../+http_file+brick_wall_texture/file/brick_wall_texture.tga", rdmn::parse::tga::parse);
+                "../+http_file+brick_wall_texture/file/brick_wall_texture.tga", rdmn::parse::tga::parse);
             auto awesome_face_tex = rcbe::visual::make_tex_ptr(
-                "../../+http_file+awesomeface_texture/file/awesomeface_texture.tga", rdmn::parse::tga::parse);
+                "../+http_file+awesomeface_texture/file/awesomeface_texture.tga", rdmn::parse::tga::parse);
 
             rcbe::visual::VisualTextureSet vts {brick_wall_tex, awesome_face_tex};
 
